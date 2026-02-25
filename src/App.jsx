@@ -9,8 +9,8 @@ import {
   ArrowRight, ChevronDown, Clock, Eye
 } from 'lucide-react';
 import * as Papa from 'papaparse';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs';
-import pdfWorkerSrc from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 /* ═══════════════════════════════════════════════════════════════
    FORTIFYOS — UNIFIED v2.3
@@ -25,6 +25,7 @@ import pdfWorkerSrc from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url';
 const THEMES = {
   dark: {
     void: '#000000', surface: '#0A0A0A', elevated: '#111111', input: '#0D0D0D',
+    panel: '#0D0D0D', panel2: '#111111',
     borderDim: '#1A1A1A', borderMid: '#2A2A2A', borderBright: '#333333',
     textPrimary: '#E8E8E8', textSecondary: '#888888', textDim: '#555555', textGhost: '#333333',
     accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
@@ -33,453 +34,21 @@ const THEMES = {
     crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
   light: {
-    void: '#FFFFFF', surface: '#FFFFFF', elevated: '#F8F9FA', input: '#F3F4F6',
-    borderDim: '#D1D5DB', borderMid: '#9CA3AF', borderBright: '#6B7280',
-    textPrimary: '#111111', textSecondary: '#1F2937', textDim: '#4B5563', textGhost: '#9CA3AF',
-    accent: '#22A35A', accentBright: '#2DBA67', accentDim: '#1B7A43', accentMuted: '#EAF7EF',
-    danger: '#FF3333', warn: '#FFB800',
-    purple: '#BF40BF', purpleDim: '#8A2D8A', purpleMuted: '#2D0A2D',
-    crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
+    void: '#F5F3F0', surface: '#FEFEFE', elevated: '#FAF9F7', input: '#F0EEEB',
+    panel: '#F0EEEB', panel2: '#FFFFFF',
+    borderDim: '#DDD9D4', borderMid: '#CCC7C0', borderBright: '#B5AFA8',
+    textPrimary: '#1C1B1A', textSecondary: '#625D56', textDim: '#948E86', textGhost: '#CCC7C0',
+    accent: '#1A7A3A', accentBright: '#20953F', accentDim: '#135E2C', accentMuted: '#E0F0E5',
+    danger: '#C42B1C', warn: '#D48A00',
+    purple: '#8B5CF6', purpleDim: '#7340DB', purpleMuted: '#F1ECF9',
+    crypto: '#E8850F', cryptoDim: '#B36C0C', cryptoMuted: '#FFF5E5',
   },
 };
 
-// ═══════════════════════════════════════════════════
-// PDF.js (bundled locally in app build; no CDN runtime fetch)
-// ═══════════════════════════════════════════════════
-GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
-
-async function extractPDFText(file) {
-  const buffer = await file.arrayBuffer();
-  const pdf = await getDocument({ data: new Uint8Array(buffer) }).promise;
-  const pages = [];
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const lines = [];
-    let lastY = null;
-    let currentLine = '';
-    for (const item of content.items) {
-      const y = Math.round(item.transform[5]);
-      if (lastY !== null && Math.abs(y - lastY) > 3) {
-        if (currentLine.trim()) lines.push(currentLine.trim());
-        currentLine = '';
-      }
-      currentLine += (currentLine ? ' ' : '') + item.str;
-      lastY = y;
-    }
-    if (currentLine.trim()) lines.push(currentLine.trim());
-    pages.push(lines);
-  }
-  return { pages, allLines: pages.flat(), numPages: pdf.numPages };
-}
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
 
 // ═══════════════════════════════════════════════════
-// PDF BANK TEXT PARSERS
-// ═══════════════════════════════════════════════════
-const PDF_BANK_PARSERS = {
-  chase: {
-    name: 'Chase',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /JPMorgan Chase/i.test(text) || /chase\.com/i.test(text) || (/CHASE/i.test(text) && /statement/i.test(text));
-    },
-    parse: (lines) => {
-      const txns = [];
-      // Chase statements: MM/DD date, description, then amount (negative=charge, positive=payment)
-      const dateRe = /^(\d{1,2}\/\d{1,2})\s+(.+?)\s+(-?[\d,]+\.\d{2})$/;
-      const dateRe2 = /^(\d{1,2}\/\d{1,2})\s+(\d{1,2}\/\d{1,2})\s+(.+?)\s+(-?[\d,]+\.\d{2})$/;
-      for (const line of lines) {
-        let m = line.match(dateRe2);
-        if (m) {
-          txns.push({ date: m[1], description: m[3].trim(), amount: -parseFloat(m[4].replace(/,/g, '')) });
-          continue;
-        }
-        m = line.match(dateRe);
-        if (m) {
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          const desc = m[2].trim();
-          if (/payment|credit/i.test(desc)) txns.push({ date: m[1], description: desc, amount: Math.abs(amt) });
-          else txns.push({ date: m[1], description: desc, amount: -Math.abs(amt) });
-          continue;
-        }
-      }
-      return txns;
-    },
-  },
-  bofa: {
-    name: 'Bank of America',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Bank of America/i.test(text) || /bankofamerica\.com/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      const dateRe = /^(\d{1,2}\/\d{1,2}\/?\d{0,4})\s+(.+?)\s+(-?[\d,]+\.\d{2})$/;
-      for (const line of lines) {
-        const m = line.match(dateRe);
-        if (m) {
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          const desc = m[2].trim();
-          if (/deposit|direct dep|credit|payment received/i.test(desc)) txns.push({ date: m[1], description: desc, amount: Math.abs(amt) });
-          else txns.push({ date: m[1], description: desc, amount: -Math.abs(amt) });
-        }
-      }
-      return txns;
-    },
-  },
-  amex: {
-    name: 'American Express',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /American Express/i.test(text) || /americanexpress\.com/i.test(text) || /AMEX/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      const dateRe = /^(\d{1,2}\/\d{1,2}\/?\d{0,4})\s+(.+?)\s+\$?([\d,]+\.\d{2})$/;
-      for (const line of lines) {
-        const m = line.match(dateRe);
-        if (m) {
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          const desc = m[2].trim();
-          if (/payment.*received|credit/i.test(desc)) txns.push({ date: m[1], description: desc, amount: Math.abs(amt) });
-          else txns.push({ date: m[1], description: desc, amount: -Math.abs(amt) });
-        }
-      }
-      return txns;
-    },
-  },
-  capitalOne: {
-    name: 'Capital One',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Capital One/i.test(text) || /capitalone\.com/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      // Capital One CC statements use: "Jan 28 Jan 28 DESCRIPTION - $211.00" or "$211.00"
-      // Trans Date, Post Date (both "Mon DD"), Description, then [- ]$Amount
-      for (const line of lines) {
-        // Pattern: MonthAbbr Day MonthAbbr Day Description [-]$Amount
-        let m = line.match(/^(\w{3}\s+\d{1,2})\s+(\w{3}\s+\d{1,2})\s+(.+?)\s+-\s*\$([\d,]+\.\d{2})$/);
-        if (m) {
-          // Negative amount (payment/credit)
-          txns.push({ date: m[1], description: m[3].trim(), amount: parseFloat(m[4].replace(/,/g, '')) });
-          continue;
-        }
-        m = line.match(/^(\w{3}\s+\d{1,2})\s+(\w{3}\s+\d{1,2})\s+(.+?)\s+\$([\d,]+\.\d{2})$/);
-        if (m) {
-          // Positive amount (charge)
-          txns.push({ date: m[1], description: m[3].trim(), amount: -parseFloat(m[4].replace(/,/g, '')) });
-          continue;
-        }
-        // Also try MM/DD format
-        m = line.match(/^(\d{1,2}\/\d{1,2})\s+(\d{1,2}\/\d{1,2})\s+(.+?)\s+-?\s*\$([\d,]+\.\d{2})$/);
-        if (m) {
-          const desc = m[3].trim();
-          const amt = parseFloat(m[4].replace(/,/g, ''));
-          if (/payment|credit|pymt/i.test(desc) || line.includes('- $'))
-            txns.push({ date: m[1], description: desc, amount: amt });
-          else
-            txns.push({ date: m[1], description: desc, amount: -amt });
-        }
-      }
-      return txns;
-    },
-  },
-  wellsFargo: {
-    name: 'Wells Fargo',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Wells Fargo/i.test(text) || /wellsfargo\.com/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      const dateRe = /^(\d{1,2}\/\d{1,2})\s+(.+?)\s+(-?[\d,]+\.\d{2})$/;
-      for (const line of lines) {
-        const m = line.match(dateRe);
-        if (m) {
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          txns.push({ date: m[1], description: m[2].trim(), amount: amt < 0 ? amt : -amt });
-        }
-      }
-      return txns;
-    },
-  },
-  citi: {
-    name: 'Citi',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Citibank/i.test(text) || /citi\.com/i.test(text) || (/Citi/i.test(text) && /statement/i.test(text));
-    },
-    parse: (lines) => {
-      const txns = [];
-      const dateRe = /^(\d{1,2}\/\d{1,2})\s+(.+?)\s+\$?([\d,]+\.\d{2})$/;
-      for (const line of lines) {
-        const m = line.match(dateRe);
-        if (m) {
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          const desc = m[2].trim();
-          if (/payment|credit|refund/i.test(desc)) txns.push({ date: m[1], description: desc, amount: Math.abs(amt) });
-          else txns.push({ date: m[1], description: desc, amount: -Math.abs(amt) });
-        }
-      }
-      return txns;
-    },
-  },
-  usaa: {
-    name: 'USAA',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /USAA/i.test(text) || /usaa\.com/i.test(text) || /United Services Automobile/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      for (const line of lines) {
-        // USAA: "MM/DD Description $Amount" or "MM/DD MM/DD Description Amount"
-        let m = line.match(/^(\d{1,2}\/\d{1,2})\s+(\d{1,2}\/\d{1,2})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (m) {
-          const desc = m[3].trim();
-          const amt = parseFloat(m[4].replace(/,/g, ''));
-          if (/payment|credit|pymt/i.test(desc) || line.includes('- $')) txns.push({ date: m[1], description: desc, amount: amt });
-          else txns.push({ date: m[1], description: desc, amount: -amt });
-          continue;
-        }
-        m = line.match(/^(\d{1,2}\/\d{1,2}\/?\d{0,4})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (m) {
-          const desc = m[2].trim();
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          if (/payment|credit|pymt|deposit|direct dep/i.test(desc) || line.includes('- $')) txns.push({ date: m[1], description: desc, amount: amt });
-          else txns.push({ date: m[1], description: desc, amount: -amt });
-        }
-      }
-      return txns;
-    },
-  },
-  avant: {
-    name: 'Avant',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Avant/i.test(text) && (/AvantCard/i.test(text) || /avant\.com/i.test(text) || /WebBank/i.test(text));
-    },
-    parse: (lines) => {
-      const txns = [];
-      for (const line of lines) {
-        // Avant CC: "MM/DD MM/DD Description $Amount" or "Mon DD Mon DD Description $Amount"
-        let m = line.match(/^(\d{1,2}\/\d{1,2})\s+(\d{1,2}\/\d{1,2})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (!m) m = line.match(/^(\w{3}\s+\d{1,2})\s+(\w{3}\s+\d{1,2})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (m) {
-          const desc = m[3].trim();
-          const amt = parseFloat(m[4].replace(/,/g, ''));
-          if (/payment|credit|pymt/i.test(desc) || line.includes('- $') || line.includes('- ')) txns.push({ date: m[1], description: desc, amount: amt });
-          else txns.push({ date: m[1], description: desc, amount: -amt });
-          continue;
-        }
-        m = line.match(/^(\d{1,2}\/\d{1,2}\/?\d{0,4})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (m) {
-          const desc = m[2].trim();
-          const amt = parseFloat(m[3].replace(/,/g, ''));
-          if (/payment|credit|pymt/i.test(desc) || line.includes('- $')) txns.push({ date: m[1], description: desc, amount: amt });
-          else txns.push({ date: m[1], description: desc, amount: -amt });
-        }
-      }
-      return txns;
-    },
-  },
-  missionLane: {
-    name: 'Mission Lane',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Mission Lane/i.test(text) || /missionlane\.com/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      for (const line of lines) {
-        let m = line.match(/^(\d{1,2}\/\d{1,2})\s+(\d{1,2}\/\d{1,2})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (!m) m = line.match(/^(\w{3}\s+\d{1,2})\s+(\w{3}\s+\d{1,2})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (!m) m = line.match(/^(\d{1,2}\/\d{1,2}\/?\d{0,4})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (m) {
-          const dateIdx = m[3] ? 3 : 2;
-          const amtIdx = m[4] ? 4 : 3;
-          const desc = m[dateIdx].trim();
-          const amt = parseFloat(m[amtIdx].replace(/,/g, ''));
-          if (/payment|credit|pymt/i.test(desc) || line.includes('- $')) txns.push({ date: m[1], description: desc, amount: amt });
-          else txns.push({ date: m[1], description: desc, amount: -amt });
-        }
-      }
-      return txns;
-    },
-  },
-  navyFederal: {
-    name: 'Navy Federal',
-    detect: (lines) => {
-      const text = lines.join(' ');
-      return /Navy Federal/i.test(text) || /navyfederal\.org/i.test(text) || /NFCU/i.test(text);
-    },
-    parse: (lines) => {
-      const txns = [];
-      for (const line of lines) {
-        // Navy Federal: "MM/DD/YY or MM/DD Description Amount" or with Trans/Post date columns
-        let m = line.match(/^(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s+(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (!m) m = line.match(/^(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/);
-        if (m) {
-          const hasPostDate = m[4] !== undefined;
-          const desc = hasPostDate ? m[3].trim() : m[2].trim();
-          const amt = parseFloat((hasPostDate ? m[4] : m[3]).replace(/,/g, ''));
-          if (/payment|credit|pymt|deposit|direct dep|payroll/i.test(desc) || line.includes('- $')) txns.push({ date: m[1], description: desc, amount: amt });
-          else txns.push({ date: m[1], description: desc, amount: -amt });
-        }
-      }
-      return txns;
-    },
-  },
-  generic: {
-    name: 'Generic',
-    detect: () => true,
-    parse: (lines) => {
-      const txns = [];
-      const patterns = [
-        // Trans Date + Post Date + Description + $Amount (most CC statements)
-        { re: /^(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s+(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/, dateG: 1, descG: 3, amtG: 4 },
-        // Mon DD + Mon DD + Description + $Amount (Capital One style)
-        { re: /^(\w{3}\s+\d{1,2})\s+(\w{3}\s+\d{1,2})\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/, dateG: 1, descG: 3, amtG: 4 },
-        // Date + Description + $Amount (simple format)
-        { re: /^(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s+(.+?)\s+-?\s*\$?([\d,]+\.\d{2})$/, dateG: 1, descG: 2, amtG: 3 },
-        // ISO Date + Description + Amount
-        { re: /^(\d{4}-\d{2}-\d{2})\s+(.+?)\s+\$?(-?[\d,]+\.\d{2})$/, dateG: 1, descG: 2, amtG: 3 },
-        // DD Mon + Description + Amount (UK/Canadian style)
-        { re: /^(\d{1,2}\s+\w{3})\s+(.+?)\s+([\d,]+\.\d{2})$/, dateG: 1, descG: 2, amtG: 3 },
-        // Mon DD, YYYY + Description + Amount
-        { re: /^(\w{3}\s+\d{1,2},?\s*\d{4})\s+(.+?)\s+\$?(-?[\d,]+\.\d{2})$/, dateG: 1, descG: 2, amtG: 3 },
-        // Date + Amount + Description (SunTrust style)
-        { re: /^(\d{1,2}\/\d{1,2})\s+([\d,]+\.\d{2})\s+(.+)$/, dateG: 1, descG: 3, amtG: 2 },
-      ];
-      for (const line of lines) {
-        for (const p of patterns) {
-          const m = line.match(p.re);
-          if (m) {
-            const desc = m[p.descG].trim();
-            let amt = parseFloat(m[p.amtG].replace(/,/g, ''));
-            if (/payment|credit|pymt|deposit|direct dep|payroll|refund/i.test(desc) || line.includes('- $')) {
-              amt = Math.abs(amt);
-            } else if (amt > 0) {
-              amt = -amt;
-            }
-            if (/^(date|trans|post|description|amount|balance|total|page|opening|closing|beginning|ending)/i.test(desc)) break;
-            txns.push({ date: m[p.dateG], description: desc, amount: amt });
-            break;
-          }
-        }
-      }
-      return txns;
-    },
-  },
-};
-
-function parsePDFTransactions(allLines) {
-  // Redact sensitive data from extracted text first
-  const redactedLines = allLines.map(l => sentinel.redact(l));
-  // Detect bank
-  let bank = 'Unknown';
-  let txns = [];
-  for (const [key, parser] of Object.entries(PDF_BANK_PARSERS)) {
-    if (key === 'generic') continue;
-    if (parser.detect(redactedLines)) {
-      txns = parser.parse(redactedLines);
-      bank = parser.name;
-      break;
-    }
-  }
-  if (bank === 'Unknown') {
-    txns = PDF_BANK_PARSERS.generic.parse(redactedLines);
-  }
-
-  // Extract credit card statement summary (works for any bank)
-  const summary = extractStatementSummary(redactedLines);
-
-  // If we got summary data but few/no transactions, synthesize transactions from summary
-  if (txns.length === 0 && summary.hasData) {
-    if (summary.payments > 0) {
-      txns.push({ date: summary.cycleStart || 'N/A', description: 'PAYMENT', amount: summary.payments });
-    }
-    if (summary.interestCharged > 0) {
-      txns.push({ date: summary.cycleEnd || 'N/A', description: 'INTEREST CHARGE', amount: -summary.interestCharged });
-    }
-    if (summary.fees > 0) {
-      txns.push({ date: summary.cycleEnd || 'N/A', description: 'FEES', amount: -summary.fees });
-    }
-    if (summary.purchases > 0) {
-      txns.push({ date: summary.cycleEnd || 'N/A', description: 'PURCHASES (TOTAL)', amount: -summary.purchases });
-    }
-  }
-
-  return { bank, txns, lineCount: redactedLines.length, summary };
-}
-
-function extractStatementSummary(lines) {
-  const s = {
-    hasData: false,
-    previousBalance: 0, payments: 0, purchases: 0, cashAdvances: 0,
-    fees: 0, interestCharged: 0, newBalance: 0,
-    creditLimit: 0, availableCredit: 0,
-    minPayment: 0, dueDate: '', apr: 0,
-    cycleStart: '', cycleEnd: '',
-    totalInterestYTD: 0, totalFeesYTD: 0,
-  };
-
-  const joined = lines.join('\n');
-  const flat = lines.join(' ');
-
-  // Helper to find dollar amounts after a label
-  const findAmt = (pattern) => {
-    const re = new RegExp(pattern + '\\s*[-+=+]*\\s*\\$?([\\d,]+\\.\\d{2})', 'i');
-    const m = flat.match(re);
-    return m ? parseFloat(m[1].replace(/,/g, '')) : 0;
-  };
-
-  s.previousBalance = findAmt('Previous Balance');
-  s.newBalance = findAmt('New Balance');
-  s.creditLimit = findAmt('Credit Limit');
-  s.minPayment = findAmt('Minimum Payment Due');
-  s.interestCharged = findAmt('Total Interest for This Period');
-  if (!s.interestCharged) s.interestCharged = findAmt('Interest Charged');
-  s.fees = findAmt('Total Fees for This Period');
-  if (!s.fees) s.fees = findAmt('Fees Charged');
-  s.totalInterestYTD = findAmt('Total Interest charged');
-  s.totalFeesYTD = findAmt('Total Fees charged');
-
-  // Payments (may have "- $" prefix)
-  const pmtMatch = flat.match(/Payments\s*[-–]?\s*\$?([\d,]+\.\d{2})/i);
-  if (pmtMatch) s.payments = parseFloat(pmtMatch[1].replace(/,/g, ''));
-
-  // Transactions/Purchases total from summary
-  const txnMatch = flat.match(/Transactions\s*\+?\s*\$?([\d,]+\.\d{2})/i);
-  if (txnMatch) s.purchases = parseFloat(txnMatch[1].replace(/,/g, ''));
-
-  // APR
-  const aprMatch = flat.match(/(\d+\.\d+)%\s*[PpVv]/);
-  if (aprMatch) s.apr = parseFloat(aprMatch[1]);
-  if (!s.apr) {
-    const aprMatch2 = flat.match(/APR\)?:?\s*(\d+\.\d+)%/i);
-    if (aprMatch2) s.apr = parseFloat(aprMatch2[1]);
-  }
-
-  // Due date
-  const dueMatch = flat.match(/(?:Payment\s+)?Due\s+Date:?\s*(\w{3,9}\s+\d{1,2},?\s*\d{4})/i);
-  if (dueMatch) s.dueDate = dueMatch[1];
-
-  // Billing cycle
-  const cycleMatch = flat.match(/(\w{3}\s+\d{1,2},?\s*\d{4})\s*[-–]\s*(\w{3}\s+\d{1,2},?\s*\d{4})/);
-  if (cycleMatch) {
-    s.cycleStart = cycleMatch[1];
-    s.cycleEnd = cycleMatch[2];
-  }
-
-  s.hasData = s.newBalance > 0 || s.previousBalance > 0 || s.payments > 0;
-  return s;
-}
-
-// ═══════════════════════════════════════════════════
-// BANK FINGERPRINT LIBRARY (CSV)
+// BANK FINGERPRINT LIBRARY
 // ═══════════════════════════════════════════════════
 const BANK_SIGNATURES = {
   chase: {
@@ -544,13 +113,13 @@ const BANK_SIGNATURES = {
 };
 
 // ═══════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════
 // SENTINEL REDACTION FILTER
 // ═══════════════════════════════════════════════════
 // Goal: aggressively mask common sensitive fields BEFORE any parsing / display.
 // (Matches the desktop Parse Protocols philosophy: redact-first, then reason.)
 const sentinel = {
-  redact: (text) => {
+  redact: (text, opts = {}) => {
+    const { preserveLabeledAccounts = false, preservePhones = false, preserveLongNumericIds = false } = opts || {};
     if (typeof text !== 'string') return text;
     let t = text;
 
@@ -568,19 +137,25 @@ const sentinel = {
     t = t.replace(/\b(?:routing|rt|aba)\s*(?:#|no\.?|number)?\s*[:\-]?\s*\d{9}\b/gi, '[REDACTED ROUTING]');
 
     // Account numbers when labeled (including "ending in", "last 4")
-    t = t.replace(/\b(?:account|acct|card|iban)\s*(?:#|no\.?|number|ending\s+in|last\s*4)\s*[:\-]?\s*\d{3,}\b/gi, '[REDACTED ACCOUNT]');
+    if (!preserveLabeledAccounts) {
+      t = t.replace(/\b(?:account|acct|card|iban)\s*(?:#|no\.?|number|ending\s+in|last\s*4)\s*[:\-]?\s*\d{3,}\b/gi, '[REDACTED ACCOUNT]');
+    }
 
     // Email addresses
     t = t.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[REDACTED EMAIL]');
 
     // US phone numbers
-    t = t.replace(/\b(?:\+?1[ .-]?)?(?:\(\d{3}\)|\d{3})[ .-]?\d{3}[ .-]?\d{4}\b/g, '[REDACTED PHONE]');
+    if (!preservePhones) {
+      t = t.replace(/\b(?:\+?1[ .-]?)?(?:\(\d{3}\)|\d{3})[ .-]?\d{3}[ .-]?\d{4}\b/g, '[REDACTED PHONE]');
+    }
 
     // DOB / Birthdate when labeled (avoid blanketing all dates)
     t = t.replace(/\b(?:dob|date\s+of\s+birth|birth\s*date)\s*[:\-]?\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\b/gi, 'DOB: [REDACTED]');
 
     // Long digit sequences (9+ digits) when likely identifiers (avoid amounts with decimals)
-    t = t.replace(/\b\d{9,}\b/g, (m) => (m.length <= 4 ? m : `${'X'.repeat(Math.max(0, m.length - 4))}${m.slice(-4)}`));
+    if (!preserveLongNumericIds) {
+      t = t.replace(/\b\d{9,}\b/g, (m) => (m.length <= 4 ? m : `${'X'.repeat(Math.max(0, m.length - 4))}${m.slice(-4)}`));
+    }
 
     return t;
   },
@@ -595,7 +170,6 @@ const sentinel = {
 
 // ═══════════════════════════════════════════════════
 // TRANSACTION CATEGORIZER
-
 // ═══════════════════════════════════════════════════
 const CATEGORY_RULES = [
   { match: /rent|mortgage|housing/i, cat: 'Essential' },
@@ -611,10 +185,236 @@ const CATEGORY_RULES = [
   { match: /payroll|direct dep|salary|wage|income/i, cat: 'Income' },
 ];
 
+const CATEGORY_OPTIONS = Array.from(new Set(CATEGORY_RULES.map(r => r.cat).concat(['Uncategorized'])));
+
 function categorize(desc) {
   const d = (desc || '').toLowerCase();
   for (const r of CATEGORY_RULES) { if (r.match.test(d)) return r.cat; }
   return 'Uncategorized';
+}
+
+/**
+ * STATEMENT PARSING (PDF text + OCR)
+ * Heuristic line parser for common bank/credit card statement formats.
+ * Output: [{ date: 'YYYY-MM-DD'|'', description: '...', amount: number }]
+ */
+function normalizeDateLike(s) {
+  if (!s) return '';
+  const str = s.trim();
+  // MM/DD/YYYY or MM/DD/YY or MM-DD-YYYY
+  let m = str.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
+  if (m) {
+    let mm = String(m[1]).padStart(2,'0');
+    let dd = String(m[2]).padStart(2,'0');
+    let yy = m[3] ? String(m[3]) : '';
+    if (yy.length === 2) yy = '20' + yy;
+    if (!yy) return `${mm}/${dd}`;
+    return `${yy}-${mm}-${dd}`;
+  }
+  // YYYY-MM-DD
+  m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return str;
+  // Month name (Jan 5 2025)
+  m = str.match(/^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s*(\d{1,2})(?:,?\s*(\d{4}))?$/i);
+  if (m) {
+    const map = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',sept:'09',oct:'10',nov:'11',dec:'12'};
+    const mm = map[m[1].toLowerCase()];
+    const dd = String(m[2]).padStart(2,'0');
+    const yy = m[3] ? String(m[3]) : '';
+    return yy ? `${yy}-${mm}-${dd}` : `${mm}/${dd}`;
+  }
+  return str;
+}
+
+function parseAmountLike(s) {
+  if (!s) return null;
+  let str = String(s).trim();
+  // parentheses = negative
+  let neg = false;
+  if (str.startsWith('(') && str.endsWith(')')) { neg = true; str = str.slice(1, -1); }
+  str = str.replace(/\$/g, '').replace(/\$/,'').replace(/,/g,'').replace(/\s+/g,'');
+  if (str.startsWith('+')) str = str.slice(1);
+  if (str.endsWith('-')) { str = str.slice(0, -1); neg = true; }
+  // sometimes trailing CR/DR
+  if (/cr$/i.test(str)) { str = str.replace(/cr$/i,''); }
+  if (/dr$/i.test(str)) { str = str.replace(/dr$/i,''); neg = true; }
+  const m = str.match(/^-?\d+(?:\.\d{1,2})?$/);
+  if (!m) return null;
+  const n = parseFloat(str);
+  if (Number.isNaN(n)) return null;
+  return neg ? -Math.abs(n) : n;
+}
+
+function parseStatementTextToTransactions(text) {
+  const rawLines = (text || '')
+    .split(/\r?\n/)
+    .map(l => (l || '').replace(/\t/g, ' ').trim())
+    .filter(Boolean);
+
+  const splitDenseStatementLine = (line, dateRegex) => {
+    const dense = (line || '').replace(/\s{2,}/g, ' ').trim();
+    if (!dense) return [];
+    const hits = Array.from(dense.matchAll(new RegExp(dateRegex.source, 'ig')));
+    if (hits.length <= 1) return [dense];
+    const parts = [];
+    for (let i = 0; i < hits.length; i++) {
+      const start = hits[i].index ?? 0;
+      const end = i + 1 < hits.length ? (hits[i + 1].index ?? dense.length) : dense.length;
+      const seg = dense.slice(start, end).trim();
+      if (seg) parts.push(seg);
+    }
+    return parts.length ? parts : [dense];
+  };
+
+  const txns = [];
+
+  const inferDirection = (line, desc = '') => {
+    const s = `${line || ''} ${desc || ''}`.toLowerCase();
+    if (/\bfrom\s+.+\b(?:bank|checking|savings|transfer)\b/.test(s)) return 1;
+    if (/\bto\s+savings\s+transfer\b/.test(s)) return -1;
+    if (/\bcash app card\b/.test(s)) return -1;
+    if (/\bloan repayment\b/.test(s)) return -1;
+    // Debit-first precedence: catches "credit card payment" correctly as expense.
+    if (/\b(?:db|dr)\b/.test(s)) return -1;
+    if (/\b(?:withdrawal|withdraw|payment|purchase|debit|atm|pos|autopay|ach\s+withdrawal)\b/.test(s)) return -1;
+    if (/\b(?:cr)\b/.test(s)) return 1;
+    if (/\b(?:dep|deposit|payroll|direct\s+dep|refund|credit)\b/.test(s)) return 1;
+    return 0;
+  };
+
+  const applyDirection = (amt, line, desc = '', amtToken = '') => {
+    if (amt === null) return null;
+    const token = String(amtToken || '').trim();
+    if (/^\+/.test(token)) return Math.abs(amt);
+    if (/^\-/.test(token) || /dr$/i.test(token)) return -Math.abs(amt);
+    const dir = inferDirection(line, desc);
+    if (dir < 0) return -Math.abs(amt);
+    if (dir > 0) return Math.abs(amt);
+    // For statement "Amount" columns, unsigned values are usually debits/outflows.
+    return -Math.abs(amt);
+  };
+
+  const isContinuationCandidate = (line) => {
+    const s = (line || '').trim();
+    if (!s) return false;
+    if (/^date\s+description|^debits?\b|^credits?\b|^balance\b/i.test(s)) return false;
+    if (dateRx.test(s)) return false;
+    if (/\(?[+\-]?\$?\d[\d,]*?(?:\.\d{1,2})?\)?(?:\s*(?:CR|DR))?|\$?\d[\d,]*(?:\.\d{1,2})?\-/i.test(s)) return false;
+    // Keep important detail lines often printed under ACH/card rows.
+    return /\b(?:from|to|checking|savings|conf#|confirmation|credit card|ending in|memo|ref)\b/i.test(s);
+  };
+
+  // Date tokens we commonly see in statements (mm/dd[/yyyy], yyyy-mm-dd, "Jan 3 2026", etc.)
+  const dateRx = /(\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?|\d{4}-\d{2}-\d{2}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s*\d{1,2}(?:,?\s*\d{4})?)/i;
+
+  // Money token: supports $1,234.56, 1234.56, (123.45), 123.45CR, 123.45 DR, trailing minus, etc.
+  const moneyTokenRx = /(\(?[+\-]?\$?\d[\d,]*?(?:\.\d{1,2})?\)?(?:\s*(?:CR|DR))?|\$?\d[\d,]*(?:\.\d{1,2})?\-)/ig;
+
+  // Fast-path patterns
+  const rx1 = /^(\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?|\d{4}-\d{2}-\d{2}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s*\d{1,2}(?:,?\s*\d{4})?)\s+(.+?)\s+([\(\+\$\-]?\d[\d,]*(?:\.\d{1,2})?(?:\)?)(?:\s*(?:CR|DR))?)$/i;
+  const rx2 = /^(.+?)\s+(\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s*\d{1,2}(?:,?\s*\d{4})?)\s+([\(\+\$\-]?\d[\d,]*(?:\.\d{1,2})?(?:\)?)(?:\s*(?:CR|DR))?)$/i;
+
+  const expandedLines = rawLines.flatMap((line0) => splitDenseStatementLine(line0, dateRx));
+
+  for (const line0 of expandedLines) {
+    const line = line0.replace(/\s{2,}/g, ' ').trim();
+
+    // Pattern 1: DATE ... AMOUNT
+    let m = line.match(rx1);
+    if (m) {
+      const date = normalizeDateLike(m[1]);
+      const desc = (m[2] || '').trim();
+      const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
+      if (amt !== null) txns.push({ date, description: desc, amount: amt });
+      continue;
+    }
+
+    // Pattern 2: DESC DATE AMOUNT
+    m = line.match(rx2);
+    if (m) {
+      const desc = (m[1] || '').trim();
+      const date = normalizeDateLike(m[2]);
+      const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
+      if (amt !== null) txns.push({ date, description: desc, amount: amt });
+      continue;
+    }
+
+    // Heuristic: if the line contains a date and at least one money token, use the last money token as amount.
+    const dm = line.match(dateRx);
+    if (!dm) {
+      if (txns.length && isContinuationCandidate(line)) {
+        const prev = txns[txns.length - 1];
+        prev.description = `${prev.description} ${line}`.replace(/\s{2,}/g, ' ').trim();
+      }
+      continue;
+    }
+
+    const amounts = Array.from(line.matchAll(moneyTokenRx)).map(x => x[0]).filter(Boolean);
+    if (!amounts.length) continue;
+
+    let pickedAmtToken = amounts[amounts.length - 1];
+    if (amounts.length >= 2) {
+      const last = amounts[amounts.length - 1];
+      const prev = amounts[amounts.length - 2];
+      const lastAmt = parseAmountLike(last);
+      const prevAmt = parseAmountLike(prev);
+      const isZeroLike = (n) => n !== null && Math.abs(n) < 0.005;
+      const looksLikeFeeAmountTable = /\b(?:cash app|standard transfer|direct deposit|loan repayment|loan drawdown|instant transfer|to savings|cash app card)\b/i.test(line);
+      const looksLikeRunningBalance = /\b(?:ach|withdrawal|payment|balance)\b/i.test(line);
+      // Cash App-style rows are Date/Description/Details/Fee/Amount -> choose final amount.
+      if (looksLikeFeeAmountTable) pickedAmtToken = last;
+      // Fee + amount format where fee is often 0.00.
+      else if (isZeroLike(prevAmt) && !isZeroLike(lastAmt)) pickedAmtToken = last;
+      // Running-balance style rows are usually amount then balance.
+      else if (looksLikeRunningBalance && !isZeroLike(prevAmt) && !isZeroLike(lastAmt)) pickedAmtToken = prev;
+    }
+    const amt = applyDirection(parseAmountLike(pickedAmtToken), line, '', pickedAmtToken);
+    if (amt === null) continue;
+
+    // Description = everything between date token and last amount token (best-effort)
+    const dateStr = dm[1];
+    const dateIdx = line.toLowerCase().indexOf(dateStr.toLowerCase());
+    const amtIdx = line.lastIndexOf(pickedAmtToken);
+    const descSliceStart = dateIdx >= 0 ? dateIdx + dateStr.length : 0;
+    const descSliceEnd = amtIdx > descSliceStart ? amtIdx : line.length;
+    const desc = line.slice(descSliceStart, descSliceEnd).replace(/\s{2,}/g, ' ').trim();
+    const date = normalizeDateLike(dateStr);
+
+    // Avoid adding lines where "description" is empty or obviously just column labels
+    if (!desc || /balance|total|statement|payment due/i.test(desc)) continue;
+
+    txns.push({ date, description: desc, amount: amt });
+  }
+
+  // De-dup by (date|desc|amount)
+  const seen = new Set();
+  const out = [];
+  for (const t of txns) {
+    const key = `${t.date}|${t.description}|${t.amount}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+
+  // Sort by date asc where possible
+  out.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
+  return out;
+}
+
+function txnsToPaymentLogCSV(txns) {
+  const header = ['DATE','PAYEE','CATEGORY','AMOUNT','METHOD','NOTES'];
+  const rows = (txns || []).map(t => {
+    const payee = (t.description || '').replace(/\s+/g,' ').trim();
+    const category = (t.category && String(t.category).trim()) ? String(t.category).trim() : categorize(payee);
+    const amount = (typeof t.amount === 'number' ? t.amount : parseFloat(t.amount)) || 0;
+    // Escape CSV
+    const esc = (v) => {
+      const s = (v === null || v === undefined) ? '' : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+    };
+    return [esc(t.date||''), esc(payee), esc(category), esc(amount.toFixed(2)), '', ''].join(',');
+  });
+  return header.join(',') + '\n' + rows.join('\n');
 }
 
 function transactionsToSnapshot(txns, bankName) {
@@ -679,11 +479,26 @@ const DEFAULT_SNAPSHOT = {
   },
   portfolio: { equities: [], options: [], crypto: [] },
 };
-const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'eFund', 'budget', 'protection', 'portfolio'], _v: 3 };
+const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'eFund', 'budget', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], _v: 6 };
 const fmt = (n) => { if (n == null || isNaN(n)) return '$0'; return '$' + Math.abs(Math.round(Number(n))).toLocaleString('en-US'); };
 const dailyInterest = (d) => d ? d.reduce((s, x) => s + ((x.balance || 0) * ((x.apr || 0) / 100)) / 365, 0) : 0;
 const totalDebt = (d) => d ? d.reduce((s, x) => s + (x.balance || 0), 0) : 0;
 const runwayDays = (ef) => (!ef || !ef.monthlyExpenses) ? 0 : Math.floor((ef.balance || 0) / (ef.monthlyExpenses / 30));
+const totalBudgetSpent = (latest) => (latest?.budget?.categories || []).reduce((s, c) => s + (c.actual || 0), 0);
+const monthlySpendBaseline = (latest) => {
+  const spent = totalBudgetSpent(latest);
+  if (spent > 0) return spent;
+  const metaExpense = latest?._meta?.totalExpense || 0;
+  if (metaExpense > 0) return metaExpense;
+  const efMonthly = latest?.eFund?.monthlyExpenses || 0;
+  return efMonthly > 0 ? efMonthly : 3000;
+};
+const runwayDaysFromLatest = (latest) => {
+  const bal = latest?.eFund?.balance || 0;
+  const monthly = monthlySpendBaseline(latest);
+  if (monthly <= 0) return 0;
+  return Math.floor(bal / (monthly / 30));
+};
 const efundTargets = (m) => [1000, m, m * 3, m * 6];
 const pctColor = (p, t) => p >= 100 ? t.danger : p >= 75 ? t.warn : t.accent;
 const runwayColor = (d, t) => d < 30 ? t.danger : d < 60 ? t.warn : t.accent;
@@ -694,9 +509,9 @@ function calcStage(latest) {
   const debt = totalDebt(latest?.debts);
   const ef = latest?.eFund || {};
   const bal = ef.balance || 0;
-  const monthly = ef.monthlyExpenses || 3000;
+  const monthly = monthlySpendBaseline(latest);
   const income = latest?.budget?.income || latest?._meta?.income || 0;
-  const totalSpent = (latest?.budget?.categories || []).reduce((s, c) => s + (c.actual || 0), 0);
+  const totalSpent = totalBudgetSpent(latest);
 
   // Stage 0: expenses exceed income or no buffer
   if (income > 0 && totalSpent > income) return 0;
@@ -739,7 +554,7 @@ function calcVelocity(latest) {
 function calcSavingsRate(latest) {
   const income = latest?.budget?.income || latest?._meta?.income || 0;
   if (income <= 0) return 0;
-  const totalSpent = (latest?.budget?.categories || []).reduce((s, c) => s + (c.actual || 0), 0);
+  const totalSpent = totalBudgetSpent(latest);
   return ((income - totalSpent) / income) * 100;
 }
 
@@ -768,7 +583,7 @@ function nextAction(latest) {
   const debts = (latest?.debts || []).filter(d => !(d.totalTerms > 0)).sort((a, b) => (b.apr || 0) - (a.apr || 0));
   const ef = latest?.eFund || {};
   const bal = ef.balance || 0;
-  const monthly = ef.monthlyExpenses || 3000;
+  const monthly = monthlySpendBaseline(latest);
   const di = dailyInterest(latest?.debts);
 
   // Priority 1: If daily burn > 0, call out the alpha target
@@ -800,7 +615,6 @@ function interestSavedEstimate(debts) {
 }
 
 // ═══════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════
 // MACRO DATA — Delivered via morning brief, not dashboard
 // ═══════════════════════════════════════════════════
 
@@ -815,7 +629,6 @@ function CurrencyInput({ value, onChange, placeholder, t, style = {} }) {
   );
 }
 
-// ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
 // STORAGE
 // ═══════════════════════════════════════════════════
@@ -964,9 +777,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   const faqs = [
     { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
     { q: 'Is my financial data safe?', a: 'Your data is stored locally in this browser profile. The 20 instruction files in the cloud contain zero financial data. Your actual numbers live in 4 local CSV files and local snapshots—disable browser sync if you want single-device isolation. Sensitive fields (SSNs, account/card numbers, emails, phones) are auto-redacted before any processing or display.' },
-    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FortifyOS auto-parses your bank CSV and tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
-    { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and a bank statement CSV. Setup takes 30-45 minutes on Mac, 45-60 on Windows. After that, daily use is 2-5 minutes — say "Good morning" and the system tells you what to do.' },
-    { q: 'Can I use it on my phone?', a: 'Yes. Install the Claude app, sign in with the same account, and your FortifyOS project loads automatically. You get daily briefings, payment checks, and emergency commands. Desktop is needed for CSV processing — mobile is your daily command line.' },
+    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FortifyOS auto-parses your bank exports (CSV/PDF) and screenshots and tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
+    { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and at least one statement export (CSV, PDF, or a clear screenshot). Setup is ~30–45 minutes on desktop. After that, daily use is 2–5 minutes — upload new statements when needed and run your morning snapshot.' },
+    { q: 'Can I use it on my phone?', a: 'Yes. You can run FortifyOS on mobile. Mobile is ideal for daily briefings and uploading screenshots; desktop is best for larger PDFs, heavier OCR, and bulk file work.' },
   ];
 
   return (
@@ -1006,12 +819,12 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'center', maxWidth: 460, margin: '0 auto 0' }}>
             {hasData ? (
               <>
-                <button onClick={onDashboard} style={{ background: accent, color: '#000', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
+                <button onClick={onDashboard} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
                 <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'Space Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>SYNC NEW DATA</button>
               </>
             ) : (
               <>
-                <button onClick={onInitialize} style={{ background: accent, color: '#000', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
+                <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
                 <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'Space Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>HOW IT WORKS</button>
               </>
             )}
@@ -1044,7 +857,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 
           <div className="sync-row-3" style={{ display: 'grid', gap: 2 }}>
             {[
-              { num: '01', title: 'SYNC', desc: 'Drop your bank CSV or paste a JSON snapshot. Sentinel auto-redacts sensitive data. The system fingerprints your bank and parses transactions automatically.', Icon: Upload },
+              { num: '01', title: 'SYNC', desc: 'Upload a statement PDF/screenshot, drop a bank CSV, or paste a JSON snapshot. Sentinel auto-redacts sensitive data. The system fingerprints your bank and parses transactions automatically.', Icon: Upload },
               { num: '02', title: 'CALCULATE', desc: 'KNOX determines your stage, ranks debts by APR, projects daily interest burn, and checks every action against safety rails. All math shown, no black boxes.', Icon: Cpu },
               { num: '03', title: 'EXECUTE', desc: 'Say "Good morning" — the Morning Pulse tells you exactly what to do today. Which debt to hit. How much is leaking. What\'s due in 48 hours.', Icon: Zap },
             ].map((s, i) => (
@@ -1165,7 +978,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             Ready to stop leaking <span style={{ color: t.danger }}>$6.05/day</span>?
           </h2>
           <p style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24 }}>Sync your first bank statement. The system does the rest.</p>
-          <button onClick={onInitialize} style={{ background: accent, color: '#000', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
+          <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
         </div>
       </section>
 
@@ -1370,7 +1183,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
 
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
-            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV, paste JSON from Claude Code, or fill in the guided form. Sentinel auto-redacts SSNs and account numbers before anything is processed.' },
+            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV, upload a statement PDF, or upload screenshots (PNG/JPG). FortifyOS extracts transactions (PDF text or OCR), runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
             { num: '2', title: 'SYSTEM CALCULATES', desc: 'KNOX determines your stage, ranks debts by APR, calculates daily interest burn, projects cash flow, and checks every action against safety rails — in real time.' },
             { num: '3', title: 'EXECUTE WITH CONFIDENCE', desc: 'Get a Morning Pulse with exactly what to do today. Weekly HUD tracks direction. Monthly reports show the math. The system enforces — you decide.' },
           ].map((c, i) => (
@@ -1507,7 +1320,7 @@ cd %USERPROFILE%\\FORTIFY && claude
 
               {/* Top-level working dirs */}
               <div style={{ borderTop: `1px solid ${t.borderDim}`, marginTop: 6, paddingTop: 6 }} />
-              {line(0, '├── 📁', 'statements/', { text: 'Drop raw CSVs here', color: t.textDim }, t.textDim)}
+              {line(0, '├── 📁', 'statements/', { text: 'Drop bank files here (CSV, PDF, PNG/JPG)', color: t.textDim }, t.textDim)}
               {line(0, '└── 📁', 'reports/', { text: 'Monthly PDFs save here', color: t.textDim }, t.textDim)}
             </div>);
           })()}
@@ -1673,8 +1486,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         <p style={sty.p}><strong style={{ color: t.textPrimary }}>Offline-First.</strong> No data leaves the device. The system accepts financial data through three ingestion paths, prioritized by fidelity.</p>
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
-            { title: 'CSV IMPORT (PRIMARY)', desc: 'Drop a .csv bank export. Auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting.' },
-            { title: 'PDF PARSE (PRIVACY-FIRST)', desc: 'Drop a bank statement PDF. Parsed 100% client-side using PDF.js — zero network calls. Works on mobile. Sentinel redaction applied before preview.' },
+            { title: 'FILE IMPORT (PRIMARY)', desc: 'Drop a .csv bank export. Auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting.' },
             { title: 'JSON PASTE (SECONDARY)', desc: 'Paste a structured JSON snapshot from CLI tools, Claude Code, or export scripts. Schema validated before commit.' },
             { title: 'MANUAL ENTRY (FALLBACK)', desc: 'Guided form for assets, debts, monthly expenses, and budget categories. Live calculations update as you type.' },
           ].map((c, i) => (
@@ -1823,11 +1635,10 @@ cd %USERPROFILE%\\FORTIFY && claude
           ['/avalanche', 'Debt re-rank + alpha target identification + interest saved.'],
           ['/cashflow', 'Day-by-day cash flow projection for the current period.'],
           ['/liberation', 'Countdown to debt freedom at current pace + acceleration scenarios.'],
-          ['/sync [JSON]', 'Weekly HUD generation from OpenClaw manifest data.'],
+          ['/sync [JSON]', 'Weekly HUD generation from imported snapshot data.'],
           ['/audit', 'Full financial health check — net worth, debt, budget, e-fund, projections.'],
           ['/monthly', 'Generate downloadable PDF progress report.'],
           ['/panic', 'Emergency protocol — immediate triage of financial situation.'],
-          ['/scan_now', 'Manual trigger for OpenClaw automated scans.'],
           ['/protocol_reset', 'Architect First violation recovery — restart from questionnaire.'],
         ].map(([k, d], i) => (
           <div key={i} style={sty.cmd}>
@@ -1959,16 +1770,68 @@ function UniversalSync({ open, onClose, onSync, t }) {
   const [parsedPreview, setParsedPreview] = useState(null);
   const fileRef = useRef();
 
+// Statement upload state (PDF / screenshots)
+const [stmtFile, setStmtFile] = useState(null);
+const [stmtRawText, setStmtRawText] = useState('');
+const [stmtText, setStmtText] = useState('');
+const [stmtTxns, setStmtTxns] = useState([]);
+const [stmtBankName, setStmtBankName] = useState('Statement Upload');
+const [csvBlobUrl, setCsvBlobUrl] = useState('');
+const stmtFileRef = useRef();
+const btn = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '10px 12px',
+    background: t.void,
+    border: `1px solid ${t.accentDim}`,
+    color: t.accent,
+    cursor: 'pointer',
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 11,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    borderRadius: 4,
+  };
+  const btnGhost = {
+    background: 'none',
+    border: `1px solid ${t.borderDim}`,
+    color: t.textSecondary,
+    cursor: 'pointer',
+    borderRadius: 4,
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 10,
+  };
+  const link = {
+    color: t.accent,
+    textDecoration: 'none',
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    border: `1px solid ${t.borderDim}`,
+    padding: '8px 10px',
+    borderRadius: 4,
+    background: t.void,
+  };
+  const assetBase = import.meta.env.BASE_URL || '/';
+  const templateLinks = [
+    { label: 'bills-registry.csv', href: `${assetBase}templates/bills-registry.csv` },
+    { label: 'bnpl-tracker.csv', href: `${assetBase}templates/bnpl-tracker.csv` },
+    { label: 'debt-avalanche.csv', href: `${assetBase}templates/debt-avalanche.csv` },
+    { label: 'payment-log.csv', href: `${assetBase}templates/payment-log.csv` },
+  ];
+  const protocolLinks = [
+    { label: 'fortify-core.md', href: `${assetBase}protocols/fortify-core.md` },
+    { label: 'parse-protocols.md', href: `${assetBase}protocols/parse-protocols.md` },
+    { label: 'hud-template.md', href: `${assetBase}protocols/hud-template.md` },
+    { label: 'FORTIFYOS_V3.jsx', href: `${assetBase}protocols/FORTIFYOS_V3.jsx` },
+    { label: 'FORTIFYOS_V3.jsx.rtf', href: `${assetBase}protocols/FORTIFYOS_V3.jsx.rtf` },
+  ];
+
+
   // JSON paste state
   const [json, setJson] = useState('');
   const [jsonValidating, setJsonValidating] = useState(false);
-
-  // PDF state
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [pdfTxns, setPdfTxns] = useState(null);
-  const [pdfBank, setPdfBank] = useState('');
-  const [pdfMeta, setPdfMeta] = useState(null);
-  const pdfRef = useRef();
 
   // Guided state
   const [gCheck, setGCheck] = useState(''); const [gSavings, setGSavings] = useState(''); const [gEF, setGEF] = useState(''); const [gOther, setGOther] = useState('');
@@ -2017,6 +1880,208 @@ function UniversalSync({ open, onClose, onSync, t }) {
     }
     return null;
   };
+
+
+// ───────────────────────────────────────────────
+// Statement parsing — pdf.js line reconstruction
+// Extracts all pages and rebuilds text rows from x/y glyph positions.
+// ───────────────────────────────────────────────
+const extractTextFromPDF = async (file) => {
+  log('LOADING PDF BUFFER...');
+  const data = new Uint8Array(await file.arrayBuffer());
+  log(`PDF BINARY READ: ${(data.length / 1024).toFixed(1)}KB`);
+
+  log('PDF MODE: RECONSTRUCTING PAGE LINES...');
+  const pdf = await pdfjsLib.getDocument({ data }).promise;
+  log(`PDF LOADED: ${pdf.numPages} PAGE(S)`);
+
+  const allLines = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const text = await page.getTextContent();
+    const buckets = new Map();
+
+    for (const it of text.items || []) {
+      const str = (it && it.str ? it.str : '').trim();
+      if (!str) continue;
+      const tx = Array.isArray(it.transform) ? it.transform[4] : 0;
+      const ty = Array.isArray(it.transform) ? it.transform[5] : 0;
+      const yKey = (Math.round(ty * 2) / 2).toFixed(1);
+      if (!buckets.has(yKey)) buckets.set(yKey, []);
+      buckets.get(yKey).push({ x: tx, str });
+    }
+
+    const yKeys = Array.from(buckets.keys()).map(Number).sort((a, b) => b - a);
+    for (const y of yKeys) {
+      const row = buckets.get(y.toFixed(1)) || [];
+      row.sort((a, b) => a.x - b.x);
+      const line = row.map(r => r.str).join(' ').replace(/[ \t]{2,}/g, ' ').trim();
+      if (line) allLines.push(line);
+    }
+  }
+
+  const clean = allLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  log(`TEXT EXTRACTED: ${clean.length} CHARS — SAMPLE: "${clean.slice(0, 80).replace(/\n/g, ' ')}"`);
+  return clean;
+};
+
+const loadTesseract = (logFn) => new Promise((resolve, reject) => {
+  if (window.Tesseract) return resolve(window.Tesseract);
+  const URLS = [
+    'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
+    'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js',
+  ];
+  let tried = 0;
+  const tryNext = () => {
+    if (tried >= URLS.length) return reject(new Error('Tesseract CDN unavailable'));
+    const url = URLS[tried++];
+    if (logFn) logFn(`LOADING OCR ENGINE (${tried}/${URLS.length})...`);
+    const s = document.createElement('script');
+    s.src = url; s.async = false;
+    s.onload = () => { setTimeout(() => window.Tesseract ? resolve(window.Tesseract) : tryNext(), 300); };
+    s.onerror = tryNext;
+    document.head.appendChild(s);
+  };
+  tryNext();
+});
+
+const ocrFirstPageOfPDF = async (file) => {
+  // Scanned PDF fallback: render first 1-2 pages and OCR locally.
+  log('SCANNED PDF DETECTED — OCR FALLBACK (PAGE RENDER)...');
+  try {
+    const Tesseract = await loadTesseract(log);
+    const data = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data }).promise;
+    const maxPages = Math.min(pdf.numPages || 1, 2);
+    let combined = '';
+
+    for (let p = 1; p <= maxPages; p++) {
+      const page = await pdf.getPage(p);
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) continue;
+
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      log(`OCR PAGE ${p}/${maxPages}...`);
+      const dataUrl = canvas.toDataURL('image/png');
+      const res = await Tesseract.recognize(dataUrl, 'eng', {
+        logger: (m) => { if (m && m.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
+      });
+      const text = (res && res.data && res.data.text) ? res.data.text : '';
+      if (text) combined += `\n${text}`;
+    }
+
+    const cleaned = (combined || '').trim();
+    log(`OCR FALLBACK EXTRACT: ${cleaned.length} CHARS`);
+    if (!cleaned) log('TIP: OCR RETURNED EMPTY TEXT — TRY A SHARPER EXPORT/SCREENSHOT');
+    return cleaned;
+  } catch (e) {
+    log(`OCR FALLBACK FAILED: ${e?.message || 'unknown error'}`);
+    return '';
+  }
+};
+
+const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+  const r = new FileReader();
+  r.onload = () => resolve(r.result);
+  r.onerror = () => reject(new Error('File read failed'));
+  r.readAsDataURL(file);
+});
+
+const extractTextFromImage = async (file) => {
+  log('LOADING OCR ENGINE...');
+  const Tesseract = await loadTesseract(log);
+  const dataUrl = await fileToDataUrl(file);
+  const res = await Tesseract.recognize(dataUrl, 'eng', {
+    logger: (m) => { if (m && m.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
+  });
+  return (res && res.data && res.data.text) ? res.data.text : '';
+};
+
+const handleStatementFile = async (file) => {
+  setProcessing(true); setError(''); setParsedPreview(null); setSuccess(false);
+  setLogs([]); setStmtFile(file); setStmtRawText(''); setStmtText(''); setStmtTxns([]); if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} setCsvBlobUrl(''); }
+  log('PIPELINE: STATEMENT RAW VIEW (NO DISPLAY REDACTION) v2026-02-23');
+  const ext = file.name.split('.').pop().toLowerCase();
+  log(`STATEMENT INGEST: ${file.name} (.${ext.toUpperCase()})`);
+  log(`SIZE: ${(file.size / 1024).toFixed(1)}KB`);
+
+  try {
+    let rawText = '';
+    if (ext === 'pdf') {
+      log('PDF MODE: EXTRACTING TEXT...');
+      rawText = await extractTextFromPDF(file);
+      log(`RAW EXTRACT: ${(rawText||'').trim().length} CHARS — SAMPLE: ${(rawText||'').trim().slice(0,60).replace(/\n/g,' ')}`);
+      if ((rawText || '').trim().length < 30) {
+        log('PDF TEXT TOO SHORT — FALLBACK: SCANNING EMBEDDED IMAGES...');
+        const ocrText = await ocrFirstPageOfPDF(file);
+        rawText = `${rawText || ''}\n${ocrText || ''}`.trim();
+      }
+    } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+      log('IMAGE MODE: RUNNING OCR (TESSERACT)...');
+      rawText = await extractTextFromImage(file);
+    } else {
+      throw new Error('Unsupported statement format');
+    }
+
+    setStmtRawText(rawText || '');
+    log('PREPARING EXTRACTED TEXT VIEW...');
+    setStmtText(rawText || '');
+
+    log('PARSING TRANSACTIONS...');
+    const txns = parseStatementTextToTransactions(rawText || '');
+    if (!txns.length) {
+      log('WARNING: NO TRANSACTIONS FOUND (HEURISTIC PARSER)');
+      setError('No transactions detected. Try a text-based PDF export or a clearer screenshot. You can review extracted text below and try parsing again.');
+    } else {
+      log(`FOUND: ${txns.length} TRANSACTIONS`);
+    }
+    setStmtTxns(txns);
+
+    // Prepare default dashboard preview (even if empty; allows committing a baseline snapshot)
+    const snap = transactionsToSnapshot(txns, stmtBankName);
+    setParsedPreview(snap);
+
+    // Prepare payment-log export (header-only if none)
+    const csv = txnsToPaymentLogCSV(txns);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    setCsvBlobUrl(url);
+
+    log('SYNC READY (EDIT BEFORE COMMIT)');
+  } catch (e) {
+    log('ERROR: STATEMENT PARSE FAILED');
+    setError(e?.message || 'Statement parse failed');
+  } finally { setProcessing(false); }
+};
+
+const updateStmtTxn = (i, field, val) => {
+  const arr = [...stmtTxns];
+  arr[i] = { ...arr[i], [field]: field === 'amount' ? (typeof val === 'number' ? val : (parseFloat(String(val).replace(/,/g,'')) || 0)) : val };
+  setStmtTxns(arr);
+  // keep preview + export in sync
+  const snap = transactionsToSnapshot(arr, stmtBankName);
+  setParsedPreview(snap);
+  const csv = txnsToPaymentLogCSV(arr);
+  if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  setCsvBlobUrl(url);
+};
+
+const removeStmtTxn = (i) => {
+  const arr = stmtTxns.filter((_, idx) => idx !== i);
+  setStmtTxns(arr);
+  const snap = transactionsToSnapshot(arr, stmtBankName);
+  setParsedPreview(snap);
+  const csv = txnsToPaymentLogCSV(arr);
+  if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  setCsvBlobUrl(url);
+};
 
   const processCSV = (text, fileName) => {
     log('PARSING CSV STRUCTURE...');
@@ -2108,16 +2173,11 @@ function UniversalSync({ open, onClose, onSync, t }) {
         const text = await file.text();
         processJSON(text);
       } else if (['png', 'jpg', 'jpeg', 'pdf'].includes(ext)) {
-        if (ext === 'pdf') {
-          log('PDF DETECTED — Use the PDF Parse tab');
-          setError('Switch to the PDF Parse tab to import PDF statements directly.');
-        } else {
-          log('FORMAT REQUIRES EXTERNAL PARSE');
-          log('→ Drop this file into Claude chat');
-          log('→ Claude outputs JSON snapshot');
-          log('→ Paste JSON here via JSON tab');
-          setError(`${ext.toUpperCase()} files need Claude chat parsing. Use the JSON tab after.`);
-        }
+        log('FORMAT REQUIRES EXTERNAL PARSE');
+        log('→ Drop this file into Claude chat');
+        log('→ Claude outputs JSON snapshot');
+        log('→ Paste JSON here via JSON tab');
+        setError(`${ext.toUpperCase()} files need Claude chat parsing. Use the JSON tab after.`);
       } else {
         log(`ERROR: UNSUPPORTED FORMAT .${ext}`);
         setError(`Unsupported: .${ext}`);
@@ -2142,93 +2202,6 @@ function UniversalSync({ open, onClose, onSync, t }) {
       processJSON(json);
       setJsonValidating(false);
     }, 500);
-  };
-
-  const handlePDFFile = async (file) => {
-    if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
-      setError('Please select a PDF file.');
-      return;
-    }
-    setPdfLoading(true); setError(''); setPdfTxns(null); setPdfBank(''); setPdfMeta(null); setParsedPreview(null);
-    setLogs([]);
-    log(`DETECTED: ${file.name} (.PDF)`);
-    log(`SIZE: ${(file.size / 1024).toFixed(1)}KB`);
-    log('LOADING PDF.js ENGINE (client-side)...');
-    try {
-      const { pages, allLines, numPages } = await extractPDFText(file);
-      log(`EXTRACTED: ${numPages} pages, ${allLines.length} text lines`);
-      if (allLines.length < 5) {
-        log('⚠ LOW TEXT CONTENT — PDF may be scanned/image-based');
-        setError('This PDF appears to be scanned (image-based). Text-based PDFs from your bank portal work best. For scanned PDFs, use Claude chat or Claude Code with OCR.');
-        setPdfLoading(false);
-        return;
-      }
-      log('RUNNING SENTINEL REDACTION FILTER...');
-      log('DETECTING BANK FINGERPRINT...');
-      const { bank, txns, lineCount, summary } = parsePDFTransactions(allLines);
-      log(`FINGERPRINT: ${bank.toUpperCase()}`);
-      log(`TRANSACTIONS FOUND: ${txns.length}`);
-      if (summary && summary.hasData) {
-        log(`STATEMENT SUMMARY: Balance ${fmt(summary.newBalance)} | APR ${summary.apr}%`);
-      }
-      if (txns.length === 0 && (!summary || !summary.hasData)) {
-        log('⚠ ZERO TRANSACTIONS + NO SUMMARY DATA');
-        setError(`No parseable data found in this PDF. The ${bank} parser could not match patterns. Try downloading a CSV from your bank if available.`);
-        setPdfLoading(false);
-        return;
-      }
-      // Calculate totals from transactions
-      const amounts = txns.map(t => t.amount);
-      const totalIn = amounts.filter(a => a > 0).reduce((s, a) => s + a, 0);
-      const totalOut = amounts.filter(a => a < 0).reduce((s, a) => s + Math.abs(a), 0);
-      const dates = txns.map(t => t.date).filter(Boolean).sort();
-      setPdfBank(bank);
-      setPdfTxns(txns);
-      setPdfMeta({
-        count: txns.length,
-        dateRange: summary.cycleStart && summary.cycleEnd
-          ? `${summary.cycleStart} — ${summary.cycleEnd}`
-          : dates.length >= 2 ? `${dates[0]} — ${dates[dates.length - 1]}` : (dates[0] || 'N/A'),
-        totalIn: Math.round(totalIn),
-        totalOut: Math.round(totalOut),
-        lineCount,
-        fileName: file.name,
-        summary: summary && summary.hasData ? summary : null,
-      });
-      log('PARSE COMPLETE — REVIEW BELOW');
-    } catch (e) {
-      log(`ERROR: ${e.message}`);
-      setError(`PDF parsing failed: ${e.message}`);
-    } finally {
-      setPdfLoading(false);
-    }
-  };
-
-  const pdfSyncToDashboard = () => {
-    if (!pdfTxns || pdfTxns.length === 0) return;
-    const snapshot = transactionsToSnapshot(pdfTxns, pdfBank || 'PDF');
-    onSync(snapshot);
-    setSuccess(true);
-    log('✓ SYNC COMMITTED TO STORAGE');
-    setTimeout(() => { setSuccess(false); setPdfTxns(null); setPdfMeta(null); setParsedPreview(null); setLogs([]); onClose(); }, 600);
-  };
-
-  const pdfDownloadCSV = () => {
-    if (!pdfTxns || pdfTxns.length === 0) return;
-    const header = 'Date,Description,Amount';
-    const rows = pdfTxns.map(t => {
-      const desc = (t.description || '').replace(/"/g, '""');
-      return `${t.date},"${desc}",${t.amount.toFixed(2)}`;
-    });
-    const csv = [header, ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = (pdfMeta?.fileName || 'statement').replace(/\.pdf$/i, '') + '.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    log('✓ CSV DOWNLOADED');
   };
 
   const handleGuided = async () => {
@@ -2284,8 +2257,8 @@ function UniversalSync({ open, onClose, onSync, t }) {
   const lbl = { color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3, display: 'block' };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={onClose}>
-      <div style={{ background: t.surface, border: `1px solid ${t.borderMid}`, maxWidth: 620, width: '100%', maxHeight: '92vh', overflow: 'auto', borderRadius: '6px 6px 0 0' }} onClick={e => e.stopPropagation()}>
+    <div className="sync-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }} onClick={onClose}>
+      <div className="sync-shell" style={{ background: t.surface, border: `1px solid ${t.borderMid}`, maxWidth: 1100, width: 'min(98vw, 1100px)', maxHeight: '94vh', overflowY: 'auto', overflowX: 'hidden', borderRadius: 6, boxSizing: 'border-box' }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{ padding: '14px 16px', borderBottom: `1px solid ${t.borderDim}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.elevated }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -2296,8 +2269,8 @@ function UniversalSync({ open, onClose, onSync, t }) {
         </div>
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: `1px solid ${t.borderDim}` }}>
-          {[{ k: 'file', l: 'CSV Import' }, { k: 'pdf', l: 'PDF Parse' }, { k: 'json', l: 'JSON' }, { k: 'guided', l: 'Manual' }].map(tb => (
-            <button key={tb.k} onClick={() => { setTab(tb.k); setError(''); setParsedPreview(null); setPdfTxns(null); setPdfMeta(null); }} style={{
+          {[{ k: 'file', l: 'File Import' }, { k: 'statement', l: 'Statements' }, { k: 'json', l: 'JSON' }, { k: 'guided', l: 'Manual' }].map(tb => (
+            <button key={tb.k} onClick={() => { setTab(tb.k); setError(''); setParsedPreview(null); }} style={{
               flex: 1, padding: 10, background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase',
               color: tab === tb.k ? t.accent : t.textDim,
@@ -2306,7 +2279,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
           ))}
         </div>
 
-        <div style={{ padding: 16 }}>
+        <div className="sync-content" style={{ padding: 16 }}>
           {/* ── FILE IMPORT TAB ── */}
           {tab === 'file' && (<>
             {/* Drop zone */}
@@ -2377,7 +2350,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
             {success && <div style={{ color: t.accent, fontSize: 11, marginBottom: 8 }}>✓ SYNC COMMITTED</div>}
 
             {parsedPreview && (
-              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
+              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
             )}
 
             {/* Privacy */}
@@ -2387,176 +2360,232 @@ function UniversalSync({ open, onClose, onSync, t }) {
             </div>
           </>)}
 
-          {/* ── PDF PARSE TAB ── */}
-          {tab === 'pdf' && (<>
-            {/* Drop zone for PDF */}
-            <div
-              onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handlePDFFile(e.dataTransfer.files[0]); }}
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onClick={() => pdfRef.current?.click()}
-              style={{
-                height: 120, border: `2px dashed ${dragOver ? t.accent : t.borderMid}`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                background: dragOver ? t.accentMuted : t.void, cursor: 'pointer',
-                transition: 'all 0.2s', marginBottom: 12, borderRadius: 4,
-              }}>
-              <input ref={pdfRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handlePDFFile(e.target.files[0]); }} />
-              {pdfLoading
-                ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
-                : <FileText size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
-              <span style={{ fontSize: 10, color: t.textDim, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                {pdfLoading ? 'Extracting text...' : 'Drop PDF or tap to browse'}
-              </span>
-              <span style={{ fontSize: 9, color: t.textGhost, marginTop: 4 }}>Bank statement PDFs only</span>
-            </div>
 
-            {/* Supported banks */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
-              {['Chase', 'BofA', 'Amex', 'Capital One', 'Wells Fargo', 'Citi', 'USAA', 'Avant', 'Mission Lane', 'Navy Federal', 'Generic'].map(b => (
-                <span key={b} style={{ fontSize: 8, color: b === 'Generic' ? t.warn : t.textDim, border: `1px solid ${b === 'Generic' ? t.warn + '40' : t.borderDim}`, padding: '2px 6px', borderRadius: 2, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{b}</span>
-              ))}
-            </div>
+{/* ── STATEMENT TAB ── */}
+{tab === 'statement' && (<>
+  <div style={{ display: 'grid', gap: 10 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', textAlign: 'center' }}>
+        <FileText size={14} style={{ color: t.accent }} />
+        <span style={lbl}>Upload Statements (PDF / Screenshots)</span>
+      </div>
+      <input ref={stmtFileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" style={{ display: 'none' }}
+             onChange={(e) => { const f = e.target.files?.[0]; if (f) handleStatementFile(f); e.target.value = ''; }} />
+    </div>
 
-            {/* Terminal log */}
-            <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: 10, height: 100, overflow: 'hidden', borderRadius: 4, marginBottom: 12 }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.accentDim, lineHeight: 1.6 }}>
-                {logs.length === 0 && <div style={{ color: t.textGhost }}>PDF PARSER IDLE. Drop a statement to begin.</div>}
-                {logs.map((l, i) => <div key={i}>{l}</div>)}
-              </div>
-            </div>
+    <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
+      <div style={{ display: 'grid', gap: 6, fontSize: 11, color: t.textDim, lineHeight: 1.35 }}>
+        <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
+        <div>• Best: Download a <b>text-based PDF</b> from your bank portal (not scanned).</div>
+        <div>• For screenshots: zoom to 125–150%, capture the full transactions list, keep it sharp.</div>
+        <div>• Sentinel redaction runs before parsing; review the extracted table before sync.</div>
+      </div>
+    </div>
 
-            {error && <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: t.danger, fontSize: 11, marginBottom: 8 }}><AlertCircle size={13} /> {error}</div>}
+    {/* Drag/drop area */}
+    <div
+      onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleStatementFile(e.dataTransfer.files[0]); }}
+      onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+      onDragLeave={() => setDragOver(false)}
+      onClick={() => stmtFileRef.current?.click()}
+      style={{
+        border: `2px dashed ${dragOver ? t.accent : t.borderMid}`,
+        borderRadius: 8,
+        padding: 20,
+        background: dragOver ? t.accentMuted : t.void,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        gap: 8, cursor: 'pointer', transition: 'all 0.2s', minHeight: 100,
+      }}
+    >
+      {processing
+        ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
+        : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
+      <div style={{ fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        {processing ? 'Processing...' : 'Drag & drop or click to select'}
+      </div>
+      <div style={{ fontSize: 9, color: t.textGhost }}>PDF · PNG · JPG — parsed locally, no upload</div>
+    </div>
 
-            {/* Transaction preview */}
-            {pdfTxns && pdfMeta && (
-              <div style={{ marginBottom: 12 }}>
-                {/* Statement Summary Card (for credit cards) */}
-                {pdfMeta.summary && (
-                  <div style={{ background: t.void, border: `1px solid ${t.accent}30`, padding: 12, borderRadius: 4, marginBottom: 10 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <span style={{ fontSize: 10, color: t.accent, fontFamily: "'Space Mono', monospace", textTransform: 'uppercase' }}>{pdfBank} Statement Summary</span>
-                      {pdfMeta.summary.dueDate && <span style={{ fontSize: 9, color: t.warn }}>Due: {pdfMeta.summary.dueDate}</span>}
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11 }}>
-                      {pdfMeta.summary.previousBalance > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Previous Balance</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.textPrimary }}>{fmt(pdfMeta.summary.previousBalance)}</div>
-                      </div>}
-                      <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>New Balance</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.danger, fontWeight: 700, fontSize: 16 }}>{fmt(pdfMeta.summary.newBalance)}</div>
-                      </div>
-                      {pdfMeta.summary.payments > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Payments</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.accent }}>{fmt(pdfMeta.summary.payments)}</div>
-                      </div>}
-                      {pdfMeta.summary.interestCharged > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Interest Charged</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.danger }}>{fmt(pdfMeta.summary.interestCharged)}</div>
-                      </div>}
-                      {pdfMeta.summary.apr > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>APR</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.danger }}>{pdfMeta.summary.apr}%</div>
-                      </div>}
-                      {pdfMeta.summary.minPayment > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Minimum Payment</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.warn }}>{fmt(pdfMeta.summary.minPayment)}</div>
-                      </div>}
-                      {pdfMeta.summary.creditLimit > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Credit Limit</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.textSecondary }}>{fmt(pdfMeta.summary.creditLimit)}</div>
-                      </div>}
-                      {pdfMeta.summary.totalInterestYTD > 0 && <div>
-                        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Interest YTD</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", color: t.danger }}>{fmt(pdfMeta.summary.totalInterestYTD)}</div>
-                      </div>}
-                    </div>
-                    {pdfMeta.summary.interestCharged > 0 && (
-                      <div style={{ marginTop: 8, padding: '6px 8px', background: t.danger + '10', border: `1px solid ${t.danger}30`, borderRadius: 2, fontSize: 9, color: t.danger }}>
-                        Daily interest burn: {fmt(pdfMeta.summary.newBalance * (pdfMeta.summary.apr / 100) / 365)}/day at {pdfMeta.summary.apr}% APR
-                      </div>
-                    )}
-                  </div>
-                )}
+    {/* Logs */}
+    <div style={{ display: 'grid', gap: 6 }}>
+      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Parse Log</div>
+      <div style={{
+        padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.input,
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim,
+      }}>
+        {logs.length ? logs.map((l, i) => <div key={i}>{l}</div>) : <div>Awaiting file…</div>}
+      </div>
+      <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel }}>
+        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>KNOX Templates</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+          {templateLinks.map((f) => (
+            <a key={f.label} href={f.href} download={f.label} style={{ ...link, padding: '6px 8px', fontSize: 9 }}>
+              <Download size={12} style={{ verticalAlign: 'text-bottom', marginRight: 4 }} />
+              {f.label}
+            </a>
+          ))}
+        </div>
+        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Protocol References</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {protocolLinks.map((f) => (
+            <a key={f.label} href={f.href} target="_blank" rel="noreferrer" style={{ ...link, padding: '6px 8px', fontSize: 9 }}>
+              {f.label}
+            </a>
+          ))}
+        </div>
+      </div>
+      {error && <div style={{ color: t.warn, fontSize: 11 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
+    {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
+      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
+          <button onClick={() => { 
+            try { 
+              const tx = parseStatementTextToTransactions(stmtRawText || stmtText); 
+              setStmtTxns(tx); 
+              const snap2 = transactionsToSnapshot(tx, stmtBankName); 
+              setParsedPreview(snap2); 
+              if (tx.length) setError(''); 
+              log(`RE-PARSE: ${tx.length} transactions`); 
+            } catch(e){ 
+              setError(e?.message || 'Re-parse failed'); 
+            } 
+          }} style={btn}>
+            <RefreshCw size={14} /> TRY PARSE AGAIN
+          </button>
+        </div>
+        <div style={{ marginTop: 10, maxHeight: 180, overflow:'auto', whiteSpace:'pre-wrap', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim }}>
+          {stmtText}
+        </div>
+      </div>
+    )}
+    </div>
 
-                {/* Transaction summary bar */}
-                <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: 12, borderRadius: 4, marginBottom: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 10, color: t.accent, fontFamily: "'Space Mono', monospace", textTransform: 'uppercase' }}>{pdfBank} — {pdfMeta.count} transactions</span>
-                    <span style={{ fontSize: 9, color: t.textDim }}>{pdfMeta.dateRange}</span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                    <div>
-                      <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Income / Credits</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, fontFamily: "'Space Mono', monospace" }}>{fmt(pdfMeta.totalIn)}</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Expenses / Debits</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: t.danger, fontFamily: "'Space Mono', monospace" }}>{fmt(pdfMeta.totalOut)}</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Net</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: (pdfMeta.totalIn - pdfMeta.totalOut) >= 0 ? t.accent : t.danger, fontFamily: "'Space Mono', monospace" }}>
-                        {(pdfMeta.totalIn - pdfMeta.totalOut) >= 0 ? '' : '-'}{fmt(Math.abs(pdfMeta.totalIn - pdfMeta.totalOut))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Transaction list (scrollable) */}
-                <div style={{ maxHeight: 200, overflow: 'auto', border: `1px solid ${t.borderDim}`, borderRadius: 4 }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
-                    <thead>
-                      <tr style={{ background: t.elevated, position: 'sticky', top: 0 }}>
-                        <th style={{ textAlign: 'left', padding: '6px 8px', color: t.textDim, fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
-                        <th style={{ textAlign: 'left', padding: '6px 8px', color: t.textDim, fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${t.borderDim}` }}>Description</th>
-                        <th style={{ textAlign: 'right', padding: '6px 8px', color: t.textDim, fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${t.borderDim}` }}>Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pdfTxns.slice(0, 50).map((txn, i) => (
-                        <tr key={i} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
-                          <td style={{ padding: '5px 8px', color: t.textDim, fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>{txn.date}</td>
-                          <td style={{ padding: '5px 8px', color: t.textPrimary, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{txn.description}</td>
-                          <td style={{ padding: '5px 8px', textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", color: txn.amount >= 0 ? t.accent : t.textPrimary }}>
-                            {txn.amount >= 0 ? '+' : ''}{txn.amount.toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {pdfTxns.length > 50 && (
-                    <div style={{ padding: '6px 8px', fontSize: 9, color: t.textDim, textAlign: 'center', borderTop: `1px solid ${t.borderDim}` }}>
-                      Showing 50 of {pdfTxns.length} — all transactions included in sync/download
-                    </div>
-                  )}
-                </div>
-
-                {/* Action buttons */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
-                  <button onClick={pdfSyncToDashboard} style={{
-                    padding: 14, background: t.accent, color: '#000',
-                    border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700,
-                    cursor: 'pointer', textTransform: 'uppercase', borderRadius: 2,
-                  }}>SYNC TO DASHBOARD</button>
-                  <button onClick={pdfDownloadCSV} style={{
-                    padding: 14, background: 'none', color: t.accent,
-                    border: `1px solid ${t.accent}`, fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700,
-                    cursor: 'pointer', textTransform: 'uppercase', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  }}><Download size={13} /> DOWNLOAD CSV</button>
-                </div>
-              </div>
+    {/* Editable transaction table */}
+    {parsedPreview && (
+      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            {csvBlobUrl && (
+              <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Download size={14} /> DOWNLOAD payment-log.csv
+              </a>
             )}
+            <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, opacity: !parsedPreview ? 0.6 : 1 }}>
+              <Shield size={14} /> COMMIT SYNC
+            </button>
+          </div>
+        </div>
 
-            {success && <div style={{ color: t.accent, fontSize: 11, marginBottom: 8 }}>✓ SYNC COMMITTED</div>}
+        <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', minWidth: 920, borderCollapse: 'collapse', fontSize: 11 }}>
+            <thead>
+              <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 10 }}>
+                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
+                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Payee</th>
+                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Category</th>
+                <th style={{ textAlign: 'right', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Amount</th>
+                <th style={{ width: 40, padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {(stmtTxns?.length ? stmtTxns.slice(0, 200) : [null]).map((tx, i) => {
+                if (!tx) {
+                  return (
+                    <tr key="empty">
+                      <td colSpan={5} style={{ padding: '10px 6px', color: t.textDim }}>
+                        No transactions detected yet. If this is a scanned/image PDF, use a clearer export or upload screenshots. You can still COMMIT SYNC to save a baseline snapshot.
+                      </td>
+                    </tr>
+                  );
+                }
+                const inferredCat = categorize(tx.description || '');
+                return (
+                  <tr key={i} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
+                    <td style={{ padding: '8px 6px' }}>
+                      <input value={tx.date || ''} onChange={e => updateStmtTxn(i, 'date', e.target.value)} style={{
+                        width: 'clamp(88px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                      }} />
+                    </td>
+                    <td style={{ padding: '8px 6px' }}>
+                      <input value={tx.description || ''} onChange={e => updateStmtTxn(i, 'description', e.target.value)} style={{
+                        width: 'clamp(160px, 36vw, 420px)', maxWidth: '52vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                      }} />
+                    </td>
+                    <td style={{ padding: '8px 6px' }}>
+  <select value={(tx.category ?? '')} onChange={e => updateStmtTxn(i, 'category', e.target.value)} style={{
+    width: 'clamp(130px, 24vw, 220px)', maxWidth: '36vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+    background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+  }}>
+    <option value="">{`AUTO · ${inferredCat}`}</option>
+    {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+  </select>
+</td>
+                    <td style={{ padding: '8px 6px', textAlign: 'right' }}>
+                      <input value={typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0)}
+                             onChange={e => updateStmtTxn(i, 'amount', e.target.value)} style={{
+                        width: 'clamp(92px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, textAlign: 'right',
+                      }} />
+                    </td>
+                    <td style={{ padding: '8px 6px', textAlign: 'right' }}>
+                      <button onClick={() => removeStmtTxn(i)} style={{ ...btnGhost, padding: '6px 8px' }} aria-label="Remove row">
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {stmtTxns.length > 200 && <div style={{ marginTop: 8, fontSize: 10, color: t.textDim }}>Showing first 200 rows. Export includes all rows.</div>}
+        </div>
+      </div>
+    )}
 
-            {/* Privacy notice */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 9, color: t.warn }}>
-              <ShieldAlert size={11} />
-              <span>100% CLIENT-SIDE. PDF never leaves your device. Zero network calls. Sentinel redaction applied.</span>
-            </div>
-          </>)}
+    {/* Optional raw extracted text */}
+    {stmtText && (
+      <details style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
+            <summary style={{ cursor: 'pointer', color: t.textDim, fontSize: 11 }}>View extracted text</summary>
+        <pre style={{ whiteSpace: 'pre-wrap', fontSize: 10, color: t.textDim, marginTop: 10, fontFamily: "'JetBrains Mono', monospace" }}>
+          {stmtText.slice(0, 20000)}{stmtText.length > 20000 ? '\\n…(truncated)…' : ''}
+        </pre>
+      </details>
+    )}
+
+    {/* Privacy */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 9, color: t.warn }}>
+      <ShieldAlert size={11} />
+      <span>Stored locally in this browser profile. Disable browser sync for single-device isolation.</span>
+    </div>
+
+    {/* Prominent Sync button — always visible once data is ready */}
+    {parsedPreview ? (
+      <button onClick={confirmSync} style={{
+        width: '100%', marginTop: 12, padding: '14px 0',
+        background: t.accent, color: '#000',
+        border: 'none', fontFamily: "'Space Mono', monospace",
+        fontSize: 14, fontWeight: 700, cursor: 'pointer',
+        textTransform: 'uppercase', letterSpacing: '0.08em',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+      }}>
+        <Shield size={16} /> CONFIRM & SYNC TO DASHBOARD
+      </button>
+    ) : (
+      <div style={{
+        width: '100%', marginTop: 12, padding: '14px 0',
+        background: t.elevated, border: `1px solid ${t.borderDim}`,
+        fontFamily: "'Space Mono', monospace", fontSize: 11,
+        color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
+      }}>
+        SYNC DISABLED — UPLOAD &amp; PARSE A STATEMENT FIRST
+      </div>
+    )}
+  </div>
+</>)}
 
           {/* ── JSON TAB ── */}
           {tab === 'json' && (<>
@@ -2576,8 +2605,8 @@ function UniversalSync({ open, onClose, onSync, t }) {
                 </div>
               </div>
             )}
-            {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
-            {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
+            {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
+            {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : (t === THEMES.dark ? '#000' : '#FFF'), border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
             {error && <div style={{ color: t.danger, fontSize: 11, marginTop: 8 }}><AlertCircle size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />{error}</div>}
           </>)}
 
@@ -2804,7 +2833,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
                 );
               })()}
               {success && <div style={{ color: t.accent, fontSize: 11 }}>✓ SYNC COMMITTED</div>}
-              <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
+              <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
             </div>
           )}
         </div>
@@ -2819,7 +2848,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
 function SettingsPanel({ open, settings, onToggle, onExport, onClear, onClose, onToggleTheme, isDark, t }) {
   const [confirm, setConfirm] = useState('');
   if (!open) return null;
-  const mods = [{ key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }];
+  const mods = [{ key: 'macroBanner', label: 'Macro Banner (top strip)' }, { key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }, { key: 'macro', label: 'Macro Signals' }, { key: 'market', label: 'Market Intelligence' }];
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
       <div style={{ width: 280, background: t.surface, borderLeft: `1px solid ${t.borderDim}`, height: '100%', padding: 20, overflow: 'auto', animation: 'slideIn 0.25s ease-out' }} onClick={e => e.stopPropagation()}>
@@ -3023,8 +3052,8 @@ function DebtMod({ latest, visible, t }) {
 }
 
 function EFundMod({ latest, visible, t }) {
-  const ef = latest?.eFund || {}; const bal = ef.balance || 0; const monthly = ef.monthlyExpenses || 3000;
-  const targets = efundTargets(monthly); const days = runwayDays(ef);
+  const ef = latest?.eFund || {}; const bal = ef.balance || 0; const monthly = monthlySpendBaseline(latest);
+  const targets = efundTargets(monthly); const days = runwayDaysFromLatest(latest);
   const phase = bal >= targets[3] ? 4 : bal >= targets[2] ? 3 : bal >= targets[1] ? 2 : bal >= targets[0] ? 1 : 0;
   const labels = ['$1K Starter', '1 Month', '3 Months', '6 Months'];
   return (<Card title="Emergency Fund" visible={visible} delay={160} t={t}>
@@ -3041,7 +3070,7 @@ function EFundMod({ latest, visible, t }) {
 function BudgetMod({ latest, visible, t }) {
   const cats = latest?.budget?.categories || [];
   const income = latest?.budget?.income || latest?._meta?.income || 0;
-  const totalSpent = cats.reduce((s, c) => s + (c.actual || 0), 0);
+  const totalSpent = totalBudgetSpent(latest);
   const surplus = income - totalSpent;
   const savingsRate = income > 0 ? ((income - totalSpent) / income) * 100 : 0;
   const velocity = calcVelocity(latest || {});
@@ -3395,6 +3424,166 @@ function PortfolioMod({ latest, visible, t }) {
   </Card>);
 }
 
+function MacroSignalsMod({ latest, visible, t, fredMacro }) {
+  if (!visible) return null;
+  const macro = latest?.macro || {};
+  const walcl = fredMacro?.walcl?.value ?? null;
+  const tga = fredMacro?.tga?.value ?? null;
+  const rrp = fredMacro?.rrp?.value ?? null;
+  const fredNetLiq = (walcl != null && tga != null && rrp != null) ? (walcl - tga - rrp) / 1000 : null;
+  const localNetLiq = Number(macro.netLiquidity);
+  const netLiqT = Number.isFinite(localNetLiq) && localNetLiq > 0 ? localNetLiq : null;
+  const benner = macro.bennerPhase || 'B-Year (Sell)';
+  const triggersActive = Number(macro.triggersActive || 0);
+  const triggerList = Array.isArray(macro.activeTriggers) ? macro.activeTriggers.filter(Boolean) : [];
+
+  return (
+    <Card title="Macro Signals" visible={visible} delay={240} t={t}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+        <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Benner Phase</div>
+          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.textPrimary }}>{benner}</div>
+        </div>
+        <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
+          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.accent }}>
+            {fredNetLiq != null ? `$${fredNetLiq.toFixed(2)}T` : netLiqT != null ? `$${netLiqT.toFixed(2)}T` : '—'}
+          </div>
+        </div>
+        <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk Triggers</div>
+          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: triggersActive >= 2 ? t.danger : triggersActive === 1 ? t.warn : t.accent }}>{triggersActive}</div>
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
+        <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.crypto }}>{macro.btcPrice ? fmt(macro.btcPrice) : '—'}</div>
+        </div>
+        <div style={{ borderLeft: `2px solid ${t.warn}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>FedWatch Cut</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{macro.fedWatchCut || 0}%</div>
+        </div>
+        <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Yield 10Y-2Y</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: (macro.yieldCurve10Y2Y || 0) >= 0 ? t.accent : t.danger }}>{macro.yieldCurve10Y2Y ?? 0}%</div>
+        </div>
+        <div style={{ borderLeft: `2px solid ${t.purple}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>{macro.nextFomc || '—'}</div>
+        </div>
+      </div>
+      <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
+        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Active Trigger Set</div>
+        <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.45 }}>
+          {triggerList.length ? triggerList.join(' • ') : 'No active macro triggers. Run Sync to refresh local macro state.'}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
+  if (!visible) return null;
+
+  // ── Derived macro signals from FRED data ─────────────────────────
+  const walcl  = fredMacro?.walcl?.value ?? null;
+  const tga    = fredMacro?.tga?.value   ?? null;
+  const rrp    = fredMacro?.rrp?.value   ?? null;
+  const netLiq = (walcl != null && tga != null && rrp != null) ? walcl - tga - rrp : null;
+  const qtqe   = walcl == null ? null : walcl > 6600000 ? 'QE' : walcl > 6200000 ? 'NEUTRAL' : 'QT';
+
+  // ── Auto Narrative Engine ─────────────────────────────────────────
+  const stage = latest ? (latest.debts?.some(d => d.balance > 0) ? (latest.eFund?.balance >= 1000 ? 2 : 1) : 3) : 0;
+  const buildNarrative = () => {
+    const parts = [];
+    // Liquidity signal
+    if (netLiq != null) {
+      if (netLiq > 5500000)      parts.push(`Fed net liquidity is elevated at $${(netLiq/1000).toFixed(2)}T — historically supportive of risk assets.`);
+      else if (netLiq > 4500000) parts.push(`Fed net liquidity at $${(netLiq/1000).toFixed(2)}T is neutral — watch for directional shift.`);
+      else                        parts.push(`Fed net liquidity is compressed at $${(netLiq/1000).toFixed(2)}T — risk-off environment, defense posture justified.`);
+    }
+    // QT/QE
+    if (qtqe === 'QT')      parts.push('Balance sheet is in QT. Liquidity is draining — elevated caution on risk exposure.');
+    else if (qtqe === 'QE') parts.push('Balance sheet expansion (QE) supports asset prices — monitor for reversal signals.');
+    // RRP near zero = bullish signal
+    if (rrp != null && rrp < 1000) parts.push('RRP near zero means excess cash has left the overnight facility — historically a bullish liquidity signal.');
+    // Stage-specific posture
+    if (stage <= 2) parts.push('Your current stage is Defense Mode. Macro data is context only — no investment action permitted until Stage 3+.');
+    return parts.length > 0 ? parts.join(' ') : 'Run a live scan to generate your macro narrative.';
+  };
+
+  // ── Styles ────────────────────────────────────────────────────────
+  const card  = { background: t.surface, border: `1px solid ${t.borderDim}`, borderRadius: 4, padding: 14, marginBottom: 0 };
+  const lbl   = { fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 };
+  const metricBox = (borderColor) => ({ padding: '10px 12px', borderRadius: 4, border: `1px solid ${borderColor || t.borderDim}`, background: t.panel, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' });
+  return (
+    <div style={card}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Activity size={14} style={{ color: t.accent }} />
+          <div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Market Intelligence</div>
+            <div style={{ fontSize: 9, color: t.textDim }}>{fredMacro?.asOf ? `FRED as of ${fredMacro.asOf}` : 'FRED Macro Narrative'}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 1 — Fed cycle metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 8 }}>
+        <div style={metricBox()}>
+          <div style={lbl}>Fed Cycle</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: qtqe === 'QT' ? t.danger : qtqe === 'QE' ? t.accent : t.warn }}>{qtqe ?? '—'}</div>
+          <div style={{ fontSize: 9, color: t.textDim }}>{walcl ? `WALCL $${(walcl/1000).toFixed(2)}T` : 'no FRED data'}</div>
+        </div>
+        <div style={metricBox()}>
+          <div style={{ ...lbl, color: t.accent }}>Net Liquidity</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: netLiq != null && netLiq > 5000000 ? t.accent : netLiq != null ? t.warn : t.textDim }}>{netLiq != null ? `$${(netLiq/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 9, color: t.textDim }}>WALCL − TGA − RRP</div>
+        </div>
+        <div style={metricBox()}>
+          <div style={lbl}>RRP</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{rrp != null ? `$${(rrp/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 9, color: t.textDim }}>overnight reverse repo</div>
+        </div>
+      </div>
+
+      {/* Row 2 — WALCL | TGA | As-Of */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+        <div style={metricBox()}>
+          <div style={lbl}>WALCL</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: t.textPrimary }}>{walcl != null ? `$${(walcl/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 9, color: t.textDim }}>Fed balance sheet</div>
+        </div>
+        <div style={metricBox()}>
+          <div style={lbl}>TGA</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{tga != null ? `$${(tga/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 9, color: t.textDim }}>Treasury General Account</div>
+        </div>
+        <div style={metricBox()}>
+          <div style={lbl}>As Of</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: t.textPrimary }}>{fredMacro?.asOf || '—'}</div>
+          <div style={{ fontSize: 9, color: t.textDim }}>FRED data timestamp</div>
+        </div>
+      </div>
+
+      {/* Narrative Engine */}
+      <div style={{ padding: '10px 14px', border: `1px solid ${t.accent}20`, background: t.accentMuted, borderRadius: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          <Eye size={10} style={{ color: t.accent }} />
+          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Macro Narrative</span>
+        </div>
+        <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.6 }}>{buildNarrative()}</div>
+      </div>
+
+      <div style={{ marginTop: 8, fontSize: 9, color: t.textGhost, lineHeight: 1.35 }}>
+        Informational only. Defense Mode (Stages 0–3): no investment action permitted.
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // DAILY DIRECTIVE ENGINE
 // Procedural 365-day cycle: monthly theme × pillar rotation
@@ -3554,12 +3743,11 @@ function DirectiveMod({ visible, latest, t }) {
   const di = dailyInterest(latest?.debts);
   const cats = latest?.budget?.categories || [];
   const income = latest?.budget?.income || latest?._meta?.income || 0;
-  const totalSpent = cats.reduce((s, c) => s + (c.actual || 0), 0);
+  const totalSpent = totalBudgetSpent(latest);
   const blownCats = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 1);
   const warnCats = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 0.75 && (c.actual / c.budgeted) < 1);
   const velocity = calcVelocity(latest || {});
-  const ef = latest?.eFund || {};
-  const days = runwayDays(ef);
+  const days = runwayDaysFromLatest(latest);
   const checking = latest?.netWorth?.assets?.checking || 0;
   const action = nextAction(latest);
 
@@ -3627,13 +3815,131 @@ function DirectiveMod({ visible, latest, t }) {
 }
 
 // ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// MARKET STRIP — top-line risk/market indicators
+// ═══════════════════════════════════════════════════
+function MacroBanner({ fredMacro, visible, t }) {
+  const [marketLive, setMarketLive] = useState(null);
+
+  useEffect(() => {
+    if (!visible) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const fetchJsonWithCorsFallback = async (url) => {
+          const direct = await fetch(url);
+          if (direct.ok) return direct.json();
+          const proxied = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+          if (!proxied.ok) return null;
+          return proxied.json();
+        };
+
+        const fetchYahoo = async (symbol) => {
+          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
+          const j = await fetchJsonWithCorsFallback(url);
+          if (!j) return null;
+          const result = j?.chart?.result?.[0];
+          if (!result) return null;
+          const meta = result.meta || {};
+          let price = Number(meta.regularMarketPrice);
+          let prev = Number(meta.chartPreviousClose || meta.previousClose);
+          if (!Number.isFinite(price)) {
+            const closes = result.indicators?.quote?.[0]?.close || [];
+            const vals = closes.filter(v => Number.isFinite(v));
+            if (vals.length) price = vals[vals.length - 1];
+            if (vals.length > 1) prev = vals[vals.length - 2];
+          }
+          if (!Number.isFinite(price)) return null;
+          const chgPct = Number.isFinite(prev) && prev !== 0 ? ((price - prev) / prev) * 100 : null;
+          return { price, chgPct };
+        };
+
+        const [cgRes, oilY, vixY, spxY, nasY] = await Promise.allSettled([
+          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'),
+          fetchYahoo('CL=F'),
+          fetchYahoo('^VIX'),
+          fetchYahoo('^GSPC'),
+          fetchYahoo('^IXIC'),
+        ]);
+
+        const cg = cgRes.status === 'fulfilled' && cgRes.value.ok ? await cgRes.value.json() : null;
+        const next = {
+          btc: cg?.bitcoin ? { price: Number(cg.bitcoin.usd), chgPct: Number(cg.bitcoin.usd_24h_change) } : null,
+          eth: cg?.ethereum ? { price: Number(cg.ethereum.usd), chgPct: Number(cg.ethereum.usd_24h_change) } : null,
+          oil: oilY.status === 'fulfilled' ? oilY.value : null,
+          vix: vixY.status === 'fulfilled' ? vixY.value : null,
+          sp500: spxY.status === 'fulfilled' ? spxY.value : null,
+          nasdaq: nasY.status === 'fulfilled' ? nasY.value : null,
+        };
+        next.spy = next.sp500 ? { ...next.sp500 } : null;
+        if (!cancelled) setMarketLive(next);
+      } catch (_) {}
+    })();
+
+    return () => { cancelled = true; };
+  }, [visible]);
+
+  if (!visible) return null;
+
+  const rrp     = fredMacro?.rrp?.value    ?? null;
+  const silver  = fredMacro?.silver?.value ?? null;
+  const silverChg = fredMacro?.silver?.change ?? null;
+  const gold    = fredMacro?.gold?.value   ?? null;
+  const goldChg = fredMacro?.gold?.change  ?? null;
+  const oil = fredMacro?.oil ? { price: fredMacro.oil.value, chgPct: fredMacro.oil.change } : (marketLive?.oil || null);
+  const spy = fredMacro?.spy ? { price: fredMacro.spy.value, chgPct: fredMacro.spy.change } : (marketLive?.spy || null);
+  const vix = fredMacro?.vix ? { price: fredMacro.vix.value, chgPct: fredMacro.vix.change } : (marketLive?.vix || null);
+  const sp500 = fredMacro?.sp500 ? { price: fredMacro.sp500.value, chgPct: fredMacro.sp500.change } : (marketLive?.sp500 || null);
+  const nasdaq = fredMacro?.nasdaq ? { price: fredMacro.nasdaq.value, chgPct: fredMacro.nasdaq.change } : (marketLive?.nasdaq || null);
+  const asOf    = fredMacro?.asOf ?? null;
+
+  const fmtP  = (n, dec = 0) => n == null ? '—' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`;
+  const lbl   = { fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 };
+
+  const cell = { flex: '1 1 0', minWidth: 90, padding: '6px 10px', borderRight: `1px solid ${t.borderDim}`, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' };
+  const lastCell = { flex: '1 1 0', minWidth: 90, padding: '6px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' };
+
+  const PriceCell = ({ label, value, chg, color, isLast = false, dec = 0 }) => (
+    <div style={isLast ? lastCell : cell}>
+      <div style={lbl}>{label}</div>
+      <div style={{ fontSize: 12, fontWeight: 700, color: color || t.textPrimary, whiteSpace: 'nowrap' }}>{fmtP(value, dec)}</div>
+      {chg != null && (
+        <div style={{ fontSize: 9, color: chg >= 0 ? t.accent : t.danger, marginTop: 1 }}>
+          {`${chg >= 0 ? '+' : ''}${Number(chg).toFixed(2)}%`}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ marginBottom: 8, animation: 'fadeIn 0.4s ease-out' }}>
+      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderTop: `2px solid ${t.accent}30`, padding: '0', display: 'flex', alignItems: 'stretch', width: '100%', overflowX: 'auto' }}>
+        <PriceCell label="Bitcoin" value={marketLive?.btc?.price ?? null} chg={marketLive?.btc?.chgPct ?? null} color={t.crypto} />
+        <PriceCell label="ETH" value={marketLive?.eth?.price ?? null} chg={marketLive?.eth?.chgPct ?? null} color={t.purple} />
+        <PriceCell label="Gold" value={gold} chg={goldChg} color="#FFD700" />
+        <PriceCell label="Silver" value={silver} chg={silverChg} color="#C0C0C0" dec={2} />
+        <PriceCell label="Oil" value={oil?.price ?? null} chg={oil?.chgPct ?? null} color={t.warn} dec={2} />
+        <PriceCell label="SPY" value={spy?.price ?? null} chg={spy?.chgPct ?? null} color={t.accent} dec={2} />
+        <PriceCell label="VIX" value={vix?.price ?? null} chg={vix?.chgPct ?? null} color={t.danger} dec={2} />
+        <PriceCell label="S&P 500" value={sp500?.price ?? null} chg={sp500?.chgPct ?? null} color={t.textPrimary} />
+        <PriceCell label="NASDAQ" value={nasdaq?.price ?? null} chg={nasdaq?.chgPct ?? null} color={t.textPrimary} isLast={!asOf} />
+
+        {/* Timestamp — flush right */}
+        {asOf && <div style={{ marginLeft: 'auto', paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><div style={{ fontSize: 8, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+      </div>
+    </div>
+  );
+}
+
 // STATUS STRIP — Stage + Velocity + Daily Burn + Savings Rate
 // ═══════════════════════════════════════════════════
 function StatusStrip({ latest, t }) {
   const stage = calcStage(latest);
   const meta = STAGE_META[stage] || STAGE_META[0];
   const velocity = calcVelocity(latest);
-  const di = dailyInterest(latest?.debts);
+  const monthlyBurn = monthlySpendBaseline(latest);
+  const dailyBurn = monthlyBurn / 30;
   const savingsRate = calcSavingsRate(latest);
   const action = nextAction(latest);
   const stageColor = t[meta.color] || t.accent;
@@ -3644,57 +3950,64 @@ function StatusStrip({ latest, t }) {
 
   return (
     <div style={{ marginBottom: 12, animation: 'fadeIn 0.4s ease-out' }}>
-      {/* Stage banner */}
-      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, padding: '12px 16px', marginBottom: 2 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, fontWeight: 700, color: stageColor }}>{stage}</span>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
-              <div style={{ fontSize: 9, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 DEFENSE MODE' : stage === 3 ? '🔓 LIBERATION' : '📈 WEALTH BUILDING'}</div>
-            </div>
-          </div>
-          {/* Stage progress mini-bar */}
-          <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            {[0,1,2,3,4,5,6,7].map(i => (
-              <div key={i} style={{ width: i === stage ? 16 : 8, height: 6, background: i <= stage ? stageColor : t.elevated, transition: 'all 0.3s', opacity: i <= stage ? 1 : 0.3 }} />
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Metrics row */}
-      <div className="status-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2 }}>
+      <div className="status-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, marginBottom: 2 }}>
         {/* Velocity */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px' }}>
+        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Velocity</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
           <div style={{ fontSize: 8, color: velColor, textTransform: 'uppercase' }}>{velocity >= 0.25 ? 'ON TRACK' : velocity >= 0.10 ? 'ALERT' : 'CRISIS'}<span style={{ color: t.textDim }}> / 25% target</span></div>
         </div>
         {/* Daily Burn */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px' }}>
+        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Burn</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: di > 0 ? t.danger : t.accent }}>${di.toFixed(2)}</div>
-          <div style={{ fontSize: 8, color: di > 0 ? t.danger : t.accent, textTransform: 'uppercase' }}>{di > 0 ? `${fmt(Math.round(di * 30))}/mo wasted` : 'ZERO BURN'}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
+          <div style={{ fontSize: 8, color: dailyBurn > 0 ? t.warn : t.accent, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : 'ZERO BURN'}</div>
         </div>
         {/* Savings Rate */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px' }}>
+        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Savings Rate</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{savingsRate >= 20 ? 'HEALTHY' : savingsRate > 0 ? 'LOW' : 'NO DATA'}</div>
         </div>
         {/* Runway */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px' }}>
+        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Runway</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(runwayDays(latest?.eFund), t) }}>{runwayDays(latest?.eFund)}<span style={{ fontSize: 10, fontWeight: 400 }}> days</span></div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(runwayDaysFromLatest(latest), t) }}>{runwayDaysFromLatest(latest)}<span style={{ fontSize: 10, fontWeight: 400 }}> days</span></div>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>E-Fund Phase {latest?.eFund?.phase || 1}/4</div>
         </div>
       </div>
 
-      {/* Next Action callout */}
-      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${t[action.color] || t.accent}`, padding: '8px 14px', marginTop: 2, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
-        <span style={{ fontSize: 11, color: t.textSecondary }}>{action.text}</span>
+      {/* Combined info strip — Stage | Ingest hint | Next Action — evenly spaced */}
+      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', gap: 0 }}>
+        {/* Stage */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
+          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
+            <div style={{ fontSize: 8, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 Defense' : stage === 3 ? '🔓 Liberation' : '📈 Wealth'}</div>
+          </div>
+          {/* Progress bar */}
+          <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.elevated, opacity: i <= stage ? 1 : 0.3 }} />
+            ))}
+          </div>
+        </div>
+
+        {/* Ingest hint */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flex: 1 }}>
+          <Upload size={12} style={{ color: t.accent, flexShrink: 0 }} />
+          <div style={{ fontSize: 10, color: t.textDim, lineHeight: 1.35, textAlign: 'center' }}>
+            <span style={{ color: t.textPrimary }}>Ingest:</span> upload <span style={{ color: t.textPrimary }}>PDFs</span>, <span style={{ color: t.textPrimary }}>screenshots</span>, or <span style={{ color: t.textPrimary }}>CSVs</span> via <span style={{ color: t.textPrimary }}>Sync</span>
+          </div>
+        </div>
+
+        {/* Next Action */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 16px', flex: 1 }}>
+          <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
+          <span style={{ fontSize: 10, color: t.textSecondary, textAlign: 'center' }}>{action.text}</span>
+        </div>
       </div>
     </div>
   );
@@ -3703,7 +4016,7 @@ function StatusStrip({ latest, t }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onExport, onClear, onToggleTheme, syncFlash, onHome }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const vis = settings.visibleModules;
@@ -3732,7 +4045,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
-        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.3</span>
+        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
       </div>
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -3742,10 +4055,13 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
     <main style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
+      <MacroBanner fredMacro={fredMacro} visible={vis.includes('macroBanner')} t={t} />
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
         <DirectiveMod visible={vis.includes('directive')} latest={latest} t={t} />
         <NetWorthMod snapshots={snapshots} latest={latest} visible={vis.includes('netWorth')} t={t} />
+        <div style={{ gridColumn: '1 / -1' }}><MacroSignalsMod latest={latest} visible={vis.includes('macro')} t={t} fredMacro={fredMacro} /></div>
+        <div style={{ gridColumn: '1 / -1' }}><MarketIntelligenceMod latest={latest} visible={vis.includes('market')} t={t} isDark={isDark} fredMacro={fredMacro} /></div>
         <DebtMod latest={latest} visible={vis.includes('debt')} t={t} />
         <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
         <BudgetMod latest={latest} visible={vis.includes('budget')} t={t} />
@@ -3775,7 +4091,19 @@ export default function FortifyOS() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [syncFlash, setSyncFlash] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
+  const [fredMacro, setFredMacro] = useState(null);
   const t = isDark ? THEMES.dark : THEMES.light;
+
+  // Fetch FRED macro data from GitHub Actions-generated macro.json
+  // BASE_URL ensures correct path on GitHub Pages (/fortifyos/macro.json)
+  // Cache-bust with today's date so CDN doesn't serve stale data
+  useEffect(() => {
+    const bust = new Date().toISOString().slice(0, 10);
+    fetch(`${import.meta.env.BASE_URL}macro.json?v=${bust}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.walcl || d?.tga || d?.rrp) setFredMacro(d); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -3805,10 +4133,14 @@ export default function FortifyOS() {
       // Always start at landing — user navigates to dashboard manually
       setView('landing');
       if (st) {
-        if ((st._v || 0) < DEFAULT_SETTINGS._v) {
-          const savedMods = st.visibleModules || [];
-          const newMods = DEFAULT_SETTINGS.visibleModules.filter(m => !savedMods.includes(m));
-          const merged = { ...st, visibleModules: [...savedMods, ...newMods], _v: DEFAULT_SETTINGS._v };
+        // Always heal missing module keys so old/local configs do not hide new dashboard modules.
+        const savedMods = st.visibleModules || [];
+        const newMods = DEFAULT_SETTINGS.visibleModules.filter(m => !savedMods.includes(m));
+        const mergedVisible = [...savedMods, ...newMods];
+        const needsVersionBump = (st._v || 0) < DEFAULT_SETTINGS._v;
+        const needsModuleMerge = newMods.length > 0;
+        if (needsVersionBump || needsModuleMerge) {
+          const merged = { ...st, visibleModules: mergedVisible, _v: DEFAULT_SETTINGS._v };
           setSettings(merged);
           await store.set('fortify-settings', merged);
         } else {
@@ -3820,16 +4152,60 @@ export default function FortifyOS() {
   }, []);
 
   const handleSync = useCallback(async (data) => {
-    // Deep merge for nested objects to prevent losing crypto/macro/protection data
-    const merged = { ...DEFAULT_SNAPSHOT, ...data };
+    // Merge against latest snapshot (not defaults) so sequential account ingests can aggregate.
+    const base = latest || DEFAULT_SNAPSHOT;
+    const merged = { ...base, ...data };
     // Sanitize date — reject garbage, stale, or future dates
     merged.date = sanitizeDate(data.date);
     // Ensure nested portfolio/protection/macro objects merge with defaults
-    merged.portfolio = { ...DEFAULT_SNAPSHOT.portfolio, ...(data.portfolio || {}) };
-    merged.macro = { ...DEFAULT_SNAPSHOT.macro, ...(data.macro || {}) };
-    merged.protection = { ...DEFAULT_SNAPSHOT.protection, ...(data.protection || {}) };
-    merged.netWorth = { ...DEFAULT_SNAPSHOT.netWorth, ...(data.netWorth || {}) };
-    merged.netWorth.assets = { ...DEFAULT_SNAPSHOT.netWorth.assets, ...(data.netWorth?.assets || {}) };
+    merged.portfolio = { ...DEFAULT_SNAPSHOT.portfolio, ...(base.portfolio || {}), ...(data.portfolio || {}) };
+    merged.macro = { ...DEFAULT_SNAPSHOT.macro, ...(base.macro || {}), ...(data.macro || {}) };
+    merged.protection = { ...DEFAULT_SNAPSHOT.protection, ...(base.protection || {}), ...(data.protection || {}) };
+    merged.netWorth = { ...DEFAULT_SNAPSHOT.netWorth, ...(base.netWorth || {}), ...(data.netWorth || {}) };
+    merged.netWorth.assets = { ...DEFAULT_SNAPSHOT.netWorth.assets, ...(base.netWorth?.assets || {}), ...(data.netWorth?.assets || {}) };
+
+    // Ingest snapshots (CSV/PDF/statement parsers) should aggregate across accounts.
+    const isIngestSync = !!data?._meta?.source;
+    if (isIngestSync) {
+      const byName = new Map();
+      for (const c of (base.budget?.categories || [])) byName.set(c.name, { ...c });
+      for (const c of (data.budget?.categories || [])) {
+        const prev = byName.get(c.name) || { name: c.name, budgeted: 0, actual: 0 };
+        byName.set(c.name, {
+          name: c.name,
+          budgeted: Math.max(prev.budgeted || 0, c.budgeted || 0),
+          actual: (prev.actual || 0) + (c.actual || 0),
+        });
+      }
+      merged.budget = {
+        ...(base.budget || {}),
+        ...(data.budget || {}),
+        income: (base.budget?.income || 0) + (data.budget?.income || 0),
+        categories: Array.from(byName.values()),
+      };
+
+      const baseMeta = base._meta || {};
+      const nextMeta = data._meta || {};
+      const src = [baseMeta.source, nextMeta.source].filter(Boolean).join(' + ');
+      merged._meta = {
+        ...baseMeta,
+        ...nextMeta,
+        source: src || nextMeta.source || baseMeta.source || 'Combined',
+        transactions: (baseMeta.transactions || 0) + (nextMeta.transactions || 0),
+        income: (baseMeta.income || 0) + (nextMeta.income || 0),
+        totalExpense: (baseMeta.totalExpense || 0) + (nextMeta.totalExpense || 0),
+        uncategorized: (baseMeta.uncategorized || 0) + (nextMeta.uncategorized || 0),
+        excludedTransfers: (baseMeta.excludedTransfers || 0) + (nextMeta.excludedTransfers || 0),
+      };
+
+      // Keep e-fund monthly expense aligned with combined spending stream.
+      const combinedSpent = (merged.budget.categories || []).reduce((s, c) => s + (c.actual || 0), 0);
+      merged.eFund = {
+        ...(base.eFund || {}),
+        ...(data.eFund || {}),
+        monthlyExpenses: Math.round(combinedSpent || merged.eFund?.monthlyExpenses || 3000),
+      };
+    }
     // Recalculate net worth total to include crypto + equity + savings
     const assets = merged.netWorth.assets;
     const cashTotal = (assets.checking || 0) + (assets.savings || 0) + (assets.eFund || 0) + (assets.other || 0);
@@ -3837,16 +4213,19 @@ export default function FortifyOS() {
     const cryptoVal = (merged.portfolio.crypto || []).reduce((s, c) => s + (c.amount || 0) * (c.lastPrice || 0), 0);
     const liabilities = Object.values(merged.netWorth.liabilities || {}).reduce((s, v) => s + (v || 0), 0);
     merged.netWorth.total = cashTotal + eqVal + cryptoVal - liabilities;
-    // Persist against storage as source-of-truth to avoid stale state overwrites
-    // when syncing multiple statements in one session.
-    const existing = (await store.get('fortify-snapshots')) || [];
-    const ns = [...existing, merged];
-    setSnapshots(ns);
+    let nextSnapshots = null;
+    setSnapshots(prev => {
+      nextSnapshots = [...(prev || []), merged];
+      return nextSnapshots;
+    });
     setLatest(merged);
-    await store.set('fortify-snapshots', ns); await store.set('fortify-latest', merged);
+    try {
+      await store.set('fortify-snapshots', nextSnapshots || [merged]);
+      await store.set('fortify-latest', merged);
+    } catch(_) {}
     setSyncFlash(true); setTimeout(() => setSyncFlash(false), 600);
     setView('dashboard'); setSyncOpen(false);
-  }, []);
+  }, [latest]);
 
   const toggleTheme = useCallback(async () => { const n = !isDark; setIsDark(n); await store.set('fortify-theme', n); }, [isDark]);
   const toggleModule = useCallback(async (k) => {
@@ -3855,7 +4234,12 @@ export default function FortifyOS() {
   }, [settings]);
   const handleExport = useCallback(() => {
     const b = new Blob([JSON.stringify({ snapshots, latest, settings }, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `fortify-export-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+    const url = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fortify-export-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   }, [snapshots, latest, settings]);
   const handleClear = useCallback(async () => { setSnapshots([]); setLatest(DEFAULT_SNAPSHOT); setView('landing'); await store.del('fortify-snapshots'); await store.del('fortify-latest'); }, []);
 
@@ -3864,7 +4248,18 @@ export default function FortifyOS() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
         * { box-sizing: border-box; margin: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+/* Responsive layout */
+.fo-main { padding-left: 14px; padding-right: 14px; }
+@media (max-width: 980px) {
+  .fo-topgrid { grid-template-columns: 1fr !important; }
+  .fo-modgrid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 520px) {
+  .fo-main { padding-left: 10px; padding-right: 10px; }
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes pulse { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 0 1px ${t.accent}60; } }
         @keyframes purplePulse { 0%,100% { box-shadow: 0 0 4px ${t.purple}40; border-color: ${t.purple}60; } 50% { box-shadow: 0 0 12px ${t.purple}80; border-color: ${t.purple}; } }
@@ -3884,12 +4279,26 @@ export default function FortifyOS() {
         .footer-stats { grid-template-columns: repeat(3, 1fr); }
         .footer-stat-cell { border-right: 1px solid ${t.borderDim}; }
         .footer-stat-cell:last-child { border-right: none; }
+        input, select, textarea { max-width: 100%; }
         @media (max-width: 768px) {
+          .sync-shell {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            border-radius: 0 !important;
+            border-left: none !important;
+            border-right: none !important;
+          }
+          .sync-content { padding: 12px !important; }
+          .sync-overlay { padding: 0 !important; }
+          input, select, textarea { font-size: 16px !important; }
+          button { min-height: 40px; }
           .phase-label,.footer-label { display: none !important; }
           .main-grid { grid-template-columns: 1fr !important; }
           .sync-row-3 { grid-template-columns: 1fr !important; }
           .status-metrics { grid-template-columns: 1fr 1fr !important; }
-          .sync-row-debt { grid-template-columns: 1fr 1fr !important; }
+          .sync-row-debt { grid-template-columns: 1fr !important; }
           .hero-title { font-size: 36px !important; }
           .hero-sub { font-size: 13px !important; }
           .hero-buttons { flex-direction: column !important; }
@@ -3897,13 +4306,14 @@ export default function FortifyOS() {
           .footer-stat-cell { border-right: none !important; border-bottom: 1px solid ${t.borderDim}; }
           .footer-stat-cell:last-child { border-bottom: none; }
           .stage-labels span { font-size: 6px !important; }
+          .fo-main { overflow-x: hidden !important; }
         }
       `}</style>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'Space Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} />}
     </div>
   );
 }
