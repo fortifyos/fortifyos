@@ -26,18 +26,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps --include=dev
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.30.2 --activate
+          pnpm install --frozen-lockfile
 
       - name: Verify build toolchain
         run: |
-          npm ls vite
-          npx vite --version
+          pnpm list vite
+          pnpm exec vite --version
 
       - name: Build
-        run: DEPLOY_TARGET=pages npm run build
+        run: DEPLOY_TARGET=pages pnpm build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
