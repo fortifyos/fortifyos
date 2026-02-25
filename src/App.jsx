@@ -31,9 +31,9 @@ const THEMES = {
     crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
   light: {
-    void: '#FFFFFF', surface: '#FFFFFF', elevated: '#FAFAFA', input: '#F5F5F5',
-    borderDim: '#DDDDDD', borderMid: '#C5C5C5', borderBright: '#AFAFAF',
-    textPrimary: '#111111', textSecondary: '#333333', textDim: '#666666', textGhost: '#BEBEBE',
+    void: '#FFFFFF', surface: '#FFFFFF', elevated: '#F8F9FA', input: '#F3F4F6',
+    borderDim: '#D1D5DB', borderMid: '#9CA3AF', borderBright: '#6B7280',
+    textPrimary: '#111111', textSecondary: '#1F2937', textDim: '#4B5563', textGhost: '#9CA3AF',
     accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
     danger: '#FF3333', warn: '#FFB800',
     purple: '#BF40BF', purpleDim: '#8A2D8A', purpleMuted: '#2D0A2D',
@@ -1026,12 +1026,12 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'center', maxWidth: 460, margin: '0 auto 0' }}>
             {hasData ? (
               <>
-                <button onClick={onDashboard} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
+                <button onClick={onDashboard} style={{ background: accent, color: '#000', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
                 <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'Space Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>SYNC NEW DATA</button>
               </>
             ) : (
               <>
-                <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
+                <button onClick={onInitialize} style={{ background: accent, color: '#000', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
                 <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'Space Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>HOW IT WORKS</button>
               </>
             )}
@@ -1185,7 +1185,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             Ready to stop leaking <span style={{ color: t.danger }}>$6.05/day</span>?
           </h2>
           <p style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24 }}>Sync your first bank statement. The system does the rest.</p>
-          <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
+          <button onClick={onInitialize} style={{ background: accent, color: '#000', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
         </div>
       </section>
 
@@ -2397,7 +2397,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
             {success && <div style={{ color: t.accent, fontSize: 11, marginBottom: 8 }}>✓ SYNC COMMITTED</div>}
 
             {parsedPreview && (
-              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
+              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
             )}
 
             {/* Privacy */}
@@ -2556,7 +2556,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
                 {/* Action buttons */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
                   <button onClick={pdfSyncToDashboard} style={{
-                    padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF',
+                    padding: 14, background: t.accent, color: '#000',
                     border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700,
                     cursor: 'pointer', textTransform: 'uppercase', borderRadius: 2,
                   }}>SYNC TO DASHBOARD</button>
@@ -2596,8 +2596,8 @@ function UniversalSync({ open, onClose, onSync, t }) {
                 </div>
               </div>
             )}
-            {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
-            {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : (t === THEMES.dark ? '#000' : '#FFF'), border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
+            {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
+            {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
             {error && <div style={{ color: t.danger, fontSize: 11, marginTop: 8 }}><AlertCircle size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />{error}</div>}
           </>)}
 
@@ -2824,7 +2824,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
                 );
               })()}
               {success && <div style={{ color: t.accent, fontSize: 11 }}>✓ SYNC COMMITTED</div>}
-              <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
+              <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: '#000', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
             </div>
           )}
         </div>
