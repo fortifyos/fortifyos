@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Shield, Upload, Terminal, Lock, Download, FileUp, KeyRound, Settings, ChevronDown } from 'lucide-react';
+import { Shield, Upload, Terminal, Lock, Download, FileUp, KeyRound, Settings, ChevronDown, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SovereignProvider, useSovereign } from './security/SovereignWrapper';
 import { isNativeRuntime } from './platform/isNative';
@@ -20,6 +20,7 @@ export default function App() {
 function FortifyOS() {
   const [view, setView] = useState('landing'); // landing | dashboard
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [theme, setTheme] = useState(() => localStorage.getItem('fortify_theme') || 'dark');
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -27,15 +28,24 @@ function FortifyOS() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('fortify_theme', theme);
+  }, [theme]);
+
   return (
-    <div className="min-h-[100svh] bg-black text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
+    <div className={`min-h-[100svh] app-shell font-sans overflow-x-hidden ${theme === 'light' ? 'theme-light selection:bg-black selection:text-white' : 'selection:bg-white selection:text-black'}`}>
       <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.02] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_2px,3px_100%]" />
 
       <AnimatePresence mode="wait">
         {view === 'landing' ? (
           <LandingView onStart={() => setView('dashboard')} />
         ) : (
-          <DashboardView isMobile={isMobile} onBack={() => setView('landing')} />
+          <DashboardView
+            isMobile={isMobile}
+            onBack={() => setView('landing')}
+            theme={theme}
+            onToggleTheme={() => setTheme((t) => t === 'dark' ? 'light' : 'dark')}
+          />
         )}
       </AnimatePresence>
     </div>
@@ -46,21 +56,21 @@ function LandingView({ onStart }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center h-screen p-8 text-center">
       <Shield size={64} className="mb-12 animate-pulse" />
-      <h1 className="text-4xl md:text-6xl font-extralight tracking-tighter mb-8">
+      <h1 className="type-h1 font-extralight mb-8">
         FortifyOS
       </h1>
-      <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest mb-8">
+      <p className="type-meta txt-meta font-mono mb-8">
         Powered by KNOX Kernel v3
       </p>
-      <button onClick={onStart} className="border border-zinc-800 px-12 py-5 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-white hover:text-black transition-all">
+      <button onClick={onStart} className="btn-secondary px-12 py-5 type-meta font-bold transition-all hover:opacity-80">
         Enter FortifyOS
       </button>
-      <p className="mt-6 text-[10px] text-zinc-600 font-mono uppercase tracking-widest">Offline-first • Local vault • Capability agents</p>
+      <p className="mt-6 type-meta txt-meta font-mono">Offline-first • Local vault • Capability agents</p>
     </motion.div>
   );
 }
 
-function DashboardView({ isMobile, onBack }) {
+function DashboardView({ isMobile, onBack, theme, onToggleTheme }) {
   const {
     locked,
     unlock,
@@ -122,7 +132,7 @@ function DashboardView({ isMobile, onBack }) {
   const [adoptFile, setAdoptFile] = useState(null);
   const [adoptPhrase, setAdoptPhrase] = useState('');
   const [adoptErr, setAdoptErr] = useState('');
-  const [ingestMsg, setIngestMsg] = useState('');
+  const [ingestStatus, setIngestStatus] = useState(null);
   const ingestInputRef = useRef(null);
   const vaultImportInputRef = useRef(null);
   const nativeRuntime = isNativeRuntime();
@@ -255,7 +265,7 @@ function DashboardView({ isMobile, onBack }) {
   };
 
   const handleIngestPick = () => {
-    setIngestMsg('');
+    setIngestStatus(null);
     ingestInputRef.current?.click();
   };
 
@@ -269,19 +279,35 @@ function DashboardView({ isMobile, onBack }) {
 
   const handleIngestFile = async (file) => {
     if (!file) return;
-    const ok = /application\/pdf|image\//.test(file.type);
-    if (!ok) {
-      setIngestMsg('Unsupported format. Upload bank statement PDF or image. Nothing was saved.');
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      setIngestStatus({
+        kind: 'error',
+        title: 'Unsupported format',
+        detail: 'Only bank statement PDF files are accepted.',
+        next: 'Upload a PDF export from your bank. Nothing was saved.'
+      });
       return;
     }
+    setIngestStatus({
+      kind: 'pending',
+      title: 'PDF verified',
+      detail: `File accepted: ${file.name}`,
+      next: 'Processing securely...'
+    });
     await executeSovereignAction('UPLOAD_BANK_STATEMENT', stage, async () => {
       // Parser pipeline not wired yet.
     });
-    setIngestMsg('Upload received, parser is not enabled yet. Nothing was saved.');
+    setIngestStatus({
+      kind: 'success',
+      title: 'PDF verified',
+      detail: 'Transactions parser is not enabled in this build.',
+      next: 'No transactions were saved yet.'
+    });
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1400px] mx-auto px-6 py-8 md:py-16">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1400px] mx-auto px-5 py-5 md:px-6 md:py-10">
       <Modal open={locked} title="Sovereign Vault">
         <div className="space-y-4">
           <p className="text-sm text-zinc-300 leading-relaxed">
@@ -365,39 +391,42 @@ function DashboardView({ isMobile, onBack }) {
         </div>
       </Modal>
 
-      <header className="flex justify-between items-center mb-12">
+      <header className="flex justify-between items-center mb-5">
         <div className="flex items-center gap-3">
-          <Shield size={isMobile ? 24 : 32} className="text-white" />
+          <Shield size={isMobile ? 24 : 32} />
           <div>
-            <h1 className="text-xl md:text-2xl font-light tracking-tighter uppercase">FortifyOS</h1>
-            <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600">KNOX Kernel v3</p>
+            <h1 className="type-h1 font-light uppercase">FortifyOS</h1>
+            <p className="type-meta txt-meta font-mono">KNOX Kernel v3</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 border border-zinc-900 p-1.5 rounded">
+        <div className="flex items-center gap-2 app-panel p-1.5 rounded">
           <div className="hidden md:flex items-center px-2">
             {chainStatus?.ok ? (
-              <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">Chain: OK</span>
+              <span className="type-meta txt-meta font-mono">Chain: OK</span>
             ) : chainStatus ? (
-              <span className="text-[9px] font-mono uppercase tracking-widest text-red-400">Chain: ALERT</span>
+              <span className="type-meta font-mono text-red-500">Chain: ALERT</span>
             ) : (
-              <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-700">Chain: —</span>
+              <span className="type-meta txt-meta font-mono">Chain: —</span>
             )}
           </div>
 
-          <button onClick={() => setSettingsOpen(true)} className="p-2 text-zinc-600 hover:text-white transition-colors" title="Settings">
+          <button onClick={onToggleTheme} className="p-2 txt-meta transition-colors hover:opacity-80" title="Theme">
+            <span className="type-meta font-mono">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          </button>
+          <button onClick={() => setSettingsOpen(true)} className="p-2 txt-meta transition-colors hover:opacity-80" title="Settings">
             <Settings size={18} />
           </button>
-          <button onClick={onBack} className="p-2 text-zinc-600 hover:text-white transition-colors" title="Back">
+          <button onClick={onBack} className="p-2 txt-meta transition-colors hover:opacity-80" title="Back">
             <Terminal size={18} />
           </button>
-          <button onClick={lock} className="p-2 text-zinc-600 hover:text-white transition-colors" title="Lock">
+          <button onClick={lock} className="p-2 txt-meta transition-colors hover:opacity-80" title="Lock">
             <Lock size={18} />
           </button>
         </div>
       </header>
 
       <div className="space-y-4">
-        <div className="border border-zinc-900 rounded-sm p-4">
+        <div className="app-panel rounded-sm p-4">
           <div className="grid grid-cols-4 gap-3">
             <StatusMetric label="Velocity" value={String(velocity.value)} badge={velocity.trend} tone="warn" />
             <StatusMetric label="Burn" value="$18.47" badge="LOSS" tone="warn" />
@@ -406,7 +435,7 @@ function DashboardView({ isMobile, onBack }) {
           </div>
         </div>
 
-        <div className="border border-zinc-900 rounded-sm p-4 space-y-3">
+        <div className="app-panel rounded-sm p-4 space-y-3">
           <input
             ref={ingestInputRef}
             type="file"
@@ -430,31 +459,37 @@ function DashboardView({ isMobile, onBack }) {
               e.target.value = '';
             }}
           />
-          <button
-            onClick={handlePrimaryAction}
-            className="w-full bg-white text-black px-6 py-4 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
-          >
+          <button onClick={handlePrimaryAction} className="w-full btn-primary px-6 py-4 type-meta font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2">
             {isVaultEmpty ? 'Restore From Backup' : 'Upload Bank Statement'} <Upload size={14} />
           </button>
-          <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
+          <p className="type-meta txt-meta font-mono">
             Files are encrypted and stored locally in this browser.
           </p>
-          {ingestMsg ? <p className="text-xs text-zinc-400 font-mono">{ingestMsg}</p> : null}
+          {ingestStatus ? (
+            <div className={`p-3 rounded-sm border ${ingestStatus.kind === 'error' ? 'border-red-900 bg-red-950/20' : ingestStatus.kind === 'success' ? 'border-emerald-800 bg-emerald-950/20' : 'app-panel'}`}>
+              <div className="flex items-center gap-2">
+                {ingestStatus.kind === 'error' ? <AlertCircle size={16} className="text-red-500" /> : <CheckCircle2 size={16} className={ingestStatus.kind === 'pending' ? 'txt-meta' : 'text-emerald-500'} />}
+                <p className="type-body">{ingestStatus.title}</p>
+              </div>
+              <p className="text-sm txt-muted mt-1">{ingestStatus.detail}</p>
+              <p className="type-meta txt-meta font-mono mt-2">{ingestStatus.next}</p>
+            </div>
+          ) : null}
         </div>
 
-        <details className="border border-zinc-900 rounded-sm group">
+        <details className="app-panel rounded-sm group">
           <summary className="list-none cursor-pointer p-4 flex items-center justify-between">
-            <span className="text-sm text-zinc-200">Vault Control</span>
-            <ChevronDown size={16} className="text-zinc-600 group-open:rotate-180 transition-transform" />
+            <span className="type-body">Vault Control</span>
+            <ChevronDown size={16} className="txt-meta group-open:rotate-180 transition-transform" />
           </summary>
           <div className="px-4 pb-4 space-y-3">
             <button
               onClick={handleExport}
-              className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2"
+              className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2"
             >
               Download Backup File <Download size={14} />
             </button>
-            <label className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <label className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2 cursor-pointer">
               Restore From Backup <FileUp size={14} />
               <input
                 type="file"
@@ -468,7 +503,7 @@ function DashboardView({ isMobile, onBack }) {
                 }}
               />
             </label>
-            <label className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <label className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2 cursor-pointer">
               Transfer to New Device <KeyRound size={14} />
               <input
                 type="file"
@@ -485,16 +520,16 @@ function DashboardView({ isMobile, onBack }) {
           </div>
         </details>
 
-        <details className="border border-zinc-900 rounded-sm group">
+        <details className="app-panel rounded-sm group">
           <summary className="list-none cursor-pointer p-4 flex items-center justify-between">
-            <span className="text-sm text-zinc-200">System Panel</span>
-            <ChevronDown size={16} className="text-zinc-600 group-open:rotate-180 transition-transform" />
+            <span className="type-body">System Panel</span>
+            <ChevronDown size={16} className="txt-meta group-open:rotate-180 transition-transform" />
           </summary>
           <div className="px-4 pb-4 space-y-3">
             {observation?.state === 'OBSERVATION' ? (
               <div className="border border-red-900 bg-red-950/30 p-3 rounded-sm space-y-2">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-red-300">Observation Gate Active</p>
-                <p className="text-xs text-zinc-300">Inactive for {observation.days} days. Clear before high-risk actions.</p>
+                <p className="type-meta font-mono text-red-500">Observation Gate Active</p>
+                <p className="text-sm txt-muted">Inactive for {observation.days} days. Clear before high-risk actions.</p>
                 <div className="flex gap-2">
                   {passkeyState?.enabled ? (
                     <button
@@ -503,7 +538,7 @@ function DashboardView({ isMobile, onBack }) {
                         try { await verifyPasskey(); setPasskeyMsg('Passkey verified.'); }
                         catch (e) { setPasskeyMsg(e?.message || 'Passkey verification failed'); }
                       }}
-                      className="flex-1 border border-red-800 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-red-200 hover:bg-red-950/40"
+                      className="flex-1 border border-red-800 px-3 py-2 type-meta font-bold text-red-500 hover:bg-red-950/40"
                     >
                       Verify Passkey
                     </button>
@@ -513,7 +548,7 @@ function DashboardView({ isMobile, onBack }) {
                       try { await acknowledgeObservation(); }
                       catch (e) { setUnlockErr(e?.message || 'Unable to clear observation'); }
                     }}
-                    className="flex-1 bg-white text-black px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-200"
+                    className="flex-1 btn-primary px-3 py-2 type-meta font-bold hover:opacity-90"
                   >
                     Acknowledge
                   </button>
@@ -523,7 +558,7 @@ function DashboardView({ isMobile, onBack }) {
 
             <button
               onClick={() => setSettingsOpen(true)}
-              className="w-full border border-zinc-800 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-900 transition-all"
+              className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all"
             >
               Open Control Panel
             </button>
@@ -719,13 +754,13 @@ function DashboardView({ isMobile, onBack }) {
 }
 
 function StatusMetric({ label, value, badge, tone }) {
-  const toneClass = tone === 'warn' ? 'bg-red-950/40 text-red-300 border-red-900' : 'bg-zinc-900/40 text-zinc-300 border-zinc-800';
+  const toneClass = tone === 'warn' ? 'bg-red-950/40 text-red-500 border-red-900' : 'bg-zinc-900/40 txt-muted border-zinc-800';
   return (
     <div className="min-w-0">
-      <p className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono mb-1">{label}</p>
+      <p className="type-meta txt-meta font-mono mb-1">{label}</p>
       <div className="flex items-center gap-2">
-        <span className="text-base md:text-lg font-light tracking-tight text-white truncate">{value}</span>
-        <span className={`text-[9px] font-mono uppercase border px-2 py-0.5 rounded-full ${toneClass}`}>{badge}</span>
+        <span className="type-metric font-light tracking-tight truncate">{value}</span>
+        <span className={`type-meta font-mono border px-2 py-0.5 rounded-full ${toneClass}`}>{badge}</span>
       </div>
     </div>
   );

@@ -4,6 +4,57 @@
 
 :root {
   color-scheme: dark;
+  --app-bg: #050505;
+  --app-text: #f4f4f5;
+  --panel-bg: #111113;
+  --panel-border: #27272a;
+  --text-muted: #a1a1aa;
+  --text-meta: #71717a;
+  --accent-red: #ef4444;
+  --accent-red-soft: #450a0a;
+  --primary-bg: #fafafa;
+  --primary-fg: #111111;
+  --link-fg: #d4d4d8;
+}
+
+.theme-light {
+  color-scheme: light;
+  --app-bg: #f5f5f5;
+  --app-text: #111111;
+  --panel-bg: #ffffff;
+  --panel-border: #d4d4d8;
+  --text-muted: #3f3f46;
+  --text-meta: #52525b;
+  --accent-red: #dc2626;
+  --accent-red-soft: #fee2e2;
+  --primary-bg: #111111;
+  --primary-fg: #ffffff;
+  --link-fg: #27272a;
 }
 
 * { -webkit-tap-highlight-color: transparent; }
+
+.app-shell { background: var(--app-bg); color: var(--app-text); }
+.app-panel { background: var(--panel-bg); border: 1px solid var(--panel-border); }
+.type-h1 { font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; }
+.type-h2 { font-size: 20px; line-height: 1.2; }
+.type-body { font-size: 15px; line-height: 1.45; }
+.type-meta { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.type-metric { font-size: clamp(24px, 3vw, 32px); line-height: 1; }
+.txt-muted { color: var(--text-muted); }
+.txt-meta { color: var(--text-meta); }
+.btn-primary {
+  background: var(--primary-bg);
+  color: var(--primary-fg);
+  border: 1px solid transparent;
+}
+.btn-secondary {
+  border: 1px solid var(--panel-border);
+  color: var(--app-text);
+  background: transparent;
+}
+.btn-link {
+  color: var(--link-fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
