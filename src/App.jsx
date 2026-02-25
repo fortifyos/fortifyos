@@ -426,144 +426,151 @@ function DashboardView({ isMobile, onBack, theme, onToggleTheme }) {
       </header>
 
       <div className="space-y-4">
-        <div className="app-panel rounded-sm p-4">
-          <div className="grid grid-cols-4 gap-3">
-            <StatusMetric label="Velocity" value={String(velocity.value)} badge={velocity.trend} tone="warn" />
-            <StatusMetric label="Burn" value="$18.47" badge="LOSS" tone="warn" />
-            <StatusMetric label="Runway" value={`${runway.days}d`} badge={runway.mode} tone="ok" />
-            <StatusMetric label="Stage" value={String(stage)} badge={posture} tone="ok" />
-          </div>
-        </div>
+        <input
+          ref={ingestInputRef}
+          type="file"
+          accept=".pdf,image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            handleIngestFile(f);
+            e.target.value = '';
+          }}
+        />
+        <input
+          ref={vaultImportInputRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          disabled={importing}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleImport(f);
+            e.target.value = '';
+          }}
+        />
 
-        <div className="app-panel rounded-sm p-4 space-y-3">
-          <input
-            ref={ingestInputRef}
-            type="file"
-            accept=".pdf,image/*"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              handleIngestFile(f);
-              e.target.value = '';
-            }}
-          />
-          <input
-            ref={vaultImportInputRef}
-            type="file"
-            accept=".json"
-            className="hidden"
-            disabled={importing}
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) handleImport(f);
-              e.target.value = '';
-            }}
-          />
-          <button onClick={handlePrimaryAction} className="w-full btn-primary px-6 py-4 type-meta font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2">
-            {isVaultEmpty ? 'Restore From Backup' : 'Upload Bank Statement'} <Upload size={14} />
+        <div className="app-panel rounded-sm px-4 py-3 flex items-center justify-between gap-3">
+          <span className="type-meta txt-meta font-mono">Banner: B-Year (Sell)</span>
+          <button onClick={handlePrimaryAction} className="btn-primary px-4 py-2 type-meta font-bold flex items-center gap-2">
+            <Upload size={12} /> Sync
           </button>
-          <p className="type-meta txt-meta font-mono">
-            Files are encrypted and stored locally in this browser.
-          </p>
-          {ingestStatus ? (
-            <div className={`p-3 rounded-sm border ${ingestStatus.kind === 'error' ? 'border-red-900 bg-red-950/20' : ingestStatus.kind === 'success' ? 'border-emerald-800 bg-emerald-950/20' : 'app-panel'}`}>
-              <div className="flex items-center gap-2">
-                {ingestStatus.kind === 'error' ? <AlertCircle size={16} className="text-red-500" /> : <CheckCircle2 size={16} className={ingestStatus.kind === 'pending' ? 'txt-meta' : 'text-emerald-500'} />}
-                <p className="type-body">{ingestStatus.title}</p>
-              </div>
-              <p className="text-sm txt-muted mt-1">{ingestStatus.detail}</p>
-              <p className="type-meta txt-meta font-mono mt-2">{ingestStatus.next}</p>
-            </div>
-          ) : null}
         </div>
 
-        <details className="app-panel rounded-sm group">
-          <summary className="list-none cursor-pointer p-4 flex items-center justify-between">
-            <span className="type-body">Vault Control</span>
-            <ChevronDown size={16} className="txt-meta group-open:rotate-180 transition-transform" />
-          </summary>
-          <div className="px-4 pb-4 space-y-3">
-            <button
-              onClick={handleExport}
-              className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2"
-            >
-              Download Backup File <Download size={14} />
-            </button>
-            <label className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2 cursor-pointer">
-              Restore From Backup <FileUp size={14} />
-              <input
-                type="file"
-                accept=".json"
-                className="hidden"
-                disabled={importing}
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleImport(f);
-                  e.target.value = '';
-                }}
-              />
-            </label>
-            <label className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2 cursor-pointer">
-              Transfer to New Device <KeyRound size={14} />
-              <input
-                type="file"
-                accept=".json"
-                className="hidden"
-                disabled={importing}
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleAdoptStart(f);
-                  e.target.value = '';
-                }}
-              />
-            </label>
-          </div>
-        </details>
-
-        <details className="app-panel rounded-sm group">
-          <summary className="list-none cursor-pointer p-4 flex items-center justify-between">
-            <span className="type-body">System Panel</span>
-            <ChevronDown size={16} className="txt-meta group-open:rotate-180 transition-transform" />
-          </summary>
-          <div className="px-4 pb-4 space-y-3">
-            {observation?.state === 'OBSERVATION' ? (
-              <div className="border border-red-900 bg-red-950/30 p-3 rounded-sm space-y-2">
-                <p className="type-meta font-mono text-red-500">Observation Gate Active</p>
-                <p className="text-sm txt-muted">Inactive for {observation.days} days. Clear before high-risk actions.</p>
-                <div className="flex gap-2">
-                  {passkeyState?.enabled ? (
-                    <button
-                      onClick={async () => {
-                        setPasskeyMsg('');
-                        try { await verifyPasskey(); setPasskeyMsg('Passkey verified.'); }
-                        catch (e) { setPasskeyMsg(e?.message || 'Passkey verification failed'); }
-                      }}
-                      className="flex-1 border border-red-800 px-3 py-2 type-meta font-bold text-red-500 hover:bg-red-950/40"
-                    >
-                      Verify Passkey
-                    </button>
-                  ) : null}
-                  <button
-                    onClick={async () => {
-                      try { await acknowledgeObservation(); }
-                      catch (e) { setUnlockErr(e?.message || 'Unable to clear observation'); }
-                    }}
-                    className="flex-1 btn-primary px-3 py-2 type-meta font-bold hover:opacity-90"
-                  >
-                    Acknowledge
-                  </button>
-                </div>
+        <div className="app-panel rounded-sm p-0 overflow-hidden">
+          <div className="grid grid-cols-3 md:grid-cols-9 divide-x divide-zinc-900">
+            {[
+              { k: 'BITCOIN', v: '$65,377', c: '-3.89%', t: 'down' },
+              { k: 'ETH', v: '$1,874', c: '-5.11%', t: 'down' },
+              { k: 'GOLD', v: '$2,936', c: '+0.81%', t: 'up' },
+              { k: 'SILVER', v: '$32.18', c: '+0.62%', t: 'up' },
+              { k: 'OIL', v: '—', c: '—', t: 'flat' },
+              { k: 'SPY', v: '—', c: '—', t: 'flat' },
+              { k: 'VIX', v: '—', c: '—', t: 'flat' },
+              { k: 'S&P 500', v: '—', c: '—', t: 'flat' },
+              { k: 'NASDAQ', v: '—', c: '—', t: 'flat' }
+            ].map((x) => (
+              <div key={x.k} className="p-3">
+                <p className="type-meta txt-meta font-mono">{x.k}</p>
+                <p className="type-body mt-1">{x.v}</p>
+                <p className={`text-xs font-mono mt-1 ${x.t === 'up' ? 'text-emerald-500' : x.t === 'down' ? 'text-red-500' : 'txt-meta'}`}>{x.c}</p>
               </div>
-            ) : null}
-
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="w-full btn-secondary px-6 py-3 type-meta font-bold hover:opacity-80 transition-all"
-            >
-              Open Control Panel
-            </button>
+            ))}
           </div>
-        </details>
+        </div>
+
+        <div className="app-panel rounded-sm p-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StatusMetric label="Velocity" value={String(velocity.value)} badge={velocity.trend} tone="warn" />
+            <StatusMetric label="Daily Burn" value="$100.00" badge="$3,000/mo" tone="warn" />
+            <StatusMetric label="Savings Rate" value="0%" badge="No Data" tone="ok" />
+            <StatusMetric label="Runway" value={`${runway.days}d`} badge={runway.mode} tone="ok" />
+          </div>
+        </div>
+
+        <div className="app-panel rounded-sm px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="type-h2 font-bold text-emerald-500">{stage}</span>
+            <div>
+              <p className="type-body">Debt Liberation</p>
+              <p className="type-meta txt-meta font-mono">Stage {stage} · {posture}</p>
+            </div>
+          </div>
+          <div className="type-body txt-muted">
+            Ingest: upload PDFs via Sync
+          </div>
+        </div>
+
+        {ingestStatus ? (
+          <div className={`p-3 rounded-sm border ${ingestStatus.kind === 'error' ? 'border-red-900 bg-red-950/20' : ingestStatus.kind === 'success' ? 'border-emerald-800 bg-emerald-950/20' : 'app-panel'}`}>
+            <div className="flex items-center gap-2">
+              {ingestStatus.kind === 'error' ? <AlertCircle size={16} className="text-red-500" /> : <CheckCircle2 size={16} className={ingestStatus.kind === 'pending' ? 'txt-meta' : 'text-emerald-500'} />}
+              <p className="type-body">{ingestStatus.title}</p>
+            </div>
+            <p className="text-sm txt-muted mt-1">{ingestStatus.detail}</p>
+            <p className="type-meta txt-meta font-mono mt-2">{ingestStatus.next}</p>
+          </div>
+        ) : null}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <section className="app-panel rounded-sm p-4 min-h-[220px]">
+            <p className="type-meta txt-meta font-mono mb-3">CFO Daily Pulse</p>
+            <h2 className="type-h2 text-emerald-500">The Law of Data Hygiene</h2>
+            <p className="type-meta txt-meta font-mono mt-2">Infrastructure // Feb — Apprenticeship</p>
+            <p className="type-body txt-muted mt-4 border-l-2 border-emerald-500 pl-3">
+              Physical clutter leads to digital entropy. Clean workspace and verify thermal stability on primary devices.
+            </p>
+          </section>
+          <section className="app-panel rounded-sm p-4 min-h-[220px] flex flex-col justify-between">
+            <p className="type-meta txt-meta font-mono">Net Worth</p>
+            <p className="type-metric font-semibold">$0</p>
+            <div className="flex justify-between type-meta txt-meta font-mono">
+              <span>Assets $0</span>
+              <span>Liabilities $0</span>
+            </div>
+          </section>
+        </div>
+
+        <section className="app-panel rounded-sm p-4 space-y-4">
+          <div>
+            <p className="type-meta txt-meta font-mono">Market Intelligence</p>
+            <p className="type-meta txt-meta font-mono">FRED as of 2026-02-22</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <IntelMetric label="Fed Cycle" value="QE" sub="WALCL $6613.40T" tone="ok" />
+            <IntelMetric label="Net Liquidity" value="$5724.54T" sub="WALCL - TGA - RRP" tone="ok" />
+            <IntelMetric label="RRP" value="$0.00T" sub="Overnight reverse repo" tone="warn" />
+            <IntelMetric label="WALCL" value="$6613.40T" sub="Fed balance sheet" tone="ok" />
+            <IntelMetric label="TGA" value="$888.85T" sub="Treasury General Account" tone="warn" />
+            <IntelMetric label="As Of" value="2026-02-22" sub="FRED data timestamp" tone="ok" />
+          </div>
+          <div className="border border-emerald-900 bg-emerald-950/30 rounded-sm p-3">
+            <p className="type-meta font-mono text-emerald-500">Macro Narrative</p>
+            <p className="text-sm txt-muted mt-1">
+              Net liquidity is elevated. Balance sheet expansion supports risk assets; monitor reversal signals.
+            </p>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <section className="app-panel rounded-sm p-4">
+            <p className="type-meta txt-meta font-mono mb-2">Debt Destruction</p>
+            <p className="type-metric font-semibold">$0</p>
+          </section>
+          <section className="app-panel rounded-sm p-4">
+            <p className="type-meta txt-meta font-mono mb-2">Emergency Fund</p>
+            <p className="type-body txt-muted">Starter → 1 month → 3 months → 6 months</p>
+          </section>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="btn-secondary px-5 py-2 type-meta font-bold flex items-center gap-2"
+          >
+            <ChevronDown size={14} /> Control Panel
+          </button>
+        </div>
       </div>
 
       <Modal open={settingsOpen} title="Control Panel">
@@ -762,6 +769,16 @@ function StatusMetric({ label, value, badge, tone }) {
         <span className="type-metric font-light tracking-tight truncate">{value}</span>
         <span className={`type-meta font-mono border px-2 py-0.5 rounded-full ${toneClass}`}>{badge}</span>
       </div>
+    </div>
+  );
+}
+
+function IntelMetric({ label, value, sub, tone }) {
+  return (
+    <div className="app-panel rounded-sm p-3">
+      <p className="type-meta txt-meta font-mono">{label}</p>
+      <p className={`type-h2 mt-2 ${tone === 'warn' ? 'text-amber-500' : 'text-emerald-500'}`}>{value}</p>
+      <p className="type-meta txt-meta font-mono mt-1">{sub}</p>
     </div>
   );
 }
