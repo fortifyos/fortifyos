@@ -29,7 +29,12 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci --legacy-peer-deps --include=dev
+
+      - name: Verify build toolchain
+        run: |
+          npm ls vite
+          npx vite --version
 
       - name: Build
         run: DEPLOY_TARGET=pages npm run build
