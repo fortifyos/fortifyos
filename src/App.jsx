@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Shield, Upload, Terminal, Smartphone, Users, Lock, Download, FileUp, KeyRound, Settings, ShieldCheck, ShieldX } from 'lucide-react';
+import { Shield, Upload, Terminal, Lock, Download, FileUp, KeyRound, Settings, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SovereignProvider, useSovereign } from './security/SovereignWrapper';
 import { isNativeRuntime } from './platform/isNative';
@@ -124,7 +124,9 @@ function DashboardView({ isMobile, onBack }) {
   const [adoptErr, setAdoptErr] = useState('');
   const [ingestMsg, setIngestMsg] = useState('');
   const ingestInputRef = useRef(null);
+  const vaultImportInputRef = useRef(null);
   const nativeRuntime = isNativeRuntime();
+  const isVaultEmpty = !!(chainStatus?.ok && (chainStatus?.count || 0) === 0);
 
   // Expose agent handshake + capability API (read-only snapshot)
   const caps = useMemo(() => [CAPABILITIES.READ_VELOCITY, CAPABILITIES.READ_RUNWAY, CAPABILITIES.PROPOSE_ACTION], []);
@@ -257,6 +259,14 @@ function DashboardView({ isMobile, onBack }) {
     ingestInputRef.current?.click();
   };
 
+  const handlePrimaryAction = () => {
+    if (isVaultEmpty) {
+      vaultImportInputRef.current?.click();
+      return;
+    }
+    handleIngestPick();
+  };
+
   const handleIngestFile = async (file) => {
     if (!file) return;
     const ok = /application\/pdf|image\//.test(file.type);
@@ -386,112 +396,58 @@ function DashboardView({ isMobile, onBack }) {
         </div>
       </header>
 
-      {observation?.state === 'OBSERVATION' ? (
-        <div className="mb-10 border border-red-900 bg-red-950/30 p-4 rounded-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-red-300">Observation Gate Active</p>
-              <p className="text-sm text-zinc-200 mt-1">
-                Inactivity exceeded {observation.days} days. High-risk actions should be paused until acknowledged.
-              </p>
-              <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mt-2">
-                Clear requires passkey verification (if enabled).
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {passkeyState?.enabled ? (
-                <button
-                  onClick={async () => {
-                    setPasskeyMsg('');
-                    try { await verifyPasskey(); setPasskeyMsg('Passkey verified.'); }
-                    catch (e) { setPasskeyMsg(e?.message || 'Passkey verification failed'); }
-                  }}
-                  className="border border-red-800 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-red-200 hover:bg-red-950/40"
-                >
-                  Verify Passkey
-                </button>
-              ) : null}
-              <button
-                onClick={async () => {
-                  try { await acknowledgeObservation(); }
-                  catch (e) { setUnlockErr(e?.message || 'Unable to clear observation'); }
-                }}
-                className="bg-white text-black px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-200"
-              >
-                Acknowledge
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-12'}`}>
-        <div className={`${isMobile ? 'order-1' : 'col-span-8'} space-y-8`}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <MetricHUD label="Velocity" value={String(velocity.value)} sub={velocity.trend} alert />
-            <MetricHUD label="Daily Burn" value="$18.47" sub="Loss" alert />
-            <MetricHUD label="Runway" value={`${runway.days}d`} sub={runway.mode} />
-            <MetricHUD label="Stage" value={String(stage)} sub={posture} />
-          </div>
-
-          <div className="bg-zinc-900/20 border border-zinc-900 p-6 md:p-10 rounded-sm group relative overflow-hidden">
-            <div className="relative z-10">
-              <h3 className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-4">Tactical Ingest</h3>
-              <p className="text-lg font-light mb-6 leading-tight max-w-sm">Upload a bank statement PDF or transaction screenshot.</p>
-              <input
-                ref={ingestInputRef}
-                type="file"
-                accept=".pdf,image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  handleIngestFile(f);
-                  e.target.value = '';
-                }}
-              />
-              <button onClick={handleIngestPick} className="w-full md:w-auto bg-white text-black px-10 py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
-                Upload Bank Statement <Upload size={14} />
-              </button>
-              <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest mt-3">
-                Files are encrypted and stored locally in this browser.
-              </p>
-              {ingestMsg ? <p className="text-xs text-zinc-400 font-mono mt-2">{ingestMsg}</p> : null}
-            </div>
-            <motion.div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><Smartphone size={120} /></motion.div>
+      <div className="space-y-4">
+        <div className="border border-zinc-900 rounded-sm p-4">
+          <div className="grid grid-cols-4 gap-3">
+            <StatusMetric label="Velocity" value={String(velocity.value)} badge={velocity.trend} tone="warn" />
+            <StatusMetric label="Burn" value="$18.47" badge="LOSS" tone="warn" />
+            <StatusMetric label="Runway" value={`${runway.days}d`} badge={runway.mode} tone="ok" />
+            <StatusMetric label="Stage" value={String(stage)} badge={posture} tone="ok" />
           </div>
         </div>
 
-        {!isMobile && (
-          <div className="col-span-4 space-y-8 border-l border-zinc-900 pl-8">
-            <h3 className="text-[10px] uppercase tracking-[0.4em] text-zinc-600">Master Intelligence</h3>
-            <div className="space-y-6">
-              <div className="pb-6 border-b border-zinc-900">
-                <p className="text-[9px] font-mono text-zinc-500 uppercase mb-2">Fed Net Liquidity</p>
-                <p className="text-xl font-light text-white">$5.70T <span className="text-xs text-red-500 font-mono italic ml-2">(Tighter)</span></p>
-              </div>
-              <div>
-                <p className="text-[9px] font-mono text-zinc-500 uppercase mb-2">Legacy Council</p>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <Users size={14} /> <span className="text-[10px] font-mono">2/3 Signers Synced</span>
-                </div>
-              </div>
-            </div>
+        <div className="border border-zinc-900 rounded-sm p-4 space-y-3">
+          <input
+            ref={ingestInputRef}
+            type="file"
+            accept=".pdf,image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              handleIngestFile(f);
+              e.target.value = '';
+            }}
+          />
+          <input
+            ref={vaultImportInputRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            disabled={importing}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleImport(f);
+              e.target.value = '';
+            }}
+          />
+          <button
+            onClick={handlePrimaryAction}
+            className="w-full bg-white text-black px-6 py-4 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
+          >
+            {isVaultEmpty ? 'Restore From Backup' : 'Upload Bank Statement'} <Upload size={14} />
+          </button>
+          <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
+            Files are encrypted and stored locally in this browser.
+          </p>
+          {ingestMsg ? <p className="text-xs text-zinc-400 font-mono">{ingestMsg}</p> : null}
+        </div>
 
-            <div className="pt-6 border-t border-zinc-900">
-              <p className="text-[9px] font-mono text-zinc-500 uppercase mb-3">Agentic Handshake</p>
-              <div className="text-[10px] font-mono text-zinc-400 space-y-1">
-                <div>window.FORTIFY.getHandshake()</div>
-                <div>window.FORTIFY.agentRequest(req)</div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Modal open={settingsOpen} title="Sovereign Settings">
-        <div className="space-y-5">
-          <div className="border border-zinc-900 p-4 rounded-sm space-y-3">
-            <p className="text-sm text-zinc-200">Vault Management</p>
+        <details className="border border-zinc-900 rounded-sm group">
+          <summary className="list-none cursor-pointer p-4 flex items-center justify-between">
+            <span className="text-sm text-zinc-200">Vault Control</span>
+            <ChevronDown size={16} className="text-zinc-600 group-open:rotate-180 transition-transform" />
+          </summary>
+          <div className="px-4 pb-4 space-y-3">
             <button
               onClick={handleExport}
               className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2"
@@ -527,7 +483,56 @@ function DashboardView({ isMobile, onBack }) {
               />
             </label>
           </div>
+        </details>
 
+        <details className="border border-zinc-900 rounded-sm group">
+          <summary className="list-none cursor-pointer p-4 flex items-center justify-between">
+            <span className="text-sm text-zinc-200">System Panel</span>
+            <ChevronDown size={16} className="text-zinc-600 group-open:rotate-180 transition-transform" />
+          </summary>
+          <div className="px-4 pb-4 space-y-3">
+            {observation?.state === 'OBSERVATION' ? (
+              <div className="border border-red-900 bg-red-950/30 p-3 rounded-sm space-y-2">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-red-300">Observation Gate Active</p>
+                <p className="text-xs text-zinc-300">Inactive for {observation.days} days. Clear before high-risk actions.</p>
+                <div className="flex gap-2">
+                  {passkeyState?.enabled ? (
+                    <button
+                      onClick={async () => {
+                        setPasskeyMsg('');
+                        try { await verifyPasskey(); setPasskeyMsg('Passkey verified.'); }
+                        catch (e) { setPasskeyMsg(e?.message || 'Passkey verification failed'); }
+                      }}
+                      className="flex-1 border border-red-800 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-red-200 hover:bg-red-950/40"
+                    >
+                      Verify Passkey
+                    </button>
+                  ) : null}
+                  <button
+                    onClick={async () => {
+                      try { await acknowledgeObservation(); }
+                      catch (e) { setUnlockErr(e?.message || 'Unable to clear observation'); }
+                    }}
+                    className="flex-1 bg-white text-black px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-200"
+                  >
+                    Acknowledge
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="w-full border border-zinc-800 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-900 transition-all"
+            >
+              Open Control Panel
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <Modal open={settingsOpen} title="Control Panel">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-zinc-200">Require Passkey to Unlock</p>
@@ -713,13 +718,14 @@ function DashboardView({ isMobile, onBack }) {
   );
 }
 
-function MetricHUD({ label, value, sub, alert }) {
+function StatusMetric({ label, value, badge, tone }) {
+  const toneClass = tone === 'warn' ? 'bg-red-950/40 text-red-300 border-red-900' : 'bg-zinc-900/40 text-zinc-300 border-zinc-800';
   return (
-    <div className={`p-4 border-l ${alert ? 'border-red-600' : 'border-zinc-800'} bg-zinc-900/5`}>
-      <p className="text-[8px] uppercase tracking-widest text-zinc-500 font-mono mb-1">{label}</p>
-      <div className="flex items-baseline gap-2">
-        <span className={`text-xl md:text-2xl font-light tracking-tighter ${alert ? 'text-red-500' : 'text-white'}`}>{value}</span>
-        <span className="text-[9px] text-zinc-700 font-mono uppercase">{sub}</span>
+    <div className="min-w-0">
+      <p className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono mb-1">{label}</p>
+      <div className="flex items-center gap-2">
+        <span className="text-base md:text-lg font-light tracking-tight text-white truncate">{value}</span>
+        <span className={`text-[9px] font-mono uppercase border px-2 py-0.5 rounded-full ${toneClass}`}>{badge}</span>
       </div>
     </div>
   );
