@@ -10,6 +10,7 @@ import { issueAgentToken, verifyAgentToken } from '../agents/leaseTokens';
 import { verifyBiometric } from '../platform/biometrics';
 
 const SovereignContext = createContext(null);
+const UNLOCK_PROBE_MARKER = 'FORTIFYOS_UNLOCK_PROBE_V1';
 
 function bytesToPassphrase(bytes) {
   // deterministic text form for PBKDF2 input
@@ -130,11 +131,22 @@ export function SovereignProvider({ children }) {
     const now = Date.now();
     const metaBeforeUnlock = await db.cryptoMeta.get('primary');
     const previousLastUnlockAt = metaBeforeUnlock?.lastUnlockAt ?? null;
-    setEncKey(encKey);
-    setMacKey(macKey);
-    setLocked(false);
-    setIsSecure(true);
-    setPasskeyVerified(false);
+
+    // Hard gate: validate this key material before any unlocked state is set.
+    let unlockProbeSealed = metaBeforeUnlock?.unlockProbeSealed || null;
+    if (unlockProbeSealed) {
+      let probe = null;
+      try {
+        probe = await decryptJSON(encKey, unlockProbeSealed);
+      } catch {
+        throw new Error('Unlock failed: key verification failed.');
+      }
+      if (probe?.marker !== UNLOCK_PROBE_MARKER) {
+        throw new Error('Unlock failed: key verification failed.');
+      }
+    } else {
+      unlockProbeSealed = await encryptJSON(encKey, { marker: UNLOCK_PROBE_MARKER, createdAt: now });
+    }
 
     // Initialize vault identity + epoch + monotonic counter (anti-rollback)
     await db.transaction('rw', db.cryptoMeta, db.auditLog, async () => {
@@ -150,6 +162,7 @@ export function SovereignProvider({ children }) {
         id: 'primary',
         ...(current || {}),
         providerId,
+        unlockProbeSealed,
         vaultId: current?.vaultId || randomVaultId(),
         epochId: current?.epochId || randomEpochId(),
         createdAt: current?.createdAt || Date.now(),
@@ -179,6 +192,13 @@ export function SovereignProvider({ children }) {
       encryptJSON,
       decryptJSON
     });
+
+    // Commit unlocked state only after all validation and key setup succeed.
+    setEncKey(encKey);
+    setMacKey(macKey);
+    setLocked(false);
+    setIsSecure(true);
+    setPasskeyVerified(false);
     setSignPubKey(keys.pubKey);
     setSignPrivKey(keys.privKey);
     setSignFingerprint(keys.fingerprintB64);

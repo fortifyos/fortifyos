@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Shield, Upload, Terminal, Smartphone, Users, Lock, Download, FileUp, KeyRound, Settings, ShieldCheck, ShieldX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SovereignProvider, useSovereign } from './security/SovereignWrapper';
@@ -47,10 +47,13 @@ function LandingView({ onStart }) {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center h-screen p-8 text-center">
       <Shield size={64} className="mb-12 animate-pulse" />
       <h1 className="text-4xl md:text-6xl font-extralight tracking-tighter mb-8">
-        KNOX <span className="text-zinc-700 font-mono text-2xl md:text-4xl">v3.0</span>
+        FortifyOS
       </h1>
+      <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest mb-8">
+        Powered by KNOX Kernel v3
+      </p>
       <button onClick={onStart} className="border border-zinc-800 px-12 py-5 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-white hover:text-black transition-all">
-        Initialize Sovereign Terminal
+        Enter FortifyOS
       </button>
       <p className="mt-6 text-[10px] text-zinc-600 font-mono uppercase tracking-widest">Offline-first • Local vault • Capability agents</p>
     </motion.div>
@@ -119,6 +122,9 @@ function DashboardView({ isMobile, onBack }) {
   const [adoptFile, setAdoptFile] = useState(null);
   const [adoptPhrase, setAdoptPhrase] = useState('');
   const [adoptErr, setAdoptErr] = useState('');
+  const [ingestMsg, setIngestMsg] = useState('');
+  const ingestInputRef = useRef(null);
+  const nativeRuntime = isNativeRuntime();
 
   // Expose agent handshake + capability API (read-only snapshot)
   const caps = useMemo(() => [CAPABILITIES.READ_VELOCITY, CAPABILITIES.READ_RUNWAY, CAPABILITIES.PROPOSE_ACTION], []);
@@ -194,8 +200,7 @@ function DashboardView({ isMobile, onBack }) {
     setUnlockErr('');
     setPasskeyMsg('');
     try {
-      const native = isNativeRuntime();
-      await unlock(native ? (pass || undefined) : pass);
+      await unlock(nativeRuntime ? undefined : pass);
       setPass('');
     } catch (e) {
       setUnlockErr(e?.message || 'Unlock failed');
@@ -230,8 +235,8 @@ function DashboardView({ isMobile, onBack }) {
 
   const handleAdoptConfirm = async () => {
     if (!adoptFile) return;
-    if (adoptPhrase.trim().toUpperCase() !== 'ADOPT') {
-      setAdoptErr('Type ADOPT to confirm lineage takeover.');
+    if (adoptPhrase.trim().toUpperCase() !== 'TRANSFER') {
+      setAdoptErr('Type TRANSFER to confirm new-device vault transfer.');
       return;
     }
     setImporting(true);
@@ -247,99 +252,89 @@ function DashboardView({ isMobile, onBack }) {
     }
   };
 
-  const handleIngest = async () => {
-    await executeSovereignAction('FORENSIC_INGEST_START', stage, async () => {
-      // Placeholder: connect real PDF/Screenshot logic later
+  const handleIngestPick = () => {
+    setIngestMsg('');
+    ingestInputRef.current?.click();
+  };
+
+  const handleIngestFile = async (file) => {
+    if (!file) return;
+    const ok = /application\/pdf|image\//.test(file.type);
+    if (!ok) {
+      setIngestMsg('Unsupported format. Upload bank statement PDF or image. Nothing was saved.');
+      return;
+    }
+    await executeSovereignAction('UPLOAD_BANK_STATEMENT', stage, async () => {
+      // Parser pipeline not wired yet.
     });
+    setIngestMsg('Upload received, parser is not enabled yet. Nothing was saved.');
   };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1400px] mx-auto px-6 py-8 md:py-16">
-      <Modal open={locked} title="Sovereign Vault Lock">
+      <Modal open={locked} title="Sovereign Vault">
         <div className="space-y-4">
           <p className="text-sm text-zinc-300 leading-relaxed">
-            Enter your Sovereign Passphrase to decrypt the local audit log.
+            {nativeRuntime
+              ? 'Use Face ID / Touch ID to unlock this device vault.'
+              : 'Enter your passphrase to decrypt your local vault.'}
           </p>
-          <input
-            value={pass}
-            onChange={(e) => setPass(e.target.value)}
-            type="password"
-            className="w-full bg-black border border-zinc-800 p-3 text-sm outline-none focus:border-zinc-500"
-            placeholder="Passphrase (min 10 chars)"
-            autoFocus
-          />
-          {unlockErr ? <p className="text-xs text-red-400 font-mono">{unlockErr}</p> : null}
-                    {passkeyState?.supported ? (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-600">
-                <span>Passkeys</span>
-                <span className="flex items-center gap-2">
-                  {passkeyState.enabled ? <ShieldCheck size={14} /> : <ShieldX size={14} />}
-                  {passkeyState.enabled ? 'Enabled' : 'Not Set'}
-                </span>
-              </div>
 
-              {!passkeyState.enabled ? (
-                <button
-                  onClick={async () => {
-                    setPasskeyMsg('');
-                    try { await registerPasskey(); setPasskeyMsg('Passkey created on this device.'); }
-                    catch (e) { setPasskeyMsg(e?.message || 'Passkey setup failed'); }
-                  }}
-                  className="w-full border border-zinc-800 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-900 transition-all flex items-center justify-center gap-2"
-                >
-                  Create Passkey <KeyRound size={14} />
-                </button>
-              ) : (
-                <button
-                  onClick={async () => {
-                    setPasskeyMsg('');
-                    try { await unlockWithPasskey(); }
-                    catch (e) { setPasskeyMsg(e?.message || 'Passkey unlock unavailable'); }
-                  }}
-                  className="w-full border border-zinc-800 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-900 transition-all flex items-center justify-center gap-2"
-                >
-                  Unlock with Passkey <KeyRound size={14} />
-                </button>
-              )}
-
-              {passkeyMsg ? <p className="text-xs text-zinc-400 font-mono">{passkeyMsg}</p> : null}
+          {!nativeRuntime ? (
+            <>
+              <input
+                value={pass}
+                onChange={(e) => setPass(e.target.value)}
+                type="password"
+                className="w-full bg-black border border-zinc-800 p-3 text-sm outline-none focus:border-zinc-500"
+                placeholder="Passphrase"
+                autoFocus
+              />
               <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
-                If PRF is unsupported, passkey verifies then passphrase unlocks.
+                Minimum 10 characters.
               </p>
-            </div>
-          ) : (
-            <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
-              Passkeys not supported on this browser/device.
-            </p>
-          )}
+            </>
+          ) : null}
 
-<button
+          {unlockErr ? <p className="text-xs text-red-400 font-mono">{unlockErr}</p> : null}
+          {passkeyState?.supported && passkeyState?.enabled ? (
+            <button
+              onClick={async () => {
+                setPasskeyMsg('');
+                try { await unlockWithPasskey(); }
+                catch (e) { setPasskeyMsg(e?.message || 'Passkey unlock unavailable'); }
+              }}
+              className="w-full border border-zinc-800 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-900 transition-all flex items-center justify-center gap-2"
+            >
+              Use Passkey Instead <KeyRound size={14} />
+            </button>
+          ) : null}
+
+          {passkeyMsg ? <p className="text-xs text-zinc-400 font-mono">{passkeyMsg}</p> : null}
+
+          <button
             onClick={handleUnlock}
             className="w-full bg-white text-black px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-200 transition-all"
           >
-            Unlock Terminal
+            {nativeRuntime ? 'Unlock with Face ID' : 'Unlock'}
           </button>
-          <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
-            Tip: store the passphrase in your offline vault.
-          </p>
         </div>
       </Modal>
 
-      <Modal open={adoptOpen} title="Adopt Imported Vault (Lineage Ceremony)" onClose={() => setAdoptOpen(false)}>
+      <Modal open={adoptOpen} title="Transfer Vault to This Device" onClose={() => setAdoptOpen(false)}>
         <div className="space-y-4">
           <p className="text-sm text-zinc-300 leading-relaxed">
-            This will overwrite the current device vault and adopt the imported vault lineage (epoch). This is intended for new devices or deliberate re-alignment.
+            This replaces this device vault with the selected backup. Use this when moving to a new phone/computer.
           </p>
           <div className="bg-zinc-900/30 border border-zinc-800 p-3">
             <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Confirmation</p>
-            <p className="text-xs text-zinc-300 mt-1">Type <span className="font-mono text-white">ADOPT</span> to proceed.</p>
+            <p className="text-xs text-zinc-300 mt-1">Type <span className="font-mono text-white">TRANSFER</span> to proceed.</p>
           </div>
           <input
             value={adoptPhrase}
             onChange={(e) => setAdoptPhrase(e.target.value)}
             className="w-full bg-black border border-zinc-800 p-3 text-sm outline-none focus:border-zinc-500"
-            placeholder="Type ADOPT"
+            placeholder="Type TRANSFER"
           />
           {adoptErr ? <p className="text-xs text-red-400 font-mono">{adoptErr}</p> : null}
           <div className="flex gap-3">
@@ -354,7 +349,7 @@ function DashboardView({ isMobile, onBack }) {
               onClick={handleAdoptConfirm}
               className="flex-1 bg-white text-black px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-200 disabled:opacity-50"
             >
-              Adopt
+              Transfer
             </button>
           </div>
         </div>
@@ -363,7 +358,10 @@ function DashboardView({ isMobile, onBack }) {
       <header className="flex justify-between items-center mb-12">
         <div className="flex items-center gap-3">
           <Shield size={isMobile ? 24 : 32} className="text-white" />
-          <h1 className="text-xl md:text-2xl font-light tracking-tighter uppercase">Knox <span className="text-zinc-700">v3.0</span></h1>
+          <div>
+            <h1 className="text-xl md:text-2xl font-light tracking-tighter uppercase">FortifyOS</h1>
+            <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600">KNOX Kernel v3</p>
+          </div>
         </div>
         <div className="flex items-center gap-2 border border-zinc-900 p-1.5 rounded">
           <div className="hidden md:flex items-center px-2">
@@ -439,51 +437,27 @@ function DashboardView({ isMobile, onBack }) {
           <div className="bg-zinc-900/20 border border-zinc-900 p-6 md:p-10 rounded-sm group relative overflow-hidden">
             <div className="relative z-10">
               <h3 className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-4">Tactical Ingest</h3>
-              <p className="text-lg font-light mb-6 leading-tight max-w-sm">Upload a screenshot or PDF to initiate forensic audit.</p>
-              <button onClick={handleIngest} className="w-full md:w-auto bg-white text-black px-10 py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
-                Capture Document <Upload size={14} />
+              <p className="text-lg font-light mb-6 leading-tight max-w-sm">Upload a bank statement PDF or transaction screenshot.</p>
+              <input
+                ref={ingestInputRef}
+                type="file"
+                accept=".pdf,image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  handleIngestFile(f);
+                  e.target.value = '';
+                }}
+              />
+              <button onClick={handleIngestPick} className="w-full md:w-auto bg-white text-black px-10 py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
+                Upload Bank Statement <Upload size={14} />
               </button>
+              <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest mt-3">
+                Files are encrypted and stored locally in this browser.
+              </p>
+              {ingestMsg ? <p className="text-xs text-zinc-400 font-mono mt-2">{ingestMsg}</p> : null}
             </div>
             <motion.div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><Smartphone size={120} /></motion.div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <button
-              onClick={handleExport}
-              className="border border-zinc-800 px-6 py-4 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2"
-            >
-              Export Vault <Download size={14} />
-            </button>
-
-            <label className="border border-zinc-800 px-6 py-4 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 cursor-pointer">
-              Import Vault <FileUp size={14} />
-              <input
-                type="file"
-                accept=".json"
-                className="hidden"
-                disabled={importing}
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleImport(f);
-                  e.target.value = '';
-                }}
-              />
-            </label>
-
-            <label className="border border-red-900/60 text-red-200 px-6 py-4 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-red-950/30 transition-all flex items-center justify-center gap-2 cursor-pointer md:col-span-2">
-              Adopt Vault (New Device) <KeyRound size={14} />
-              <input
-                type="file"
-                accept=".json"
-                className="hidden"
-                disabled={importing}
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleAdoptStart(f);
-                  e.target.value = '';
-                }}
-              />
-            </label>
           </div>
         </div>
 
@@ -514,19 +488,46 @@ function DashboardView({ isMobile, onBack }) {
         )}
       </div>
 
-      <div className="mt-20 border-t border-zinc-900 pt-10">
-        <div className="flex justify-between items-center">
-          {[0,1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="flex flex-col items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${s === stage ? 'bg-red-500' : 'bg-zinc-800'}`} />
-              <span className="text-[8px] font-mono text-zinc-700 uppercase">{s}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <Modal open={settingsOpen} title="Sovereign Settings">
         <div className="space-y-5">
+          <div className="border border-zinc-900 p-4 rounded-sm space-y-3">
+            <p className="text-sm text-zinc-200">Vault Management</p>
+            <button
+              onClick={handleExport}
+              className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2"
+            >
+              Download Backup File <Download size={14} />
+            </button>
+            <label className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 cursor-pointer">
+              Restore From Backup <FileUp size={14} />
+              <input
+                type="file"
+                accept=".json"
+                className="hidden"
+                disabled={importing}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImport(f);
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            <label className="w-full border border-zinc-800 px-6 py-3 text-[10px] uppercase tracking-[0.25em] font-bold hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 cursor-pointer">
+              Transfer to New Device <KeyRound size={14} />
+              <input
+                type="file"
+                accept=".json"
+                className="hidden"
+                disabled={importing}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleAdoptStart(f);
+                  e.target.value = '';
+                }}
+              />
+            </label>
+          </div>
+
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-zinc-200">Require Passkey to Unlock</p>
@@ -550,6 +551,21 @@ function DashboardView({ isMobile, onBack }) {
               {requirePasskey ? 'ON' : 'OFF'}
             </button>
           </div>
+
+          {!passkeyState?.enabled && passkeyState?.supported ? (
+            <button
+              onClick={async () => {
+                setPasskeyMsg('');
+                try { await registerPasskey(); setPasskeyMsg('Passkey created on this device.'); }
+                catch (e) { setPasskeyMsg(e?.message || 'Passkey setup failed'); }
+              }}
+              className="w-full border border-zinc-800 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-zinc-900 transition-all"
+            >
+              Create Device Passkey
+            </button>
+          ) : null}
+
+          {passkeyMsg ? <p className="text-xs text-zinc-400 font-mono">{passkeyMsg}</p> : null}
 
           {isNativeRuntime() && (
             <div className="flex items-center justify-between">
