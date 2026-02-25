@@ -9,6 +9,8 @@ import {
   ArrowRight, ChevronDown, Clock, Eye
 } from 'lucide-react';
 import * as Papa from 'papaparse';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import pdfWorkerSrc from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url';
 
 /* ═══════════════════════════════════════════════════════════════
    FORTIFYOS — UNIFIED v2.3
@@ -42,35 +44,13 @@ const THEMES = {
 };
 
 // ═══════════════════════════════════════════════════
-// PDF.js LOADER (Client-side, zero network data transfer)
+// PDF.js (bundled locally in app build; no CDN runtime fetch)
 // ═══════════════════════════════════════════════════
-const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-const PDFJS_WORKER_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-let pdfjsReady = null;
-function loadPDFJS() {
-  if (pdfjsReady) return pdfjsReady;
-  pdfjsReady = new Promise((resolve, reject) => {
-    // Check if already loaded
-    if (window.pdfjsLib) { resolve(window.pdfjsLib); return; }
-    const script = document.createElement('script');
-    script.src = PDFJS_CDN;
-    script.onload = () => {
-      const lib = window.pdfjsLib;
-      if (!lib) { reject(new Error('PDF.js did not initialize')); return; }
-      lib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_CDN;
-      resolve(lib);
-    };
-    script.onerror = () => { pdfjsReady = null; reject(new Error('Failed to load PDF.js from CDN')); };
-    document.head.appendChild(script);
-  });
-  return pdfjsReady;
-}
+GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 
 async function extractPDFText(file) {
-  const lib = await loadPDFJS();
   const buffer = await file.arrayBuffer();
-  const pdf = await lib.getDocument({ data: new Uint8Array(buffer) }).promise;
+  const pdf = await getDocument({ data: new Uint8Array(buffer) }).promise;
   const pages = [];
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
@@ -3857,11 +3837,16 @@ export default function FortifyOS() {
     const cryptoVal = (merged.portfolio.crypto || []).reduce((s, c) => s + (c.amount || 0) * (c.lastPrice || 0), 0);
     const liabilities = Object.values(merged.netWorth.liabilities || {}).reduce((s, v) => s + (v || 0), 0);
     merged.netWorth.total = cashTotal + eqVal + cryptoVal - liabilities;
-    const ns = [...snapshots, merged]; setSnapshots(ns); setLatest(merged);
+    // Persist against storage as source-of-truth to avoid stale state overwrites
+    // when syncing multiple statements in one session.
+    const existing = (await store.get('fortify-snapshots')) || [];
+    const ns = [...existing, merged];
+    setSnapshots(ns);
+    setLatest(merged);
     await store.set('fortify-snapshots', ns); await store.set('fortify-latest', merged);
     setSyncFlash(true); setTimeout(() => setSyncFlash(false), 600);
     setView('dashboard'); setSyncOpen(false);
-  }, [snapshots]);
+  }, []);
 
   const toggleTheme = useCallback(async () => { const n = !isDark; setIsDark(n); await store.set('fortify-theme', n); }, [isDark]);
   const toggleModule = useCallback(async (k) => {
