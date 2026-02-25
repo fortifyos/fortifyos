@@ -34,7 +34,7 @@ const THEMES = {
     void: '#FFFFFF', surface: '#FFFFFF', elevated: '#F8F9FA', input: '#F3F4F6',
     borderDim: '#D1D5DB', borderMid: '#9CA3AF', borderBright: '#6B7280',
     textPrimary: '#111111', textSecondary: '#1F2937', textDim: '#4B5563', textGhost: '#9CA3AF',
-    accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
+    accent: '#22A35A', accentBright: '#2DBA67', accentDim: '#1B7A43', accentMuted: '#EAF7EF',
     danger: '#FF3333', warn: '#FFB800',
     purple: '#BF40BF', purpleDim: '#8A2D8A', purpleMuted: '#2D0A2D',
     crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
