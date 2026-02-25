@@ -456,6 +456,8 @@ function transactionsToSnapshot(txns, bankName) {
     macro: { netLiquidity: 0, liquidityTrend: 'NEUTRAL', btcPrice: 0, wyckoffPhase: 'Accumulation', fedWatchCut: 0, nextFomc: '', yieldCurve10Y2Y: 0, yieldTrend: 'flat', triggersActive: 0, activeTriggers: [] },
     protection: { lifeInsurance: { provider: '', type: 'TERM', deathBenefit: 0, monthlyPremium: 0, expirationDate: '', conversionDeadline: '', alertLeadTimeYears: 5 }, funeralBuffer: { target: 10000, current: 0 } },
     portfolio: { equities: [], options: [], crypto: [] },
+    bills: [],
+    payroll: { frequency: 'WEEKLY', weekday: 2 },
     _meta: { source: bankName, transactions: txns.length, income: Math.round(income), totalExpense: Math.round(totalExpense), uncategorized: Math.round(cats['Uncategorized'] || 0), excludedTransfers: Math.round(excludedIncome) },
   };
 }
@@ -478,8 +480,10 @@ const DEFAULT_SNAPSHOT = {
     funeralBuffer: { target: 10000, current: 0 },
   },
   portfolio: { equities: [], options: [], crypto: [] },
+  bills: [],
+  payroll: { frequency: 'WEEKLY', weekday: 2 },
 };
-const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'eFund', 'budget', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], _v: 6 };
+const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], _v: 7 };
 const fmt = (n) => { if (n == null || isNaN(n)) return '$0'; return '$' + Math.abs(Math.round(Number(n))).toLocaleString('en-US'); };
 const dailyInterest = (d) => d ? d.reduce((s, x) => s + ((x.balance || 0) * ((x.apr || 0) / 100)) / 365, 0) : 0;
 const totalDebt = (d) => d ? d.reduce((s, x) => s + (x.balance || 0), 0) : 0;
@@ -502,6 +506,18 @@ const runwayDaysFromLatest = (latest) => {
 const efundTargets = (m) => [1000, m, m * 3, m * 6];
 const pctColor = (p, t) => p >= 100 ? t.danger : p >= 75 ? t.warn : t.accent;
 const runwayColor = (d, t) => d < 30 ? t.danger : d < 60 ? t.warn : t.accent;
+const weekdayName = (n) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][Math.max(0, Math.min(6, Number(n) || 0))];
+const nextWeekdayDates = (weekday = 2, count = 4) => {
+  const out = [];
+  const now = new Date();
+  let d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+  while (out.length < count) {
+    if (d.getDay() === weekday && d >= now) out.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return out;
+};
 const CURRENCY_SYMBOL = (() => { try { return (0).toLocaleString(undefined, { style: 'currency', currency: Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).resolvedOptions().currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/[\d.,\s]/g, '').trim(); } catch { return '$'; } })();
 
 // Stage calculation from live data
@@ -777,9 +793,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   const faqs = [
     { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
     { q: 'Is my financial data safe?', a: 'Your data is stored locally in this browser profile. The 20 instruction files in the cloud contain zero financial data. Your actual numbers live in 4 local CSV files and local snapshots—disable browser sync if you want single-device isolation. Sensitive fields (SSNs, account/card numbers, emails, phones) are auto-redacted before any processing or display.' },
-    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FortifyOS auto-parses your bank exports (CSV/PDF) and screenshots and tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
-    { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and at least one statement export (CSV, PDF, or a clear screenshot). Setup is ~30–45 minutes on desktop. After that, daily use is 2–5 minutes — upload new statements when needed and run your morning snapshot.' },
-    { q: 'Can I use it on my phone?', a: 'Yes. You can run FortifyOS on mobile. Mobile is ideal for daily briefings and uploading screenshots; desktop is best for larger PDFs, heavier OCR, and bulk file work.' },
+    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FortifyOS auto-parses your bank exports (CSV/PDF) and screenshots, tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
+    { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and at least one statement export (CSV, PDF, or screenshot). Setup is ~30–45 minutes on desktop. After that, daily use is 2–5 minutes — upload new statements when needed and run your morning snapshot.' },
+    { q: 'Can I use it on my phone?', a: 'Yes. You can run FortifyOS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
   ];
 
   return (
@@ -1183,7 +1199,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
 
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
-            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV, upload a statement PDF, or upload screenshots (PNG/JPG). FortifyOS extracts transactions (PDF text or OCR), runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
+            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV or upload a text-based statement PDF. FortifyOS extracts transactions locally, runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
             { num: '2', title: 'SYSTEM CALCULATES', desc: 'KNOX determines your stage, ranks debts by APR, calculates daily interest burn, projects cash flow, and checks every action against safety rails — in real time.' },
             { num: '3', title: 'EXECUTE WITH CONFIDENCE', desc: 'Get a Morning Pulse with exactly what to do today. Weekly HUD tracks direction. Monthly reports show the math. The system enforces — you decide.' },
           ].map((c, i) => (
@@ -1501,7 +1517,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
           <thead><tr><th style={sty.th}>Document</th><th style={sty.th}>Sensitivity</th><th style={sty.th}>Recommended Method</th></tr></thead>
           <tbody>
-            <tr><td style={sty.td}>Bank screenshots</td><td style={sty.td}>Low</td><td style={sty.td}>Either (browser or Claude Code)</td></tr>
+            <tr><td style={sty.td}>Bank screenshots</td><td style={sty.td}>Low</td><td style={sty.td}>Browser or Claude Code</td></tr>
             <tr><td style={sty.td}>Credit card statements</td><td style={sty.td}>Medium</td><td style={sty.td}>Claude Code recommended</td></tr>
             <tr><td style={sty.td}>Pay stubs</td><td style={{ ...sty.td, color: t.warn }}>High (contains SSN)</td><td style={sty.td}>Claude Code only</td></tr>
             <tr><td style={sty.td}>Tax documents (W-2, 1099)</td><td style={{ ...sty.td, color: t.danger }}>Critical</td><td style={sty.td}>Claude Code only — never cloud</td></tr>
@@ -1668,7 +1684,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         <p style={sty.p}>Screenshots and PDFs can't be parsed in the browser artifact. Claude Code on desktop fills this gap with full filesystem and library access.</p>
 
         <h3 style={sty.h3}>Setup</h3>
-        <pre style={sty.pre}>{`npm install tesseract.js   # OCR for screenshots
+        <pre style={sty.pre}>{`# Optional desktop OCR pipeline for image statements
 npm install pdfjs-dist     # PDF text extraction
 npm install papaparse      # CSV parsing`}</pre>
 
@@ -1778,6 +1794,7 @@ const [stmtTxns, setStmtTxns] = useState([]);
 const [stmtBankName, setStmtBankName] = useState('Statement Upload');
 const [csvBlobUrl, setCsvBlobUrl] = useState('');
 const stmtFileRef = useRef();
+const ocrWorkerRef = useRef(null);
 const btn = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -1835,7 +1852,9 @@ const btn = {
 
   // Guided state
   const [gCheck, setGCheck] = useState(''); const [gSavings, setGSavings] = useState(''); const [gEF, setGEF] = useState(''); const [gOther, setGOther] = useState('');
-  const [gDebts, setGDebts] = useState([{ name: '', apr: '', balance: '', minPayment: '', type: 'REVOLVING', totalTerms: '', paymentsMade: '', monthlyPayment: '' }]);
+  const [gDebts, setGDebts] = useState([{ name: '', apr: '', balance: '', minPayment: '', type: 'REVOLVING', totalTerms: '', paymentsMade: '', monthlyPayment: '', dueDate: '' }]);
+  const [gBills, setGBills] = useState([{ name: '', amount: '', dueDay: '', autopay: true }]);
+  const [gPaydayWeekday, setGPaydayWeekday] = useState('2');
   const [gMonthly, setGMonthly] = useState('');
   const [gBudget, setGBudget] = useState([
     { name: 'Essential', budgeted: '', actual: '' },
@@ -1860,6 +1879,8 @@ const btn = {
   const upEquity = (i, f, v) => { const e = [...gEquities]; e[i][f] = v; setGEquities(e); };
   const upOption = (i, f, v) => { const o = [...gOptions]; o[i][f] = v; setGOptions(o); };
   const upCrypto = (i, f, v) => { const c = [...gCrypto]; c[i][f] = v; setGCrypto(c); };
+  const upBill = (i, f, v) => { const b = [...gBills]; b[i][f] = v; setGBills(b); };
+  const addBill = () => setGBills([...gBills, { name: '', amount: '', dueDay: '', autopay: true }]);
   const addEquity = () => setGEquities([...gEquities, { ticker: '', shares: '', avgCost: '', lastPrice: '' }]);
   const addOption = () => setGOptions([...gOptions, { ticker: '', type: 'CALL', contracts: '', strikePrice: '', expDate: '', lastPrice: '' }]);
   const addCrypto = () => setGCrypto([...gCrypto, { coin: '', amount: '', avgCost: '', lastPrice: '' }]);
@@ -1869,6 +1890,15 @@ const btn = {
 
   // Macro state
   const [gBenner, setGBenner] = useState('B-Year (Sell)');
+
+  useEffect(() => {
+    return () => {
+      if (ocrWorkerRef.current?.terminate) {
+        ocrWorkerRef.current.terminate().catch(() => {});
+      }
+      ocrWorkerRef.current = null;
+    };
+  }, []);
 
   if (!open) return null;
 
@@ -1925,64 +1955,18 @@ const extractTextFromPDF = async (file) => {
   return clean;
 };
 
-const loadTesseract = (logFn) => new Promise((resolve, reject) => {
-  if (window.Tesseract) return resolve(window.Tesseract);
-  const URLS = [
-    'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
-    'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js',
-  ];
-  let tried = 0;
-  const tryNext = () => {
-    if (tried >= URLS.length) return reject(new Error('Tesseract CDN unavailable'));
-    const url = URLS[tried++];
-    if (logFn) logFn(`LOADING OCR ENGINE (${tried}/${URLS.length})...`);
-    const s = document.createElement('script');
-    s.src = url; s.async = false;
-    s.onload = () => { setTimeout(() => window.Tesseract ? resolve(window.Tesseract) : tryNext(), 300); };
-    s.onerror = tryNext;
-    document.head.appendChild(s);
-  };
-  tryNext();
-});
-
-const ocrFirstPageOfPDF = async (file) => {
-  // Scanned PDF fallback: render first 1-2 pages and OCR locally.
-  log('SCANNED PDF DETECTED — OCR FALLBACK (PAGE RENDER)...');
-  try {
-    const Tesseract = await loadTesseract(log);
-    const data = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data }).promise;
-    const maxPages = Math.min(pdf.numPages || 1, 2);
-    let combined = '';
-
-    for (let p = 1; p <= maxPages; p++) {
-      const page = await pdf.getPage(p);
-      const viewport = page.getViewport({ scale: 2 });
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) continue;
-
-      canvas.width = Math.ceil(viewport.width);
-      canvas.height = Math.ceil(viewport.height);
-      await page.render({ canvasContext: ctx, viewport }).promise;
-
-      log(`OCR PAGE ${p}/${maxPages}...`);
-      const dataUrl = canvas.toDataURL('image/png');
-      const res = await Tesseract.recognize(dataUrl, 'eng', {
-        logger: (m) => { if (m && m.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
-      });
-      const text = (res && res.data && res.data.text) ? res.data.text : '';
-      if (text) combined += `\n${text}`;
-    }
-
-    const cleaned = (combined || '').trim();
-    log(`OCR FALLBACK EXTRACT: ${cleaned.length} CHARS`);
-    if (!cleaned) log('TIP: OCR RETURNED EMPTY TEXT — TRY A SHARPER EXPORT/SCREENSHOT');
-    return cleaned;
-  } catch (e) {
-    log(`OCR FALLBACK FAILED: ${e?.message || 'unknown error'}`);
-    return '';
-  }
+const getOCRWorker = async () => {
+  if (ocrWorkerRef.current) return ocrWorkerRef.current;
+  log('OCR INIT: LOADING LOCAL WORKER...');
+  const { createWorker } = await import('tesseract.js');
+  const worker = await createWorker('eng', 1, {
+    logger: (m) => { if (m?.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
+    langPath: `${assetBase}tessdata`,
+    gzip: false,
+    cacheMethod: 'readOnly',
+  });
+  ocrWorkerRef.current = worker;
+  return worker;
 };
 
 const fileToDataUrl = (file) => new Promise((resolve, reject) => {
@@ -1993,13 +1977,38 @@ const fileToDataUrl = (file) => new Promise((resolve, reject) => {
 });
 
 const extractTextFromImage = async (file) => {
-  log('LOADING OCR ENGINE...');
-  const Tesseract = await loadTesseract(log);
+  const worker = await getOCRWorker();
   const dataUrl = await fileToDataUrl(file);
-  const res = await Tesseract.recognize(dataUrl, 'eng', {
-    logger: (m) => { if (m && m.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
-  });
-  return (res && res.data && res.data.text) ? res.data.text : '';
+  const res = await worker.recognize(dataUrl);
+  const txt = (res?.data?.text || '').trim();
+  log(`OCR EXTRACT: ${txt.length} CHARS`);
+  return txt;
+};
+
+const ocrFirstPageOfPDF = async (file) => {
+  log('SCANNED PDF DETECTED — OCR FALLBACK (PAGE RENDER)...');
+  const worker = await getOCRWorker();
+  const data = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data }).promise;
+  const maxPages = Math.min(pdf.numPages || 1, 2);
+  let combined = '';
+  for (let p = 1; p <= maxPages; p++) {
+    const page = await pdf.getPage(p);
+    const viewport = page.getViewport({ scale: 2 });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) continue;
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const dataUrl = canvas.toDataURL('image/png');
+    const res = await worker.recognize(dataUrl);
+    const text = (res?.data?.text || '').trim();
+    if (text) combined += `\n${text}`;
+  }
+  const cleaned = (combined || '').trim();
+  log(`OCR FALLBACK EXTRACT: ${cleaned.length} CHARS`);
+  return cleaned;
 };
 
 const handleStatementFile = async (file) => {
@@ -2017,12 +2026,12 @@ const handleStatementFile = async (file) => {
       rawText = await extractTextFromPDF(file);
       log(`RAW EXTRACT: ${(rawText||'').trim().length} CHARS — SAMPLE: ${(rawText||'').trim().slice(0,60).replace(/\n/g,' ')}`);
       if ((rawText || '').trim().length < 30) {
-        log('PDF TEXT TOO SHORT — FALLBACK: SCANNING EMBEDDED IMAGES...');
+        log('PDF TEXT TOO SHORT — FALLBACK: OCR PAGE RENDER');
         const ocrText = await ocrFirstPageOfPDF(file);
         rawText = `${rawText || ''}\n${ocrText || ''}`.trim();
       }
     } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
-      log('IMAGE MODE: RUNNING OCR (TESSERACT)...');
+      log('IMAGE MODE: OCR');
       rawText = await extractTextFromImage(file);
     } else {
       throw new Error('Unsupported statement format');
@@ -2036,7 +2045,7 @@ const handleStatementFile = async (file) => {
     const txns = parseStatementTextToTransactions(rawText || '');
     if (!txns.length) {
       log('WARNING: NO TRANSACTIONS FOUND (HEURISTIC PARSER)');
-      setError('No transactions detected. Try a text-based PDF export or a clearer screenshot. You can review extracted text below and try parsing again.');
+      setError('No transactions detected. Try a text-based PDF export or CSV statement. You can review extracted text below and try parsing again.');
     } else {
       log(`FOUND: ${txns.length} TRANSACTIONS`);
     }
@@ -2210,7 +2219,7 @@ const removeStmtTxn = (i) => {
       const isFixed = d.type === 'BNPL' || d.type === 'TERM';
       return {
         name: d.name, apr: parseFloat(d.apr) || 0, balance: parseFloat(d.balance) || 0,
-        minPayment: parseFloat(d.minPayment) || 0, type: d.type || 'REVOLVING',
+        minPayment: parseFloat(d.minPayment) || 0, type: d.type || 'REVOLVING', dueDate: d.dueDate || '',
         ...(isFixed ? {
           totalTerms: parseInt(d.totalTerms) || 0,
           paymentsMade: parseInt(d.paymentsMade) || 0,
@@ -2242,7 +2251,14 @@ const removeStmtTxn = (i) => {
       triggersActive: 0, activeTriggers: [],
       bennerPhase: gBenner || 'B-Year (Sell)',
     };
-    const snap = { date: new Date().toISOString().slice(0, 10), netWorth: { assets: { checking, savings, eFund: efund, other }, liabilities: debts.reduce((o, d) => ({ ...o, [d.name]: d.balance }), {}), total: totalAssets - tL }, debts, eFund: { balance: efund, monthlyExpenses: monthly, phase }, budget: { income, categories: budgetCats }, macro, protection, portfolio };
+    const bills = gBills.filter(b => b.name).map(b => ({
+      name: b.name,
+      amount: parseFloat(b.amount) || 0,
+      dueDay: Math.max(1, Math.min(31, parseInt(b.dueDay) || 1)),
+      autopay: b.autopay !== false,
+    }));
+    const payroll = { frequency: 'WEEKLY', weekday: Number(gPaydayWeekday || 2) };
+    const snap = { date: new Date().toISOString().slice(0, 10), netWorth: { assets: { checking, savings, eFund: efund, other }, liabilities: debts.reduce((o, d) => ({ ...o, [d.name]: d.balance }), {}), total: totalAssets - tL }, debts, bills, payroll, eFund: { balance: efund, monthlyExpenses: monthly, phase }, budget: { income, categories: budgetCats }, macro, protection, portfolio };
     // Sanity check: warn but don't block
     if (income > 50000) {
       if (!window.confirm(`Income entered: ${fmt(income)}. This seems unusually high for a monthly figure. Continue?`)) return;
@@ -2251,7 +2267,7 @@ const removeStmtTxn = (i) => {
     setTimeout(() => { setSuccess(false); onClose(); }, 600);
   };
 
-  const addDebt = () => setGDebts([...gDebts, { name: '', apr: '', balance: '', minPayment: '', type: 'REVOLVING', totalTerms: '', paymentsMade: '', monthlyPayment: '' }]);
+  const addDebt = () => setGDebts([...gDebts, { name: '', apr: '', balance: '', minPayment: '', type: 'REVOLVING', totalTerms: '', paymentsMade: '', monthlyPayment: '', dueDate: '' }]);
   const upDebt = (i, f, v) => { const d = [...gDebts]; d[i][f] = v; setGDebts(d); };
   const inp = { background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '8px 10px', width: '100%', outline: 'none', borderRadius: 2, boxSizing: 'border-box' };
   const lbl = { color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3, display: 'block' };
@@ -2376,8 +2392,8 @@ const removeStmtTxn = (i) => {
     <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
       <div style={{ display: 'grid', gap: 6, fontSize: 11, color: t.textDim, lineHeight: 1.35 }}>
         <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
-        <div>• Best: Download a <b>text-based PDF</b> from your bank portal (not scanned).</div>
-        <div>• For screenshots: zoom to 125–150%, capture the full transactions list, keep it sharp.</div>
+        <div>• Best: Download a <b>text-based PDF</b> from your bank portal (not scanned/image-only).</div>
+        <div>• Screenshots supported via local OCR. Keep captures sharp and include full transaction rows.</div>
         <div>• Sentinel redaction runs before parsing; review the extracted table before sync.</div>
       </div>
     </div>
@@ -2495,7 +2511,7 @@ const removeStmtTxn = (i) => {
                   return (
                     <tr key="empty">
                       <td colSpan={5} style={{ padding: '10px 6px', color: t.textDim }}>
-                        No transactions detected yet. If this is a scanned/image PDF, use a clearer export or upload screenshots. You can still COMMIT SYNC to save a baseline snapshot.
+                        No transactions detected yet. If this is a scanned/image file, try a sharper image or text-based PDF export. You can still COMMIT SYNC to save a baseline snapshot.
                       </td>
                     </tr>
                   );
@@ -2647,6 +2663,9 @@ const removeStmtTxn = (i) => {
                       : <div><label style={lbl}>Monthly Pmt</label><CurrencyInput t={t} value={d.monthlyPayment} onChange={e => upDebt(i, 'monthlyPayment', e.target.value)} placeholder="0" /></div>
                     }
                   </div>
+                  <div className="sync-row-3" style={{ display: 'grid', gap: 6, marginBottom: 6 }}>
+                    <div><label style={lbl}>Due Date</label><input style={inp} type="date" value={d.dueDate || ''} onChange={e => upDebt(i, 'dueDate', e.target.value)} /></div>
+                  </div>
                   {(d.type === 'BNPL' || d.type === 'TERM') && (
                     <div className="sync-row-3" style={{ display: 'grid', gap: 6 }}>
                       <div><label style={lbl}>Total Payments</label><input style={inp} placeholder="12" value={d.totalTerms} onChange={e => upDebt(i, 'totalTerms', e.target.value)} inputMode="numeric" /></div>
@@ -2668,7 +2687,26 @@ const removeStmtTxn = (i) => {
                 <div className="sync-row-3" style={{ display: 'grid', gap: 8 }}>
                   <div><label style={lbl}>Monthly Income</label><CurrencyInput t={t} value={gIncome} onChange={e => setGIncome(e.target.value)} placeholder="3500" /></div>
                   <div><label style={lbl}>Monthly Expenses</label><CurrencyInput t={t} value={gMonthly} onChange={e => setGMonthly(e.target.value)} placeholder="3000" /></div>
+                  <div><label style={lbl}>Payday (Weekly)</label>
+                    <select style={{ ...inp, appearance: 'none' }} value={gPaydayWeekday} onChange={e => setGPaydayWeekday(e.target.value)}>
+                      <option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option>
+                    </select>
+                  </div>
                 </div>
+              </div>
+              {/* Bills */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bill Calendar</span>
+                  <button onClick={addBill} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
+                </div>
+                {gBills.map((b, i) => (
+                  <div key={i} className="sync-row-3" style={{ display: 'grid', gap: 8, marginBottom: 8 }}>
+                    <div><label style={lbl}>Bill Name</label><input style={inp} placeholder="Rent" value={b.name} onChange={e => upBill(i, 'name', e.target.value)} /></div>
+                    <div><label style={lbl}>Amount</label><CurrencyInput t={t} value={b.amount} onChange={e => upBill(i, 'amount', e.target.value)} placeholder="0" /></div>
+                    <div><label style={lbl}>Due Day (1-31)</label><input style={inp} value={b.dueDay} onChange={e => upBill(i, 'dueDay', e.target.value)} placeholder="1" inputMode="numeric" /></div>
+                  </div>
+                ))}
               </div>
               {/* Budget categories */}
               <div>
@@ -2848,7 +2886,7 @@ const removeStmtTxn = (i) => {
 function SettingsPanel({ open, settings, onToggle, onExport, onClear, onClose, onToggleTheme, isDark, t }) {
   const [confirm, setConfirm] = useState('');
   if (!open) return null;
-  const mods = [{ key: 'macroBanner', label: 'Macro Banner (top strip)' }, { key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }, { key: 'macro', label: 'Macro Signals' }, { key: 'market', label: 'Market Intelligence' }];
+  const mods = [{ key: 'macroBanner', label: 'Macro Banner (top strip)' }, { key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'planner', label: 'Bills & Payday Planner' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }, { key: 'macro', label: 'Macro Signals' }, { key: 'market', label: 'Market Intelligence' }];
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
       <div style={{ width: 280, background: t.surface, borderLeft: `1px solid ${t.borderDim}`, height: '100%', padding: 20, overflow: 'auto', animation: 'slideIn 0.25s ease-out' }} onClick={e => e.stopPropagation()}>
@@ -2939,6 +2977,7 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
 }
 
 function DebtMod({ latest, visible, t }) {
+  const [extraMonthly, setExtraMonthly] = useState('');
   const debts = (latest?.debts || []).sort((a, b) => {
     // Fixed-term debts sort by payments remaining (ascending), revolving by APR (descending)
     const aFixed = (a.totalTerms || 0) > 0;
@@ -3024,6 +3063,8 @@ function DebtMod({ latest, visible, t }) {
       const liberationDays = liberationMonths * 30;
       const accelerated50 = monthlyPrincipal > 0 ? Math.ceil(total / (monthlyPrincipal * 1.5)) : 0;
       const accelerated100 = monthlyPrincipal > 0 ? Math.ceil(total / (monthlyPrincipal * 2)) : 0;
+      const extra = Math.max(0, parseFloat(extraMonthly) || 0);
+      const acceleratedCustom = monthlyPrincipal > 0 ? Math.ceil(total / (monthlyPrincipal + extra)) : 0;
       const libDate = new Date();
       libDate.setMonth(libDate.getMonth() + liberationMonths);
       const libDateStr = libDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
@@ -3041,6 +3082,13 @@ function DebtMod({ latest, visible, t }) {
           <div style={{ height: 4, background: t.borderDim, marginBottom: 8 }}>
             <div style={{ height: '100%', background: `linear-gradient(90deg, ${t.accent}, ${t.accentBright})`, width: '0%', boxShadow: `0 0 6px ${t.accent}40` }} />
           </div>
+          <div style={{ marginBottom: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, alignItems: 'end' }}>
+            <div>
+              <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Extra Payment / Month</div>
+              <input value={extraMonthly} onChange={e => setExtraMonthly(e.target.value)} placeholder="100" inputMode="decimal" style={{ width: '100%', background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 8px' }} />
+            </div>
+            {extra > 0 && <div style={{ fontSize: 9, color: t.textSecondary }}>With {fmt(extra)} extra: <span style={{ color: t.accent }}>{acceleratedCustom * 30}d</span></div>}
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9 }}>
             <div style={{ color: t.textDim }}>+50%/mo extra: <span style={{ color: t.accent }}>{accelerated50 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated50)} mo saved)</span></div>
             <div style={{ color: t.textDim }}>+100%/mo extra: <span style={{ color: t.accent }}>{accelerated100 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated100)} mo saved)</span></div>
@@ -3049,6 +3097,62 @@ function DebtMod({ latest, visible, t }) {
       );
     })()}
   </Card>);
+}
+
+function PlannerMod({ latest, visible, t }) {
+  if (!visible) return null;
+  const bills = latest?.bills || [];
+  const debts = latest?.debts || [];
+  const payroll = latest?.payroll || { frequency: 'WEEKLY', weekday: 2 };
+  const today = new Date();
+  const nextMonthlyDate = (day) => {
+    const d = new Date(today.getFullYear(), today.getMonth(), Math.max(1, Math.min(31, day)));
+    if (d < today) d.setMonth(d.getMonth() + 1);
+    return d;
+  };
+  const billEvents = bills.map(b => ({
+    label: b.name || 'Bill',
+    date: nextMonthlyDate(Number(b.dueDay || 1)),
+    amount: Number(b.amount || 0),
+    type: 'bill',
+  }));
+  const debtEvents = debts
+    .filter(d => d.dueDate && (d.balance || 0) > 0)
+    .map(d => ({
+      label: d.name || 'Debt',
+      date: new Date(d.dueDate),
+      amount: Number(d.monthlyPayment || d.minPayment || 0),
+      type: 'debt',
+    }));
+  const paydayEvents = nextWeekdayDates(Number(payroll.weekday || 2), 4).map(d => ({
+    label: `Payday (${weekdayName(payroll.weekday || 2)})`,
+    date: d,
+    amount: Number(latest?.budget?.income || latest?._meta?.income || 0) / 4,
+    type: 'payday',
+  }));
+  const timeline = [...billEvents, ...debtEvents, ...paydayEvents]
+    .filter(e => e.date && !Number.isNaN(e.date.getTime()))
+    .sort((a, b) => a.date - b.date)
+    .slice(0, 8);
+
+  return (
+    <Card title="Bills & Payday Planner" visible={visible} delay={120} t={t}>
+      <div style={{ display: 'grid', gap: 8 }}>
+        {timeline.length === 0 && <div style={{ color: t.textDim, fontSize: 11 }}>No bill or payday events tracked yet. Add in Manual Sync.</div>}
+        {timeline.map((e, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 6 }}>
+            <div>
+              <div style={{ fontSize: 11, color: e.type === 'payday' ? t.accent : e.type === 'debt' ? t.warn : t.textPrimary }}>{e.label}</div>
+              <div style={{ fontSize: 9, color: t.textDim }}>{e.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            </div>
+            <div style={{ fontSize: 10, color: e.type === 'payday' ? t.accent : t.textSecondary }}>
+              {e.amount > 0 ? `${e.type === 'payday' ? '+' : '-'}${fmt(e.amount)}` : '—'}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
 }
 
 function EFundMod({ latest, visible, t }) {
@@ -4063,6 +4167,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <div style={{ gridColumn: '1 / -1' }}><MacroSignalsMod latest={latest} visible={vis.includes('macro')} t={t} fredMacro={fredMacro} /></div>
         <div style={{ gridColumn: '1 / -1' }}><MarketIntelligenceMod latest={latest} visible={vis.includes('market')} t={t} isDark={isDark} fredMacro={fredMacro} /></div>
         <DebtMod latest={latest} visible={vis.includes('debt')} t={t} />
+        <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} />
         <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
         <BudgetMod latest={latest} visible={vis.includes('budget')} t={t} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
@@ -4119,6 +4224,8 @@ export default function FortifyOS() {
           netWorth: { ...s.netWorth, assets: { savings: 0, ...((s.netWorth || {}).assets || {}) } },
           portfolio: { equities: [], options: [], crypto: [], ...((s || {}).portfolio || {}) },
           macro: { ...DEFAULT_SNAPSHOT.macro, ...((s || {}).macro || {}) },
+          bills: Array.isArray(s?.bills) ? s.bills : [],
+          payroll: { ...DEFAULT_SNAPSHOT.payroll, ...((s || {}).payroll || {}) },
         }));
         const migratedLatest = lt ? {
           ...lt,
@@ -4126,6 +4233,8 @@ export default function FortifyOS() {
           netWorth: { ...lt.netWorth, assets: { savings: 0, ...((lt.netWorth || {}).assets || {}) } },
           portfolio: { equities: [], options: [], crypto: [], ...((lt || {}).portfolio || {}) },
           macro: { ...DEFAULT_SNAPSHOT.macro, ...((lt || {}).macro || {}) },
+          bills: Array.isArray(lt?.bills) ? lt.bills : [],
+          payroll: { ...DEFAULT_SNAPSHOT.payroll, ...((lt || {}).payroll || {}) },
         } : migrated[migrated.length - 1];
         setSnapshots(migrated);
         setLatest(migratedLatest);
@@ -4161,6 +4270,8 @@ export default function FortifyOS() {
     merged.portfolio = { ...DEFAULT_SNAPSHOT.portfolio, ...(base.portfolio || {}), ...(data.portfolio || {}) };
     merged.macro = { ...DEFAULT_SNAPSHOT.macro, ...(base.macro || {}), ...(data.macro || {}) };
     merged.protection = { ...DEFAULT_SNAPSHOT.protection, ...(base.protection || {}), ...(data.protection || {}) };
+    merged.bills = Array.isArray(data.bills) ? data.bills : (Array.isArray(base.bills) ? base.bills : []);
+    merged.payroll = { ...DEFAULT_SNAPSHOT.payroll, ...(base.payroll || {}), ...(data.payroll || {}) };
     merged.netWorth = { ...DEFAULT_SNAPSHOT.netWorth, ...(base.netWorth || {}), ...(data.netWorth || {}) };
     merged.netWorth.assets = { ...DEFAULT_SNAPSHOT.netWorth.assets, ...(base.netWorth?.assets || {}), ...(data.netWorth?.assets || {}) };
 
