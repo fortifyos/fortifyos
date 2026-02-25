@@ -31,13 +31,13 @@ const THEMES = {
     crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
   light: {
-    void: '#F5F3F0', surface: '#FEFEFE', elevated: '#FAF9F7', input: '#F0EEEB',
-    borderDim: '#DDD9D4', borderMid: '#CCC7C0', borderBright: '#B5AFA8',
-    textPrimary: '#1C1B1A', textSecondary: '#625D56', textDim: '#948E86', textGhost: '#CCC7C0',
-    accent: '#1A7A3A', accentBright: '#20953F', accentDim: '#135E2C', accentMuted: '#E0F0E5',
-    danger: '#C42B1C', warn: '#D48A00',
-    purple: '#8B5CF6', purpleDim: '#7340DB', purpleMuted: '#F1ECF9',
-    crypto: '#E8850F', cryptoDim: '#B36C0C', cryptoMuted: '#FFF5E5',
+    void: '#FFFFFF', surface: '#FFFFFF', elevated: '#FAFAFA', input: '#F5F5F5',
+    borderDim: '#DDDDDD', borderMid: '#C5C5C5', borderBright: '#AFAFAF',
+    textPrimary: '#111111', textSecondary: '#333333', textDim: '#666666', textGhost: '#BEBEBE',
+    accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
+    danger: '#FF3333', warn: '#FFB800',
+    purple: '#BF40BF', purpleDim: '#8A2D8A', purpleMuted: '#2D0A2D',
+    crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
 };
 
