@@ -3150,6 +3150,8 @@ function SettingsPanel({ open, settings, onToggle, onExport, onClear, onClose, o
 // DASHBOARD MODULES
 // ═══════════════════════════════════════════════════
 function NetWorthMod({ snapshots, latest, visible, t }) {
+  const [openAssets, setOpenAssets] = useState(true);
+  const [openLiabilities, setOpenLiabilities] = useState(true);
   const hist = snapshots.map(s => ({ date: s.date?.slice(5) || '', value: s.netWorth?.total || 0 }));
   const nw = latest?.netWorth || {}; const prev = snapshots.length > 1 ? snapshots[snapshots.length - 2]?.netWorth?.total || 0 : 0; const delta = (nw.total || 0) - prev;
   const assets = nw.assets || {};
@@ -3168,6 +3170,13 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
     { label: 'Crypto', value: cryptoVal, color: t.crypto },
     { label: 'Other', value: assets.other || 0, color: t.textSecondary },
   ].filter(b => b.value > 0);
+  const liabilitiesList = Object.entries(nw.liabilities || {})
+    .map(([name, value]) => ({ name, value: Number(value) || 0 }))
+    .filter(l => l.value > 0)
+    .sort((a, b) => b.value - a.value);
+  const mapAssets = breakdown.map(b => ({ label: b.label, value: b.value, color: b.color }));
+  const mapLiabs = liabilitiesList.map(l => ({ label: l.name, value: l.value, color: t.danger }));
+  const mapTotal = [...mapAssets, ...mapLiabs].reduce((s, x) => s + (x.value || 0), 0) || 1;
 
   return (<Card title="Net Worth" visible={visible} delay={0} t={t}>
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
@@ -3184,6 +3193,90 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 8 }}>
       <div><span style={{ color: t.textSecondary, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assets </span>{fmt(tA)}</div>
       <div><span style={{ color: t.textSecondary, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Liabilities </span>{fmt(tL)}</div>
+    </div>
+    {/* Money Map */}
+    {(mapAssets.length > 0 || mapLiabs.length > 0) && (
+      <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Money Map</div>
+        <div style={{ display: 'grid', gap: 4 }}>
+          {mapAssets.length > 0 && (
+            <div style={{ display: 'flex', gap: 3, minHeight: 42 }}>
+              {mapAssets.map((a, i) => (
+                <div key={`ma-${i}`} style={{
+                  flex: Math.max(1, a.value),
+                  minWidth: `${Math.max(8, (a.value / mapTotal) * 100)}%`,
+                  background: t.accentMuted,
+                  border: `1px solid ${t.borderDim}`,
+                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                  padding: '5px 6px',
+                }}>
+                  <span style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{a.label}</span>
+                  <span style={{ fontSize: 10, color: a.color }}>{fmt(a.value)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {mapLiabs.length > 0 && (
+            <div style={{ display: 'flex', gap: 3, minHeight: 34 }}>
+              {mapLiabs.map((l, i) => (
+                <div key={`ml-${i}`} style={{
+                  flex: Math.max(1, l.value),
+                  minWidth: `${Math.max(8, (l.value / mapTotal) * 100)}%`,
+                  background: '#2A1010',
+                  border: `1px solid ${t.danger}55`,
+                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                  padding: '5px 6px',
+                }}>
+                  <span style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{l.label}</span>
+                  <span style={{ fontSize: 10, color: t.danger }}>-{fmt(l.value)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+    {/* Collapsible Account Groups */}
+    <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginBottom: 8 }}>
+      <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Account Explorer</div>
+      <div style={{ border: `1px solid ${t.borderDim}`, marginBottom: 6 }}>
+        <button
+          onClick={() => setOpenAssets(v => !v)}
+          style={{ width: '100%', background: t.surface, border: 'none', borderBottom: openAssets ? `1px solid ${t.borderDim}` : 'none', color: t.textPrimary, padding: '7px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase', cursor: 'pointer' }}
+        >
+          <span>{openAssets ? '▼' : '▶'} Assets</span>
+          <span style={{ color: t.accent }}>{fmt(tA)}</span>
+        </button>
+        {openAssets && (
+          <div style={{ padding: 6, display: 'grid', gap: 4 }}>
+            {mapAssets.length ? mapAssets.map((a, i) => (
+              <div key={`asset-row-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
+                <span style={{ color: t.textDim }}>{a.label}</span>
+                <span style={{ color: a.color }}>{fmt(a.value)}</span>
+              </div>
+            )) : <div style={{ fontSize: 10, color: t.textDim }}>No tracked assets</div>}
+          </div>
+        )}
+      </div>
+      <div style={{ border: `1px solid ${t.borderDim}` }}>
+        <button
+          onClick={() => setOpenLiabilities(v => !v)}
+          style={{ width: '100%', background: t.surface, border: 'none', borderBottom: openLiabilities ? `1px solid ${t.borderDim}` : 'none', color: t.textPrimary, padding: '7px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase', cursor: 'pointer' }}
+        >
+          <span>{openLiabilities ? '▼' : '▶'} Liabilities</span>
+          <span style={{ color: t.danger }}>-{fmt(tL)}</span>
+        </button>
+        {openLiabilities && (
+          <div style={{ padding: 6, display: 'grid', gap: 4 }}>
+            {liabilitiesList.length ? liabilitiesList.map((l, i) => (
+              <div key={`liab-row-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
+                <span style={{ color: t.textDim }}>{l.name}</span>
+                <span style={{ color: t.danger }}>-{fmt(l.value)}</span>
+              </div>
+            )) : <div style={{ fontSize: 10, color: t.textDim }}>No tracked liabilities</div>}
+          </div>
+        )}
+      </div>
     </div>
     {/* Asset breakdown */}
     {breakdown.length > 1 && (
