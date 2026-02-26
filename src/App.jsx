@@ -1203,6 +1203,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   const [boot, setBoot] = useState(0);
   const [faqOpen, setFaqOpen] = useState(null);
   const [dailyBurn, setDailyBurn] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   const accent = t.accent;
 
   useEffect(() => { const id = setInterval(() => setBoot(p => p < 4 ? p + 1 : 4), 600); return () => clearInterval(id); }, []);
@@ -1252,10 +1253,21 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <Shield size={18} style={{ color: accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={onMacroSentinel} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>MACRO SENTINEL</button>
-          <button onClick={onDocs} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>DOCS</button>
-          <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}</button>
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setMenuOpen(v => !v)}
+            style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}
+            title="Open actions"
+          >
+            {menuOpen ? <X size={16} /> : <Menu size={16} />}
+          </button>
+          {menuOpen && (
+            <div style={{ position: 'absolute', right: 0, top: 42, width: 190, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
+              <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>RADAR</button>
+              <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>DOCS</button>
+              <button onClick={() => { setMenuOpen(false); onToggleTheme(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}>{isDark ? 'LIGHT MODE' : 'DARK MODE'}</button>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -1469,6 +1481,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 function DocsView({ t, isDark, onBack, onToggleTheme }) {
   const [activeSection, setActiveSection] = useState(null);
   const [expandedTier, setExpandedTier] = useState({ start: true, core: true, data: false, advanced: false, why: false });
+  const [menuOpen, setMenuOpen] = useState(false);
   const accent = t.accent;
   const sectionRefs = useRef({});
 
@@ -1561,7 +1574,17 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
             <span style={{ fontSize: 10, color: t.textDim }}>DOCS</span>
           </div>
         </div>
-        <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>{isDark ? <Sun size={14} /> : <Moon size={14} />}</button>
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Open actions">
+            {menuOpen ? <X size={14} /> : <Menu size={14} />}
+          </button>
+          {menuOpen && (
+            <div style={{ position: 'absolute', right: 0, top: 38, width: 180, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>HOME</button>
+              <button onClick={() => { setMenuOpen(false); onToggleTheme(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}>{isDark ? 'LIGHT MODE' : 'DARK MODE'}</button>
+            </div>
+          )}
+        </div>
       </nav>
 
       <div style={sty.container}>
@@ -5023,7 +5046,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
           title="Open actions menu"
         >
-          {quickMenuOpen ? <X size={12} /> : <Menu size={12} />} Menu
+          {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
           <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 32, minWidth: 190, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
@@ -5101,6 +5124,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
   const [query, setQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -5183,15 +5207,17 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
             <span style={{ color: t.textSecondary, fontSize: 12, marginLeft: 10 }}>RADAR</span>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={load} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 10px', cursor: 'pointer' }}>
-              <RefreshCw size={12} style={{ marginRight: 6, verticalAlign: 'text-bottom' }} />
-              REFRESH
+          <div style={{ position: 'relative' }}>
+            <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, borderRadius: 8, width: 32, height: 32, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Open actions">
+              {menuOpen ? <X size={12} /> : <Menu size={12} />}
             </button>
-            <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 10px', cursor: 'pointer' }}>
-              {isDark ? <Sun size={12} style={{ marginRight: 6, verticalAlign: 'text-bottom' }} /> : <Moon size={12} style={{ marginRight: 6, verticalAlign: 'text-bottom' }} />}
-              THEME
-            </button>
+            {menuOpen && (
+              <div style={{ position: 'absolute', right: 0, top: 38, width: 180, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
+                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>DASHBOARD</button>
+                <button onClick={() => { setMenuOpen(false); load(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>REFRESH</button>
+                <button onClick={() => { setMenuOpen(false); onToggleTheme(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}>{isDark ? 'LIGHT MODE' : 'DARK MODE'}</button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -5627,7 +5653,7 @@ function FortifyOSApp() {
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
     </div>
   );
