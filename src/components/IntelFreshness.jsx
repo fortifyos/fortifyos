@@ -117,7 +117,7 @@ export default function IntelFreshness() {
   }, []);
 
   if (!intel) {
-    return <div className="intel-block intel-anim stale">Macro Sentinel: Unavailable</div>;
+    return null;
   }
 
   const generated = new Date(intel.generatedAt);
