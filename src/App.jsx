@@ -885,6 +885,47 @@ const payPeriodsPerMonth = (frequency = 'WEEKLY') => {
   if (f === 'BIWEEKLY') return 26 / 12;
   return 52 / 12;
 };
+function buildProtectionFirstBudget(income = 0, categories = [], latest = {}) {
+  const inc = Math.max(0, Number(income) || 0);
+  const src = Array.isArray(categories) ? categories : [];
+  if (inc <= 0 || src.length === 0) return src.map(c => ({ ...c }));
+
+  const catMap = new Map(src.map(c => [c.name, { ...c, actual: Number(c.actual) || 0, budgeted: Number(c.budgeted) || 0 }]));
+  const hasDebt = (latest?.debts || []).some(d => (Number(d?.balance) || 0) > 0);
+  const efMonthly = monthlySpendBaseline(latest);
+  const efBalance = Number(latest?.eFund?.balance) || 0;
+  const needsEfundBuild = efBalance < Math.max(1000, efMonthly);
+
+  const minByName = {
+    Essential: Math.max((catMap.get('Essential')?.actual || 0), inc * 0.45),
+    Medical: Math.max((catMap.get('Medical')?.actual || 0), inc * 0.08),
+    'Debt Service': hasDebt ? Math.max((catMap.get('Debt Service')?.actual || 0), inc * 0.22) : Math.max((catMap.get('Debt Service')?.actual || 0), inc * 0.05),
+    Savings: needsEfundBuild || hasDebt ? Math.max((catMap.get('Savings')?.actual || 0), inc * 0.2) : Math.max((catMap.get('Savings')?.actual || 0), inc * 0.15),
+    Discretionary: Math.max((catMap.get('Discretionary')?.actual || 0), inc * 0.05),
+  };
+
+  // Keep priority strict: Essential -> Medical -> Debt Service -> Savings -> Discretionary.
+  const order = ['Essential', 'Medical', 'Debt Service', 'Savings', 'Discretionary'];
+  let remaining = inc;
+  const allocated = {};
+  for (const name of order) {
+    const desired = Math.max(0, minByName[name] || 0);
+    const take = Math.min(remaining, desired);
+    allocated[name] = Math.round(take);
+    remaining -= take;
+  }
+  if (remaining > 0) {
+    allocated['Savings'] = (allocated['Savings'] || 0) + Math.round(remaining * 0.75);
+    allocated['Debt Service'] = (allocated['Debt Service'] || 0) + Math.round(remaining * 0.2);
+    allocated['Discretionary'] = (allocated['Discretionary'] || 0) + Math.round(remaining * 0.05);
+  }
+
+  return src.map((c) => {
+    const currentBudgeted = Number(c?.budgeted) || 0;
+    const fallbackBudgeted = allocated[c?.name] || 0;
+    return { ...c, budgeted: currentBudgeted > 0 ? currentBudgeted : fallbackBudgeted };
+  });
+}
 const nextPayrollDates = (payroll = {}, count = 4) => {
   const weekday = Number(payroll?.weekday ?? 2);
   const frequency = String(payroll?.frequency || 'WEEKLY').toUpperCase();
@@ -3980,7 +4021,11 @@ function EFundMod({ latest, visible, t }) {
 }
 
 function BudgetMod({ latest, visible, t }) {
-  const cats = latest?.budget?.categories || [];
+  const cats = buildProtectionFirstBudget(
+    latest?.budget?.income || latest?._meta?.income || 0,
+    latest?.budget?.categories || [],
+    latest
+  );
   const income = latest?.budget?.income || latest?._meta?.income || 0;
   const totalSpent = totalBudgetSpent(latest);
   const surplus = income - totalSpent;
@@ -4039,6 +4084,9 @@ function BudgetMod({ latest, visible, t }) {
   else if (slashActive) slashDiagnosis = 'Low velocity — audit all non-Essential recurring charges';
 
   return (<Card title="Budget Allocation" visible={visible} delay={240} alert={violations.some(v => v.severity === 'danger')} t={t}>
+    <div style={{ marginBottom: 10, fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      Policy: Essential + Medical + Debt Service + E-Fund Savings first; Discretionary last.
+    </div>
 
     {/* ═══ ENFORCEMENT ALERTS ═══ */}
     {(violations.length > 0 || slashActive) && (
@@ -5185,6 +5233,7 @@ function FortifyOSApp() {
         income: (base.budget?.income || 0) + (data.budget?.income || 0),
         categories: Array.from(byName.values()),
       };
+      merged.budget.categories = buildProtectionFirstBudget(merged.budget.income || 0, merged.budget.categories || [], merged);
 
       const baseMeta = base._meta || {};
       const nextMeta = data._meta || {};
