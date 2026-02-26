@@ -1852,7 +1852,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
             { title: 'FILE IMPORT (PRIMARY)', desc: 'Drop a .csv bank export. Auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting.' },
-            { title: 'JSON PASTE (SECONDARY)', desc: 'Paste a structured JSON snapshot from CLI tools, Claude Code, or export scripts. Schema validated before commit.' },
+            { title: 'JSON PASTE (SECONDARY)', desc: 'Paste a structured JSON snapshot from CLI tools, any AI/tool output, or export scripts. Schema validated before commit.' },
             { title: 'MANUAL ENTRY (FALLBACK)', desc: 'Guided form for assets, debts, monthly expenses, and budget categories. Live calculations update as you type.' },
           ].map((c, i) => (
             <div key={i} style={sty.card}><div style={{ fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{c.title}</div><div style={{ fontSize: 11, color: t.textDim }}>{c.desc}</div></div>
@@ -3223,7 +3223,7 @@ useEffect(() => {
           {tab === 'json' && (<>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={lbl}>Paste JSON Snapshot</span>
-              <span style={{ fontSize: 9, color: t.textGhost }}>CLI / Claude Code output</span>
+              <span style={{ fontSize: 9, color: t.textGhost }}>CLI / Any Tool or AI output</span>
             </div>
             <textarea value={json} onChange={e => setJson(e.target.value)}
               placeholder={'{\n  "date": "2026-02-21",\n  "netWorth": { ... },\n  "debts": [ ... ],\n  "eFund": { ... }\n}'}
