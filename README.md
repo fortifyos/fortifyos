@@ -17,34 +17,6 @@ npm run build
 npm run preview
 ```
 
-## Plaid Integration (Secure)
-Plaid linking requires a backend because Plaid secrets cannot be exposed in a static frontend.
-
-### 1) Start Plaid bridge backend
-```bash
-cp .env.plaid.example .env
-# fill PLAID_CLIENT_ID / PLAID_SECRET
-npm run plaid:server
-```
-
-### 2) Point frontend to backend
-Create `.env.local`:
-```bash
-VITE_PLAID_API_BASE=http://localhost:8787
-```
-
-Then run:
-```bash
-npm run dev
-```
-
-### 3) Use in app
-Universal Sync -> `FILE IMPORT`:
-- `PREPARE LINK`
-- `CONNECT ACCOUNTS`
-
-After link success, transactions are imported into the editable transaction table and can be committed to snapshot.
-
 ## Deploy to GitHub Pages
 1) Create repo named `fortifyos`
 2) Push this project to `main`

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { usePlaidLink } from 'react-plaid-link';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -224,27 +223,6 @@ function inferCategory(desc, merchantRules) {
   return learnedCategoryForDescription(desc, merchantRules) || categorize(desc);
 }
 
-function titleCaseWords(s) {
-  return String(s || '')
-    .toLowerCase()
-    .split(/[_\s]+/)
-    .filter(Boolean)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
-
-function normalizePlaidTransaction(tx) {
-  const rawAmount = Number(tx?.amount) || 0;
-  const amount = -rawAmount; // Plaid convention: positive = outflow; app uses negative for spend
-  const categoryPrimary = tx?.personal_finance_category?.primary || tx?.category?.[0] || '';
-  return {
-    date: tx?.authorized_date || tx?.date || '',
-    description: tx?.name || tx?.merchant_name || 'Linked Account Transaction',
-    amount,
-    category: categoryPrimary ? titleCaseWords(categoryPrimary) : '',
-  };
-}
-
 function applyMerchantRules(txns, merchantRules) {
   return (txns || []).map((tx) => {
     const learned = learnedCategoryForDescription(tx?.description, merchantRules);
@@ -325,6 +303,38 @@ function parseAmountLike(s) {
   return neg ? -Math.abs(n) : n;
 }
 
+const STATEMENT_TEMPLATES = [
+  { key: 'usaa', label: 'USAA', detect: /(usaa|classic checking|funds transfer|ach withdrawal|ach dep)/i },
+  { key: 'chase', label: 'Chase', detect: /(chase|jpmorgan|transaction date|post date|debit card purchase)/i },
+  { key: 'bofa', label: 'Bank of America', detect: /(bank of america|bofa|running bal|bankofamerica)/i },
+  { key: 'wellsfargo', label: 'Wells Fargo', detect: /(wells fargo|wellsfargo)/i },
+  { key: 'citi', label: 'Citi', detect: /(citi|citibank)/i },
+];
+
+function detectStatementTemplate(rawText = '', fileName = '') {
+  const source = `${fileName || ''}\n${rawText || ''}`;
+  for (const tpl of STATEMENT_TEMPLATES) {
+    if (tpl.detect.test(source)) return tpl;
+  }
+  return { key: 'generic', label: 'Generic' };
+}
+
+function preprocessStatementText(text, bankKey = 'generic') {
+  let out = String(text || '');
+  // OCR cleanup for numeric fields and dates
+  out = out
+    .replace(/([0-9])O([0-9])/g, '$10$2')
+    .replace(/\bO([0-9]{1,2}\/[0-9]{1,2})\b/g, '0$1')
+    .replace(/\b([0-9]{1,2})\/O([0-9]{1,2})\b/g, '$1/0$2');
+  if (bankKey === 'usaa') {
+    out = out
+      .replace(/\bTTY[: ]\d+\/\d+\b/gi, ' ')
+      .replace(/\bMobile:\s*#?\d+\b/gi, ' ')
+      .replace(/\s{2,}/g, ' ');
+  }
+  return out.trim();
+}
+
 function scoreTxnConfidence({ date, description, amount, line }) {
   let score = 0;
   const dateNorm = normalizeDateLike(date || '');
@@ -357,8 +367,10 @@ function withTxnConfidence(txn, line = '') {
   return { ...txn, confidence: label, confidenceScore: score };
 }
 
-function parseStatementTextToTransactions(text) {
-  const rawLines = (text || '')
+function parseStatementTextToTransactions(text, options = {}) {
+  const bankKey = options?.bankKey || 'generic';
+  const preprocessed = preprocessStatementText(text || '', bankKey);
+  const rawLines = (preprocessed || '')
     .split(/\r?\n/)
     .map(l => (l || '').replace(/\t/g, ' ').trim())
     .filter(Boolean);
@@ -531,6 +543,58 @@ function parseStatementTextToTransactions(text) {
   // Sort by date asc where possible
   out.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
   return out;
+}
+
+function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
+  const items = [...(txns || [])];
+  let correctedSign = 0;
+  let filledYear = 0;
+  const warnings = [];
+
+  const endYearMatch = String(rawText || '').match(/\b(20\d{2})\b/g);
+  const inferredYear = endYearMatch?.length ? Number(endYearMatch[endYearMatch.length - 1]) : new Date().getFullYear();
+
+  const debitHint = /\b(withdrawal|payment|purchase|debit|autopay|pos|card payment|loan repayment)\b/i;
+  const creditHint = /\b(deposit|dep\b|payroll|refund|credit|funds transfer cr)\b/i;
+
+  for (let i = 0; i < items.length; i++) {
+    const row = { ...items[i] };
+    if (/^\d{2}\/\d{2}$/.test(String(row.date || ''))) {
+      row.date = `${inferredYear}-${row.date.slice(0, 2)}-${row.date.slice(3, 5)}`;
+      filledYear++;
+    }
+    if (debitHint.test(row.description || '') && Number(row.amount) > 0) {
+      row.amount = -Math.abs(Number(row.amount) || 0);
+      correctedSign++;
+    } else if (creditHint.test(row.description || '') && Number(row.amount) < 0) {
+      row.amount = Math.abs(Number(row.amount) || 0);
+      correctedSign++;
+    }
+    items[i] = withTxnConfidence(row, `${row.date || ''} ${row.description || ''} ${row.amount ?? ''}`);
+  }
+
+  const startBalMatch = String(rawText || '').match(/(?:beginning|previous|starting)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  const endBalMatch = String(rawText || '').match(/(?:ending|new|available)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  let balanceDiff = null;
+  if (startBalMatch && endBalMatch) {
+    const startBal = parseAmountLike(startBalMatch[1]);
+    const endBal = parseAmountLike(endBalMatch[1]);
+    const txnDelta = items.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+    if (startBal !== null && endBal !== null) {
+      const expectedDelta = endBal - startBal;
+      balanceDiff = Number((txnDelta - expectedDelta).toFixed(2));
+      if (Math.abs(balanceDiff) > Math.max(25, Math.abs(expectedDelta) * 0.05)) {
+        warnings.push(`Balance reconciliation variance ${fmt(Math.abs(balanceDiff))}`);
+      }
+    }
+  } else if (bankKey !== 'generic') {
+    warnings.push('No statement balances detected for reconciliation');
+  }
+
+  return {
+    txns: items,
+    summary: { correctedSign, filledYear, balanceDiff, warnings },
+  };
 }
 
 function txnsToPaymentLogCSV(txns) {
@@ -1926,10 +1990,11 @@ const [stmtTxns, setStmtTxns] = useState([]);
 const [showLowConfidence, setShowLowConfidence] = useState(true);
 const [reviewLowConfidence, setReviewLowConfidence] = useState(false);
 const [reviewCursor, setReviewCursor] = useState(0);
+const [reviewedLowIndices, setReviewedLowIndices] = useState([]);
+const [stmtTemplateLabel, setStmtTemplateLabel] = useState('');
+const [stmtReconSummary, setStmtReconSummary] = useState(null);
+const [stmtPickMode, setStmtPickMode] = useState('replace');
 const [merchantRules, setMerchantRules] = useState([]);
-const [plaidLinkToken, setPlaidLinkToken] = useState('');
-const [plaidLoading, setPlaidLoading] = useState(false);
-const [plaidStatus, setPlaidStatus] = useState('');
 const [stmtBankName, setStmtBankName] = useState('Statement Upload');
 const [csvBlobUrl, setCsvBlobUrl] = useState('');
 const stmtFileRef = useRef();
@@ -1970,7 +2035,6 @@ const btn = {
     background: t.void,
   };
   const assetBase = import.meta.env.BASE_URL || '/';
-  const plaidApiBase = String(import.meta.env.VITE_PLAID_API_BASE || '').replace(/\/$/, '');
 
 
   // JSON paste state
@@ -2053,72 +2117,6 @@ const btn = {
     return null;
   };
 
-  const plaidRequest = useCallback(async (path, init = {}) => {
-    if (!plaidApiBase) throw new Error('Plaid API base URL is not configured.');
-    const res = await fetch(`${plaidApiBase}${path}`, {
-      ...init,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(init.headers || {}),
-      },
-    });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(body?.error || body?.message || `Plaid request failed (${res.status})`);
-    return body;
-  }, [plaidApiBase]);
-
-  const loadPlaidData = useCallback(async () => {
-    const now = new Date();
-    const endDate = now.toISOString().slice(0, 10);
-    const start = new Date(now);
-    start.setDate(start.getDate() - 90);
-    const startDate = start.toISOString().slice(0, 10);
-
-    const [accountsRes, txRes] = await Promise.all([
-      plaidRequest('/api/plaid/accounts'),
-      plaidRequest('/api/plaid/transactions', { method: 'POST', body: JSON.stringify({ startDate, endDate }) }),
-    ]);
-    const accounts = Array.isArray(accountsRes?.accounts) ? accountsRes.accounts : [];
-    const plaidTxns = Array.isArray(txRes?.transactions) ? txRes.transactions : [];
-    const normalized = plaidTxns.map(normalizePlaidTransaction);
-    const scored = normalized.map(tx => withTxnConfidence(tx, `${tx.date || ''} ${tx.description || ''} ${tx.amount ?? ''}`));
-    const txns = applyMerchantRules(scored, merchantRules);
-
-    setStmtBankName('Plaid Linked Accounts');
-    setStmtRawText('');
-    setStmtText('');
-    setStmtTxns(txns);
-    setReviewLowConfidence(false);
-    setReviewCursor(0);
-
-    const snap = transactionsToSnapshot(txns, 'Plaid Linked Accounts');
-    setParsedPreview(snap);
-
-    const csv = txnsToPaymentLogCSV(txns);
-    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
-    setCsvBlobUrl(URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })));
-
-    setPlaidStatus(`Linked ${accounts.length} account(s) • Imported ${txns.length} transaction(s)`);
-    log(`PLAID: ${accounts.length} ACCOUNTS • ${txns.length} TRANSACTIONS IMPORTED`);
-    setTab('statement');
-  }, [csvBlobUrl, merchantRules, plaidRequest]);
-
-  const createPlaidLinkToken = useCallback(async () => {
-    setPlaidLoading(true);
-    setError('');
-    try {
-      const body = await plaidRequest('/api/plaid/link-token', { method: 'POST', body: JSON.stringify({}) });
-      if (!body?.link_token) throw new Error('Link token not returned by Plaid server.');
-      setPlaidLinkToken(body.link_token);
-      setPlaidStatus('Link token ready. Continue to connect your account.');
-      log('PLAID: LINK TOKEN CREATED');
-    } catch (e) {
-      setError(e?.message || 'Unable to initialize Plaid.');
-    } finally {
-      setPlaidLoading(false);
-    }
-  }, [plaidRequest]);
-
   const learnMerchantRule = useCallback(async (description, category) => {
     const nextCategory = String(category || '').trim();
     if (!nextCategory || nextCategory === 'Uncategorized') return;
@@ -2136,33 +2134,6 @@ const btn = {
     }
     await persistMerchantRules(nextRules);
   }, [merchantRules, persistMerchantRules]);
-
-  const onPlaidSuccess = useCallback(async (publicToken) => {
-    setPlaidLoading(true);
-    setError('');
-    try {
-      await plaidRequest('/api/plaid/exchange-public-token', {
-        method: 'POST',
-        body: JSON.stringify({ publicToken }),
-      });
-      log('PLAID: PUBLIC TOKEN EXCHANGED');
-      await loadPlaidData();
-    } catch (e) {
-      setError(e?.message || 'Plaid exchange/import failed.');
-    } finally {
-      setPlaidLoading(false);
-    }
-  }, [loadPlaidData, plaidRequest]);
-
-  const { open: openPlaidLink, ready: plaidReady } = usePlaidLink({
-    token: plaidLinkToken || null,
-    onSuccess: async (publicToken) => { await onPlaidSuccess(publicToken); },
-    onExit: (err) => {
-      if (err?.display_message || err?.error_message) {
-        setError(err.display_message || err.error_message);
-      }
-    },
-  });
 
 
 // ───────────────────────────────────────────────
@@ -2264,61 +2235,111 @@ const ocrFirstPageOfPDF = async (file) => {
   return cleaned;
 };
 
-const handleStatementFile = async (file) => {
-  setProcessing(true); setError(''); setParsedPreview(null); setSuccess(false);
-  setLogs([]); setStmtFile(file); setStmtRawText(''); setStmtText(''); setStmtTxns([]); setReviewLowConfidence(false); setReviewCursor(0); if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} setCsvBlobUrl(''); }
-  log('PIPELINE: STATEMENT RAW VIEW (NO DISPLAY REDACTION) v2026-02-23');
+const parseStatementInput = async (file) => {
   const ext = file.name.split('.').pop().toLowerCase();
   log(`STATEMENT INGEST: ${file.name} (.${ext.toUpperCase()})`);
   log(`SIZE: ${(file.size / 1024).toFixed(1)}KB`);
+  let rawText = '';
+  if (ext === 'pdf') {
+    log('PDF MODE: EXTRACTING TEXT...');
+    rawText = await extractTextFromPDF(file);
+    log(`RAW EXTRACT: ${(rawText||'').trim().length} CHARS — SAMPLE: ${(rawText||'').trim().slice(0,60).replace(/\n/g,' ')}`);
+    if ((rawText || '').trim().length < 30) {
+      log('PDF TEXT TOO SHORT — FALLBACK: OCR PAGE RENDER');
+      const ocrText = await ocrFirstPageOfPDF(file);
+      rawText = `${rawText || ''}\n${ocrText || ''}`.trim();
+    }
+  } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+    log('IMAGE MODE: OCR');
+    rawText = await extractTextFromImage(file);
+  } else {
+    throw new Error('Unsupported statement format');
+  }
+  const template = detectStatementTemplate(rawText || '', file.name || '');
+  log(`TEMPLATE: ${template.label.toUpperCase()}`);
+  const txnsRaw = parseStatementTextToTransactions(rawText || '', { bankKey: template.key });
+  const reconciled = reconcileParsedTransactions(txnsRaw, rawText || '', template.key);
+  if (reconciled.summary.correctedSign > 0) log(`RECON: SIGN FIXES ${reconciled.summary.correctedSign}`);
+  if (reconciled.summary.filledYear > 0) log(`RECON: YEAR FILLS ${reconciled.summary.filledYear}`);
+  if (reconciled.summary.warnings?.length) log(`RECON WARNING: ${reconciled.summary.warnings[0]}`);
+  return { rawText, template, reconciled };
+};
+
+const handleStatementFiles = async (files, mode = 'replace') => {
+  const list = Array.from(files || []).filter(Boolean);
+  if (!list.length) return;
+  const append = mode === 'append';
+  setProcessing(true); setError(''); setParsedPreview(null); setSuccess(false);
+  if (!append) {
+    setLogs([]);
+    setStmtFile(list[0]);
+    setStmtRawText('');
+    setStmtText('');
+    setStmtTxns([]);
+    setReviewLowConfidence(false);
+    setReviewCursor(0);
+    setReviewedLowIndices([]);
+    setStmtReconSummary(null);
+    setStmtTemplateLabel('');
+    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} setCsvBlobUrl(''); }
+  }
+  log(`PIPELINE: PDF MODE ${append ? 'APPEND' : 'REPLACE'} (${list.length} FILE${list.length > 1 ? 'S' : ''})`);
 
   try {
-    let rawText = '';
-    if (ext === 'pdf') {
-      log('PDF MODE: EXTRACTING TEXT...');
-      rawText = await extractTextFromPDF(file);
-      log(`RAW EXTRACT: ${(rawText||'').trim().length} CHARS — SAMPLE: ${(rawText||'').trim().slice(0,60).replace(/\n/g,' ')}`);
-      if ((rawText || '').trim().length < 30) {
-        log('PDF TEXT TOO SHORT — FALLBACK: OCR PAGE RENDER');
-        const ocrText = await ocrFirstPageOfPDF(file);
-        rawText = `${rawText || ''}\n${ocrText || ''}`.trim();
-      }
-    } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
-      log('IMAGE MODE: OCR');
-      rawText = await extractTextFromImage(file);
-    } else {
-      throw new Error('Unsupported statement format');
+    let mergedText = append ? (stmtText || '') : '';
+    let mergedRaw = append ? (stmtRawText || '') : '';
+    let mergedTxns = append ? [...stmtTxns] : [];
+    let reconAgg = append && stmtReconSummary
+      ? { ...stmtReconSummary, warnings: [...(stmtReconSummary.warnings || [])] }
+      : { correctedSign: 0, filledYear: 0, balanceDiff: null, warnings: [] };
+    let detectedTemplate = append ? stmtTemplateLabel : '';
+
+    for (const file of list) {
+      const { rawText, template, reconciled } = await parseStatementInput(file);
+      detectedTemplate = detectedTemplate && detectedTemplate !== template.label ? 'Mixed Templates' : template.label;
+      mergedRaw = `${mergedRaw}${mergedRaw ? '\n\n--- NEXT FILE ---\n\n' : ''}${rawText || ''}`;
+      mergedText = mergedRaw;
+      mergedTxns = [...mergedTxns, ...reconciled.txns];
+      reconAgg.correctedSign += reconciled.summary.correctedSign || 0;
+      reconAgg.filledYear += reconciled.summary.filledYear || 0;
+      if (typeof reconciled.summary.balanceDiff === 'number') reconAgg.balanceDiff = reconciled.summary.balanceDiff;
+      reconAgg.warnings.push(...(reconciled.summary.warnings || []));
     }
 
-    setStmtRawText(rawText || '');
-    log('PREPARING EXTRACTED TEXT VIEW...');
-    setStmtText(rawText || '');
+    const dedup = [];
+    const seen = new Set();
+    for (const t of mergedTxns) {
+      const key = `${t.date}|${t.description}|${t.amount}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      dedup.push(t);
+    }
+    dedup.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
+    const txns = applyMerchantRules(dedup, merchantRules);
 
-    log('PARSING TRANSACTIONS...');
-    const txnsRaw = parseStatementTextToTransactions(rawText || '');
-    const txns = applyMerchantRules(txnsRaw, merchantRules);
+    setStmtRawText(mergedRaw || '');
+    setStmtText(mergedText || '');
+    setStmtTxns(txns);
+    setStmtTemplateLabel(detectedTemplate || 'Generic');
+    setStmtReconSummary(reconAgg);
+
     if (!txns.length) {
       log('WARNING: NO TRANSACTIONS FOUND (HEURISTIC PARSER)');
-      setError('No transactions detected. Try a text-based PDF export or CSV statement. You can review extracted text below and try parsing again.');
+      setError('No transactions detected. Try a text-based PDF export or clearer screenshot. You can review extracted text and retry parse.');
     } else {
       log(`FOUND: ${txns.length} TRANSACTIONS`);
       if (merchantRules.length) {
         const learnedHits = txns.filter(tx => tx?.category && tx.category !== 'Uncategorized').length;
         if (learnedHits > 0) log(`MERCHANT LEARNING APPLIED: ${learnedHits} AUTO-CATEGORIZED`);
       }
+      if (list.length > 1) log(`MERGED ${list.length} FILES INTO SINGLE MONTH VIEW`);
     }
-    setStmtTxns(txns);
 
-    // Prepare default dashboard preview (even if empty; allows committing a baseline snapshot)
     const snap = transactionsToSnapshot(txns, stmtBankName);
     setParsedPreview(snap);
-
-    // Prepare payment-log export (header-only if none)
     const csv = txnsToPaymentLogCSV(txns);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     setCsvBlobUrl(url);
-
     log('SYNC READY (EDIT BEFORE COMMIT)');
   } catch (e) {
     log('ERROR: STATEMENT PARSE FAILED');
@@ -2328,6 +2349,7 @@ const handleStatementFile = async (file) => {
 
 const updateStmtTxn = (i, field, val) => {
   const arr = [...stmtTxns];
+  const wasLow = (arr[i]?.confidence || 'low') === 'low';
   const next = { ...arr[i], [field]: field === 'amount' ? (typeof val === 'number' ? val : (parseFloat(String(val).replace(/,/g,'')) || 0)) : val };
   if (field === 'category') {
     if (next.category) {
@@ -2338,6 +2360,9 @@ const updateStmtTxn = (i, field, val) => {
     }
   }
   arr[i] = withTxnConfidence(next, `${next.date || ''} ${next.description || ''} ${next.amount ?? ''}`);
+  if (wasLow || (arr[i]?.confidence || 'low') === 'low') {
+    setReviewedLowIndices(prev => (prev.includes(i) ? prev : [...prev, i]));
+  }
   setStmtTxns(arr);
   // keep preview + export in sync
   const snap = transactionsToSnapshot(arr, stmtBankName);
@@ -2350,6 +2375,7 @@ const updateStmtTxn = (i, field, val) => {
 
 const removeStmtTxn = (i) => {
   const arr = stmtTxns.filter((_, idx) => idx !== i);
+  setReviewedLowIndices(prev => prev.filter(idx => idx !== i).map(idx => (idx > i ? idx - 1 : idx)));
   setStmtTxns(arr);
   const snap = transactionsToSnapshot(arr, stmtBankName);
   setParsedPreview(snap);
@@ -2369,6 +2395,10 @@ const confidenceCounts = stmtRows.reduce((acc, row) => {
   acc[label] = (acc[label] || 0) + 1;
   return acc;
 }, { high: 0, medium: 0, low: 0 });
+const lowConfidenceIndices = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low').map(row => row.idx);
+const reviewedLowSet = new Set(reviewedLowIndices);
+const reviewedLowCount = lowConfidenceIndices.filter(idx => reviewedLowSet.has(idx)).length;
+const lowReviewComplete = lowConfidenceIndices.length === 0 || reviewedLowCount >= lowConfidenceIndices.length;
 const lowConfidenceRows = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low');
 const reviewedRow = reviewLowConfidence ? (lowConfidenceRows[reviewCursor] ? [lowConfidenceRows[reviewCursor]] : []) : [];
 const visibleStmtRows = showLowConfidence ? stmtRows : stmtRows.filter(row => (row.tx?.confidence || 'low') !== 'low');
@@ -2385,6 +2415,10 @@ useEffect(() => {
     setReviewCursor(Math.max(0, lowConfidenceRows.length - 1));
   }
 }, [reviewLowConfidence, reviewCursor, lowConfidenceRows.length]);
+
+useEffect(() => {
+  setReviewedLowIndices(prev => prev.filter(idx => lowConfidenceIndices.includes(idx)));
+}, [lowConfidenceIndices.join('|')]);
 
 useEffect(() => {
   if (!stmtTxns.length || !merchantRules.length) return;
@@ -2494,11 +2528,10 @@ useEffect(() => {
         const text = await file.text();
         processJSON(text);
       } else if (['png', 'jpg', 'jpeg', 'pdf'].includes(ext)) {
-        log('FORMAT REQUIRES EXTERNAL PARSE');
-        log('→ Drop this file into Claude chat');
-        log('→ Claude outputs JSON snapshot');
-        log('→ Paste JSON here via JSON tab');
-        setError(`${ext.toUpperCase()} files need Claude chat parsing. Use the JSON tab after.`);
+        log('ROUTING TO STATEMENT PARSER...');
+        setTab('statement');
+        await handleStatementFiles([file], 'replace');
+        return;
       } else {
         log(`ERROR: UNSUPPORTED FORMAT .${ext}`);
         setError(`Unsupported: .${ext}`);
@@ -2511,6 +2544,12 @@ useEffect(() => {
 
   const confirmSync = () => {
     if (!parsedPreview) return;
+    if (stmtTxns.length > 0 && !lowReviewComplete) {
+      setReviewLowConfidence(true);
+      setError(`Review required: ${reviewedLowCount}/${lowConfidenceIndices.length} low-confidence rows reviewed.`);
+      log(`BLOCKED: REVIEW REQUIRED (${reviewedLowCount}/${lowConfidenceIndices.length})`);
+      return;
+    }
     onSync(parsedPreview);
     setSuccess(true);
     log('✓ SYNC COMMITTED TO STORAGE');
@@ -2610,36 +2649,6 @@ useEffect(() => {
         <div className="sync-content" style={{ padding: 16 }}>
           {/* ── FILE IMPORT TAB ── */}
           {tab === 'file' && (<>
-            <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: 12, borderRadius: 4, marginBottom: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <div>
-                  <div style={{ fontSize: 10, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Plaid Account Link</div>
-                  <div style={{ fontSize: 10, color: t.textDim }}>
-                    {plaidApiBase
-                      ? 'Securely connect institutions and import recent transactions.'
-                      : 'Set VITE_PLAID_API_BASE to enable secure account linking.'}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button
-                    onClick={createPlaidLinkToken}
-                    disabled={!plaidApiBase || plaidLoading}
-                    style={{ ...btn, opacity: (!plaidApiBase || plaidLoading) ? 0.5 : 1 }}
-                  >
-                    {plaidLoading ? <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Database size={12} />}
-                    PREPARE LINK
-                  </button>
-                  <button
-                    onClick={() => openPlaidLink()}
-                    disabled={!plaidReady || plaidLoading}
-                    style={{ ...btnGhost, padding: '8px 10px', fontSize: 10, opacity: (!plaidReady || plaidLoading) ? 0.5 : 1 }}
-                  >
-                    CONNECT ACCOUNTS
-                  </button>
-                </div>
-              </div>
-              {plaidStatus && <div style={{ marginTop: 8, fontSize: 10, color: t.textSecondary }}>{plaidStatus}</div>}
-            </div>
             {/* Drop zone */}
             <div
               onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}
@@ -2725,10 +2734,18 @@ useEffect(() => {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', textAlign: 'center' }}>
         <FileText size={14} style={{ color: t.accent }} />
-        <span style={lbl}>Upload Statements (PDF / Screenshots)</span>
+        <span style={lbl}>Upload Statements (PDF / Screenshots · Multi-file Merge)</span>
       </div>
-      <input ref={stmtFileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" style={{ display: 'none' }}
-             onChange={(e) => { const f = e.target.files?.[0]; if (f) handleStatementFile(f); e.target.value = ''; }} />
+      <input ref={stmtFileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" multiple style={{ display: 'none' }}
+             onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) handleStatementFiles(fs, stmtPickMode); e.target.value = ''; }} />
+    </div>
+    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+      <button onClick={() => { setStmtPickMode('replace'); stmtFileRef.current?.click(); }} style={{ ...btn, padding: '8px 10px', fontSize: 10 }}>
+        <Upload size={12} /> REPLACE WITH FILES
+      </button>
+      <button onClick={() => { setStmtPickMode('append'); stmtFileRef.current?.click(); }} style={{ ...btnGhost, padding: '8px 10px', fontSize: 10 }}>
+        <Upload size={12} /> ADD MORE FILES
+      </button>
     </div>
 
     <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
@@ -2742,7 +2759,7 @@ useEffect(() => {
 
     {/* Drag/drop area */}
     <div
-      onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleStatementFile(e.dataTransfer.files[0]); }}
+      onDrop={e => { e.preventDefault(); setDragOver(false); const fs = Array.from(e.dataTransfer.files || []); if (fs.length) handleStatementFiles(fs, stmtTxns.length ? 'append' : 'replace'); }}
       onDragOver={e => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onClick={() => stmtFileRef.current?.click()}
@@ -2759,9 +2776,9 @@ useEffect(() => {
         ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
         : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
       <div style={{ fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-        {processing ? 'Processing...' : 'Drag & drop or click to select'}
+        {processing ? 'Processing...' : 'Drag & drop one or more files'}
       </div>
-      <div style={{ fontSize: 9, color: t.textGhost }}>PDF · PNG · JPG — parsed locally, no upload</div>
+      <div style={{ fontSize: 9, color: t.textGhost }}>PDF · PNG · JPG — parsed locally, merged into one timeline</div>
     </div>
 
     {/* Logs */}
@@ -2773,6 +2790,25 @@ useEffect(() => {
       }}>
         {logs.length ? logs.map((l, i) => <div key={i}>{l}</div>) : <div>Awaiting file…</div>}
       </div>
+      {(stmtTemplateLabel || stmtReconSummary) && (
+        <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel, fontSize: 10, color: t.textSecondary }}>
+          <div><span style={{ color: t.textDim }}>Template:</span> <span style={{ color: t.accent }}>{stmtTemplateLabel || 'Generic'}</span></div>
+          {stmtReconSummary && (
+            <div style={{ marginTop: 4 }}>
+              <span>Reconciliation:</span>{' '}
+              <span style={{ color: t.textDim }}>sign fixes {stmtReconSummary.correctedSign || 0}, year fills {stmtReconSummary.filledYear || 0}</span>
+              {typeof stmtReconSummary.balanceDiff === 'number' && (
+                <span style={{ marginLeft: 6, color: Math.abs(stmtReconSummary.balanceDiff) <= 25 ? t.accent : t.warn }}>
+                  Δ {stmtReconSummary.balanceDiff >= 0 ? '+' : ''}{stmtReconSummary.balanceDiff.toFixed(2)}
+                </span>
+              )}
+              {!!stmtReconSummary.warnings?.length && (
+                <div style={{ marginTop: 4, color: t.warn }}>{stmtReconSummary.warnings[0]}</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       {error && <div style={{ color: t.warn, fontSize: 11 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
     {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
       <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10 }}>
@@ -2780,8 +2816,14 @@ useEffect(() => {
           <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
           <button onClick={() => { 
             try { 
-              const tx = applyMerchantRules(parseStatementTextToTransactions(stmtRawText || stmtText), merchantRules); 
+              const tpl = detectStatementTemplate(stmtRawText || stmtText, stmtFile?.name || '');
+              const parsed = parseStatementTextToTransactions(stmtRawText || stmtText, { bankKey: tpl.key });
+              const reconciled = reconcileParsedTransactions(parsed, stmtRawText || stmtText, tpl.key);
+              const tx = applyMerchantRules(reconciled.txns, merchantRules); 
               setStmtTxns(tx); 
+              setReviewedLowIndices([]);
+              setStmtTemplateLabel(tpl.label || 'Generic');
+              setStmtReconSummary(reconciled.summary);
               const snap2 = transactionsToSnapshot(tx, stmtBankName); 
               setParsedPreview(snap2); 
               if (tx.length) setError(''); 
@@ -2814,6 +2856,9 @@ useEffect(() => {
               <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
               <span style={{ color: t.danger }}>Low {confidenceCounts.low || 0}</span>
             </div>
+            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: 10, color: lowReviewComplete ? t.accent : t.warn }}>
+              Review {reviewedLowCount}/{lowConfidenceIndices.length || 0}
+            </div>
             <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '8px 10px', fontSize: 10 }}>
               {showLowConfidence ? 'HIDE LOW-CONFIDENCE' : 'SHOW LOW-CONFIDENCE'}
             </button>
@@ -2833,7 +2878,7 @@ useEffect(() => {
                 <Download size={14} /> DOWNLOAD payment-log.csv
               </a>
             )}
-            <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, opacity: !parsedPreview ? 0.6 : 1 }}>
+            <button onClick={confirmSync} disabled={!parsedPreview || !lowReviewComplete} style={{ ...btn, opacity: (!parsedPreview || !lowReviewComplete) ? 0.6 : 1 }}>
               <Shield size={14} /> COMMIT SYNC
             </button>
           </div>
@@ -2846,6 +2891,15 @@ useEffect(() => {
             </button>
             <button onClick={() => setReviewCursor(c => Math.min(lowConfidenceRows.length - 1, c + 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 10 }} disabled={reviewCursor >= lowConfidenceRows.length - 1}>
               NEXT
+            </button>
+            <button
+              onClick={() => {
+                const idx = lowConfidenceRows[reviewCursor]?.idx;
+                if (typeof idx === 'number') setReviewedLowIndices(prev => (prev.includes(idx) ? prev : [...prev, idx]));
+              }}
+              style={{ ...btn, padding: '6px 8px', fontSize: 10 }}
+            >
+              MARK REVIEWED
             </button>
           </div>
         )}
