@@ -4295,6 +4295,12 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
   const fredNetLiq = (walcl != null && tga != null && rrp != null) ? (walcl - tga - rrp) / 1000 : null;
   const localNetLiq = Number(macro.netLiquidity);
   const netLiqT = Number.isFinite(localNetLiq) && localNetLiq > 0 ? localNetLiq : null;
+  const btcPrice = Number(macro.btcPrice) > 0 ? Number(macro.btcPrice) : (fredMacro?.btc?.value ?? null);
+  const fedWatchCut = Number(macro.fedWatchCut || fredMacro?.fedWatchCut?.value || 0);
+  const yieldCurve = Number.isFinite(Number(macro.yieldCurve10Y2Y))
+    ? Number(macro.yieldCurve10Y2Y)
+    : (Number(fredMacro?.yieldCurve10Y2Y?.value) || 0);
+  const nextFomc = macro.nextFomc || fredMacro?.nextFomc?.value || '—';
   const benner = macro.bennerPhase || 'B-Year (Sell)';
   const triggersActive = Number(macro.triggersActive || 0);
   const triggerList = Array.isArray(macro.activeTriggers) ? macro.activeTriggers.filter(Boolean) : [];
@@ -4320,19 +4326,19 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.crypto }}>{macro.btcPrice ? fmt(macro.btcPrice) : '—'}</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.crypto }}>{btcPrice ? fmt(btcPrice) : '—'}</div>
         </div>
         <div style={{ borderLeft: `2px solid ${t.warn}`, paddingLeft: 8 }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>FedWatch Cut</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{macro.fedWatchCut || 0}%</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{fedWatchCut}%</div>
         </div>
         <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Yield 10Y-2Y</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: (macro.yieldCurve10Y2Y || 0) >= 0 ? t.accent : t.danger }}>{macro.yieldCurve10Y2Y ?? 0}%</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: yieldCurve >= 0 ? t.accent : t.danger }}>{yieldCurve}%</div>
         </div>
         <div style={{ borderLeft: `2px solid ${t.purple}`, paddingLeft: 8 }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>{macro.nextFomc || '—'}</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>{nextFomc}</div>
         </div>
       </div>
       <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
@@ -4781,8 +4787,8 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
   return (
     <div style={{ marginBottom: 8, animation: 'fadeIn 0.4s ease-out' }}>
       <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderTop: `2px solid ${t.accent}30`, padding: '0', display: 'flex', alignItems: 'stretch', width: '100%', overflowX: 'auto' }}>
-        <PriceCell label="Bitcoin" value={marketLive?.btc?.price ?? null} chg={marketLive?.btc?.chgPct ?? null} color={t.crypto} />
-        <PriceCell label="ETH" value={marketLive?.eth?.price ?? null} chg={marketLive?.eth?.chgPct ?? null} color={t.purple} />
+        <PriceCell label="Bitcoin" value={fredMacro?.btc?.value ?? marketLive?.btc?.price ?? null} chg={fredMacro?.btc?.change ?? marketLive?.btc?.chgPct ?? null} color={t.crypto} />
+        <PriceCell label="ETH" value={fredMacro?.eth?.value ?? marketLive?.eth?.price ?? null} chg={fredMacro?.eth?.change ?? marketLive?.eth?.chgPct ?? null} color={t.purple} />
         <PriceCell label="Gold" value={gold} chg={goldChg} color="#FFD700" />
         <PriceCell label="Silver" value={silver} chg={silverChg} color="#C0C0C0" dec={2} />
         <PriceCell label="Oil" value={oil?.price ?? null} chg={oil?.chgPct ?? null} color={t.warn} dec={2} />

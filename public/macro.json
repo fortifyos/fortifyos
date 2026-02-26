@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-02-22",
+  "asOf": "2026-02-26",
   "walcl": {
     "date": "2026-02-18",
     "value": 6613395.0,
@@ -22,7 +22,7 @@
   },
   "gold": {
     "date": "2026-02-21",
-    "value": 2936.10,
+    "value": 2936.1,
     "change": 0.81
   },
   "yieldCurve": null,
@@ -32,5 +32,42 @@
     "rrp": "FRED API: RRPONTSYD",
     "silver": "FRED API: SLVPRUSD",
     "gold": "FRED API: GOLDAMGBD228NLBM"
+  },
+  "btc": {
+    "value": 68045,
+    "change": 3.107692266900099
+  },
+  "eth": {
+    "value": 2051.75,
+    "change": 6.526277611515729
+  },
+  "oil": {
+    "value": 65.58,
+    "change": -0.08
+  },
+  "spy": {
+    "value": 693.15,
+    "change": 1.58
+  },
+  "vix": {
+    "value": 17.93,
+    "change": -8.29
+  },
+  "sp500": {
+    "value": 6946.13,
+    "change": 1.59
+  },
+  "nasdaq": {
+    "value": 23152.078,
+    "change": 2.32
+  },
+  "fedWatchCut": {
+    "value": 0
+  },
+  "yieldCurve10Y2Y": {
+    "value": 0
+  },
+  "nextFomc": {
+    "value": "\u2014"
   }
 }
