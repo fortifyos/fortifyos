@@ -4288,63 +4288,64 @@ function PortfolioMod({ latest, visible, t }) {
 
 function MacroSignalsMod({ latest, visible, t, fredMacro }) {
   if (!visible) return null;
-  const macro = latest?.macro || {};
-  const walcl = fredMacro?.walcl?.value ?? null;
-  const tga = fredMacro?.tga?.value ?? null;
-  const rrp = fredMacro?.rrp?.value ?? null;
-  const fredNetLiq = (walcl != null && tga != null && rrp != null) ? (walcl - tga - rrp) / 1000 : null;
-  const localNetLiq = Number(macro.netLiquidity);
-  const netLiqT = Number.isFinite(localNetLiq) && localNetLiq > 0 ? localNetLiq : null;
-  const btcPrice = Number(macro.btcPrice) > 0 ? Number(macro.btcPrice) : (fredMacro?.btc?.value ?? null);
-  const fedWatchCut = Number(macro.fedWatchCut || fredMacro?.fedWatchCut?.value || 0);
-  const yieldCurve = Number.isFinite(Number(macro.yieldCurve10Y2Y))
-    ? Number(macro.yieldCurve10Y2Y)
-    : (Number(fredMacro?.yieldCurve10Y2Y?.value) || 0);
-  const nextFomc = macro.nextFomc || fredMacro?.nextFomc?.value || '—';
-  const benner = macro.bennerPhase || 'B-Year (Sell)';
-  const triggersActive = Number(macro.triggersActive || 0);
-  const triggerList = Array.isArray(macro.activeTriggers) ? macro.activeTriggers.filter(Boolean) : [];
+  const btcPrice = Number(fredMacro?.btc?.value || latest?.macro?.btcPrice || 0) || null;
+
+  // User-requested cycle: anchor from last year's September top region.
+  const cycleAnchor = new Date('2025-09-01T00:00:00Z');
+  const cycleLengthDays = 500;
+  const msDay = 86400000;
+  const utcToday = new Date();
+  const todayUTC = Date.UTC(utcToday.getFullYear(), utcToday.getMonth(), utcToday.getDate());
+  const anchorUTC = Date.UTC(cycleAnchor.getUTCFullYear(), cycleAnchor.getUTCMonth(), cycleAnchor.getUTCDate());
+  const daysFromAnchor = Math.floor((todayUTC - anchorUTC) / msDay);
+  const cycleDay = Math.max(0, daysFromAnchor + 1);
+  const daysRemaining = Math.max(0, cycleLengthDays - cycleDay);
+  const progressPct = Math.max(0, Math.min(100, (cycleDay / cycleLengthDays) * 100));
+  const targetDate = new Date(anchorUTC + (cycleLengthDays - 1) * msDay);
+  const targetLabel = targetDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const anchorLabel = cycleAnchor.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const cyclePhase = progressPct >= 90 ? 'LATE CYCLE' : progressPct >= 60 ? 'MID CYCLE' : 'EARLY CYCLE';
+  const phaseColor = progressPct >= 90 ? t.danger : progressPct >= 60 ? t.warn : t.accent;
 
   return (
-    <Card title="Macro Signals" visible={visible} delay={240} t={t}>
+    <Card title="BTC 500-Day Cycle" visible={visible} delay={240} t={t}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Benner Phase</div>
-          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.textPrimary }}>{benner}</div>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Price</div>
+          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.crypto }}>{btcPrice ? fmt(btcPrice) : '—'}</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
-          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.accent }}>
-            {fredNetLiq != null ? `$${fredNetLiq.toFixed(2)}T` : netLiqT != null ? `$${netLiqT.toFixed(2)}T` : '—'}
-          </div>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cycle Day</div>
+          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.textPrimary }}>{cycleDay} / {cycleLengthDays}</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk Triggers</div>
-          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: triggersActive >= 2 ? t.danger : triggersActive === 1 ? t.warn : t.accent }}>{triggersActive}</div>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Days Remaining</div>
+          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: phaseColor }}>{daysRemaining}</div>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
-        <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.crypto }}>{btcPrice ? fmt(btcPrice) : '—'}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+        <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Anchor</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>{anchorLabel}</div>
         </div>
         <div style={{ borderLeft: `2px solid ${t.warn}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>FedWatch Cut</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{fedWatchCut}%</div>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Target Day 500</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{targetLabel}</div>
         </div>
-        <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Yield 10Y-2Y</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: yieldCurve >= 0 ? t.accent : t.danger }}>{yieldCurve}%</div>
-        </div>
-        <div style={{ borderLeft: `2px solid ${t.purple}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>{nextFomc}</div>
+        <div style={{ borderLeft: `2px solid ${phaseColor}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Phase</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: phaseColor }}>{cyclePhase}</div>
         </div>
       </div>
       <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Active Trigger Set</div>
+        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+          Cycle Progress
+        </div>
+        <div style={{ height: 6, borderRadius: 999, background: t.elevated, border: `1px solid ${t.borderDim}`, overflow: 'hidden', marginBottom: 8 }}>
+          <div style={{ width: `${progressPct.toFixed(1)}%`, height: '100%', background: phaseColor }} />
+        </div>
         <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.45 }}>
-          {triggerList.length ? triggerList.join(' • ') : 'No active macro triggers. Run Sync to refresh local macro state.'}
+          Day {cycleDay} of {cycleLengthDays} ({progressPct.toFixed(1)}%). Countdown model anchored to {anchorLabel}.
         </div>
       </div>
     </Card>
