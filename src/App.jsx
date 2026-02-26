@@ -2650,14 +2650,52 @@ useEffect(() => {
     log('PARSING JSON SNAPSHOT...');
     try {
       const p = JSON.parse(text);
+      const hasSnapshotShape = ['date', 'netWorth', 'debts', 'eFund'].every(k => k in p);
+      if (hasSnapshotShape) {
+        // Native Fortify snapshot JSON path
+        p.date = sanitizeDate(p.date);
+        log('SCHEMA VALID');
+        log('RUNNING SENTINEL REDACTION FILTER...');
+        log('SYNC READY');
+        setParsedPreview(p);
+        return;
+      }
+
+      // Statement-parser JSON path: { records: [{ date, description, amount, ...}] }
+      const records = Array.isArray(p?.records) ? p.records : null;
+      if (records && records.length > 0) {
+        const txns = records
+          .map(r => ({
+            date: r?.date || r?.date_mmdd || '',
+            description: r?.description || '',
+            amount: typeof r?.amount === 'number' ? r.amount : parseFloat(r?.amount || 0),
+            category: r?.category || autoCategory(r?.description || ''),
+          }))
+          .filter(r =>
+            r.description &&
+            Number.isFinite(r.amount) &&
+            !/beginning balance|ending balance/i.test(r.description)
+          );
+
+        if (!txns.length) {
+          log('ERROR: JSON RECORDS FOUND BUT NO TRANSACTION ROWS');
+          setError('JSON contains records, but no usable transactions were found.');
+          return;
+        }
+
+        const source = p?.source_pdf ? 'Statement JSON' : 'JSON Records';
+        const snapshot = transactionsToSnapshot(txns, source);
+        log(`JSON RECORDS DETECTED: ${records.length}`);
+        log(`TRANSACTIONS EXTRACTED: ${txns.length}`);
+        log('MAPPED TO FORTIFY SNAPSHOT');
+        log('SYNC READY');
+        setParsedPreview(snapshot);
+        return;
+      }
+
       const missing = ['date', 'netWorth', 'debts', 'eFund'].filter(k => !(k in p));
-      if (missing.length) { log(`ERROR: MISSING KEYS — ${missing.join(', ')}`); setError(`Missing: ${missing.join(', ')}`); return; }
-      // Sanitize the date field
-      p.date = sanitizeDate(p.date);
-      log('SCHEMA VALID');
-      log('RUNNING SENTINEL REDACTION FILTER...');
-      log('SYNC READY');
-      setParsedPreview(p);
+      log(`ERROR: MISSING KEYS — ${missing.join(', ')}`);
+      setError(`Missing: ${missing.join(', ')} (or provide JSON with a records[] array)`);
     } catch (e) { log('ERROR: INVALID JSON SYNTAX'); setError('Invalid JSON syntax'); }
   };
 
