@@ -4406,7 +4406,8 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
   const qtqe   = walcl == null ? null : walcl > 6600000 ? 'QE' : walcl > 6200000 ? 'NEUTRAL' : 'QT';
 
   // ── Auto Narrative Engine ─────────────────────────────────────────
-  const stage = latest ? (latest.debts?.some(d => d.balance > 0) ? (latest.eFund?.balance >= 1000 ? 2 : 1) : 3) : 0;
+  const debtList = Array.isArray(latest?.debts) ? latest.debts : [];
+  const stage = latest ? (debtList.some(d => (d?.balance || 0) > 0) ? ((latest?.eFund?.balance || 0) >= 1000 ? 2 : 1) : 3) : 0;
   const buildNarrative = () => {
     const parts = [];
     // Liquidity signal
