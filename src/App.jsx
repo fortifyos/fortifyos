@@ -944,6 +944,28 @@ function sanitizeDate(dateStr) {
   return dateStr.slice(0, 10);
 }
 
+function parseLooseJson(rawText) {
+  let text = String(rawText || '').trim();
+  if (!text) throw new Error('empty');
+
+  text = text.replace(/^\uFEFF/, '');
+  text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+
+  const firstObj = text.indexOf('{');
+  const lastObj = text.lastIndexOf('}');
+  const firstArr = text.indexOf('[');
+  const lastArr = text.lastIndexOf(']');
+  if (firstObj !== -1 && lastObj !== -1 && lastObj > firstObj) {
+    text = text.slice(firstObj, lastObj + 1);
+  } else if (firstArr !== -1 && lastArr !== -1 && lastArr > firstArr) {
+    text = text.slice(firstArr, lastArr + 1);
+  }
+
+  // Allow common paste mistakes (trailing commas).
+  text = text.replace(/,\s*([}\]])/g, '$1');
+  return JSON.parse(text);
+}
+
 function nextAction(latest) {
   const debts = (latest?.debts || []).filter(d => !(d.totalTerms > 0)).sort((a, b) => (b.apr || 0) - (a.apr || 0));
   const ef = latest?.eFund || {};
@@ -2649,7 +2671,7 @@ useEffect(() => {
   const processJSON = (text) => {
     log('PARSING JSON SNAPSHOT...');
     try {
-      const p = JSON.parse(text);
+      const p = parseLooseJson(text);
       const hasSnapshotShape = ['date', 'netWorth', 'debts', 'eFund'].every(k => k in p);
       if (hasSnapshotShape) {
         // Native Fortify snapshot JSON path
@@ -2696,7 +2718,10 @@ useEffect(() => {
       const missing = ['date', 'netWorth', 'debts', 'eFund'].filter(k => !(k in p));
       log(`ERROR: MISSING KEYS — ${missing.join(', ')}`);
       setError(`Missing: ${missing.join(', ')} (or provide JSON with a records[] array)`);
-    } catch (e) { log('ERROR: INVALID JSON SYNTAX'); setError('Invalid JSON syntax'); }
+    } catch (e) {
+      log('ERROR: INVALID JSON SYNTAX');
+      setError('Invalid JSON syntax. Tip: use FILE IMPORT with the full .json file.');
+    }
   };
 
   const handleFile = async (file) => {
