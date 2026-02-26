@@ -4644,11 +4644,8 @@ function StatusStrip({ latest, t }) {
   );
 }
 
-function timeGreeting(d = new Date()) {
-  const h = d.getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
+function timeGreeting() {
+  return 'Good Day Sir';
 }
 
 function PulseTicker({ latest, t, now }) {
