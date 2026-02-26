@@ -5096,7 +5096,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 // ═══════════════════════════════════════════════════
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
-function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro }) {
   const [loading, setLoading] = useState(true);
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
@@ -5204,7 +5204,15 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
             style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: t.textPrimary, fontFamily: 'inherit', fontSize: 13 }}
           />
         </div>
-        <MacroBanner fredMacro={macro} visible={true} t={t} refreshNonce={0} rotating={true} />
+        <MacroBanner fredMacro={macro || fredMacro} visible={true} t={t} refreshNonce={0} rotating={true} />
+
+        <div style={{ marginTop: 12 }}>
+          <MacroSignalsMod latest={latest} visible={true} t={t} fredMacro={macro || fredMacro} />
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <MarketIntelligenceMod latest={latest} visible={true} t={t} isDark={isDark} fredMacro={macro || fredMacro} />
+        </div>
 
         <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12 }}>
           <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
@@ -5619,7 +5627,7 @@ function FortifyOSApp() {
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
     </div>
   );
