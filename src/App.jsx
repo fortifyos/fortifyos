@@ -2752,8 +2752,8 @@ useEffect(() => {
         const buffer = await file.arrayBuffer();
         processXLSX(buffer, file.name);
       } else if (ext === 'json') {
-        const text = await file.text();
-        processJSON(text);
+        log('JSON IMPORT DISABLED FOR THIS FLOW');
+        setError('JSON import disabled. Use File Import for CSV/PDF/screenshots.');
       } else if (['png', 'jpg', 'jpeg', 'pdf'].includes(ext)) {
         log('ROUTING TO STATEMENT PARSER...');
         setTab('statement');
@@ -2864,7 +2864,7 @@ useEffect(() => {
         </div>
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: `1px solid ${t.borderDim}` }}>
-          {[{ k: 'file', l: 'File Import' }, { k: 'statement', l: 'Statements' }, { k: 'json', l: 'JSON' }, { k: 'guided', l: 'Manual' }].map(tb => (
+          {[{ k: 'file', l: 'File Import' }, { k: 'statement', l: 'Statements' }, { k: 'guided', l: 'Manual' }].map(tb => (
             <button key={tb.k} onClick={() => { setTab(tb.k); setError(''); setParsedPreview(null); }} style={{
               flex: 1, padding: 10, background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase',
@@ -2889,14 +2889,14 @@ useEffect(() => {
                 background: dragOver ? t.accentMuted : t.void, cursor: 'pointer',
                 transition: 'all 0.2s', marginBottom: 12, borderRadius: 4,
               }}>
-              <input ref={fileRef} type="file" accept=".csv,.json" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFile(e.target.files[0]); }} />
+              <input ref={fileRef} type="file" accept=".csv,.pdf,.png,.jpg,.jpeg" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFile(e.target.files[0]); }} />
               {processing
                 ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
                 : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
               <span style={{ fontSize: 10, color: t.textDim, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 {processing ? 'Processing...' : 'Drop file or click to browse'}
               </span>
-              <span style={{ fontSize: 9, color: t.textGhost, marginTop: 4 }}>.csv .json</span>
+              <span style={{ fontSize: 9, color: t.textGhost, marginTop: 4 }}>.csv .pdf .png .jpg</span>
             </div>
 
             {/* Supported banks */}
