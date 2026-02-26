@@ -931,7 +931,7 @@ function Card({ title, children, visible = true, delay = 0, alert = false, t }) 
       onMouseEnter={e => { if (!alert) e.currentTarget.style.borderColor = t.borderMid; }}
       onMouseLeave={e => { if (!alert) e.currentTarget.style.borderColor = t.borderDim; }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{title}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{title}</span>
         {alert && <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.danger, boxShadow: `0 0 6px ${t.danger}` }} />}
       </div>
       {children}
@@ -1000,7 +1000,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <nav style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}` }}>
         <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
           <Shield size={18} style={{ color: accent }} />
-          <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={onDocs} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>DOCS</button>
@@ -1013,11 +1013,11 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           {/* Pain hook */}
           <div style={{ display: 'inline-block', background: t.surface, border: `1px solid ${t.borderDim}`, padding: '8px 16px', marginBottom: 32, fontSize: 13, color: t.textSecondary }}>
-            <span><strong style={{ color: t.danger, fontFamily: "'Space Mono', monospace" }}>${dailyBurn.toFixed(2)}</strong> disappeared from your account today in interest alone</span>
+            <span><strong style={{ color: t.danger, fontFamily: "'JetBrains Mono', monospace" }}>${dailyBurn.toFixed(2)}</strong> disappeared from your account today in interest alone</span>
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontFamily: "'Space Mono', monospace", fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.0, letterSpacing: '-0.03em', marginBottom: 20 }}>
+          <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.0, letterSpacing: '-0.03em', marginBottom: 20 }}>
             <span className="hero-title" style={{ display: 'block' }}>Stop Tracking.</span>
             <span className="hero-title" style={{ display: 'block', color: accent, textShadow: isDark ? `0 0 10px ${accent}66` : 'none' }}>Start Enforcing.</span>
           </h1>
@@ -1031,13 +1031,13 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'center', maxWidth: 460, margin: '0 auto 0' }}>
             {hasData ? (
               <>
-                <button onClick={onDashboard} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
-                <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'Space Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>SYNC NEW DATA</button>
+                <button onClick={onDashboard} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
+                <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>SYNC NEW DATA</button>
               </>
             ) : (
               <>
-                <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
-                <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'Space Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>HOW IT WORKS</button>
+                <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
+                <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>HOW IT WORKS</button>
               </>
             )}
           </div>
@@ -1054,7 +1054,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           ].map((c, i) => (
             <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 20 }}>
               <c.Icon size={20} style={{ color: accent, marginBottom: 12 }} />
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, marginBottom: 8, color: t.textPrimary }}>{c.title}</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, marginBottom: 8, color: t.textPrimary }}>{c.title}</div>
               <div style={{ fontSize: 12, color: t.textDim, lineHeight: 1.65 }}>{c.desc}</div>
             </div>
           ))}
@@ -1065,7 +1065,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>How It Works</div>
-          <h2 style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Three steps. Five minutes a day.</h2>
+          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Three steps. Five minutes a day.</h2>
 
           <div className="sync-row-3" style={{ display: 'grid', gap: 2 }}>
             {[
@@ -1075,10 +1075,10 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             ].map((s, i) => (
               <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 20, position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 24, fontWeight: 700, color: accent }}>{s.num}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 24, fontWeight: 700, color: accent }}>{s.num}</span>
                   <s.Icon size={16} style={{ color: t.textDim }} />
                 </div>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700, marginBottom: 6, color: t.textPrimary, letterSpacing: '0.04em' }}>{s.title}</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, marginBottom: 6, color: t.textPrimary, letterSpacing: '0.04em' }}>{s.title}</div>
                 <div style={{ fontSize: 11, color: t.textDim, lineHeight: 1.65 }}>{s.desc}</div>
               </div>
             ))}
@@ -1090,7 +1090,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>The Journey</div>
-          <h2 style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 6, color: t.textPrimary }}>7 Stages. Mathematically Gated.</h2>
+          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 6, color: t.textPrimary }}>7 Stages. Mathematically Gated.</h2>
           <p style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24, maxWidth: 560 }}>Every user enters at their current stage. The system moves you forward — and blocks you from skipping ahead. Your stage is calculated from real data, never a static label.</p>
 
           {/* Stage progress bar */}
@@ -1115,7 +1115,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
               { stage: '4–7', label: 'WEALTH BUILDING', detail: 'Passive income grows from covering needs → current life → dream life → generational impact.', color: accent },
             ].map((r, i) => (
               <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'center', background: t.surface, border: `1px solid ${t.borderDim}`, padding: '12px 16px' }}>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 700, color: r.color, minWidth: 36 }}>{r.stage}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: r.color, minWidth: 36 }}>{r.stage}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, letterSpacing: '0.04em', marginBottom: 2 }}>{r.label}</div>
                   <div style={{ fontSize: 11, color: t.textDim, lineHeight: 1.5 }}>{r.detail}</div>
@@ -1130,7 +1130,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <Lock size={24} style={{ color: accent, marginBottom: 16 }} />
-          <h2 style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, marginBottom: 10, color: t.textPrimary }}>Instructions in the cloud. Data on your machine.</h2>
+          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, marginBottom: 10, color: t.textPrimary }}>Instructions in the cloud. Data on your machine.</h2>
           <p style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.7, maxWidth: 520, marginBottom: 20 }}>The 20 protocol files that power KNOX contain zero financial data. Your actual numbers — balances, transactions, debts — live in 4 local CSV files that never upload. SSNs and account numbers are auto-redacted before any processing.</p>
           <div className="sync-row-3" style={{ display: 'grid', gap: 12, width: '100%' }}>
             {[
@@ -1164,7 +1164,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>FAQ</div>
-          <h2 style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Common Questions</h2>
+          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Common Questions</h2>
 
           {faqs.map((f, i) => (
             <div key={i} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
@@ -1186,11 +1186,11 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ FINAL CTA ═══ */}
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 10, color: t.textPrimary }}>
+          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 10, color: t.textPrimary }}>
             Ready to stop leaking <span style={{ color: t.danger }}>$6.05/day</span>?
           </h2>
           <p style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24 }}>Sync your first bank statement. The system does the rest.</p>
-          <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
+          <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
         </div>
       </section>
 
@@ -1224,7 +1224,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
   const sty = {
     nav: { position: 'sticky', top: 0, zIndex: 50, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.surface, borderBottom: `1px solid ${t.borderDim}`, backdropFilter: 'blur(8px)' },
     container: { maxWidth: 780, margin: '0 auto', padding: '24px 24px 80px' },
-    h2: { fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.01em', color: accent, marginTop: 48, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${t.borderDim}` },
+    h2: { fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.01em', color: accent, marginTop: 48, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${t.borderDim}` },
     h3: { fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary, marginTop: 20, marginBottom: 8 },
     p: { fontSize: 13, color: t.textSecondary, marginBottom: 14, lineHeight: 1.7 },
     code: { background: t.surface, color: accent, padding: '2px 6px', border: `1px solid ${t.borderDim}`, fontSize: 12 },
@@ -1306,7 +1306,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <span style={{ color: t.borderMid }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
             <Shield size={14} style={{ color: accent }} />
-            <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 700, fontSize: 13, color: accent }}>FORTIFYOS</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, color: accent }}>FORTIFYOS</span>
             <span style={{ fontSize: 10, color: t.textDim }}>DOCS</span>
           </div>
         </div>
@@ -1316,7 +1316,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
       <div style={sty.container}>
         {/* Hero */}
         <div style={{ padding: '32px 0 24px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 32 }}>
-          <h1 style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: 8 }}>
+          <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 28, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: 8 }}>
             FORTIFYOS <span style={{ color: accent }}>// Docs</span>
           </h1>
           <p style={{ color: t.textSecondary, fontSize: 13, maxWidth: 560, lineHeight: 1.7 }}>System field manual. From first sync to financial independence — the architecture, enforcement logic, and methodology behind every calculation.</p>
@@ -1401,7 +1401,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           ].map((c, i) => (
             <div key={i} style={sty.card}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, color: accent }}>{c.num}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: accent }}>{c.num}</span>
                 <span style={{ fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{c.title}</span>
               </div>
               <div style={{ fontSize: 11, color: t.textDim, lineHeight: 1.6 }}>{c.desc}</div>
@@ -1545,7 +1545,7 @@ cd %USERPROFILE%\\FORTIFY && claude
               { n: '2', label: 'Working dirs', color: t.textDim },
             ].map((c, i) => (
               <div key={i} style={{ flex: 1, textAlign: 'center', padding: '8px 4px' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: c.color, fontFamily: "'Space Mono', monospace" }}>{c.n}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: c.color, fontFamily: "'JetBrains Mono', monospace" }}>{c.n}</div>
                 <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.label}</div>
               </div>
             ))}
@@ -1573,7 +1573,7 @@ cd %USERPROFILE%\\FORTIFY && claude
             { num: '3', q: 'Does this decrease DRAG or increase VELOCITY?', detail: 'If NO → system halts and explains before proceeding' },
           ].map((c, i) => (
             <div key={i} style={{ ...sty.card, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: accent, flexShrink: 0 }}>{c.num}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: accent, flexShrink: 0 }}>{c.num}</span>
               <div>
                 <div style={{ fontSize: 12, color: t.textPrimary, marginBottom: 4 }}>{c.q}</div>
                 <div style={{ fontSize: 10, color: t.textDim }}>{c.detail}</div>
@@ -2630,7 +2630,7 @@ useEffect(() => {
         <div style={{ padding: '14px 16px', borderBottom: `1px solid ${t.borderDim}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.elevated }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Database size={14} style={{ color: t.accent }} />
-            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary }}>Universal Sync Terminal</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary }}>Universal Sync Terminal</span>
           </div>
           <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'transparent', border: 'none', padding: 0, margin: 0, cursor: 'pointer' }}><X size={16} style={{ color: t.textDim }} /></button>
         </div>
@@ -2717,7 +2717,7 @@ useEffect(() => {
             {success && <div style={{ color: t.accent, fontSize: 11, marginBottom: 8 }}>✓ SYNC COMMITTED</div>}
 
             {parsedPreview && (
-              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
+              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
             )}
 
             {/* Privacy */}
@@ -3017,7 +3017,7 @@ useEffect(() => {
       <button onClick={confirmSync} style={{
         width: '100%', marginTop: 12, padding: '14px 0',
         background: t.accent, color: '#000',
-        border: 'none', fontFamily: "'Space Mono', monospace",
+        border: 'none', fontFamily: "'JetBrains Mono', monospace",
         fontSize: 14, fontWeight: 700, cursor: 'pointer',
         textTransform: 'uppercase', letterSpacing: '0.08em',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -3028,7 +3028,7 @@ useEffect(() => {
       <div style={{
         width: '100%', marginTop: 12, padding: '14px 0',
         background: t.elevated, border: `1px solid ${t.borderDim}`,
-        fontFamily: "'Space Mono', monospace", fontSize: 11,
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
         color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
       }}>
         SYNC DISABLED — UPLOAD &amp; PARSE A STATEMENT FIRST
@@ -3055,8 +3055,8 @@ useEffect(() => {
                 </div>
               </div>
             )}
-            {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
-            {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : (t === THEMES.dark ? '#000' : '#FFF'), border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
+            {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
+            {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : (t === THEMES.dark ? '#000' : '#FFF'), border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
             {error && <div style={{ color: t.danger, fontSize: 11, marginTop: 8 }}><AlertCircle size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />{error}</div>}
           </>)}
 
@@ -3305,7 +3305,7 @@ useEffect(() => {
                 );
               })()}
               {success && <div style={{ color: t.accent, fontSize: 11 }}>✓ SYNC COMMITTED</div>}
-              <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
+              <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
             </div>
           )}
         </div>
@@ -3325,7 +3325,7 @@ function SettingsPanel({ open, settings, onToggle, onExport, onClear, onClose, o
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
       <div style={{ width: 280, background: t.surface, borderLeft: `1px solid ${t.borderDim}`, height: '100%', padding: 20, overflow: 'auto', animation: 'slideIn 0.25s ease-out' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Settings</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Settings</span>
           <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'transparent', border: 'none', padding: 0, margin: 0, cursor: 'pointer' }}><X size={14} style={{ color: t.textSecondary }} /></button>
         </div>
         <div style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Theme</div>
@@ -3791,7 +3791,7 @@ function BudgetMod({ latest, visible, t }) {
             border: `1px solid ${v.severity === 'danger' ? t.danger : t.warn}30`,
             display: 'flex', alignItems: 'center', gap: 8, fontSize: 10,
           }}>
-            <span style={{ color: v.severity === 'danger' ? t.danger : t.warn, fontSize: 8, fontWeight: 700, fontFamily: "'Space Mono', monospace", flexShrink: 0 }}>{v.code}</span>
+            <span style={{ color: v.severity === 'danger' ? t.danger : t.warn, fontSize: 8, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{v.code}</span>
             <span style={{ color: t.textSecondary }}>{v.text}</span>
           </div>
         ))}
@@ -4155,7 +4155,7 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Activity size={14} style={{ color: t.accent }} />
           <div>
-            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Market Intelligence</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Market Intelligence</div>
             <div style={{ fontSize: 9, color: t.textDim }}>{fredMacro?.asOf ? `FRED as of ${fredMacro.asOf}` : 'FRED Macro Narrative'}</div>
           </div>
         </div>
@@ -4203,7 +4203,7 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
       <div style={{ padding: '10px 14px', border: `1px solid ${t.accent}20`, background: t.accentMuted, borderRadius: 4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
           <Eye size={10} style={{ color: t.accent }} />
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Macro Narrative</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Macro Narrative</span>
         </div>
         <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.6 }}>{buildNarrative()}</div>
       </div>
@@ -4613,7 +4613,7 @@ function StatusStrip({ latest, t }) {
       <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', gap: 0 }}>
         {/* Stage */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
             <div style={{ fontSize: 8, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 Defense' : stage === 3 ? '🔓 Liberation' : '📈 Wealth'}</div>
@@ -4720,7 +4720,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
-        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
       </div>
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -4935,7 +4935,7 @@ export default function FortifyOS() {
   return (
     <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght;700&display=swap');
         * { box-sizing: border-box; margin: 0; }
         
 /* Responsive layout */
@@ -5002,7 +5002,7 @@ export default function FortifyOS() {
         }
       `}</style>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
-      {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'Space Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
+      {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} />}
