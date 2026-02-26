@@ -4680,7 +4680,7 @@ function DirectiveMod({ visible, latest, t }) {
 // ═══════════════════════════════════════════════════
 // MARKET STRIP — top-line risk/market indicators
 // ═══════════════════════════════════════════════════
-function MacroBanner({ fredMacro, visible, t }) {
+function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
   const [marketLive, setMarketLive] = useState(null);
 
   useEffect(() => {
@@ -4740,7 +4740,7 @@ function MacroBanner({ fredMacro, visible, t }) {
     })();
 
     return () => { cancelled = true; };
-  }, [visible]);
+  }, [visible, refreshNonce]);
 
   if (!visible) return null;
 
@@ -4916,7 +4916,7 @@ function PulseTicker({ latest, t, now }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -4955,7 +4955,15 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <button onClick={() => setSyncOpen(true)} style={{ background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}><RefreshCw size={10} /> Sync</button>
+        <button
+          onClick={() => onRefreshIntel && onRefreshIntel()}
+          style={{ background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
+          title="Refresh Macro + Market Intelligence"
+        >
+          <RefreshCw size={10} style={{ animation: intelRefreshing ? 'spin 0.9s linear infinite' : 'none' }} />
+          {intelRefreshing ? 'Refreshing…' : 'Sync Intel'}
+        </button>
+        <button onClick={() => setSyncOpen(true)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}><Upload size={10} /> Data Sync</button>
         <Settings size={16} style={{ color: t.textSecondary, cursor: 'pointer' }} onClick={() => setSettingsOpen(true)} />
       </div>
     </header>
@@ -4968,7 +4976,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         </div>
       </div>
       <PulseTicker latest={latest} t={t} now={now} />
-      <MacroBanner fredMacro={fredMacro} visible={vis.includes('macroBanner')} t={t} />
+      <MacroBanner fredMacro={fredMacro} visible={vis.includes('macroBanner')} t={t} refreshNonce={intelRefreshNonce} />
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
         <DirectiveMod visible={vis.includes('directive')} latest={latest} t={t} />
@@ -5006,18 +5014,31 @@ function FortifyOSApp() {
   const [syncFlash, setSyncFlash] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
   const [fredMacro, setFredMacro] = useState(null);
+  const [intelRefreshing, setIntelRefreshing] = useState(false);
+  const [intelRefreshNonce, setIntelRefreshNonce] = useState(0);
   const t = isDark ? THEMES.dark : THEMES.light;
 
-  // Fetch FRED macro data from GitHub Actions-generated macro.json
-  // BASE_URL ensures correct path on GitHub Pages (/fortifyos/macro.json)
-  // Cache-bust with today's date so CDN doesn't serve stale data
-  useEffect(() => {
-    const bust = new Date().toISOString().slice(0, 10);
-    fetch(`${import.meta.env.BASE_URL}macro.json?v=${bust}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.walcl || d?.tga || d?.rrp) setFredMacro(d); })
-      .catch(() => {});
+  const refreshIntel = useCallback(async () => {
+    setIntelRefreshing(true);
+    try {
+      const bust = Date.now();
+      const r = await fetch(`${import.meta.env.BASE_URL}macro.json?v=${bust}`, { cache: 'no-store' });
+      const d = r.ok ? await r.json() : null;
+      if (d) setFredMacro(d);
+      setIntelRefreshNonce(n => n + 1);
+      setSyncFlash(true);
+      setTimeout(() => setSyncFlash(false), 600);
+    } catch (_) {
+      // Keep last known macro state on refresh failures.
+    } finally {
+      setIntelRefreshing(false);
+    }
   }, []);
+
+  // Initial macro load
+  useEffect(() => {
+    refreshIntel();
+  }, [refreshIntel]);
 
   useEffect(() => {
     (async () => {
@@ -5236,7 +5257,7 @@ function FortifyOSApp() {
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
     </div>
   );
 }
