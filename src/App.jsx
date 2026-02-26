@@ -201,34 +201,50 @@ function categorize(desc) {
 function normalizeDateLike(s) {
   if (!s) return '';
   const str = s.trim();
+  const validMD = (mm, dd) => mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31;
   // MM/DD/YYYY or MM/DD/YY or MM-DD-YYYY
   let m = str.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
   if (m) {
-    let mm = String(m[1]).padStart(2,'0');
-    let dd = String(m[2]).padStart(2,'0');
+    const mmN = Number(m[1]);
+    const ddN = Number(m[2]);
+    if (!validMD(mmN, ddN)) return '';
+    let mm = String(mmN).padStart(2,'0');
+    let dd = String(ddN).padStart(2,'0');
     let yy = m[3] ? String(m[3]) : '';
     if (yy.length === 2) yy = '20' + yy;
     if (!yy) return `${mm}/${dd}`;
+    const dt = new Date(`${yy}-${mm}-${dd}T00:00:00`);
+    if (Number.isNaN(dt.getTime()) || (dt.getMonth() + 1) !== mmN || dt.getDate() !== ddN) return '';
     return `${yy}-${mm}-${dd}`;
   }
   // YYYY-MM-DD
   m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (m) return str;
+  if (m) {
+    const mmN = Number(m[2]);
+    const ddN = Number(m[3]);
+    if (!validMD(mmN, ddN)) return '';
+    return str;
+  }
   // Month name (Jan 5 2025)
   m = str.match(/^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s*(\d{1,2})(?:,?\s*(\d{4}))?$/i);
   if (m) {
     const map = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',sept:'09',oct:'10',nov:'11',dec:'12'};
     const mm = map[m[1].toLowerCase()];
-    const dd = String(m[2]).padStart(2,'0');
+    const ddN = Number(m[2]);
+    if (!validMD(Number(mm), ddN)) return '';
+    const dd = String(ddN).padStart(2,'0');
     const yy = m[3] ? String(m[3]) : '';
     return yy ? `${yy}-${mm}-${dd}` : `${mm}/${dd}`;
   }
-  return str;
+  return '';
 }
 
 function parseAmountLike(s) {
   if (!s) return null;
-  let str = String(s).trim();
+  const raw = String(s).trim();
+  let str = raw;
+  const hadDollar = /\$/.test(raw);
+  const hadSignedMarker = /[()+-]|(?:cr|dr)\b/i.test(raw);
   // parentheses = negative
   let neg = false;
   if (str.startsWith('(') && str.endsWith(')')) { neg = true; str = str.slice(1, -1); }
@@ -238,10 +254,13 @@ function parseAmountLike(s) {
   // sometimes trailing CR/DR
   if (/cr$/i.test(str)) { str = str.replace(/cr$/i,''); }
   if (/dr$/i.test(str)) { str = str.replace(/dr$/i,''); neg = true; }
+  // Suppress OCR noise like account IDs unless explicitly money-like.
+  if (!/\./.test(str) && !hadDollar && !hadSignedMarker) return null;
   const m = str.match(/^-?\d+(?:\.\d{1,2})?$/);
   if (!m) return null;
   const n = parseFloat(str);
   if (Number.isNaN(n)) return null;
+  if (Math.abs(n) > 1e7) return null;
   return neg ? -Math.abs(n) : n;
 }
 
@@ -267,6 +286,33 @@ function parseStatementTextToTransactions(text) {
   };
 
   const txns = [];
+  const isLikelyBalanceToken = (line, token) => {
+    const low = line.toLowerCase();
+    const idx = line.indexOf(token);
+    if (idx < 0) return false;
+    const near = low.slice(Math.max(0, idx - 24), Math.min(low.length, idx + token.length + 24));
+    return /\bbalance\b|\bavailable\b|\bbal\.\b/.test(near);
+  };
+  const pickAmountToken = (line, amountTokens) => {
+    const parsed = amountTokens
+      .map(tok => ({ tok, val: parseAmountLike(tok), idx: line.indexOf(tok) }))
+      .filter(x => x.val !== null);
+    if (!parsed.length) return null;
+    if (parsed.length === 1) return parsed[0].tok;
+
+    const hasBalanceWord = /\brunning bal|available balance|balance\b|ending balance\b/i.test(line);
+    if (hasBalanceWord) {
+      const nonBalance = parsed.filter(p => !isLikelyBalanceToken(line, p.tok));
+      if (nonBalance.length) return nonBalance[nonBalance.length - 1].tok;
+    }
+
+    const sorted = [...parsed].sort((a, b) => a.idx - b.idx);
+    const last = sorted[sorted.length - 1];
+    const prev = sorted[sorted.length - 2];
+    const lineLooksTxn = /\b(?:ach|withdrawal|payment|purchase|debit|deposit|dep|transfer|autopay|card)\b/i.test(line);
+    if (lineLooksTxn && Math.abs(last.val) > Math.abs(prev.val) * 1.8) return prev.tok;
+    return last.tok;
+  };
 
   const inferDirection = (line, desc = '') => {
     const s = `${line || ''} ${desc || ''}`.toLowerCase();
@@ -325,7 +371,7 @@ function parseStatementTextToTransactions(text) {
       const date = normalizeDateLike(m[1]);
       const desc = (m[2] || '').trim();
       const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
-      if (amt !== null) txns.push({ date, description: desc, amount: amt });
+      if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) txns.push({ date, description: desc, amount: amt });
       continue;
     }
 
@@ -335,7 +381,7 @@ function parseStatementTextToTransactions(text) {
       const desc = (m[1] || '').trim();
       const date = normalizeDateLike(m[2]);
       const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
-      if (amt !== null) txns.push({ date, description: desc, amount: amt });
+      if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) txns.push({ date, description: desc, amount: amt });
       continue;
     }
 
@@ -351,23 +397,8 @@ function parseStatementTextToTransactions(text) {
 
     const amounts = Array.from(line.matchAll(moneyTokenRx)).map(x => x[0]).filter(Boolean);
     if (!amounts.length) continue;
-
-    let pickedAmtToken = amounts[amounts.length - 1];
-    if (amounts.length >= 2) {
-      const last = amounts[amounts.length - 1];
-      const prev = amounts[amounts.length - 2];
-      const lastAmt = parseAmountLike(last);
-      const prevAmt = parseAmountLike(prev);
-      const isZeroLike = (n) => n !== null && Math.abs(n) < 0.005;
-      const looksLikeFeeAmountTable = /\b(?:cash app|standard transfer|direct deposit|loan repayment|loan drawdown|instant transfer|to savings|cash app card)\b/i.test(line);
-      const looksLikeRunningBalance = /\b(?:ach|withdrawal|payment|balance)\b/i.test(line);
-      // Cash App-style rows are Date/Description/Details/Fee/Amount -> choose final amount.
-      if (looksLikeFeeAmountTable) pickedAmtToken = last;
-      // Fee + amount format where fee is often 0.00.
-      else if (isZeroLike(prevAmt) && !isZeroLike(lastAmt)) pickedAmtToken = last;
-      // Running-balance style rows are usually amount then balance.
-      else if (looksLikeRunningBalance && !isZeroLike(prevAmt) && !isZeroLike(lastAmt)) pickedAmtToken = prev;
-    }
+    const pickedAmtToken = pickAmountToken(line, amounts);
+    if (!pickedAmtToken) continue;
     const amt = applyDirection(parseAmountLike(pickedAmtToken), line, '', pickedAmtToken);
     if (amt === null) continue;
 
@@ -381,7 +412,10 @@ function parseStatementTextToTransactions(text) {
     const date = normalizeDateLike(dateStr);
 
     // Avoid adding lines where "description" is empty or obviously just column labels
+    if (!date) continue;
     if (!desc || /balance|total|statement|payment due/i.test(desc)) continue;
+    if ((desc.match(/[A-Za-z]/g) || []).length < 3) continue;
+    if (Math.abs(amt) < 0.01) continue;
 
     txns.push({ date, description: desc, amount: amt });
   }
