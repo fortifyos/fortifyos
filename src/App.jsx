@@ -4717,12 +4717,14 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
           return { price, chgPct };
         };
 
-        const [cgRes, oilY, vixY, spxY, nasY] = await Promise.allSettled([
+        const [cgRes, oilY, vixY, spxY, nasY, goldY, silverY] = await Promise.allSettled([
           fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'),
           fetchYahoo('CL=F'),
           fetchYahoo('^VIX'),
           fetchYahoo('^GSPC'),
           fetchYahoo('^IXIC'),
+          fetchYahoo('GC=F'),
+          fetchYahoo('SI=F'),
         ]);
 
         const cg = cgRes.status === 'fulfilled' && cgRes.value.ok ? await cgRes.value.json() : null;
@@ -4733,6 +4735,8 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
           vix: vixY.status === 'fulfilled' ? vixY.value : null,
           sp500: spxY.status === 'fulfilled' ? spxY.value : null,
           nasdaq: nasY.status === 'fulfilled' ? nasY.value : null,
+          gold: goldY.status === 'fulfilled' ? goldY.value : null,
+          silver: silverY.status === 'fulfilled' ? silverY.value : null,
         };
         next.spy = next.sp500 ? { ...next.sp500 } : null;
         if (!cancelled) setMarketLive(next);
@@ -4745,10 +4749,10 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
   if (!visible) return null;
 
   const rrp     = fredMacro?.rrp?.value    ?? null;
-  const silver  = fredMacro?.silver?.value ?? null;
-  const silverChg = fredMacro?.silver?.change ?? null;
-  const gold    = fredMacro?.gold?.value   ?? null;
-  const goldChg = fredMacro?.gold?.change  ?? null;
+  const silver  = fredMacro?.silver?.value ?? marketLive?.silver?.price ?? null;
+  const silverChg = fredMacro?.silver?.change ?? marketLive?.silver?.chgPct ?? null;
+  const gold    = fredMacro?.gold?.value   ?? marketLive?.gold?.price ?? null;
+  const goldChg = fredMacro?.gold?.change  ?? marketLive?.gold?.chgPct ?? null;
   const oil = fredMacro?.oil ? { price: fredMacro.oil.value, chgPct: fredMacro.oil.change } : (marketLive?.oil || null);
   const spy = fredMacro?.spy ? { price: fredMacro.spy.value, chgPct: fredMacro.spy.change } : (marketLive?.spy || null);
   const vix = fredMacro?.vix ? { price: fredMacro.vix.value, chgPct: fredMacro.vix.change } : (marketLive?.vix || null);
