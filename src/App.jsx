@@ -5146,9 +5146,9 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 28px' }}>
+      <div className="ms-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 28px' }}>
         {/* Top Bar */}
-        <div style={{
+        <div className="ms-topbar" style={{
           border: `1px solid ${t.borderMid}`,
           background: `linear-gradient(180deg, ${t.surface}, ${t.void})`,
           borderRadius: 14,
@@ -5158,7 +5158,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div className="ms-top-left" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               <Shield size={14} style={{ color: t.accent }} />
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
@@ -5169,7 +5169,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div className="ms-top-actions" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <button onClick={load} style={{
               background: 'transparent', border: `1px solid ${t.borderMid}`, color: t.textPrimary,
               padding: '8px 10px', borderRadius: 10, fontFamily: 'inherit', cursor: 'pointer',
@@ -5189,8 +5189,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
         </div>
 
         {/* Search + Tabs */}
-        <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
-          <div style={{
+        <div className="ms-search-tabs" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
+          <div className="ms-search-box" style={{
             border: `1px solid ${t.borderMid}`,
             background: t.input,
             borderRadius: 12,
@@ -5216,7 +5216,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div className="ms-tab-row" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <button onClick={() => setTab('today')} className="intel-tab" data-on={tab === 'today'}>TODAY</button>
             <button onClick={() => setTab('tickers')} className="intel-tab" data-on={tab === 'tickers'}>TICKERS</button>
             <button onClick={() => setTab('archive')} className="intel-tab" data-on={tab === 'archive'}>ARCHIVE</button>
@@ -5225,7 +5225,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
 
         {/* Today */}
         {tab === 'today' && (
-          <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 12 }}>
+          <div className="ms-today-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 12 }}>
             <Card
               title="Snapshot"
               right={
@@ -5241,7 +5241,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
               ) : !latest ? (
                 <div style={{ color: t.textSecondary, fontSize: 12 }}>No intel available yet.</div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="ms-snapshot-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div style={{ fontSize: 13, lineHeight: 1.35 }}>
                     <div style={{ marginBottom: 8 }}>{badge(latest.overallStance || 'Neutral')}</div>
                     <div style={{ color: t.textSecondary, fontSize: 12 }}>Most bullish: <b style={{ color: t.textPrimary }}>{latest.mostBullish || 'n/a'}</b></div>
@@ -5289,7 +5289,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
                   {keyIssues.slice(0, 3).map((k, idx) => (
                     <div key={idx} style={{ border: `1px solid ${t.borderDim}`, borderRadius: 12, padding: 10, background: t.panel2 }}>
                       <div style={{ fontWeight: 800, fontSize: 12, marginBottom: 6 }}>{k.issue}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div className="ms-issue-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                         <div style={{ fontSize: 12 }}>
                           <div style={{ color: t.accentBright, fontWeight: 800, marginBottom: 4 }}>Bull</div>
                           <div style={{ color: t.textSecondary }}>{k.bull}</div>
@@ -5312,7 +5312,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
         {/* Tickers */}
         {tab === 'tickers' && (
           <div style={{ marginTop: 12 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            <div className="ms-ticker-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
               {filteredTickers.slice(0, 12).map((x, i) => (
                 <div key={i} style={{
                   border: `1px solid ${t.borderMid}`,
@@ -5352,7 +5352,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
                   const file = e.file || e;
                   const sha = e.sha256 ? String(e.sha256).slice(0, 10) : '';
                   return (
-                    <div key={i} style={{
+                    <div key={i} className="ms-archive-row" style={{
                       display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center',
                       border: `1px solid ${t.borderDim}`, background: t.panel2, borderRadius: 12, padding: '10px 12px'
                     }}>
@@ -5390,7 +5390,22 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
           box-shadow: 0 0 0 1px ${t.accentBright} inset;
         }
         @media (max-width: 980px) {
+          .ms-wrap { padding: 12px 10px 22px !important; }
+          .ms-topbar { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
+          .ms-top-left { flex-direction: column; align-items: flex-start !important; }
+          .ms-top-actions { justify-content: flex-end; flex-wrap: wrap; }
+          .ms-search-tabs { grid-template-columns: 1fr !important; }
+          .ms-tab-row { justify-content: flex-start !important; }
+          .ms-today-grid { grid-template-columns: 1fr !important; }
+          .ms-snapshot-grid { grid-template-columns: 1fr !important; }
+          .ms-issue-split { grid-template-columns: 1fr !important; }
+          .ms-ticker-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .ms-archive-row { flex-direction: column; align-items: flex-start !important; }
           .intel-tab { width: 100%; }
+        }
+        @media (max-width: 640px) {
+          .ms-top-actions button { width: 100%; justify-content: center; }
+          .ms-ticker-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
