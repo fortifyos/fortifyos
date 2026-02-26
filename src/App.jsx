@@ -34,11 +34,11 @@ const THEMES = {
     crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
   light: {
-    void: '#F5F3F0', surface: '#FEFEFE', elevated: '#FAF9F7', input: '#F0EEEB',
-    panel: '#F0EEEB', panel2: '#FFFFFF',
-    borderDim: '#DDD9D4', borderMid: '#CCC7C0', borderBright: '#B5AFA8',
-    textPrimary: '#1C1B1A', textSecondary: '#625D56', textDim: '#948E86', textGhost: '#CCC7C0',
-    accent: '#1A7A3A', accentBright: '#20953F', accentDim: '#135E2C', accentMuted: '#E0F0E5',
+    void: '#FFFFFF', surface: '#FFFFFF', elevated: '#FFFFFF', input: '#F7F7F7',
+    panel: '#F7F7F7', panel2: '#FFFFFF',
+    borderDim: '#E1E1E1', borderMid: '#D0D0D0', borderBright: '#BDBDBD',
+    textPrimary: '#121212', textSecondary: '#4E4E4E', textDim: '#777777', textGhost: '#C7C7C7',
+    accent: '#1D7A3A', accentBright: '#2A9950', accentDim: '#14572A', accentMuted: '#E6F4EA',
     danger: '#C42B1C', warn: '#D48A00',
     purple: '#8B5CF6', purpleDim: '#7340DB', purpleMuted: '#F1ECF9',
     crypto: '#E8850F', cryptoDim: '#B36C0C', cryptoMuted: '#FFF5E5',
@@ -46,6 +46,85 @@ const THEMES = {
 };
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
+
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.error('FortifyOS runtime error:', error);
+  }
+
+  render() {
+    if (!this.state.hasError) return this.props.children;
+
+    const panel = {
+      minHeight: '100vh',
+      background: '#000',
+      color: '#E8E8E8',
+      fontFamily: "'JetBrains Mono', monospace",
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 20,
+    };
+
+    const shell = {
+      width: '100%',
+      maxWidth: 640,
+      border: '1px solid #2A2A2A',
+      background: '#0A0A0A',
+      padding: 16,
+    };
+
+    return (
+      <div style={panel}>
+        <div style={shell}>
+          <div style={{ color: '#00FF41', fontSize: 13, marginBottom: 12 }}>FORTIFYOS SAFE RECOVERY MODE</div>
+          <div style={{ fontSize: 12, color: '#BFBFBF', lineHeight: 1.5, marginBottom: 12 }}>
+            The app hit a runtime error and switched to recovery mode to prevent a blank screen.
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              style={{ background: '#00FF41', color: '#000', border: 'none', padding: '8px 12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12 }}
+              onClick={() => window.location.reload()}
+            >
+              RELOAD
+            </button>
+            <button
+              style={{ background: 'transparent', color: '#E8E8E8', border: '1px solid #444', padding: '8px 12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12 }}
+              onClick={async () => {
+                try {
+                  localStorage.removeItem('fortify-snapshots');
+                  localStorage.removeItem('fortify-latest');
+                  localStorage.removeItem('fortify-settings');
+                  localStorage.removeItem('fortify-theme');
+                  if ('serviceWorker' in navigator) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(regs.map(r => r.unregister()));
+                  }
+                  if ('caches' in window) {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(k => caches.delete(k)));
+                  }
+                } catch (_) {}
+                window.location.reload();
+              }}
+            >
+              RESET CACHE + RELOAD
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
 
 // ═══════════════════════════════════════════════════
 // BANK FINGERPRINT LIBRARY
@@ -4831,7 +4910,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 // ═══════════════════════════════════════════════════
 // MAIN — VIEW ROUTER
 // ═══════════════════════════════════════════════════
-export default function FortifyOS() {
+function FortifyOSApp() {
   const [view, setView] = useState('loading');
   const [isDark, setIsDark] = useState(true);
   const [snapshots, setSnapshots] = useState([]);
@@ -5072,5 +5151,13 @@ export default function FortifyOS() {
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} />}
     </div>
+  );
+}
+
+export default function FortifyOS() {
+  return (
+    <AppErrorBoundary>
+      <FortifyOSApp />
+    </AppErrorBoundary>
   );
 }
