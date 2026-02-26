@@ -1922,7 +1922,7 @@ const extractTextFromPDF = async (file) => {
   log(`PDF BINARY READ: ${(data.length / 1024).toFixed(1)}KB`);
 
   log('PDF MODE: RECONSTRUCTING PAGE LINES...');
-  const pdf = await pdfjsLib.getDocument({ data }).promise;
+  const pdf = await pdfjsLib.getDocument({ data, disableWorker: true }).promise;
   log(`PDF LOADED: ${pdf.numPages} PAGE(S)`);
 
   const allLines = [];
@@ -1989,7 +1989,7 @@ const ocrFirstPageOfPDF = async (file) => {
   log('SCANNED PDF DETECTED — OCR FALLBACK (PAGE RENDER)...');
   const worker = await getOCRWorker();
   const data = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data }).promise;
+  const pdf = await pdfjsLib.getDocument({ data, disableWorker: true }).promise;
   const maxPages = Math.min(pdf.numPages || 1, 2);
   let combined = '';
   for (let p = 1; p <= maxPages; p++) {
