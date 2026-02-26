@@ -23,9 +23,12 @@ fetch('./index.json', {cache:'no-store'})
   .then(r => r.ok ? r.json() : [])
   .then(files => {
     const ul = document.getElementById('list');
-    (files||[]).forEach(f => {
+    (files||[]).forEach(item => {
+      const f = (typeof item === 'string') ? { file: item } : item;
+      const name = f.file || '';
+      const hash = (f.sha256 || '').slice(0, 10);
       const li=document.createElement('li');
-      li.innerHTML = `<a href="${f}">${f}</a>`;
+      li.innerHTML = `<a href="${name}">${name}</a>${hash ? ` <span class="mut">#${hash}</span>` : ''}`;
       ul.appendChild(li);
     });
   })
