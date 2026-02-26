@@ -4290,8 +4290,8 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
   if (!visible) return null;
   const btcPrice = Number(fredMacro?.btc?.value || latest?.macro?.btcPrice || 0) || null;
 
-  // User-requested cycle: anchor from last year's September top region.
-  const cycleAnchor = new Date('2025-09-01T00:00:00Z');
+  // User-requested cycle: anchor from Oct 10, 2025 top region (estimated window).
+  const cycleAnchor = new Date('2025-10-10T00:00:00Z');
   const cycleLengthDays = 500;
   const msDay = 86400000;
   const utcToday = new Date();
@@ -4345,7 +4345,7 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
           <div style={{ width: `${progressPct.toFixed(1)}%`, height: '100%', background: phaseColor }} />
         </div>
         <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.45 }}>
-          Day {cycleDay} of {cycleLengthDays} ({progressPct.toFixed(1)}%). Countdown model anchored to {anchorLabel}.
+          Day {cycleDay} of {cycleLengthDays} ({progressPct.toFixed(1)}%). Estimated countdown window anchored to {anchorLabel}.
         </div>
       </div>
     </Card>
