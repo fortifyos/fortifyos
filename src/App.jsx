@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import IntelFreshness from './components/IntelFreshness.jsx';
-import IntelHub from './intel/IntelHub.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, BarChart, Bar, CartesianGrid, Legend
@@ -1254,7 +1253,12 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={onMacroSentinel} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>MACRO SENTINEL</button>
+          <button
+            onClick={() => window.open(`${import.meta.env.BASE_URL}radar/index.html`, '_blank', 'noopener,noreferrer')}
+            style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}
+          >
+            MACRO SENTINEL
+          </button>
           <button onClick={onDocs} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>DOCS</button>
           <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}</button>
         </div>
@@ -5155,26 +5159,13 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
           justifyContent: 'space-between'
         }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <button onClick={onBack} style={{
-              background: 'transparent',
-              border: `1px solid ${t.borderMid}`,
-              color: t.textPrimary,
-              padding: '8px 10px',
-              borderRadius: 10,
-              fontFamily: 'inherit',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8
-            }}>
-              <ChevronRight size={16} style={{ transform: 'rotate(180deg)' }} />
-              BACK
-            </button>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: .4 }}>FORTIFY INTEL</div>
-              <div style={{ fontSize: 12, color: t.textSecondary }}>
-                One page. Markets → Signals → Sources. {latest?.generatedAt ? `Updated: ${new Date(latest.generatedAt).toLocaleString()}` : ''}
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+              <Shield size={14} style={{ color: t.accent }} />
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
+              <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+            </div>
+            <div style={{ fontSize: 12, color: t.textSecondary }}>
+              Macro Sentinel · {latest?.generatedAt ? `Updated: ${new Date(latest.generatedAt).toLocaleString()}` : 'Waiting for latest intel'}
             </div>
           </div>
 
@@ -5703,7 +5694,7 @@ function FortifyOSApp() {
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'macroSentinel' && <IntelHub isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
     </div>
   );
