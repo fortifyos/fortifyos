@@ -2221,7 +2221,7 @@ cat snapshot.json | pbcopy`}</pre>
 // UNIVERSAL SYNC ENGINE
 // ═══════════════════════════════════════════════════
 function UniversalSync({ open, onClose, onSync, t }) {
-  const [tab, setTab] = useState('file');
+  const [tab, setTab] = useState('statement');
   const [logs, setLogs] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -2924,7 +2924,7 @@ useEffect(() => {
         </div>
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: `1px solid ${t.borderDim}` }}>
-          {[{ k: 'file', l: 'File Import' }, { k: 'statement', l: 'Statements' }, { k: 'guided', l: 'Manual' }].map(tb => (
+          {[{ k: 'statement', l: 'File Import' }, { k: 'guided', l: 'Manual' }].map(tb => (
             <button key={tb.k} onClick={() => { setTab(tb.k); setError(''); setParsedPreview(null); }} style={{
               flex: 1, padding: 10, background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase',
@@ -2935,87 +2935,6 @@ useEffect(() => {
         </div>
 
         <div className="sync-content" style={{ padding: 16 }}>
-          {/* ── FILE IMPORT TAB ── */}
-          {tab === 'file' && (<>
-            {/* Drop zone */}
-            <div
-              onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onClick={() => fileRef.current?.click()}
-              style={{
-                height: 120, border: `2px dashed ${dragOver ? t.accent : t.borderMid}`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                background: dragOver ? t.accentMuted : t.void, cursor: 'pointer',
-                transition: 'all 0.2s', marginBottom: 12, borderRadius: 4,
-              }}>
-              <input ref={fileRef} type="file" accept=".csv,.pdf,.png,.jpg,.jpeg" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) handleFile(e.target.files[0]); }} />
-              {processing
-                ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
-                : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
-              <span style={{ fontSize: 10, color: t.textDim, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                {processing ? 'Processing...' : 'Drop file or click to browse'}
-              </span>
-              <span style={{ fontSize: 9, color: t.textGhost, marginTop: 4 }}>.csv .pdf .png .jpg</span>
-            </div>
-
-            {/* Supported banks */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
-              {['Chase', 'BofA', 'Amex', 'Capital One', 'Wells Fargo', 'Citi'].map(b => (
-                <span key={b} style={{ fontSize: 8, color: t.textDim, border: `1px solid ${t.borderDim}`, padding: '2px 6px', borderRadius: 2, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{b}</span>
-              ))}
-            </div>
-
-            {/* Terminal log */}
-            <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: 10, height: 130, overflow: 'hidden', borderRadius: 4, marginBottom: 12 }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.accentDim, lineHeight: 1.6 }}>
-                {logs.length === 0 && <div style={{ color: t.textGhost }}>SYSTEM IDLE. AWAITING DATA...</div>}
-                {logs.map((l, i) => <div key={i} style={{ opacity: 1 - i * 0.1 }}>{l}</div>)}
-              </div>
-            </div>
-
-            {/* Parse preview */}
-            {parsedPreview && (
-              <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: 12, borderRadius: 4, marginBottom: 12 }}>
-                <div style={{ fontSize: 10, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Parse Summary</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, fontSize: 11 }}>
-                  {parsedPreview._meta && <>
-                    <div><span style={{ color: t.textDim }}>Source:</span> <span style={{ color: t.textPrimary }}>{parsedPreview._meta.source}</span></div>
-                    <div><span style={{ color: t.textDim }}>Txns:</span> <span style={{ color: t.textPrimary }}>{parsedPreview._meta.transactions}</span></div>
-                    <div><span style={{ color: t.textDim }}>Income:</span> <span style={{ color: t.accent }}>{fmt(parsedPreview._meta.income)}</span></div>
-                    <div><span style={{ color: t.textDim }}>Expense:</span> <span style={{ color: t.danger }}>{fmt(parsedPreview._meta.totalExpense)}</span></div>
-                  </>}
-                </div>
-                {parsedPreview._meta?.uncategorized > 0 && (
-                  <div style={{ fontSize: 9, color: t.warn, marginTop: 6 }}>⚠ {fmt(parsedPreview._meta.uncategorized)} uncategorized — refine in dashboard</div>
-                )}
-                {parsedPreview._meta?.excludedTransfers > 0 && (
-                  <div style={{ fontSize: 9, color: t.textSecondary, marginTop: 4 }}>ℹ {fmt(parsedPreview._meta.excludedTransfers)} excluded (transfers/refunds/large deposits)</div>
-                )}
-                {parsedPreview._meta?.income > 50000 && (
-                  <div style={{ fontSize: 9, color: t.danger, marginTop: 4 }}>⚠ Income looks unusually high ({fmt(parsedPreview._meta.income)}) — verify via Guided tab if this includes transfers</div>
-                )}
-                {parsedPreview._meta?.totalExpense === 0 && parsedPreview._meta?.income > 0 && (
-                  <div style={{ fontSize: 9, color: t.warn, marginTop: 4 }}>⚠ $0 expenses detected — your bank may report all amounts as positive. Try Guided tab for manual entry.</div>
-                )}
-              </div>
-            )}
-
-            {error && <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: t.danger, fontSize: 11, marginBottom: 8 }}><AlertCircle size={13} /> {error}</div>}
-            {success && <div style={{ color: t.accent, fontSize: 11, marginBottom: 8 }}>✓ SYNC COMMITTED</div>}
-
-            {parsedPreview && (
-              <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>CONFIRM & SYNC</button>
-            )}
-
-            {/* Privacy */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12, fontSize: 9, color: t.warn }}>
-              <ShieldAlert size={11} />
-              <span>SENTINEL: All parsing on-device. No PII stored. Card numbers auto-redacted.</span>
-            </div>
-          </>)}
-
-
 {/* ── STATEMENT TAB ── */}
 {tab === 'statement' && (<>
   <div style={{ display: 'grid', gap: 10 }}>
@@ -5371,16 +5290,20 @@ function FortifyOSApp() {
             justify-content: flex-start !important;
           }
           .sync-shell {
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
-            max-height: 100vh !important;
-            border-radius: 0 !important;
+            width: calc(100vw - 16px) !important;
+            max-width: calc(100vw - 16px) !important;
+            height: auto !important;
+            max-height: calc(100vh - 18px - env(safe-area-inset-top, 0px)) !important;
+            margin-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+            border-radius: 8px !important;
             border-left: none !important;
             border-right: none !important;
           }
-          .sync-content { padding: 12px !important; }
-          .sync-overlay { padding: 0 !important; }
+          .sync-content { padding: 14px !important; }
+          .sync-overlay {
+            padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+            align-items: flex-start !important;
+          }
           input, select, textarea { font-size: 16px !important; }
           button { min-height: 40px; }
           .phase-label,.footer-label { display: none !important; }
