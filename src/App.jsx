@@ -8,7 +8,7 @@ import {
   Shield, ChevronRight, Sun, Moon, Lock, Cpu, Activity,
   Settings, RefreshCw, X, Download, Trash2, Database, AlertCircle,
   FileText, Upload, Zap, ShieldAlert, TrendingUp,
-  ArrowRight, ChevronDown, Clock, Eye
+  ArrowRight, ChevronDown, Clock, Eye, Menu
 } from 'lucide-react';
 import * as Papa from 'papaparse';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -4966,6 +4966,7 @@ function PulseTicker({ latest, t, now, payFrequencyOverride }) {
 function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const vis = settings.visibleModules;
   const ac = { red: 0, amber: 0, green: 0 };
@@ -5001,24 +5002,63 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
       </div>
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+        <div className="dash-actions-inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => onMacroSentinel && onMacroSentinel()}
+            style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
+            title="Open Macro Sentinel (Pre-Market Radar)"
+          >
+            <Eye size={10} /> Radar
+          </button>
+          <button
+            onClick={() => onRefreshIntel && onRefreshIntel()}
+            style={{ background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
+            title="Refresh Macro + Market Intelligence"
+          >
+            <RefreshCw size={10} style={{ animation: intelRefreshing ? 'spin 0.9s linear infinite' : 'none' }} />
+            {intelRefreshing ? 'Refreshing…' : 'Sync Intel'}
+          </button>
+          <button onClick={() => setSyncOpen(true)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}><Upload size={10} /> Data Sync</button>
+          <Settings size={16} style={{ color: t.textSecondary, cursor: 'pointer' }} onClick={() => setSettingsOpen(true)} />
+        </div>
         <button
-          onClick={() => onMacroSentinel && onMacroSentinel()}
-          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
-          title="Open Macro Sentinel (Pre-Market Radar)"
+          className="dash-menu-toggle"
+          onClick={() => setQuickMenuOpen(v => !v)}
+          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'none', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
+          title="Open quick actions"
         >
-          <Eye size={10} /> Radar
+          {quickMenuOpen ? <X size={12} /> : <Menu size={12} />} MENU
         </button>
-        <button
-          onClick={() => onRefreshIntel && onRefreshIntel()}
-          style={{ background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
-          title="Refresh Macro + Market Intelligence"
-        >
-          <RefreshCw size={10} style={{ animation: intelRefreshing ? 'spin 0.9s linear infinite' : 'none' }} />
-          {intelRefreshing ? 'Refreshing…' : 'Sync Intel'}
-        </button>
-        <button onClick={() => setSyncOpen(true)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}><Upload size={10} /> Data Sync</button>
-        <Settings size={16} style={{ color: t.textSecondary, cursor: 'pointer' }} onClick={() => setSettingsOpen(true)} />
+        {quickMenuOpen && (
+          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 32, minWidth: 170, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
+            <button
+              onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}
+              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+            >
+              <Eye size={10} /> Radar
+            </button>
+            <button
+              onClick={() => { setQuickMenuOpen(false); onRefreshIntel && onRefreshIntel(); }}
+              style={{ width: '100%', background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+            >
+              <RefreshCw size={10} style={{ animation: intelRefreshing ? 'spin 0.9s linear infinite' : 'none' }} />
+              {intelRefreshing ? 'Refreshing…' : 'Sync Intel'}
+            </button>
+            <button
+              onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }}
+              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+            >
+              <Upload size={10} /> Data Sync
+            </button>
+            <button
+              onClick={() => { setQuickMenuOpen(false); setSettingsOpen(true); }}
+              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+            >
+              <Settings size={10} /> Settings
+            </button>
+          </div>
+        )}
       </div>
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
@@ -5655,6 +5695,9 @@ function FortifyOSApp() {
         .footer-stat-cell:last-child { border-right: none; }
         input, select, textarea { max-width: 100%; }
         @media (max-width: 768px) {
+          .dash-actions-inline { display: none !important; }
+          .dash-menu-toggle { display: inline-flex !important; }
+          .dash-menu-pop { width: 180px; }
           .dashboard-main {
             padding: 62px 8px 48px !important;
           }
