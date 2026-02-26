@@ -3893,7 +3893,7 @@ function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
       type: 'debt',
     }));
   const paydayEvents = nextPayrollDates(payroll, 4).map(d => ({
-    label: `Payday (${weekdayName(payroll.weekday || 2)} • ${payroll.frequency === 'BIWEEKLY' ? 'Bi-Weekly' : 'Weekly'})`,
+    label: `Payday (${payroll.frequency === 'BIWEEKLY' ? 'Bi-Weekly' : 'Weekly'})`,
     date: d,
     amount: Number(latest?.budget?.income || latest?._meta?.income || 0) / payPeriodsPerMonth(payroll.frequency),
     type: 'payday',
@@ -3911,7 +3911,7 @@ function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 6 }}>
             <div>
               <div style={{ fontSize: 11, color: e.type === 'payday' ? t.accent : e.type === 'debt' ? t.warn : t.textPrimary }}>{e.label}</div>
-              <div style={{ fontSize: 9, color: t.textDim }}>{e.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+              <div style={{ fontSize: 9, color: t.textDim }}>{e.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
             </div>
             <div style={{ fontSize: 10, color: e.type === 'payday' ? t.accent : t.textSecondary }}>
               {e.amount > 0 ? `${e.type === 'payday' ? '+' : '-'}${fmt(e.amount)}` : '—'}
