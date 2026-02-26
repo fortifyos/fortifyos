@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import IntelFreshness from './components/IntelFreshness.jsx';
+import IntelHub from './intel/IntelHub.jsx';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  LineChart, Line, BarChart, Bar, CartesianGrid, Legend
 } from 'recharts';
 import {
   Shield, ChevronRight, Sun, Moon, Lock, Cpu, Activity,
@@ -1197,7 +1200,7 @@ const ChartTip = ({ active, payload, label, t }) => {
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
-function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard }) {
+function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel }) {
   const [boot, setBoot] = useState(0);
   const [faqOpen, setFaqOpen] = useState(null);
   const [dailyBurn, setDailyBurn] = useState(0);
@@ -1251,6 +1254,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={onMacroSentinel} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>MACRO SENTINEL</button>
           <button onClick={onDocs} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>DOCS</button>
           <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}</button>
         </div>
@@ -4955,7 +4959,7 @@ function PulseTicker({ latest, t, now, payFrequencyOverride }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -4995,6 +4999,13 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <button
+          onClick={() => onMacroSentinel && onMacroSentinel()}
+          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
+          title="Open Macro Sentinel (Pre-Market Radar)"
+        >
+          <Eye size={10} /> Radar
+        </button>
+        <button
           onClick={() => onRefreshIntel && onRefreshIntel()}
           style={{ background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
           title="Refresh Macro + Market Intelligence"
@@ -5008,6 +5019,8 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
+      <IntelFreshness />
+
       <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 12px' }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
         <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -5042,8 +5055,358 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 }
 
 // ═══════════════════════════════════════════════════
-// MAIN — VIEW ROUTER
+// MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
+  const [latest, setLatest] = useState(null);
+  const [archive, setArchive] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('today'); // today | tickers | archive
+  const [q, setQ] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const bust = Date.now();
+      const base = import.meta.env.BASE_URL || '/';
+      const [r1, r2] = await Promise.all([
+        fetch(`${base}macro-sentinel/latest.json?v=${bust}`, { cache: 'no-store' }),
+        fetch(`${base}radar/index.json?v=${bust}`, { cache: 'no-store' })
+      ]);
+      const d1 = r1.ok ? await r1.json() : null;
+      const d2 = r2.ok ? await r2.json() : [];
+      setLatest(d1);
+      setArchive(Array.isArray(d2) ? d2 : []);
+    } catch (_) {
+      setLatest(null);
+      setArchive([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const tickers = latest?.tickers || [];
+  const keyIssues = latest?.keyIssues || [];
+  const htmlFile = latest?.htmlFile || null;
+  const htmlHref = htmlFile ? `${import.meta.env.BASE_URL}radar/${htmlFile}` : null;
+
+  const filteredTickers = useMemo(() => {
+    const term = (q || '').trim().toLowerCase();
+    if (!term) return tickers;
+    return tickers.filter(x =>
+      String(x.symbol || '').toLowerCase().includes(term) ||
+      String(x.name || '').toLowerCase().includes(term)
+    );
+  }, [q, tickers]);
+
+  const badge = (label) => {
+    const v = String(label || '').toLowerCase();
+    const bg = v.includes('bull') ? t.accent : v.includes('bear') ? t.danger : t.warn;
+    const fg = isDark ? '#000' : '#fff';
+    return (
+      <span style={{
+        display: 'inline-flex', alignItems: 'center',
+        padding: '2px 10px', borderRadius: 999,
+        background: bg, color: fg, fontSize: 11, fontWeight: 700
+      }}>{label}</span>
+    );
+  };
+
+  const chip = (text) => (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '3px 10px', borderRadius: 999,
+      border: `1px solid ${t.borderMid}`,
+      color: t.textSecondary, fontSize: 11
+    }}>{text}</span>
+  );
+
+  const Card = ({ title, children, right }) => (
+    <div style={{
+      border: `1px solid ${t.borderMid}`,
+      background: t.panel,
+      padding: 14,
+      borderRadius: 12,
+      boxShadow: isDark ? '0 0 0 rgba(0,0,0,0)' : '0 2px 14px rgba(0,0,0,0.04)',
+      animation: 'intelFade .35s ease-out both'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+        <div style={{ color: t.textSecondary, fontSize: 12, letterSpacing: .2 }}>{title}</div>
+        {right}
+      </div>
+      <div style={{ marginTop: 10 }}>{children}</div>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 28px' }}>
+        {/* Top Bar */}
+        <div style={{
+          border: `1px solid ${t.borderMid}`,
+          background: `linear-gradient(180deg, ${t.surface}, ${t.void})`,
+          borderRadius: 14,
+          padding: 14,
+          display: 'flex',
+          gap: 12,
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button onClick={onBack} style={{
+              background: 'transparent',
+              border: `1px solid ${t.borderMid}`,
+              color: t.textPrimary,
+              padding: '8px 10px',
+              borderRadius: 10,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <ChevronRight size={16} style={{ transform: 'rotate(180deg)' }} />
+              BACK
+            </button>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: .4 }}>FORTIFY INTEL</div>
+              <div style={{ fontSize: 12, color: t.textSecondary }}>
+                One page. Markets → Signals → Sources. {latest?.generatedAt ? `Updated: ${new Date(latest.generatedAt).toLocaleString()}` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button onClick={load} style={{
+              background: 'transparent', border: `1px solid ${t.borderMid}`, color: t.textPrimary,
+              padding: '8px 10px', borderRadius: 10, fontFamily: 'inherit', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 8
+            }}>
+              <RefreshCw size={16} /> REFRESH
+            </button>
+
+            <button onClick={onToggleTheme} style={{
+              background: 'transparent', border: `1px solid ${t.borderMid}`, color: t.textPrimary,
+              padding: '8px 10px', borderRadius: 10, fontFamily: 'inherit', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 8
+            }}>
+              {isDark ? <Sun size={16} /> : <Moon size={16} />} THEME
+            </button>
+          </div>
+        </div>
+
+        {/* Search + Tabs */}
+        <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
+          <div style={{
+            border: `1px solid ${t.borderMid}`,
+            background: t.input,
+            borderRadius: 12,
+            padding: '10px 12px',
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center'
+          }}>
+            <Eye size={16} color={t.textSecondary} />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search tickers, themes, or issues…"
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                color: t.textPrimary,
+                fontFamily: 'inherit',
+                fontSize: 13
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <button onClick={() => setTab('today')} className="intel-tab" data-on={tab === 'today'}>TODAY</button>
+            <button onClick={() => setTab('tickers')} className="intel-tab" data-on={tab === 'tickers'}>TICKERS</button>
+            <button onClick={() => setTab('archive')} className="intel-tab" data-on={tab === 'archive'}>ARCHIVE</button>
+          </div>
+        </div>
+
+        {/* Today */}
+        {tab === 'today' && (
+          <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 12 }}>
+            <Card
+              title="Snapshot"
+              right={
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {chip(`Regime: ${latest?.regimeMode === 'RISK_ON' ? 'Risk-On' : latest?.regimeMode === 'RISK_OFF' ? 'Risk-Off' : 'Unknown'}`)}
+                  {chip(`Vol: ${typeof latest?.volatilityPercentile === 'number' ? `${latest.volatilityPercentile}th pct` : 'n/a'}`)}
+                  {latest?.htmlSha256 ? chip(`#${String(latest.htmlSha256).slice(0, 10)}`) : null}
+                </div>
+              }
+            >
+              {loading ? (
+                <div style={{ color: t.textSecondary, fontSize: 12 }}>Loading…</div>
+              ) : !latest ? (
+                <div style={{ color: t.textSecondary, fontSize: 12 }}>No intel available yet.</div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div style={{ fontSize: 13, lineHeight: 1.35 }}>
+                    <div style={{ marginBottom: 8 }}>{badge(latest.overallStance || 'Neutral')}</div>
+                    <div style={{ color: t.textSecondary, fontSize: 12 }}>Most bullish: <b style={{ color: t.textPrimary }}>{latest.mostBullish || 'n/a'}</b></div>
+                    <div style={{ color: t.textSecondary, fontSize: 12 }}>Highest risk: <b style={{ color: t.textPrimary }}>{latest.highestRisk || 'n/a'}</b></div>
+                    <div style={{ color: t.textSecondary, fontSize: 12, marginTop: 8 }}>Macro driver:</div>
+                    <div style={{ fontSize: 12 }}>{latest.macroDriver || 'n/a'}</div>
+                    <div style={{ marginTop: 10, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                      {htmlHref ? (
+                        <a href={htmlHref} target="_blank" rel="noopener noreferrer" style={{ color: t.accentBright, fontSize: 12 }}>
+                          View Today’s Radar →
+                        </a>
+                      ) : (
+                        <span style={{ color: t.textSecondary, fontSize: 12 }}>Radar not published yet</span>
+                      )}
+                      <a href={`${import.meta.env.BASE_URL}radar/index.html`} style={{ color: t.textSecondary, fontSize: 12 }}>
+                        Archive →
+                      </a>
+                    </div>
+                  </div>
+
+                  <div style={{ border: `1px solid ${t.borderDim}`, borderRadius: 12, padding: 10, background: t.panel2 }}>
+                    <div style={{ color: t.textSecondary, fontSize: 12, marginBottom: 8 }}>Volatility Sparkline</div>
+                    <div style={{ height: 70 }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={(latest?.volatility?.series || []).map((v, i) => ({ i, v }))}>
+                          <CartesianGrid stroke={t.borderDim} strokeDasharray="3 3" />
+                          <XAxis dataKey="i" hide />
+                          <YAxis hide domain={['auto','auto']} />
+                          <Tooltip contentStyle={{ background: t.panel, border: `1px solid ${t.borderMid}`, color: t.textPrimary }} />
+                          <Line type="monotone" dataKey="v" stroke={t.accentBright} strokeWidth={2} dot={false} isAnimationActive />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div style={{ color: t.textSecondary, fontSize: 11, marginTop: 6 }}>
+                      {latest?.volatility?.label || 'Vol'} {latest?.volatility?.isProxy ? '(Proxy)' : ''}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            <Card title="Key Issues (Bull vs Bear)">
+              {keyIssues?.length ? (
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {keyIssues.slice(0, 3).map((k, idx) => (
+                    <div key={idx} style={{ border: `1px solid ${t.borderDim}`, borderRadius: 12, padding: 10, background: t.panel2 }}>
+                      <div style={{ fontWeight: 800, fontSize: 12, marginBottom: 6 }}>{k.issue}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        <div style={{ fontSize: 12 }}>
+                          <div style={{ color: t.accentBright, fontWeight: 800, marginBottom: 4 }}>Bull</div>
+                          <div style={{ color: t.textSecondary }}>{k.bull}</div>
+                        </div>
+                        <div style={{ fontSize: 12 }}>
+                          <div style={{ color: t.danger, fontWeight: 800, marginBottom: 4 }}>Bear</div>
+                          <div style={{ color: t.textSecondary }}>{k.bear}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ color: t.textSecondary, fontSize: 12 }}>No key issues available yet.</div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {/* Tickers */}
+        {tab === 'tickers' && (
+          <div style={{ marginTop: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+              {filteredTickers.slice(0, 12).map((x, i) => (
+                <div key={i} style={{
+                  border: `1px solid ${t.borderMid}`,
+                  borderRadius: 12,
+                  padding: 12,
+                  background: t.panel,
+                  animation: 'intelFade .35s ease-out both',
+                  animationDelay: `${Math.min(i, 6) * 25}ms`
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'baseline' }}>
+                    <div style={{ fontWeight: 900 }}>{x.symbol}</div>
+                    {badge(x.newsClass || 'Neutral')}
+                  </div>
+                  <div style={{ color: t.textSecondary, fontSize: 12, marginTop: 4 }}>{x.name || ''}</div>
+                  <div style={{ marginTop: 10, display: 'grid', gap: 6, fontSize: 12 }}>
+                    <div style={{ color: t.textSecondary }}>Social: <span style={{ color: t.textPrimary }}>{x.socialSentiment || 'n/a'}</span></div>
+                    <div style={{ color: t.textSecondary }}>Options: <span style={{ color: t.textPrimary }}>{x.optionsSignal || 'n/a'}</span></div>
+                    <div style={{ color: t.textSecondary }}>Risk: <span style={{ color: t.textPrimary }}>{x.riskLevel || 'n/a'} ({x.riskScore ?? '—'})</span></div>
+                    <div style={{ color: t.textSecondary }}>Action: <span style={{ color: t.textPrimary }}>{x.action || 'n/a'}</span></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {!filteredTickers.length && (
+              <div style={{ marginTop: 12, color: t.textSecondary, fontSize: 12 }}>No matches.</div>
+            )}
+          </div>
+        )}
+
+        {/* Archive */}
+        {tab === 'archive' && (
+          <div style={{ marginTop: 12 }}>
+            <Card title="Daily HTML Archive" right={chip(`${archive.length} files`)}>
+              <div style={{ display: 'grid', gap: 8 }}>
+                {(archive || []).slice(0, 30).map((e, i) => {
+                  const file = e.file || e;
+                  const sha = e.sha256 ? String(e.sha256).slice(0, 10) : '';
+                  return (
+                    <div key={i} style={{
+                      display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center',
+                      border: `1px solid ${t.borderDim}`, background: t.panel2, borderRadius: 12, padding: '10px 12px'
+                    }}>
+                      <a href={`${import.meta.env.BASE_URL}radar/${file}`} target="_blank" rel="noopener noreferrer" style={{ color: t.accentBright, fontSize: 12 }}>
+                        {file}
+                      </a>
+                      <div style={{ color: t.textSecondary, fontSize: 11 }}>#{sha}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          </div>
+        )}
+
+      </div>
+
+      <style>{`
+        @keyframes intelFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .intel-tab {
+          background: transparent;
+          border: 1px solid ${t.borderMid};
+          color: ${t.textPrimary};
+          padding: 9px 10px;
+          border-radius: 12px;
+          font-family: inherit;
+          font-size: 12px;
+          cursor: pointer;
+          letter-spacing: .2px;
+          transition: transform .12s ease, opacity .12s ease;
+        }
+        .intel-tab:hover { transform: translateY(-1px); }
+        .intel-tab[data-on="true"] {
+          border-color: ${t.accentBright};
+          box-shadow: 0 0 0 1px ${t.accentBright} inset;
+        }
+        @media (max-width: 980px) {
+          .intel-tab { width: 100%; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
 function FortifyOSApp() {
   const [view, setView] = useState('loading');
   const [isDark, setIsDark] = useState(true);
@@ -5338,9 +5701,10 @@ function FortifyOSApp() {
       `}</style>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
-      {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
+      {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
+      {view === 'macroSentinel' && <IntelHub isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
     </div>
   );
 }

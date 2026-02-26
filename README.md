@@ -77,3 +77,15 @@ This uses `@capgo/capacitor-native-biometric` (pinned to 8.4.2; fixed versions a
 
 Enable in-app:
 - Settings → **Require Biometrics (Native)** → ON
+
+## Pre-Market Intelligence Radar (Macro Sentinel)
+
+Automation + report generator lives in `radar/`.
+- Workflow: `.github/workflows/premarket-radar.yml`
+- Generator: `radar/scripts/radar.py`
+- Ticker universe: `radar/config/tickers.json`
+
+Set GitHub Secrets to enable richer data + Telegram delivery:
+- `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
+- Optional: `FINNHUB_API_KEY`, `NEWSAPI_KEY`, `X_BEARER_TOKEN`, `TRADIER_TOKEN`
+- Kill switch: `STOP_PREMARKET_RADAR` (set to `1`)

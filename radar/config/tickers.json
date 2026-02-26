@@ -1,0 +1,37 @@
+{
+  "tickers": [
+    {
+      "symbol": "PLTR",
+      "name": "Palantir"
+    },
+    {
+      "symbol": "SPY",
+      "name": "S&P 500 ETF"
+    },
+    {
+      "symbol": "QQQ",
+      "name": "Nasdaq 100 ETF"
+    },
+    {
+      "symbol": "VTI",
+      "name": "Vanguard Total Market"
+    },
+    {
+      "symbol": "BTC-USD",
+      "name": "Bitcoin (spot proxy)"
+    }
+  ],
+  "portfolio_weights": {
+    "PLTR": 0.25,
+    "SPY": 0.25,
+    "QQQ": 0.2,
+    "VTI": 0.2,
+    "BTC-USD": 0.1
+  },
+  "risk_model": {
+    "vol_weight": 0.3,
+    "options_weight": 0.3,
+    "news_weight": 0.2,
+    "ma_weight": 0.2
+  }
+}

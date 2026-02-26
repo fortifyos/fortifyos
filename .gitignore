@@ -1,9 +1,4 @@
 .env
 .env.local
 .env.*.local
-
-# Local financial statement artifacts (never commit)
-statements/
-**/statements/
-*.parsed.json
-*.parsed.csv
+node_modules
