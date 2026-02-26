@@ -1253,12 +1253,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button
-            onClick={() => window.open(`${import.meta.env.BASE_URL}radar/index.html`, '_blank', 'noopener,noreferrer')}
-            style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}
-          >
-            MACRO SENTINEL
-          </button>
+          <button onClick={onMacroSentinel} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>MACRO SENTINEL</button>
           <button onClick={onDocs} style={{ background: 'none', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textSecondary, cursor: 'pointer', padding: '6px 0', letterSpacing: '0.04em' }}>DOCS</button>
           <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}</button>
         </div>
@@ -5003,35 +4998,16 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
-        <div className="dash-actions-inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
-            onClick={() => onMacroSentinel && onMacroSentinel()}
-            style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
-            title="Open Macro Sentinel (Pre-Market Radar)"
-          >
-            <Eye size={10} /> Radar
-          </button>
-          <button
-            onClick={() => onRefreshIntel && onRefreshIntel()}
-            style={{ background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}
-            title="Refresh Macro + Market Intelligence"
-          >
-            <RefreshCw size={10} style={{ animation: intelRefreshing ? 'spin 0.9s linear infinite' : 'none' }} />
-            {intelRefreshing ? 'Refreshing…' : 'Sync Intel'}
-          </button>
-          <button onClick={() => setSyncOpen(true)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '4px 10px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}><Upload size={10} /> Data Sync</button>
-          <Settings size={16} style={{ color: t.textSecondary, cursor: 'pointer' }} onClick={() => setSettingsOpen(true)} />
-        </div>
         <button
           className="dash-menu-toggle"
           onClick={() => setQuickMenuOpen(v => !v)}
-          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'none', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
-          title="Open quick actions"
+          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
+          title="Open actions menu"
         >
-          {quickMenuOpen ? <X size={12} /> : <Menu size={12} />} MENU
+          {quickMenuOpen ? <X size={12} /> : <Menu size={12} />} Menu
         </button>
         {quickMenuOpen && (
-          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 32, minWidth: 170, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
+          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 32, minWidth: 190, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
             <button
               onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}
               style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
@@ -5102,11 +5078,10 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
 function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
-  const [latest, setLatest] = useState(null);
-  const [archive, setArchive] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('today'); // today | tickers | archive
-  const [q, setQ] = useState('');
+  const [intel, setIntel] = useState(null);
+  const [macro, setMacro] = useState(null);
+  const [query, setQuery] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -5115,15 +5090,13 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
       const base = import.meta.env.BASE_URL || '/';
       const [r1, r2] = await Promise.all([
         fetch(`${base}macro-sentinel/latest.json?v=${bust}`, { cache: 'no-store' }),
-        fetch(`${base}radar/index.json?v=${bust}`, { cache: 'no-store' })
+        fetch(`${base}macro.json?v=${bust}`, { cache: 'no-store' }),
       ]);
-      const d1 = r1.ok ? await r1.json() : null;
-      const d2 = r2.ok ? await r2.json() : [];
-      setLatest(d1);
-      setArchive(Array.isArray(d2) ? d2 : []);
+      setIntel(r1.ok ? await r1.json() : null);
+      setMacro(r2.ok ? await r2.json() : null);
     } catch (_) {
-      setLatest(null);
-      setArchive([]);
+      setIntel(null);
+      setMacro(null);
     } finally {
       setLoading(false);
     }
@@ -5131,323 +5104,199 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const tickers = latest?.tickers || [];
-  const keyIssues = latest?.keyIssues || [];
-  const htmlFile = latest?.htmlFile || null;
-  const htmlHref = htmlFile ? `${import.meta.env.BASE_URL}radar/${htmlFile}` : null;
-
-  const filteredTickers = useMemo(() => {
-    const term = (q || '').trim().toLowerCase();
-    if (!term) return tickers;
-    return tickers.filter(x =>
-      String(x.symbol || '').toLowerCase().includes(term) ||
-      String(x.name || '').toLowerCase().includes(term)
-    );
-  }, [q, tickers]);
-
-  const badge = (label) => {
-    const v = String(label || '').toLowerCase();
-    const bg = v.includes('bull') ? t.accent : v.includes('bear') ? t.danger : t.warn;
-    const fg = isDark ? '#000' : '#fff';
-    return (
-      <span style={{
-        display: 'inline-flex', alignItems: 'center',
-        padding: '2px 10px', borderRadius: 999,
-        background: bg, color: fg, fontSize: 11, fontWeight: 700
-      }}>{label}</span>
-    );
+  const pctText = (v) => {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return 'n/a';
+    return `${n > 0 ? '+' : ''}${n.toFixed(2)}%`;
   };
 
-  const chip = (text) => (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center',
-      padding: '3px 10px', borderRadius: 999,
-      border: `1px solid ${t.borderMid}`,
-      color: t.textSecondary, fontSize: 11
-    }}>{text}</span>
-  );
+  const chipTone = (n) => {
+    if (!Number.isFinite(n)) return t.textSecondary;
+    return n >= 0 ? t.accentBright : t.danger;
+  };
 
-  const Card = ({ title, children, right }) => (
-    <div style={{
-      border: `1px solid ${t.borderMid}`,
-      background: t.panel,
-      padding: 14,
-      borderRadius: 12,
-      boxShadow: isDark ? '0 0 0 rgba(0,0,0,0)' : '0 2px 14px rgba(0,0,0,0.04)',
-      animation: 'intelFade .35s ease-out both'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
-        <div style={{ color: t.textSecondary, fontSize: 12, letterSpacing: .2 }}>{title}</div>
-        {right}
-      </div>
-      <div style={{ marginTop: 10 }}>{children}</div>
-    </div>
-  );
+  const btcCycle = useMemo(() => {
+    const halving = new Date('2024-04-20T00:00:00Z');
+    const now = new Date();
+    const days = Math.max(0, Math.floor((now - halving) / 86400000));
+    let phase = 'Early';
+    if (days >= 120 && days < 280) phase = 'Expansion';
+    if (days >= 280 && days < 430) phase = 'Distribution';
+    if (days >= 430) phase = 'Reset';
+    const score = Math.max(0, 100 - Math.abs(260 - days) * 0.35);
+    return { days, phase, score: Math.round(score) };
+  }, []);
+
+  const marketCards = [
+    { label: 'BTC', value: macro?.btc?.value, change: macro?.btc?.change },
+    { label: 'ETH', value: macro?.eth?.value, change: macro?.eth?.change },
+    { label: 'SPY', value: macro?.spy?.value, change: macro?.spy?.change },
+    { label: 'NASDAQ', value: macro?.nasdaq?.value, change: macro?.nasdaq?.change },
+    { label: 'VIX', value: macro?.vix?.value, change: macro?.vix?.change },
+    { label: 'OIL', value: macro?.oil?.value, change: macro?.oil?.change },
+  ];
+
+  const macroCards = [
+    { label: 'WALCL', value: macro?.walcl?.value, source: macro?.source?.walcl || 'n/a' },
+    { label: 'TGA', value: macro?.tga?.value, source: macro?.source?.tga || 'n/a' },
+    { label: 'RRP', value: macro?.rrp?.value, source: macro?.source?.rrp || 'n/a' },
+    { label: 'GOLD', value: macro?.gold?.value, source: macro?.source?.gold || 'n/a' },
+    { label: 'SILVER', value: macro?.silver?.value, source: macro?.source?.silver || 'n/a' },
+  ];
+
+  const filteredTickers = useMemo(() => {
+    const arr = Array.isArray(intel?.tickers) ? intel.tickers : [];
+    const q = query.trim().toLowerCase();
+    if (!q) return arr;
+    return arr.filter((x) =>
+      String(x.ticker || x.symbol || '').toLowerCase().includes(q) ||
+      String(x.name || '').toLowerCase().includes(q)
+    );
+  }, [intel, query]);
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <div className="ms-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 28px' }}>
-        {/* Top Bar */}
-        <div className="ms-topbar" style={{
-          border: `1px solid ${t.borderMid}`,
-          background: `linear-gradient(180deg, ${t.surface}, ${t.void})`,
-          borderRadius: 14,
-          padding: 14,
-          display: 'flex',
-          gap: 12,
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <div className="ms-top-left" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-              <Shield size={14} style={{ color: t.accent }} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
-              <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
-            </div>
-            <div style={{ fontSize: 12, color: t.textSecondary }}>
-              Macro Sentinel · {latest?.generatedAt ? `Updated: ${new Date(latest.generatedAt).toLocaleString()}` : 'Waiting for latest intel'}
-            </div>
+      <div className="ms2-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 28px' }}>
+        <div className="ms2-top" style={{ border: `1px solid ${t.borderMid}`, background: t.surface, padding: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Shield size={14} style={{ color: t.accent }} />
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
+            <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+            <span style={{ color: t.textSecondary, fontSize: 12, marginLeft: 10 }}>Macro Sentinel</span>
           </div>
-
-          <div className="ms-top-actions" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <button onClick={load} style={{
-              background: 'transparent', border: `1px solid ${t.borderMid}`, color: t.textPrimary,
-              padding: '8px 10px', borderRadius: 10, fontFamily: 'inherit', cursor: 'pointer',
-              display: 'inline-flex', alignItems: 'center', gap: 8
-            }}>
-              <RefreshCw size={16} /> REFRESH
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={load} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 10px', cursor: 'pointer' }}>
+              <RefreshCw size={12} style={{ marginRight: 6, verticalAlign: 'text-bottom' }} />
+              REFRESH
             </button>
-
-            <button onClick={onToggleTheme} style={{
-              background: 'transparent', border: `1px solid ${t.borderMid}`, color: t.textPrimary,
-              padding: '8px 10px', borderRadius: 10, fontFamily: 'inherit', cursor: 'pointer',
-              display: 'inline-flex', alignItems: 'center', gap: 8
-            }}>
-              {isDark ? <Sun size={16} /> : <Moon size={16} />} THEME
+            <button onClick={onToggleTheme} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 10px', cursor: 'pointer' }}>
+              {isDark ? <Sun size={12} style={{ marginRight: 6, verticalAlign: 'text-bottom' }} /> : <Moon size={12} style={{ marginRight: 6, verticalAlign: 'text-bottom' }} />}
+              THEME
             </button>
           </div>
         </div>
 
-        {/* Search + Tabs */}
-        <div className="ms-search-tabs" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
-          <div className="ms-search-box" style={{
-            border: `1px solid ${t.borderMid}`,
-            background: t.input,
-            borderRadius: 12,
-            padding: '10px 12px',
-            display: 'flex',
-            gap: 10,
-            alignItems: 'center'
-          }}>
-            <Eye size={16} color={t.textSecondary} />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search tickers, themes, or issues…"
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: t.textPrimary,
-                fontFamily: 'inherit',
-                fontSize: 13
-              }}
-            />
+        <div style={{ marginTop: 10, border: `1px solid ${t.borderMid}`, background: t.input, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Eye size={16} color={t.textSecondary} />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Filter tickers..."
+            style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: t.textPrimary, fontFamily: 'inherit', fontSize: 13 }}
+          />
+        </div>
+
+        <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12 }}>
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
+            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Portfolio Regime</div>
+            {loading ? (
+              <div style={{ color: t.textSecondary, fontSize: 12 }}>Loading…</div>
+            ) : (
+              <div className="ms2-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Stance</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.overallStance || 'n/a'}</div></div>
+                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Regime</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.regimeMode || 'UNKNOWN'}</div></div>
+                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Most Bullish</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.mostBullish || 'n/a'}</div></div>
+                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Highest Risk</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.highestRisk || 'n/a'}</div></div>
+              </div>
+            )}
           </div>
 
-          <div className="ms-tab-row" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            <button onClick={() => setTab('today')} className="intel-tab" data-on={tab === 'today'}>TODAY</button>
-            <button onClick={() => setTab('tickers')} className="intel-tab" data-on={tab === 'tickers'}>TICKERS</button>
-            <button onClick={() => setTab('archive')} className="intel-tab" data-on={tab === 'archive'}>ARCHIVE</button>
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
+            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Cycle</div>
+            <div style={{ display: 'grid', gap: 8 }}>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
+                <div style={{ fontSize: 10, color: t.textSecondary }}>Days Since Halving</div>
+                <div style={{ fontSize: 16, fontWeight: 800 }}>{btcCycle.days}</div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
+                <div style={{ fontSize: 10, color: t.textSecondary }}>Phase</div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{btcCycle.phase}</div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
+                <div style={{ fontSize: 10, color: t.textSecondary }}>Cycle Score</div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{btcCycle.score}/100</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Today */}
-        {tab === 'today' && (
-          <div className="ms-today-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 12 }}>
-            <Card
-              title="Snapshot"
-              right={
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  {chip(`Regime: ${latest?.regimeMode === 'RISK_ON' ? 'Risk-On' : latest?.regimeMode === 'RISK_OFF' ? 'Risk-Off' : 'Unknown'}`)}
-                  {chip(`Vol: ${typeof latest?.volatilityPercentile === 'number' ? `${latest.volatilityPercentile}th pct` : 'n/a'}`)}
-                  {latest?.htmlSha256 ? chip(`#${String(latest.htmlSha256).slice(0, 10)}`) : null}
-                </div>
-              }
-            >
-              {loading ? (
-                <div style={{ color: t.textSecondary, fontSize: 12 }}>Loading…</div>
-              ) : !latest ? (
-                <div style={{ color: t.textSecondary, fontSize: 12 }}>No intel available yet.</div>
-              ) : (
-                <div className="ms-snapshot-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div style={{ fontSize: 13, lineHeight: 1.35 }}>
-                    <div style={{ marginBottom: 8 }}>{badge(latest.overallStance || 'Neutral')}</div>
-                    <div style={{ color: t.textSecondary, fontSize: 12 }}>Most bullish: <b style={{ color: t.textPrimary }}>{latest.mostBullish || 'n/a'}</b></div>
-                    <div style={{ color: t.textSecondary, fontSize: 12 }}>Highest risk: <b style={{ color: t.textPrimary }}>{latest.highestRisk || 'n/a'}</b></div>
-                    <div style={{ color: t.textSecondary, fontSize: 12, marginTop: 8 }}>Macro driver:</div>
-                    <div style={{ fontSize: 12 }}>{latest.macroDriver || 'n/a'}</div>
-                    <div style={{ marginTop: 10, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                      {htmlHref ? (
-                        <a href={htmlHref} target="_blank" rel="noopener noreferrer" style={{ color: t.accentBright, fontSize: 12 }}>
-                          View Today’s Radar →
-                        </a>
-                      ) : (
-                        <span style={{ color: t.textSecondary, fontSize: 12 }}>Radar not published yet</span>
-                      )}
-                      <a href={`${import.meta.env.BASE_URL}radar/index.html`} style={{ color: t.textSecondary, fontSize: 12 }}>
-                        Archive →
-                      </a>
-                    </div>
-                  </div>
-
-                  <div style={{ border: `1px solid ${t.borderDim}`, borderRadius: 12, padding: 10, background: t.panel2 }}>
-                    <div style={{ color: t.textSecondary, fontSize: 12, marginBottom: 8 }}>Volatility Sparkline</div>
-                    <div style={{ height: 70 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={(latest?.volatility?.series || []).map((v, i) => ({ i, v }))}>
-                          <CartesianGrid stroke={t.borderDim} strokeDasharray="3 3" />
-                          <XAxis dataKey="i" hide />
-                          <YAxis hide domain={['auto','auto']} />
-                          <Tooltip contentStyle={{ background: t.panel, border: `1px solid ${t.borderMid}`, color: t.textPrimary }} />
-                          <Line type="monotone" dataKey="v" stroke={t.accentBright} strokeWidth={2} dot={false} isAnimationActive />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div style={{ color: t.textSecondary, fontSize: 11, marginTop: 6 }}>
-                      {latest?.volatility?.label || 'Vol'} {latest?.volatility?.isProxy ? '(Proxy)' : ''}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Card>
-
-            <Card title="Key Issues (Bull vs Bear)">
-              {keyIssues?.length ? (
-                <div style={{ display: 'grid', gap: 10 }}>
-                  {keyIssues.slice(0, 3).map((k, idx) => (
-                    <div key={idx} style={{ border: `1px solid ${t.borderDim}`, borderRadius: 12, padding: 10, background: t.panel2 }}>
-                      <div style={{ fontWeight: 800, fontSize: 12, marginBottom: 6 }}>{k.issue}</div>
-                      <div className="ms-issue-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                        <div style={{ fontSize: 12 }}>
-                          <div style={{ color: t.accentBright, fontWeight: 800, marginBottom: 4 }}>Bull</div>
-                          <div style={{ color: t.textSecondary }}>{k.bull}</div>
-                        </div>
-                        <div style={{ fontSize: 12 }}>
-                          <div style={{ color: t.danger, fontWeight: 800, marginBottom: 4 }}>Bear</div>
-                          <div style={{ color: t.textSecondary }}>{k.bear}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ color: t.textSecondary, fontSize: 12 }}>No key issues available yet.</div>
-              )}
-            </Card>
-          </div>
-        )}
-
-        {/* Tickers */}
-        {tab === 'tickers' && (
-          <div style={{ marginTop: 12 }}>
-            <div className="ms-ticker-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-              {filteredTickers.slice(0, 12).map((x, i) => (
-                <div key={i} style={{
-                  border: `1px solid ${t.borderMid}`,
-                  borderRadius: 12,
-                  padding: 12,
-                  background: t.panel,
-                  animation: 'intelFade .35s ease-out both',
-                  animationDelay: `${Math.min(i, 6) * 25}ms`
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'baseline' }}>
-                    <div style={{ fontWeight: 900 }}>{x.symbol}</div>
-                    {badge(x.newsClass || 'Neutral')}
-                  </div>
-                  <div style={{ color: t.textSecondary, fontSize: 12, marginTop: 4 }}>{x.name || ''}</div>
-                  <div style={{ marginTop: 10, display: 'grid', gap: 6, fontSize: 12 }}>
-                    <div style={{ color: t.textSecondary }}>Social: <span style={{ color: t.textPrimary }}>{x.socialSentiment || 'n/a'}</span></div>
-                    <div style={{ color: t.textSecondary }}>Options: <span style={{ color: t.textPrimary }}>{x.optionsSignal || 'n/a'}</span></div>
-                    <div style={{ color: t.textSecondary }}>Risk: <span style={{ color: t.textPrimary }}>{x.riskLevel || 'n/a'} ({x.riskScore ?? '—'})</span></div>
-                    <div style={{ color: t.textSecondary }}>Action: <span style={{ color: t.textPrimary }}>{x.action || 'n/a'}</span></div>
-                  </div>
+        <div className="ms2-grid-3" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12, gridColumn: 'span 2' }}>
+            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Markets</div>
+            <div className="ms2-market-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {marketCards.map((m) => (
+                <div key={m.label} style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
+                  <div style={{ fontSize: 10, color: t.textSecondary }}>{m.label}</div>
+                  <div style={{ fontSize: 14, fontWeight: 800 }}>{Number.isFinite(Number(m.value)) ? Number(m.value).toLocaleString() : 'n/a'}</div>
+                  <div style={{ fontSize: 11, color: chipTone(Number(m.change)) }}>{pctText(m.change)}</div>
                 </div>
               ))}
             </div>
-
-            {!filteredTickers.length && (
-              <div style={{ marginTop: 12, color: t.textSecondary, fontSize: 12 }}>No matches.</div>
-            )}
           </div>
-        )}
 
-        {/* Archive */}
-        {tab === 'archive' && (
-          <div style={{ marginTop: 12 }}>
-            <Card title="Daily HTML Archive" right={chip(`${archive.length} files`)}>
-              <div style={{ display: 'grid', gap: 8 }}>
-                {(archive || []).slice(0, 30).map((e, i) => {
-                  const file = e.file || e;
-                  const sha = e.sha256 ? String(e.sha256).slice(0, 10) : '';
-                  return (
-                    <div key={i} className="ms-archive-row" style={{
-                      display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center',
-                      border: `1px solid ${t.borderDim}`, background: t.panel2, borderRadius: 12, padding: '10px 12px'
-                    }}>
-                      <a href={`${import.meta.env.BASE_URL}radar/${file}`} target="_blank" rel="noopener noreferrer" style={{ color: t.accentBright, fontSize: 12 }}>
-                        {file}
-                      </a>
-                      <div style={{ color: t.textSecondary, fontSize: 11 }}>#{sha}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
+            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Macro Inputs</div>
+            <div style={{ display: 'grid', gap: 8 }}>
+              {macroCards.map((m) => (
+                <div key={m.label} style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
+                  <div style={{ fontSize: 10, color: t.textSecondary }}>{m.label}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>{Number.isFinite(Number(m.value)) ? Number(m.value).toLocaleString() : 'n/a'}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
+        </div>
 
+        <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 12 }}>
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
+            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Watchlist</div>
+            <div style={{ display: 'grid', gap: 8 }}>
+              {(filteredTickers || []).slice(0, 10).map((x, i) => (
+                <div key={i} style={{ border: `1px solid ${t.borderDim}`, padding: 8, display: 'grid', gridTemplateColumns: '1fr auto', gap: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 800 }}>{x.ticker || x.symbol} <span style={{ fontSize: 11, color: t.textSecondary }}>{x.name || ''}</span></div>
+                    <div style={{ fontSize: 11, color: t.textSecondary }}>Risk: {x.risk_level || x.riskLevel || 'n/a'} · Action: {x.action || 'n/a'}</div>
+                  </div>
+                  <div style={{ fontSize: 11, color: t.textSecondary }}>{x.news_class || x.newsClass || 'Neutral'}</div>
+                </div>
+              ))}
+              {(!filteredTickers || !filteredTickers.length) && (
+                <div style={{ color: t.textSecondary, fontSize: 12 }}>No ticker intel yet.</div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
+            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Narrative</div>
+            <div style={{ display: 'grid', gap: 8 }}>
+              {(Array.isArray(intel?.keyIssues) ? intel.keyIssues : []).slice(0, 4).map((k, i) => (
+                <div key={i} style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>{k.issue || `Issue ${i + 1}`}</div>
+                  <div style={{ fontSize: 11, color: t.accentBright, marginBottom: 3 }}>Bull: {k.bull || 'n/a'}</div>
+                  <div style={{ fontSize: 11, color: t.danger }}>Bear: {k.bear || 'n/a'}</div>
+                </div>
+              ))}
+              {(!intel?.keyIssues || intel.keyIssues.length === 0) && (
+                <div style={{ color: t.textSecondary, fontSize: 12 }}>No narrative issues available yet.</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          @media (max-width: 980px) {
+            .ms2-wrap { padding: 12px 10px 22px !important; }
+            .ms2-top { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
+            .ms2-grid { grid-template-columns: 1fr !important; }
+            .ms2-grid-3 { grid-template-columns: 1fr !important; }
+            .ms2-market-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .ms2-kpi { grid-template-columns: repeat(2, 1fr) !important; }
+          }
+          @media (max-width: 640px) {
+            .ms2-market-grid { grid-template-columns: 1fr !important; }
+          }
+        `}</style>
       </div>
-
-      <style>{`
-        @keyframes intelFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        .intel-tab {
-          background: transparent;
-          border: 1px solid ${t.borderMid};
-          color: ${t.textPrimary};
-          padding: 9px 10px;
-          border-radius: 12px;
-          font-family: inherit;
-          font-size: 12px;
-          cursor: pointer;
-          letter-spacing: .2px;
-          transition: transform .12s ease, opacity .12s ease;
-        }
-        .intel-tab:hover { transform: translateY(-1px); }
-        .intel-tab[data-on="true"] {
-          border-color: ${t.accentBright};
-          box-shadow: 0 0 0 1px ${t.accentBright} inset;
-        }
-        @media (max-width: 980px) {
-          .ms-wrap { padding: 12px 10px 22px !important; }
-          .ms-topbar { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
-          .ms-top-left { flex-direction: column; align-items: flex-start !important; }
-          .ms-top-actions { justify-content: flex-end; flex-wrap: wrap; }
-          .ms-search-tabs { grid-template-columns: 1fr !important; }
-          .ms-tab-row { justify-content: flex-start !important; }
-          .ms-today-grid { grid-template-columns: 1fr !important; }
-          .ms-snapshot-grid { grid-template-columns: 1fr !important; }
-          .ms-issue-split { grid-template-columns: 1fr !important; }
-          .ms-ticker-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .ms-archive-row { flex-direction: column; align-items: flex-start !important; }
-          .intel-tab { width: 100%; }
-        }
-        @media (max-width: 640px) {
-          .ms-top-actions button { width: 100%; justify-content: center; }
-          .ms-ticker-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -5695,8 +5544,6 @@ function FortifyOSApp() {
         .footer-stat-cell:last-child { border-right: none; }
         input, select, textarea { max-width: 100%; }
         @media (max-width: 768px) {
-          .dash-actions-inline { display: none !important; }
-          .dash-menu-toggle { display: inline-flex !important; }
           .dash-menu-pop { width: 180px; }
           .dashboard-main {
             padding: 62px 8px 48px !important;
