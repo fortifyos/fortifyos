@@ -4307,27 +4307,25 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
   if (!visible) return null;
   const btcPrice = Number(fredMacro?.btc?.value || latest?.macro?.btcPrice || 0) || null;
 
-  // Halving-anchored cycle: Apr 2024 halving -> expected Apr 2028 halving window.
-  const cycleAnchor = new Date('2024-04-20T00:00:00Z');
-  const nextHalvingEstimate = new Date('2028-04-20T00:00:00Z');
+  // User model: Day 1 starts from the prior cycle top anchor (Oct 10, 2025), then count to Day 500.
+  const cycleAnchor = new Date('2025-10-10T00:00:00Z');
+  const cycleLengthDays = 500;
   const msDay = 86400000;
   const utcToday = new Date();
   const todayUTC = Date.UTC(utcToday.getFullYear(), utcToday.getMonth(), utcToday.getDate());
   const anchorUTC = Date.UTC(cycleAnchor.getUTCFullYear(), cycleAnchor.getUTCMonth(), cycleAnchor.getUTCDate());
-  const nextHalvingUTC = Date.UTC(nextHalvingEstimate.getUTCFullYear(), nextHalvingEstimate.getUTCMonth(), nextHalvingEstimate.getUTCDate());
-  const cycleLengthDays = Math.max(1, Math.floor((nextHalvingUTC - anchorUTC) / msDay) + 1);
   const daysFromAnchor = Math.floor((todayUTC - anchorUTC) / msDay);
   const cycleDay = Math.max(0, daysFromAnchor + 1);
   const daysRemaining = Math.max(0, cycleLengthDays - cycleDay);
   const progressPct = Math.max(0, Math.min(100, (cycleDay / cycleLengthDays) * 100));
-  const targetDate = new Date(nextHalvingUTC);
+  const targetDate = new Date(anchorUTC + (cycleLengthDays - 1) * msDay);
   const targetLabel = targetDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const anchorLabel = cycleAnchor.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const cyclePhase = progressPct >= 90 ? 'LATE CYCLE' : progressPct >= 60 ? 'MID CYCLE' : 'EARLY CYCLE';
   const phaseColor = progressPct >= 90 ? t.danger : progressPct >= 60 ? t.warn : t.accent;
 
   return (
-    <Card title="BTC Halving Cycle" visible={visible} delay={240} t={t}>
+    <Card title="BTC 500-Day Cycle" visible={visible} delay={240} t={t}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
           <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Price</div>
@@ -4345,10 +4343,10 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
           <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Anchor</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>Halving {anchorLabel}</div>
+          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>Top {anchorLabel}</div>
         </div>
         <div style={{ borderLeft: `2px solid ${t.warn}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Halving (Est.)</div>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Target Day 500</div>
           <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{targetLabel}</div>
         </div>
         <div style={{ borderLeft: `2px solid ${phaseColor}`, paddingLeft: 8 }}>
@@ -4364,7 +4362,7 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
           <div style={{ width: `${progressPct.toFixed(1)}%`, height: '100%', background: phaseColor }} />
         </div>
         <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.45 }}>
-          Day {cycleDay} of {cycleLengthDays} ({progressPct.toFixed(1)}%). Countdown anchored to the Apr 2024 halving.
+          Day {cycleDay} of {cycleLengthDays} ({progressPct.toFixed(1)}%). Day 1 starts from the Oct 10, 2025 top anchor.
         </div>
       </div>
     </Card>
