@@ -272,13 +272,26 @@ function categorize(desc) {
   return 'Uncategorized';
 }
 
+function normalizeMerchantDescription(desc) {
+  return String(desc || '')
+    .replace(/\*{3,}\S*/g, ' ')
+    .replace(/\bconf#?\s*\d+\b/gi, ' ')
+    .replace(/\bchecking\s*#?\d+\b/gi, ' ')
+    .replace(/\bach\s+(withdrawal|dep)\s*\d+\b/gi, ' ACH $1 ')
+    .replace(/\b(?:from|to)\s+pierre\s+eustache\b/gi, ' ')
+    .replace(/\bcredit card ending in \d+\b/gi, 'credit card')
+    .replace(/\b(?:mobile|online):\s*#?\d+\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function merchantKeyFromDescription(desc) {
-  const source = String(desc || '').toLowerCase();
+  const source = normalizeMerchantDescription(desc).toLowerCase();
   if (!source.trim()) return '';
   const scrubbed = source
     .replace(/\$?\d[\d,]*(?:\.\d{1,2})?/g, ' ')
     .replace(/\b\d{1,4}[\/\-]\d{1,4}(?:[\/\-]\d{2,4})?\b/g, ' ')
-    .replace(/\b(?:ach|withdrawal|deposit|debit|credit|payment|transfer|funds|mobile|checking|savings|online|purchase|card|pending|posted|fee|service|classic|statement)\b/g, ' ')
+    .replace(/\b(?:ach|withdrawal|deposit|debit|credit|payment|transfer|funds|mobile|checking|savings|online|purchase|card|pending|posted|fee|service|classic|statement|from|to|bank|account|ending|conf)\b/g, ' ')
     .replace(/[^a-z\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -479,7 +492,7 @@ function parseStatementTextToTransactions(text, options = {}) {
       const normDate = normalizeDateLike(rowDate);
       const amount = parseAmountLike(amountToken);
       if (!normDate || amount === null) return;
-      const desc = String(rowDesc || '').replace(/\s{2,}/g, ' ').trim();
+      const desc = normalizeMerchantDescription(String(rowDesc || '').replace(/\s{2,}/g, ' ').trim());
       if (!desc || /beginning balance|ending balance|service charges?/i.test(desc)) return;
       const signed = usaaDirection(rowLine, desc) > 0 ? Math.abs(amount) : -Math.abs(amount);
       txns.push(withTxnConfidence({ date: normDate, description: desc, amount: signed }, rowLine));
@@ -495,11 +508,11 @@ function parseStatementTextToTransactions(text, options = {}) {
       if (!amounts.length) continue;
       const amountToken = amounts.length >= 2 ? amounts[0] : amounts[0]; // first money token is debit/credit; trailing token is often running balance
 
-      let desc = line
+      let desc = normalizeMerchantDescription(line
         .replace(dateHeadRx, '')
         .replace(amountRx, ' ')
         .replace(/\s{2,}/g, ' ')
-        .trim();
+        .trim());
 
       // Pull continuation lines (merchant/details) under the dated row.
       let j = i + 1;
@@ -507,7 +520,7 @@ function parseStatementTextToTransactions(text, options = {}) {
         const next = rawLines[j];
         if (!next || isNoiseLine(next) || dateHeadRx.test(next)) break;
         if (/[A-Za-z]/.test(next) && !/^\*{4,}\d{2,4}$/.test(next)) {
-          desc = `${desc} ${next}`.replace(/\s{2,}/g, ' ').trim();
+          desc = normalizeMerchantDescription(`${desc} ${next}`.replace(/\s{2,}/g, ' ').trim());
         }
         j++;
       }
@@ -627,7 +640,7 @@ function parseStatementTextToTransactions(text, options = {}) {
     let m = line.match(rx1);
     if (m) {
       const date = normalizeDateLike(m[1]);
-      const desc = (m[2] || '').trim();
+      const desc = normalizeMerchantDescription((m[2] || '').trim());
       const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
       if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) {
         txns.push(withTxnConfidence({ date, description: desc, amount: amt }, line));
@@ -638,7 +651,7 @@ function parseStatementTextToTransactions(text, options = {}) {
     // Pattern 2: DESC DATE AMOUNT
     m = line.match(rx2);
     if (m) {
-      const desc = (m[1] || '').trim();
+      const desc = normalizeMerchantDescription((m[1] || '').trim());
       const date = normalizeDateLike(m[2]);
       const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
       if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) {
@@ -652,7 +665,7 @@ function parseStatementTextToTransactions(text, options = {}) {
     if (!dm) {
       if (txns.length && isContinuationCandidate(line)) {
         const prev = txns[txns.length - 1];
-        const mergedDesc = `${prev.description} ${line}`.replace(/\s{2,}/g, ' ').trim();
+        const mergedDesc = normalizeMerchantDescription(`${prev.description} ${line}`.replace(/\s{2,}/g, ' ').trim());
         txns[txns.length - 1] = withTxnConfidence({ ...prev, description: mergedDesc }, mergedDesc);
       }
       continue;
@@ -671,7 +684,7 @@ function parseStatementTextToTransactions(text, options = {}) {
     const amtIdx = line.lastIndexOf(pickedAmtToken);
     const descSliceStart = dateIdx >= 0 ? dateIdx + dateStr.length : 0;
     const descSliceEnd = amtIdx > descSliceStart ? amtIdx : line.length;
-    const desc = line.slice(descSliceStart, descSliceEnd).replace(/\s{2,}/g, ' ').trim();
+    const desc = normalizeMerchantDescription(line.slice(descSliceStart, descSliceEnd).replace(/\s{2,}/g, ' ').trim());
     const date = normalizeDateLike(dateStr);
 
     // Avoid adding lines where "description" is empty or obviously just column labels
@@ -3079,12 +3092,24 @@ useEffect(() => {
             >
               {reviewLowConfidence ? 'EXIT LOW-REVIEW' : `REVIEW LOW ONLY (${lowConfidenceRows.length})`}
             </button>
+            <button
+              onClick={() => {
+                const all = lowConfidenceRows.map(r => r.idx).filter(idx => typeof idx === 'number');
+                setReviewedLowIndices(prev => Array.from(new Set([...prev, ...all])));
+                setError('');
+                log(`LOW-CONFIDENCE QUICK REVIEW: ${all.length} ROWS MARKED`);
+              }}
+              disabled={!lowConfidenceRows.length}
+              style={{ ...btnGhost, padding: '8px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+            >
+              MARK ALL LOW REVIEWED
+            </button>
             {csvBlobUrl && (
               <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Download size={14} /> DOWNLOAD payment-log.csv
               </a>
             )}
-            <button onClick={confirmSync} disabled={!parsedPreview || !lowReviewComplete} style={{ ...btn, opacity: (!parsedPreview || !lowReviewComplete) ? 0.6 : 1 }}>
+            <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, opacity: (!parsedPreview) ? 0.6 : 1 }}>
               <Shield size={14} /> COMMIT SYNC
             </button>
           </div>
