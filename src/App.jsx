@@ -375,6 +375,80 @@ function parseStatementTextToTransactions(text, options = {}) {
     .map(l => (l || '').replace(/\t/g, ' ').trim())
     .filter(Boolean);
 
+  if (bankKey === 'usaa') {
+    const txns = [];
+    const dateHeadRx = /^(\d{1,2}\/\d{1,2})\s+/;
+    const amountRx = /\$?\d[\d,]*\.\d{2}/g;
+    const isNoiseLine = (line) => (
+      /^online:\s*usaa\.com/i.test(line) ||
+      /^usaa classic checking/i.test(line) ||
+      /^for account number/i.test(line) ||
+      /^statement period/i.test(line) ||
+      /^transactions?(?:\s*\(continued\))?$/i.test(line) ||
+      /^date\s+description/i.test(line) ||
+      /^activity summary/i.test(line) ||
+      /^page\s+\d+\s+of\s+\d+/i.test(line) ||
+      /^\d+\s*$/.test(line)
+    );
+    const usaaDirection = (line, desc = '') => {
+      const s = `${line} ${desc}`.toLowerCase();
+      if (/\b(?:funds transfer cr|ach dep|deposit|dep\b|payroll|credit|refund)\b/.test(s)) return 1;
+      if (/\b(?:withdrawal|payment|debit|autopay|purchase|atm|card)\b/.test(s)) return -1;
+      return -1;
+    };
+    const pushTxn = (rowDate, rowDesc, amountToken, rowLine) => {
+      const normDate = normalizeDateLike(rowDate);
+      const amount = parseAmountLike(amountToken);
+      if (!normDate || amount === null) return;
+      const desc = String(rowDesc || '').replace(/\s{2,}/g, ' ').trim();
+      if (!desc || /beginning balance|ending balance|service charges?/i.test(desc)) return;
+      const signed = usaaDirection(rowLine, desc) > 0 ? Math.abs(amount) : -Math.abs(amount);
+      txns.push(withTxnConfidence({ date: normDate, description: desc, amount: signed }, rowLine));
+    };
+
+    for (let i = 0; i < rawLines.length; i++) {
+      const line = rawLines[i];
+      if (isNoiseLine(line)) continue;
+      const dm = line.match(dateHeadRx);
+      if (!dm) continue;
+      const rowDate = dm[1];
+      const amounts = Array.from(line.matchAll(amountRx)).map(m => m[0]);
+      if (!amounts.length) continue;
+      const amountToken = amounts.length >= 2 ? amounts[0] : amounts[0]; // first money token is debit/credit; trailing token is often running balance
+
+      let desc = line
+        .replace(dateHeadRx, '')
+        .replace(amountRx, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+
+      // Pull continuation lines (merchant/details) under the dated row.
+      let j = i + 1;
+      while (j < rawLines.length) {
+        const next = rawLines[j];
+        if (!next || isNoiseLine(next) || dateHeadRx.test(next)) break;
+        if (/[A-Za-z]/.test(next) && !/^\*{4,}\d{2,4}$/.test(next)) {
+          desc = `${desc} ${next}`.replace(/\s{2,}/g, ' ').trim();
+        }
+        j++;
+      }
+      i = j - 1;
+      pushTxn(rowDate, desc, amountToken, line);
+    }
+
+    // Dedupe/sort like generic path
+    const seen = new Set();
+    const out = [];
+    for (const t of txns) {
+      const key = `${t.date}|${t.description}|${t.amount}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(t);
+    }
+    out.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
+    return out;
+  }
+
   const splitDenseStatementLine = (line, dateRegex) => {
     const dense = (line || '').replace(/\s{2,}/g, ' ').trim();
     if (!dense) return [];
