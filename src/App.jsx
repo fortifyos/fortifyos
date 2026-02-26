@@ -36,7 +36,7 @@ const THEMES = {
   light: {
     void: '#FFFFFF', surface: '#FFFFFF', elevated: '#FFFFFF', input: '#F7F7F7',
     panel: '#F7F7F7', panel2: '#FFFFFF',
-    borderDim: '#E1E1E1', borderMid: '#D0D0D0', borderBright: '#BDBDBD',
+    borderDim: '#CECECE', borderMid: '#B9B9B9', borderBright: '#A8A8A8',
     textPrimary: '#121212', textSecondary: '#4E4E4E', textDim: '#777777', textGhost: '#C7C7C7',
     accent: '#1D7A3A', accentBright: '#2A9950', accentDim: '#14572A', accentMuted: '#E6F4EA',
     danger: '#C42B1C', warn: '#D48A00',
@@ -845,7 +845,7 @@ const DEFAULT_SNAPSHOT = {
   bills: [],
   payroll: { frequency: 'WEEKLY', weekday: 2 },
 };
-const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], _v: 7 };
+const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], payFrequency: 'WEEKLY', _v: 8 };
 const fmt = (n) => { if (n == null || isNaN(n)) return '$0'; return '$' + Math.abs(Math.round(Number(n))).toLocaleString('en-US'); };
 const dailyInterest = (d) => d ? d.reduce((s, x) => s + ((x.balance || 0) * ((x.apr || 0) / 100)) / 365, 0) : 0;
 const totalDebt = (d) => d ? d.reduce((s, x) => s + (x.balance || 0), 0) : 0;
@@ -877,6 +877,25 @@ const nextWeekdayDates = (weekday = 2, count = 4) => {
   while (out.length < count) {
     if (d.getDay() === weekday && d >= now) out.push(new Date(d));
     d.setDate(d.getDate() + 1);
+  }
+  return out;
+};
+const payPeriodsPerMonth = (frequency = 'WEEKLY') => {
+  const f = String(frequency || 'WEEKLY').toUpperCase();
+  if (f === 'BIWEEKLY') return 26 / 12;
+  return 52 / 12;
+};
+const nextPayrollDates = (payroll = {}, count = 4) => {
+  const weekday = Number(payroll?.weekday ?? 2);
+  const frequency = String(payroll?.frequency || 'WEEKLY').toUpperCase();
+  if (frequency !== 'BIWEEKLY') return nextWeekdayDates(weekday, count);
+  const first = nextWeekdayDates(weekday, 1)[0];
+  if (!first) return [];
+  const out = [new Date(first)];
+  while (out.length < count) {
+    const next = new Date(out[out.length - 1]);
+    next.setDate(next.getDate() + 14);
+    out.push(next);
   }
   return out;
 };
@@ -3548,10 +3567,15 @@ useEffect(() => {
 // ═══════════════════════════════════════════════════
 // SETTINGS PANEL
 // ═══════════════════════════════════════════════════
-function SettingsPanel({ open, settings, onToggle, onExport, onClear, onClose, onToggleTheme, isDark, t }) {
+function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, onClear, onClose, onToggleTheme, isDark, t }) {
   const [confirm, setConfirm] = useState('');
   if (!open) return null;
   const mods = [{ key: 'macroBanner', label: 'Macro Banner (top strip)' }, { key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'planner', label: 'Bills & Payday Planner' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }, { key: 'macro', label: 'Macro Signals' }, { key: 'market', label: 'Market Intelligence' }];
+  const payFrequency = String(settings?.payFrequency || 'WEEKLY').toUpperCase();
+  const payFrequencyOptions = [
+    { key: 'WEEKLY', label: 'Weekly' },
+    { key: 'BIWEEKLY', label: 'Bi-Weekly' },
+  ];
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
       <div style={{ width: 280, background: t.surface, borderLeft: `1px solid ${t.borderDim}`, height: '100%', padding: 20, overflow: 'auto', animation: 'slideIn 0.25s ease-out' }} onClick={e => e.stopPropagation()}>
@@ -3571,6 +3595,32 @@ function SettingsPanel({ open, settings, onToggle, onExport, onClear, onClose, o
             <div style={{ width: 28, height: 14, borderRadius: 7, background: on ? t.accentMuted : t.elevated, position: 'relative', transition: 'background 0.2s' }}><div style={{ width: 10, height: 10, borderRadius: '50%', position: 'absolute', top: 2, left: on ? 16 : 2, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} /></div>
           </div>);
         })}
+        <div style={{ marginTop: 20, color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Pay Schedule</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
+          {payFrequencyOptions.map(opt => {
+            const isActive = payFrequency === opt.key;
+            return (
+              <button
+                key={opt.key}
+                onClick={() => onSetPayFrequency?.(opt.key)}
+                style={{
+                  width: '100%',
+                  padding: '8px 6px',
+                  background: isActive ? t.accentMuted : t.surface,
+                  border: `1px solid ${isActive ? t.accent : t.borderDim}`,
+                  color: isActive ? t.accent : t.textSecondary,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 10,
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ color: t.textDim, fontSize: 9, marginBottom: 10 }}>Applies to payday timeline and ticker calculations.</div>
         <div style={{ marginTop: 20, color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Data</div>
         <button onClick={onExport} style={{ width: '100%', padding: 8, background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}><Download size={12} /> Export All</button>
         <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 8px', width: '100%', outline: 'none', marginBottom: 6, boxSizing: 'border-box' }} />
@@ -3857,11 +3907,11 @@ function DebtMod({ latest, visible, t }) {
   </Card>);
 }
 
-function PlannerMod({ latest, visible, t }) {
+function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
   if (!visible) return null;
   const bills = latest?.bills || [];
   const debts = latest?.debts || [];
-  const payroll = latest?.payroll || { frequency: 'WEEKLY', weekday: 2 };
+  const payroll = { ...(latest?.payroll || { frequency: 'WEEKLY', weekday: 2 }), frequency: String(payFrequencyOverride || latest?.payroll?.frequency || 'WEEKLY').toUpperCase() };
   const today = new Date();
   const nextMonthlyDate = (day) => {
     const d = new Date(today.getFullYear(), today.getMonth(), Math.max(1, Math.min(31, day)));
@@ -3882,10 +3932,10 @@ function PlannerMod({ latest, visible, t }) {
       amount: Number(d.monthlyPayment || d.minPayment || 0),
       type: 'debt',
     }));
-  const paydayEvents = nextWeekdayDates(Number(payroll.weekday || 2), 4).map(d => ({
-    label: `Payday (${weekdayName(payroll.weekday || 2)})`,
+  const paydayEvents = nextPayrollDates(payroll, 4).map(d => ({
+    label: `Payday (${weekdayName(payroll.weekday || 2)} • ${payroll.frequency === 'BIWEEKLY' ? 'Bi-Weekly' : 'Weekly'})`,
     date: d,
-    amount: Number(latest?.budget?.income || latest?._meta?.income || 0) / 4,
+    amount: Number(latest?.budget?.income || latest?._meta?.income || 0) / payPeriodsPerMonth(payroll.frequency),
     type: 'payday',
   }));
   const timeline = [...billEvents, ...debtEvents, ...paydayEvents]
@@ -4886,14 +4936,15 @@ function timeGreeting(now = new Date()) {
   return 'Good Night';
 }
 
-function PulseTicker({ latest, t, now }) {
+function PulseTicker({ latest, t, now, payFrequencyOverride }) {
   const stage = calcStage(latest);
   const stageMeta = STAGE_META[stage] || STAGE_META[0];
   const runway = runwayDaysFromLatest(latest);
   const savingsRate = calcSavingsRate(latest);
   const leak = dailyInterest(latest?.debts);
   const nextActionText = nextAction(latest)?.text || 'System ready';
-  const nextPayday = nextWeekdayDates(Number(latest?.payroll?.weekday ?? 2), 1)[0];
+  const payroll = { ...(latest?.payroll || { frequency: 'WEEKLY', weekday: 2 }), frequency: String(payFrequencyOverride || latest?.payroll?.frequency || 'WEEKLY').toUpperCase() };
+  const nextPayday = nextPayrollDates(payroll, 1)[0];
   const bills = (latest?.bills || []).slice(0, 3).map(b => `${b.name} due ${b.dueDay}`);
   const tickItems = [
     `Stage ${stage} ${stageMeta.name}`,
@@ -4923,7 +4974,7 @@ function PulseTicker({ latest, t, now }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -4982,7 +5033,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
         </div>
       </div>
-      <PulseTicker latest={latest} t={t} now={now} />
+      <PulseTicker latest={latest} t={t} now={now} payFrequencyOverride={settings?.payFrequency} />
       <MacroBanner fredMacro={fredMacro} visible={vis.includes('macroBanner')} t={t} refreshNonce={intelRefreshNonce} />
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
@@ -4991,7 +5042,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <div style={{ gridColumn: '1 / -1' }}><MacroSignalsMod latest={latest} visible={vis.includes('macro')} t={t} fredMacro={fredMacro} /></div>
         <div style={{ gridColumn: '1 / -1' }}><MarketIntelligenceMod latest={latest} visible={vis.includes('market')} t={t} isDark={isDark} fredMacro={fredMacro} /></div>
         <DebtMod latest={latest} visible={vis.includes('debt')} t={t} />
-        <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} />
+        <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
         <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
         <BudgetMod latest={latest} visible={vis.includes('budget')} t={t} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
@@ -5005,7 +5056,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <span className="footer-label" style={{ color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>FortifyOS</span>
     </footer>
     <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={onSync} t={t} />
-    <SettingsPanel open={settingsOpen} settings={settings} onToggle={onToggle} onExport={onExport} onClear={onClear} onClose={() => setSettingsOpen(false)} onToggleTheme={onToggleTheme} isDark={isDark} t={t} />
+    <SettingsPanel open={settingsOpen} settings={settings} onToggle={onToggle} onSetPayFrequency={onSetPayFrequency} onExport={onExport} onClear={onClear} onClose={() => setSettingsOpen(false)} onToggleTheme={onToggleTheme} isDark={isDark} t={t} />
   </div>);
 }
 
@@ -5085,12 +5136,12 @@ function FortifyOSApp() {
         const mergedVisible = [...savedMods, ...newMods];
         const needsVersionBump = (st._v || 0) < DEFAULT_SETTINGS._v;
         const needsModuleMerge = newMods.length > 0;
+        const mergedSettings = { ...DEFAULT_SETTINGS, ...st, visibleModules: mergedVisible, payFrequency: String(st.payFrequency || DEFAULT_SETTINGS.payFrequency).toUpperCase() === 'BIWEEKLY' ? 'BIWEEKLY' : 'WEEKLY', _v: DEFAULT_SETTINGS._v };
         if (needsVersionBump || needsModuleMerge) {
-          const merged = { ...st, visibleModules: mergedVisible, _v: DEFAULT_SETTINGS._v };
-          setSettings(merged);
-          await store.set('fortify-settings', merged);
+          setSettings(mergedSettings);
+          await store.set('fortify-settings', mergedSettings);
         } else {
-          setSettings(st);
+          setSettings(mergedSettings);
         }
       }
       if (th !== null) setIsDark(th);
@@ -5109,6 +5160,7 @@ function FortifyOSApp() {
     merged.protection = { ...DEFAULT_SNAPSHOT.protection, ...(base.protection || {}), ...(data.protection || {}) };
     merged.bills = Array.isArray(data.bills) ? data.bills : (Array.isArray(base.bills) ? base.bills : []);
     merged.payroll = { ...DEFAULT_SNAPSHOT.payroll, ...(base.payroll || {}), ...(data.payroll || {}) };
+    merged.payroll.frequency = String(settings?.payFrequency || merged.payroll.frequency || 'WEEKLY').toUpperCase() === 'BIWEEKLY' ? 'BIWEEKLY' : 'WEEKLY';
     merged.netWorth = { ...DEFAULT_SNAPSHOT.netWorth, ...(base.netWorth || {}), ...(data.netWorth || {}) };
     merged.netWorth.assets = { ...DEFAULT_SNAPSHOT.netWorth.assets, ...(base.netWorth?.assets || {}), ...(data.netWorth?.assets || {}) };
 
@@ -5173,12 +5225,32 @@ function FortifyOSApp() {
     } catch(_) {}
     setSyncFlash(true); setTimeout(() => setSyncFlash(false), 600);
     setView('dashboard'); setSyncOpen(false);
-  }, [latest]);
+  }, [latest, settings?.payFrequency]);
 
   const toggleTheme = useCallback(async () => { const n = !isDark; setIsDark(n); await store.set('fortify-theme', n); }, [isDark]);
   const toggleModule = useCallback(async (k) => {
     const m = settings.visibleModules.includes(k) ? settings.visibleModules.filter(x => x !== k) : [...settings.visibleModules, k];
     const ns = { ...settings, visibleModules: m }; setSettings(ns); await store.set('fortify-settings', ns);
+  }, [settings]);
+  const setPayFrequency = useCallback(async (frequency) => {
+    const normalized = String(frequency || 'WEEKLY').toUpperCase() === 'BIWEEKLY' ? 'BIWEEKLY' : 'WEEKLY';
+    const ns = { ...settings, payFrequency: normalized };
+    setSettings(ns);
+    await store.set('fortify-settings', ns);
+
+    setLatest((prev) => {
+      const nextLatest = { ...prev, payroll: { ...DEFAULT_SNAPSHOT.payroll, ...(prev?.payroll || {}), frequency: normalized } };
+      store.set('fortify-latest', nextLatest);
+      return nextLatest;
+    });
+    setSnapshots((prev) => {
+      if (!Array.isArray(prev) || prev.length === 0) return prev;
+      const next = [...prev];
+      const last = next[next.length - 1] || {};
+      next[next.length - 1] = { ...last, payroll: { ...DEFAULT_SNAPSHOT.payroll, ...(last.payroll || {}), frequency: normalized } };
+      store.set('fortify-snapshots', next);
+      return next;
+    });
   }, [settings]);
   const handleExport = useCallback(() => {
     const b = new Blob([JSON.stringify({ snapshots, latest, settings }, null, 2)], { type: 'application/json' });
@@ -5261,7 +5333,8 @@ function FortifyOSApp() {
           input, select, textarea { font-size: 16px !important; }
           button { min-height: 40px; }
           .phase-label,.footer-label { display: none !important; }
-          .main-grid { grid-template-columns: 1fr !important; }
+          .main-grid { grid-template-columns: minmax(0, 1fr) !important; }
+          .main-grid > * { min-width: 0 !important; width: 100% !important; }
           .sync-row-3 { grid-template-columns: 1fr !important; }
           .status-metrics { grid-template-columns: 1fr 1fr !important; }
           .sync-row-debt { grid-template-columns: 1fr !important; }
@@ -5274,13 +5347,14 @@ function FortifyOSApp() {
           .footer-stat-cell:last-child { border-bottom: none; }
           .stage-labels span { font-size: 6px !important; }
           .fo-main { overflow-x: hidden !important; }
+          .dashboard-main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
         }
       `}</style>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
     </div>
   );
 }
