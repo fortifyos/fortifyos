@@ -193,6 +193,45 @@ function categorize(desc) {
   return 'Uncategorized';
 }
 
+function merchantKeyFromDescription(desc) {
+  const source = String(desc || '').toLowerCase();
+  if (!source.trim()) return '';
+  const scrubbed = source
+    .replace(/\$?\d[\d,]*(?:\.\d{1,2})?/g, ' ')
+    .replace(/\b\d{1,4}[\/\-]\d{1,4}(?:[\/\-]\d{2,4})?\b/g, ' ')
+    .replace(/\b(?:ach|withdrawal|deposit|debit|credit|payment|transfer|funds|mobile|checking|savings|online|purchase|card|pending|posted|fee|service|classic|statement)\b/g, ' ')
+    .replace(/[^a-z\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const words = scrubbed.split(' ').filter(w => w.length >= 3);
+  if (!words.length) return '';
+  return words.slice(0, 4).join(' ');
+}
+
+function learnedCategoryForDescription(desc, merchantRules) {
+  const key = merchantKeyFromDescription(desc);
+  if (!key || !Array.isArray(merchantRules) || merchantRules.length === 0) return '';
+  const exact = merchantRules.find(r => r?.key === key && r?.category);
+  if (exact) return exact.category;
+  const fuzzy = merchantRules
+    .filter(r => r?.key && r?.category && (key.includes(r.key) || r.key.includes(key)))
+    .sort((a, b) => (b.key?.length || 0) - (a.key?.length || 0))[0];
+  return fuzzy?.category || '';
+}
+
+function inferCategory(desc, merchantRules) {
+  return learnedCategoryForDescription(desc, merchantRules) || categorize(desc);
+}
+
+function applyMerchantRules(txns, merchantRules) {
+  return (txns || []).map((tx) => {
+    const learned = learnedCategoryForDescription(tx?.description, merchantRules);
+    if (!learned) return tx;
+    if (tx?.category && String(tx.category).trim() && String(tx.category).trim() !== 'Uncategorized') return tx;
+    return { ...tx, category: learned };
+  });
+}
+
 /**
  * STATEMENT PARSING (PDF text + OCR)
  * Heuristic line parser for common bank/credit card statement formats.
@@ -262,6 +301,38 @@ function parseAmountLike(s) {
   if (Number.isNaN(n)) return null;
   if (Math.abs(n) > 1e7) return null;
   return neg ? -Math.abs(n) : n;
+}
+
+function scoreTxnConfidence({ date, description, amount, line }) {
+  let score = 0;
+  const dateNorm = normalizeDateLike(date || '');
+  const desc = String(description || '').trim();
+  const source = String(line || `${date || ''} ${desc} ${amount ?? ''}`).toLowerCase();
+  const descLetters = (desc.match(/[A-Za-z]/g) || []).length;
+  const amountNum = typeof amount === 'number' ? amount : parseFloat(String(amount || '').replace(/,/g, ''));
+
+  if (dateNorm) score += 0.28;
+  if (descLetters >= 5) score += 0.22;
+  if (/\b(?:ach|withdrawal|payment|deposit|transfer|card|debit|credit|autopay|pos|zelle|venmo|paypal|atm)\b/i.test(desc)) score += 0.2;
+  if (Number.isFinite(amountNum) && Math.abs(amountNum) >= 0.01 && Math.abs(amountNum) <= 1000000) score += 0.2;
+
+  if (descLetters < 3) score -= 0.18;
+  if (/\b(?:balance|statement|ending|beginning|available|total due|interest charge)\b/.test(source)) score -= 0.26;
+  if (/^\d[\d\s\-./]*$/.test(desc)) score -= 0.12;
+
+  score = Math.max(0, Math.min(1, score));
+  const label = score >= 0.75 ? 'high' : score >= 0.5 ? 'medium' : 'low';
+  return { score: Number(score.toFixed(2)), label };
+}
+
+function withTxnConfidence(txn, line = '') {
+  const { score, label } = scoreTxnConfidence({
+    date: txn?.date,
+    description: txn?.description,
+    amount: txn?.amount,
+    line,
+  });
+  return { ...txn, confidence: label, confidenceScore: score };
 }
 
 function parseStatementTextToTransactions(text) {
@@ -371,7 +442,9 @@ function parseStatementTextToTransactions(text) {
       const date = normalizeDateLike(m[1]);
       const desc = (m[2] || '').trim();
       const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
-      if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) txns.push({ date, description: desc, amount: amt });
+      if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) {
+        txns.push(withTxnConfidence({ date, description: desc, amount: amt }, line));
+      }
       continue;
     }
 
@@ -381,7 +454,9 @@ function parseStatementTextToTransactions(text) {
       const desc = (m[1] || '').trim();
       const date = normalizeDateLike(m[2]);
       const amt = applyDirection(parseAmountLike(m[3]), line, desc, m[3]);
-      if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) txns.push({ date, description: desc, amount: amt });
+      if (date && amt !== null && (desc.match(/[A-Za-z]/g) || []).length >= 3 && Math.abs(amt) >= 0.01) {
+        txns.push(withTxnConfidence({ date, description: desc, amount: amt }, line));
+      }
       continue;
     }
 
@@ -390,7 +465,8 @@ function parseStatementTextToTransactions(text) {
     if (!dm) {
       if (txns.length && isContinuationCandidate(line)) {
         const prev = txns[txns.length - 1];
-        prev.description = `${prev.description} ${line}`.replace(/\s{2,}/g, ' ').trim();
+        const mergedDesc = `${prev.description} ${line}`.replace(/\s{2,}/g, ' ').trim();
+        txns[txns.length - 1] = withTxnConfidence({ ...prev, description: mergedDesc }, mergedDesc);
       }
       continue;
     }
@@ -417,7 +493,7 @@ function parseStatementTextToTransactions(text) {
     if ((desc.match(/[A-Za-z]/g) || []).length < 3) continue;
     if (Math.abs(amt) < 0.01) continue;
 
-    txns.push({ date, description: desc, amount: amt });
+    txns.push(withTxnConfidence({ date, description: desc, amount: amt }, line));
   }
 
   // De-dup by (date|desc|amount)
@@ -1825,6 +1901,10 @@ const [stmtFile, setStmtFile] = useState(null);
 const [stmtRawText, setStmtRawText] = useState('');
 const [stmtText, setStmtText] = useState('');
 const [stmtTxns, setStmtTxns] = useState([]);
+const [showLowConfidence, setShowLowConfidence] = useState(true);
+const [reviewLowConfidence, setReviewLowConfidence] = useState(false);
+const [reviewCursor, setReviewCursor] = useState(0);
+const [merchantRules, setMerchantRules] = useState([]);
 const [stmtBankName, setStmtBankName] = useState('Statement Upload');
 const [csvBlobUrl, setCsvBlobUrl] = useState('');
 const stmtFileRef = useRef();
@@ -1865,19 +1945,6 @@ const btn = {
     background: t.void,
   };
   const assetBase = import.meta.env.BASE_URL || '/';
-  const templateLinks = [
-    { label: 'bills-registry.csv', href: `${assetBase}templates/bills-registry.csv` },
-    { label: 'bnpl-tracker.csv', href: `${assetBase}templates/bnpl-tracker.csv` },
-    { label: 'debt-avalanche.csv', href: `${assetBase}templates/debt-avalanche.csv` },
-    { label: 'payment-log.csv', href: `${assetBase}templates/payment-log.csv` },
-  ];
-  const protocolLinks = [
-    { label: 'fortify-core.md', href: `${assetBase}protocols/fortify-core.md` },
-    { label: 'parse-protocols.md', href: `${assetBase}protocols/parse-protocols.md` },
-    { label: 'hud-template.md', href: `${assetBase}protocols/hud-template.md` },
-    { label: 'FORTIFYOS_V3.jsx', href: `${assetBase}protocols/FORTIFYOS_V3.jsx` },
-    { label: 'FORTIFYOS_V3.jsx.rtf', href: `${assetBase}protocols/FORTIFYOS_V3.jsx.rtf` },
-  ];
 
 
   // JSON paste state
@@ -1934,6 +2001,21 @@ const btn = {
     };
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const saved = await store.get('fortify-merchant-rules');
+      if (!mounted || !Array.isArray(saved)) return;
+      setMerchantRules(saved.filter(r => r?.key && r?.category));
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const persistMerchantRules = useCallback(async (nextRules) => {
+    setMerchantRules(nextRules);
+    await store.set('fortify-merchant-rules', nextRules);
+  }, []);
+
   if (!open) return null;
 
   const log = (msg) => setLogs(p => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...p].slice(0, 8));
@@ -1944,6 +2026,24 @@ const btn = {
     }
     return null;
   };
+
+  const learnMerchantRule = useCallback(async (description, category) => {
+    const nextCategory = String(category || '').trim();
+    if (!nextCategory || nextCategory === 'Uncategorized') return;
+    const key = merchantKeyFromDescription(description);
+    if (!key) return;
+    const existing = merchantRules.find(r => r.key === key);
+    const now = Date.now();
+    let nextRules;
+    if (existing) {
+      nextRules = merchantRules.map(r => r.key === key
+        ? { ...r, category: nextCategory, hits: (r.hits || 0) + 1, updatedAt: now }
+        : r);
+    } else {
+      nextRules = [...merchantRules, { key, category: nextCategory, hits: 1, updatedAt: now }];
+    }
+    await persistMerchantRules(nextRules);
+  }, [merchantRules, persistMerchantRules]);
 
 
 // ───────────────────────────────────────────────
@@ -2047,7 +2147,7 @@ const ocrFirstPageOfPDF = async (file) => {
 
 const handleStatementFile = async (file) => {
   setProcessing(true); setError(''); setParsedPreview(null); setSuccess(false);
-  setLogs([]); setStmtFile(file); setStmtRawText(''); setStmtText(''); setStmtTxns([]); if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} setCsvBlobUrl(''); }
+  setLogs([]); setStmtFile(file); setStmtRawText(''); setStmtText(''); setStmtTxns([]); setReviewLowConfidence(false); setReviewCursor(0); if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} setCsvBlobUrl(''); }
   log('PIPELINE: STATEMENT RAW VIEW (NO DISPLAY REDACTION) v2026-02-23');
   const ext = file.name.split('.').pop().toLowerCase();
   log(`STATEMENT INGEST: ${file.name} (.${ext.toUpperCase()})`);
@@ -2076,12 +2176,17 @@ const handleStatementFile = async (file) => {
     setStmtText(rawText || '');
 
     log('PARSING TRANSACTIONS...');
-    const txns = parseStatementTextToTransactions(rawText || '');
+    const txnsRaw = parseStatementTextToTransactions(rawText || '');
+    const txns = applyMerchantRules(txnsRaw, merchantRules);
     if (!txns.length) {
       log('WARNING: NO TRANSACTIONS FOUND (HEURISTIC PARSER)');
       setError('No transactions detected. Try a text-based PDF export or CSV statement. You can review extracted text below and try parsing again.');
     } else {
       log(`FOUND: ${txns.length} TRANSACTIONS`);
+      if (merchantRules.length) {
+        const learnedHits = txns.filter(tx => tx?.category && tx.category !== 'Uncategorized').length;
+        if (learnedHits > 0) log(`MERCHANT LEARNING APPLIED: ${learnedHits} AUTO-CATEGORIZED`);
+      }
     }
     setStmtTxns(txns);
 
@@ -2104,7 +2209,16 @@ const handleStatementFile = async (file) => {
 
 const updateStmtTxn = (i, field, val) => {
   const arr = [...stmtTxns];
-  arr[i] = { ...arr[i], [field]: field === 'amount' ? (typeof val === 'number' ? val : (parseFloat(String(val).replace(/,/g,'')) || 0)) : val };
+  const next = { ...arr[i], [field]: field === 'amount' ? (typeof val === 'number' ? val : (parseFloat(String(val).replace(/,/g,'')) || 0)) : val };
+  if (field === 'category') {
+    if (next.category) {
+      learnMerchantRule(next.description, next.category);
+    } else {
+      const auto = learnedCategoryForDescription(next.description, merchantRules);
+      if (auto) next.category = auto;
+    }
+  }
+  arr[i] = withTxnConfidence(next, `${next.date || ''} ${next.description || ''} ${next.amount ?? ''}`);
   setStmtTxns(arr);
   // keep preview + export in sync
   const snap = transactionsToSnapshot(arr, stmtBankName);
@@ -2125,6 +2239,46 @@ const removeStmtTxn = (i) => {
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   setCsvBlobUrl(url);
 };
+
+const stmtRows = (stmtTxns || []).slice(0, 200).map((tx, idx) => {
+  if (tx?.confidence && typeof tx?.confidenceScore === 'number') return { tx, idx };
+  const hydrated = withTxnConfidence(tx || { date: '', description: '', amount: 0 });
+  return { tx: hydrated, idx };
+});
+const confidenceCounts = stmtRows.reduce((acc, row) => {
+  const label = row.tx?.confidence || 'low';
+  acc[label] = (acc[label] || 0) + 1;
+  return acc;
+}, { high: 0, medium: 0, low: 0 });
+const lowConfidenceRows = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low');
+const reviewedRow = reviewLowConfidence ? (lowConfidenceRows[reviewCursor] ? [lowConfidenceRows[reviewCursor]] : []) : [];
+const visibleStmtRows = showLowConfidence ? stmtRows : stmtRows.filter(row => (row.tx?.confidence || 'low') !== 'low');
+const displayedStmtRows = reviewLowConfidence ? reviewedRow : visibleStmtRows;
+
+useEffect(() => {
+  if (!reviewLowConfidence) return;
+  if (!lowConfidenceRows.length) {
+    setReviewLowConfidence(false);
+    setReviewCursor(0);
+    return;
+  }
+  if (reviewCursor >= lowConfidenceRows.length) {
+    setReviewCursor(Math.max(0, lowConfidenceRows.length - 1));
+  }
+}, [reviewLowConfidence, reviewCursor, lowConfidenceRows.length]);
+
+useEffect(() => {
+  if (!stmtTxns.length || !merchantRules.length) return;
+  const learnedApplied = applyMerchantRules(stmtTxns, merchantRules);
+  const changed = learnedApplied.some((tx, i) => (tx?.category || '') !== (stmtTxns[i]?.category || ''));
+  if (!changed) return;
+  setStmtTxns(learnedApplied);
+  const snap = transactionsToSnapshot(learnedApplied, stmtBankName);
+  setParsedPreview(snap);
+  const csv = txnsToPaymentLogCSV(learnedApplied);
+  if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
+  setCsvBlobUrl(URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })));
+}, [merchantRules, stmtTxns, stmtBankName, csvBlobUrl]);
 
   const processCSV = (text, fileName) => {
     log('PARSING CSV STRUCTURE...');
@@ -2153,8 +2307,13 @@ const removeStmtTxn = (i) => {
         return { date: vals[0] || '', description: vals[1] || '', amount: parseFloat(r[amtField] || vals[2]) || 0 };
       });
     }
+    txns = applyMerchantRules(txns, merchantRules);
 
     log(`TRANSACTIONS EXTRACTED: ${txns.length}`);
+    if (merchantRules.length) {
+      const learnedHits = txns.filter(tx => tx?.category && tx.category !== 'Uncategorized').length;
+      if (learnedHits > 0) log(`MERCHANT LEARNING APPLIED: ${learnedHits} AUTO-CATEGORIZED`);
+    }
     log('MAPPING TO FORTIFY SCHEMA...');
 
     const snapshot = transactionsToSnapshot(txns, bank ? bank.name : 'Generic');
@@ -2465,25 +2624,6 @@ const removeStmtTxn = (i) => {
       }}>
         {logs.length ? logs.map((l, i) => <div key={i}>{l}</div>) : <div>Awaiting file…</div>}
       </div>
-      <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel }}>
-        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>KNOX Templates</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-          {templateLinks.map((f) => (
-            <a key={f.label} href={f.href} download={f.label} style={{ ...link, padding: '6px 8px', fontSize: 9 }}>
-              <Download size={12} style={{ verticalAlign: 'text-bottom', marginRight: 4 }} />
-              {f.label}
-            </a>
-          ))}
-        </div>
-        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Protocol References</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          {protocolLinks.map((f) => (
-            <a key={f.label} href={f.href} target="_blank" rel="noreferrer" style={{ ...link, padding: '6px 8px', fontSize: 9 }}>
-              {f.label}
-            </a>
-          ))}
-        </div>
-      </div>
       {error && <div style={{ color: t.warn, fontSize: 11 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
     {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
       <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10 }}>
@@ -2491,7 +2631,7 @@ const removeStmtTxn = (i) => {
           <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
           <button onClick={() => { 
             try { 
-              const tx = parseStatementTextToTransactions(stmtRawText || stmtText); 
+              const tx = applyMerchantRules(parseStatementTextToTransactions(stmtRawText || stmtText), merchantRules); 
               setStmtTxns(tx); 
               const snap2 = transactionsToSnapshot(tx, stmtBankName); 
               setParsedPreview(snap2); 
@@ -2517,6 +2657,28 @@ const removeStmtTxn = (i) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: 10, color: t.textDim }}>
+              Rules {merchantRules.length}
+            </div>
+            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: 10, color: t.textDim }}>
+              <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
+              <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
+              <span style={{ color: t.danger }}>Low {confidenceCounts.low || 0}</span>
+            </div>
+            <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '8px 10px', fontSize: 10 }}>
+              {showLowConfidence ? 'HIDE LOW-CONFIDENCE' : 'SHOW LOW-CONFIDENCE'}
+            </button>
+            <button
+              onClick={() => {
+                if (!lowConfidenceRows.length) return;
+                setReviewLowConfidence(v => !v);
+                setReviewCursor(0);
+              }}
+              disabled={!lowConfidenceRows.length}
+              style={{ ...btnGhost, padding: '8px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+            >
+              {reviewLowConfidence ? 'EXIT LOW-REVIEW' : `REVIEW LOW ONLY (${lowConfidenceRows.length})`}
+            </button>
             {csvBlobUrl && (
               <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Download size={14} /> DOWNLOAD payment-log.csv
@@ -2527,6 +2689,17 @@ const removeStmtTxn = (i) => {
             </button>
           </div>
         </div>
+        {reviewLowConfidence && lowConfidenceRows.length > 0 && (
+          <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 10, color: t.textDim }}>
+            <span>Reviewing low-confidence row {reviewCursor + 1} / {lowConfidenceRows.length}</span>
+            <button onClick={() => setReviewCursor(c => Math.max(0, c - 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 10 }} disabled={reviewCursor === 0}>
+              PREV
+            </button>
+            <button onClick={() => setReviewCursor(c => Math.min(lowConfidenceRows.length - 1, c + 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 10 }} disabled={reviewCursor >= lowConfidenceRows.length - 1}>
+              NEXT
+            </button>
+          </div>
+        )}
 
         <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch' }}>
           <table style={{ width: '100%', minWidth: 920, borderCollapse: 'collapse', fontSize: 11 }}>
@@ -2534,39 +2707,58 @@ const removeStmtTxn = (i) => {
               <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 10 }}>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Payee</th>
+                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Confidence</th>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Category</th>
                 <th style={{ textAlign: 'right', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Amount</th>
                 <th style={{ width: 40, padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}></th>
               </tr>
             </thead>
             <tbody>
-              {(stmtTxns?.length ? stmtTxns.slice(0, 200) : [null]).map((tx, i) => {
+              {(displayedStmtRows.length ? displayedStmtRows : [{ tx: null, idx: -1 }]).map((row, i) => {
+                const tx = row?.tx;
                 if (!tx) {
+                  const emptyMsg = reviewLowConfidence
+                    ? 'No low-confidence rows left to review.'
+                    : stmtRows.length
+                    ? 'No rows visible with current confidence filter. Toggle "SHOW LOW-CONFIDENCE" to review hidden rows.'
+                    : 'No transactions detected yet. If this is a scanned/image file, try a sharper image or text-based PDF export. You can still COMMIT SYNC to save a baseline snapshot.';
                   return (
                     <tr key="empty">
-                      <td colSpan={5} style={{ padding: '10px 6px', color: t.textDim }}>
-                        No transactions detected yet. If this is a scanned/image file, try a sharper image or text-based PDF export. You can still COMMIT SYNC to save a baseline snapshot.
+                      <td colSpan={6} style={{ padding: '10px 6px', color: t.textDim }}>
+                        {emptyMsg}
                       </td>
                     </tr>
                   );
                 }
-                const inferredCat = categorize(tx.description || '');
+                const idx = row.idx;
+                const inferredCat = inferCategory(tx.description || '', merchantRules);
+                const confidenceColor = tx.confidence === 'high' ? t.accent : tx.confidence === 'medium' ? t.warn : t.danger;
                 return (
-                  <tr key={i} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
+                  <tr key={`${idx}-${i}`} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
                     <td style={{ padding: '8px 6px' }}>
-                      <input value={tx.date || ''} onChange={e => updateStmtTxn(i, 'date', e.target.value)} style={{
+                      <input value={tx.date || ''} onChange={e => updateStmtTxn(idx, 'date', e.target.value)} style={{
                         width: 'clamp(88px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
                         background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
                       }} />
                     </td>
                     <td style={{ padding: '8px 6px' }}>
-                      <input value={tx.description || ''} onChange={e => updateStmtTxn(i, 'description', e.target.value)} style={{
+                      <input value={tx.description || ''} onChange={e => updateStmtTxn(idx, 'description', e.target.value)} style={{
                         width: 'clamp(160px, 36vw, 420px)', maxWidth: '52vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
                         background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
                       }} />
                     </td>
                     <td style={{ padding: '8px 6px' }}>
-  <select value={(tx.category ?? '')} onChange={e => updateStmtTxn(i, 'category', e.target.value)} style={{
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        minWidth: 74, padding: '6px 8px', borderRadius: 999, border: `1px solid ${confidenceColor}`,
+                        color: confidenceColor, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em',
+                        fontFamily: "'JetBrains Mono', monospace",
+                      }}>
+                        {(tx.confidence || 'low').toUpperCase()}
+                      </span>
+                    </td>
+                    <td style={{ padding: '8px 6px' }}>
+  <select value={(tx.category ?? '')} onChange={e => updateStmtTxn(idx, 'category', e.target.value)} style={{
     width: 'clamp(130px, 24vw, 220px)', maxWidth: '36vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
     background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
   }}>
@@ -2576,13 +2768,13 @@ const removeStmtTxn = (i) => {
 </td>
                     <td style={{ padding: '8px 6px', textAlign: 'right' }}>
                       <input value={typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0)}
-                             onChange={e => updateStmtTxn(i, 'amount', e.target.value)} style={{
+                             onChange={e => updateStmtTxn(idx, 'amount', e.target.value)} style={{
                         width: 'clamp(92px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
                         background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, textAlign: 'right',
                       }} />
                     </td>
                     <td style={{ padding: '8px 6px', textAlign: 'right' }}>
-                      <button onClick={() => removeStmtTxn(i)} style={{ ...btnGhost, padding: '6px 8px' }} aria-label="Remove row">
+                      <button onClick={() => removeStmtTxn(idx)} style={{ ...btnGhost, padding: '6px 8px' }} aria-label="Remove row">
                         <Trash2 size={14} />
                       </button>
                     </td>
@@ -2591,6 +2783,11 @@ const removeStmtTxn = (i) => {
               })}
             </tbody>
           </table>
+          {!showLowConfidence && confidenceCounts.low > 0 && (
+            <div style={{ marginTop: 8, fontSize: 10, color: t.textDim }}>
+              {confidenceCounts.low} low-confidence rows hidden. Toggle "SHOW LOW-CONFIDENCE" to review/edit.
+            </div>
+          )}
           {stmtTxns.length > 200 && <div style={{ marginTop: 8, fontSize: 10, color: t.textDim }}>Showing first 200 rows. Export includes all rows.</div>}
         </div>
       </div>
