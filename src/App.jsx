@@ -2760,9 +2760,8 @@ useEffect(() => {
     if (!parsedPreview) return;
     if (stmtTxns.length > 0 && !lowReviewComplete) {
       setReviewLowConfidence(true);
-      setError(`Review required: ${reviewedLowCount}/${lowConfidenceIndices.length} low-confidence rows reviewed.`);
-      log(`BLOCKED: REVIEW REQUIRED (${reviewedLowCount}/${lowConfidenceIndices.length})`);
-      return;
+      setError(`Warning: syncing before review (${reviewedLowCount}/${lowConfidenceIndices.length} low-confidence rows reviewed).`);
+      log(`WARNING: SYNCING BEFORE REVIEW (${reviewedLowCount}/${lowConfidenceIndices.length})`);
     }
     onSync(parsedPreview);
     setSuccess(true);
