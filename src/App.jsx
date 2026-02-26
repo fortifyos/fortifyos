@@ -4404,7 +4404,19 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
   // ── Styles ────────────────────────────────────────────────────────
   const card  = { background: t.surface, border: `1px solid ${t.borderDim}`, borderRadius: 4, padding: 14, marginBottom: 0 };
   const lbl   = { fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 };
-  const metricBox = (borderColor) => ({ padding: '10px 12px', borderRadius: 4, border: `1px solid ${borderColor || t.borderDim}`, background: t.panel, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' });
+  const metricBox = (borderColor) => ({
+    padding: '10px 12px',
+    borderRadius: 4,
+    border: `1px solid ${borderColor || t.borderDim}`,
+    background: t.panel,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    minWidth: 0,
+    overflow: 'hidden',
+  });
   return (
     <div style={card}>
       {/* Header */}
@@ -4419,7 +4431,7 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
       </div>
 
       {/* Row 1 — Fed cycle metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, marginBottom: 8 }}>
         <div style={metricBox()}>
           <div style={lbl}>Fed Cycle</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: qtqe === 'QT' ? t.danger : qtqe === 'QE' ? t.accent : t.warn }}>{qtqe ?? '—'}</div>
@@ -4438,7 +4450,7 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
       </div>
 
       {/* Row 2 — WALCL | TGA | As-Of */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, marginBottom: 10 }}>
         <div style={metricBox()}>
           <div style={lbl}>WALCL</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: t.textPrimary }}>{walcl != null ? `$${(walcl/1000).toFixed(2)}T` : '—'}</div>
@@ -4451,7 +4463,9 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
         </div>
         <div style={metricBox()}>
           <div style={lbl}>As Of</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: t.textPrimary }}>{fredMacro?.asOf || '—'}</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: t.textPrimary, lineHeight: 1.15, wordBreak: 'break-word', overflowWrap: 'anywhere', textAlign: 'center', maxWidth: '100%' }}>
+            {fredMacro?.asOf || '—'}
+          </div>
           <div style={{ fontSize: 9, color: t.textDim }}>FRED data timestamp</div>
         </div>
       </div>
