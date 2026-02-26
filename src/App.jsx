@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { usePlaidLink } from 'react-plaid-link';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -221,6 +222,27 @@ function learnedCategoryForDescription(desc, merchantRules) {
 
 function inferCategory(desc, merchantRules) {
   return learnedCategoryForDescription(desc, merchantRules) || categorize(desc);
+}
+
+function titleCaseWords(s) {
+  return String(s || '')
+    .toLowerCase()
+    .split(/[_\s]+/)
+    .filter(Boolean)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+function normalizePlaidTransaction(tx) {
+  const rawAmount = Number(tx?.amount) || 0;
+  const amount = -rawAmount; // Plaid convention: positive = outflow; app uses negative for spend
+  const categoryPrimary = tx?.personal_finance_category?.primary || tx?.category?.[0] || '';
+  return {
+    date: tx?.authorized_date || tx?.date || '',
+    description: tx?.name || tx?.merchant_name || 'Linked Account Transaction',
+    amount,
+    category: categoryPrimary ? titleCaseWords(categoryPrimary) : '',
+  };
 }
 
 function applyMerchantRules(txns, merchantRules) {
@@ -1905,6 +1927,9 @@ const [showLowConfidence, setShowLowConfidence] = useState(true);
 const [reviewLowConfidence, setReviewLowConfidence] = useState(false);
 const [reviewCursor, setReviewCursor] = useState(0);
 const [merchantRules, setMerchantRules] = useState([]);
+const [plaidLinkToken, setPlaidLinkToken] = useState('');
+const [plaidLoading, setPlaidLoading] = useState(false);
+const [plaidStatus, setPlaidStatus] = useState('');
 const [stmtBankName, setStmtBankName] = useState('Statement Upload');
 const [csvBlobUrl, setCsvBlobUrl] = useState('');
 const stmtFileRef = useRef();
@@ -1945,6 +1970,7 @@ const btn = {
     background: t.void,
   };
   const assetBase = import.meta.env.BASE_URL || '/';
+  const plaidApiBase = String(import.meta.env.VITE_PLAID_API_BASE || '').replace(/\/$/, '');
 
 
   // JSON paste state
@@ -2027,6 +2053,72 @@ const btn = {
     return null;
   };
 
+  const plaidRequest = useCallback(async (path, init = {}) => {
+    if (!plaidApiBase) throw new Error('Plaid API base URL is not configured.');
+    const res = await fetch(`${plaidApiBase}${path}`, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init.headers || {}),
+      },
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body?.error || body?.message || `Plaid request failed (${res.status})`);
+    return body;
+  }, [plaidApiBase]);
+
+  const loadPlaidData = useCallback(async () => {
+    const now = new Date();
+    const endDate = now.toISOString().slice(0, 10);
+    const start = new Date(now);
+    start.setDate(start.getDate() - 90);
+    const startDate = start.toISOString().slice(0, 10);
+
+    const [accountsRes, txRes] = await Promise.all([
+      plaidRequest('/api/plaid/accounts'),
+      plaidRequest('/api/plaid/transactions', { method: 'POST', body: JSON.stringify({ startDate, endDate }) }),
+    ]);
+    const accounts = Array.isArray(accountsRes?.accounts) ? accountsRes.accounts : [];
+    const plaidTxns = Array.isArray(txRes?.transactions) ? txRes.transactions : [];
+    const normalized = plaidTxns.map(normalizePlaidTransaction);
+    const scored = normalized.map(tx => withTxnConfidence(tx, `${tx.date || ''} ${tx.description || ''} ${tx.amount ?? ''}`));
+    const txns = applyMerchantRules(scored, merchantRules);
+
+    setStmtBankName('Plaid Linked Accounts');
+    setStmtRawText('');
+    setStmtText('');
+    setStmtTxns(txns);
+    setReviewLowConfidence(false);
+    setReviewCursor(0);
+
+    const snap = transactionsToSnapshot(txns, 'Plaid Linked Accounts');
+    setParsedPreview(snap);
+
+    const csv = txnsToPaymentLogCSV(txns);
+    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
+    setCsvBlobUrl(URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })));
+
+    setPlaidStatus(`Linked ${accounts.length} account(s) • Imported ${txns.length} transaction(s)`);
+    log(`PLAID: ${accounts.length} ACCOUNTS • ${txns.length} TRANSACTIONS IMPORTED`);
+    setTab('statement');
+  }, [csvBlobUrl, merchantRules, plaidRequest]);
+
+  const createPlaidLinkToken = useCallback(async () => {
+    setPlaidLoading(true);
+    setError('');
+    try {
+      const body = await plaidRequest('/api/plaid/link-token', { method: 'POST', body: JSON.stringify({}) });
+      if (!body?.link_token) throw new Error('Link token not returned by Plaid server.');
+      setPlaidLinkToken(body.link_token);
+      setPlaidStatus('Link token ready. Continue to connect your account.');
+      log('PLAID: LINK TOKEN CREATED');
+    } catch (e) {
+      setError(e?.message || 'Unable to initialize Plaid.');
+    } finally {
+      setPlaidLoading(false);
+    }
+  }, [plaidRequest]);
+
   const learnMerchantRule = useCallback(async (description, category) => {
     const nextCategory = String(category || '').trim();
     if (!nextCategory || nextCategory === 'Uncategorized') return;
@@ -2044,6 +2136,33 @@ const btn = {
     }
     await persistMerchantRules(nextRules);
   }, [merchantRules, persistMerchantRules]);
+
+  const onPlaidSuccess = useCallback(async (publicToken) => {
+    setPlaidLoading(true);
+    setError('');
+    try {
+      await plaidRequest('/api/plaid/exchange-public-token', {
+        method: 'POST',
+        body: JSON.stringify({ publicToken }),
+      });
+      log('PLAID: PUBLIC TOKEN EXCHANGED');
+      await loadPlaidData();
+    } catch (e) {
+      setError(e?.message || 'Plaid exchange/import failed.');
+    } finally {
+      setPlaidLoading(false);
+    }
+  }, [loadPlaidData, plaidRequest]);
+
+  const { open: openPlaidLink, ready: plaidReady } = usePlaidLink({
+    token: plaidLinkToken || null,
+    onSuccess: async (publicToken) => { await onPlaidSuccess(publicToken); },
+    onExit: (err) => {
+      if (err?.display_message || err?.error_message) {
+        setError(err.display_message || err.error_message);
+      }
+    },
+  });
 
 
 // ───────────────────────────────────────────────
@@ -2491,6 +2610,36 @@ useEffect(() => {
         <div className="sync-content" style={{ padding: 16 }}>
           {/* ── FILE IMPORT TAB ── */}
           {tab === 'file' && (<>
+            <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: 12, borderRadius: 4, marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ fontSize: 10, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Plaid Account Link</div>
+                  <div style={{ fontSize: 10, color: t.textDim }}>
+                    {plaidApiBase
+                      ? 'Securely connect institutions and import recent transactions.'
+                      : 'Set VITE_PLAID_API_BASE to enable secure account linking.'}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={createPlaidLinkToken}
+                    disabled={!plaidApiBase || plaidLoading}
+                    style={{ ...btn, opacity: (!plaidApiBase || plaidLoading) ? 0.5 : 1 }}
+                  >
+                    {plaidLoading ? <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Database size={12} />}
+                    PREPARE LINK
+                  </button>
+                  <button
+                    onClick={() => openPlaidLink()}
+                    disabled={!plaidReady || plaidLoading}
+                    style={{ ...btnGhost, padding: '8px 10px', fontSize: 10, opacity: (!plaidReady || plaidLoading) ? 0.5 : 1 }}
+                  >
+                    CONNECT ACCOUNTS
+                  </button>
+                </div>
+              </div>
+              {plaidStatus && <div style={{ marginTop: 8, fontSize: 10, color: t.textSecondary }}>{plaidStatus}</div>}
+            </div>
             {/* Drop zone */}
             <div
               onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}
