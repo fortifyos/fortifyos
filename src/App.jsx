@@ -4721,7 +4721,7 @@ function DirectiveMod({ visible, latest, t }) {
 // ═══════════════════════════════════════════════════
 // MARKET STRIP — top-line risk/market indicators
 // ═══════════════════════════════════════════════════
-function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
+function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false }) {
   const [marketLive, setMarketLive] = useState(null);
 
   useEffect(() => {
@@ -4819,21 +4819,40 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
     </div>
   );
 
+  const stripSequence = (
+    <>
+      <PriceCell label="Bitcoin" value={fredMacro?.btc?.value ?? marketLive?.btc?.price ?? null} chg={fredMacro?.btc?.change ?? marketLive?.btc?.chgPct ?? null} color={t.crypto} />
+      <PriceCell label="ETH" value={fredMacro?.eth?.value ?? marketLive?.eth?.price ?? null} chg={fredMacro?.eth?.change ?? marketLive?.eth?.chgPct ?? null} color={t.purple} />
+      <PriceCell label="Gold" value={gold} chg={goldChg} color="#FFD700" />
+      <PriceCell label="Silver" value={silver} chg={silverChg} color="#C0C0C0" dec={2} />
+      <PriceCell label="Oil" value={oil?.price ?? null} chg={oil?.chgPct ?? null} color={t.warn} dec={2} />
+      <PriceCell label="SPY" value={spy?.price ?? null} chg={spy?.chgPct ?? null} color={t.accent} dec={2} />
+      <PriceCell label="VIX" value={vix?.price ?? null} chg={vix?.chgPct ?? null} color={t.danger} dec={2} />
+      <PriceCell label="S&P 500" value={sp500?.price ?? null} chg={sp500?.chgPct ?? null} color={t.textPrimary} />
+      <PriceCell label="NASDAQ" value={nasdaq?.price ?? null} chg={nasdaq?.chgPct ?? null} color={t.textPrimary} isLast={!asOf} />
+    </>
+  );
+
   return (
     <div style={{ marginBottom: 8, animation: 'fadeIn 0.4s ease-out' }}>
-      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderTop: `2px solid ${t.accent}30`, padding: '0', display: 'flex', alignItems: 'stretch', width: '100%', overflowX: 'auto' }}>
-        <PriceCell label="Bitcoin" value={fredMacro?.btc?.value ?? marketLive?.btc?.price ?? null} chg={fredMacro?.btc?.change ?? marketLive?.btc?.chgPct ?? null} color={t.crypto} />
-        <PriceCell label="ETH" value={fredMacro?.eth?.value ?? marketLive?.eth?.price ?? null} chg={fredMacro?.eth?.change ?? marketLive?.eth?.chgPct ?? null} color={t.purple} />
-        <PriceCell label="Gold" value={gold} chg={goldChg} color="#FFD700" />
-        <PriceCell label="Silver" value={silver} chg={silverChg} color="#C0C0C0" dec={2} />
-        <PriceCell label="Oil" value={oil?.price ?? null} chg={oil?.chgPct ?? null} color={t.warn} dec={2} />
-        <PriceCell label="SPY" value={spy?.price ?? null} chg={spy?.chgPct ?? null} color={t.accent} dec={2} />
-        <PriceCell label="VIX" value={vix?.price ?? null} chg={vix?.chgPct ?? null} color={t.danger} dec={2} />
-        <PriceCell label="S&P 500" value={sp500?.price ?? null} chg={sp500?.chgPct ?? null} color={t.textPrimary} />
-        <PriceCell label="NASDAQ" value={nasdaq?.price ?? null} chg={nasdaq?.chgPct ?? null} color={t.textPrimary} isLast={!asOf} />
-
-        {/* Timestamp — flush right */}
-        {asOf && <div style={{ marginLeft: 'auto', paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><div style={{ fontSize: 8, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderTop: `2px solid ${t.accent}30`, padding: '0', display: 'flex', alignItems: 'stretch', width: '100%', overflowX: rotating ? 'hidden' : 'auto' }}>
+        {rotating ? (
+          <div className="fo-ticker-track" style={{ display: 'inline-flex', alignItems: 'stretch', whiteSpace: 'nowrap', minWidth: 'max-content' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'stretch', flexShrink: 0 }}>
+              {stripSequence}
+              {asOf && <div style={{ paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center', borderRight: `1px solid ${t.borderDim}` }}><div style={{ fontSize: 8, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+            </div>
+            <div style={{ display: 'inline-flex', alignItems: 'stretch', flexShrink: 0 }}>
+              {stripSequence}
+              {asOf && <div style={{ paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center', borderRight: `1px solid ${t.borderDim}` }}><div style={{ fontSize: 8, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+            </div>
+          </div>
+        ) : (
+          <>
+            {stripSequence}
+            {asOf && <div style={{ marginLeft: 'auto', paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><div style={{ fontSize: 8, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+          </>
+        )}
       </div>
     </div>
   );
@@ -5162,7 +5181,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
             <Shield size={14} style={{ color: t.accent }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
             <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
-            <span style={{ color: t.textSecondary, fontSize: 12, marginLeft: 10 }}>Macro Sentinel</span>
+            <span style={{ color: t.textSecondary, fontSize: 12, marginLeft: 10 }}>RADAR</span>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={load} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 10px', cursor: 'pointer' }}>
@@ -5185,6 +5204,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme }) {
             style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: t.textPrimary, fontFamily: 'inherit', fontSize: 13 }}
           />
         </div>
+        <MacroBanner fredMacro={macro} visible={true} t={t} refreshNonce={0} rotating={true} />
 
         <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12 }}>
           <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
