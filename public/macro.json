@@ -1,0 +1,36 @@
+{
+  "asOf": "2026-02-22",
+  "walcl": {
+    "date": "2026-02-18",
+    "value": 6613395.0,
+    "change": null
+  },
+  "tga": {
+    "date": "2026-02-18",
+    "value": 888854.0,
+    "change": null
+  },
+  "rrp": {
+    "date": "2026-02-20",
+    "value": 0.496,
+    "change": null
+  },
+  "silver": {
+    "date": "2026-02-21",
+    "value": 32.18,
+    "change": 0.62
+  },
+  "gold": {
+    "date": "2026-02-21",
+    "value": 2936.10,
+    "change": 0.81
+  },
+  "yieldCurve": null,
+  "source": {
+    "walcl": "FRED API: WALCL",
+    "tga": "FRED API: WDTGAL",
+    "rrp": "FRED API: RRPONTSYD",
+    "silver": "FRED API: SLVPRUSD",
+    "gold": "FRED API: GOLDAMGBD228NLBM"
+  }
+}
