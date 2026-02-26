@@ -4850,7 +4850,7 @@ function StatusStrip({ latest, t }) {
         </div>
       </div>
 
-      {/* Combined info strip — Stage | Ingest hint | Next Action — evenly spaced */}
+      {/* Combined info strip — Stage | Next Action */}
       <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', gap: 0 }}>
         {/* Stage */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
@@ -4864,14 +4864,6 @@ function StatusStrip({ latest, t }) {
             {[0,1,2,3,4,5,6,7].map(i => (
               <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.elevated, opacity: i <= stage ? 1 : 0.3 }} />
             ))}
-          </div>
-        </div>
-
-        {/* Ingest hint */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flex: 1 }}>
-          <Upload size={12} style={{ color: t.accent, flexShrink: 0 }} />
-          <div style={{ fontSize: 10, color: t.textDim, lineHeight: 1.35, textAlign: 'center' }}>
-            <span style={{ color: t.textPrimary }}>Ingest:</span> upload <span style={{ color: t.textPrimary }}>PDFs</span>, <span style={{ color: t.textPrimary }}>screenshots</span>, or <span style={{ color: t.textPrimary }}>CSVs</span> via <span style={{ color: t.textPrimary }}>Sync</span>
           </div>
         </div>
 
