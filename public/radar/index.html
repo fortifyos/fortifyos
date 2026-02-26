@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Macro Sentinel Archive</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:20px;background:#0b0d10;color:#e8edf2}
-    a{color:#67b7ff;text-decoration:none}
+    body{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;margin:20px;background:#050505;color:#f4f4f5}
+    a{color:#d4d4d8;text-decoration:none}
     a:hover{text-decoration:underline}
-    .mut{color:#9aa6b2;font-size:12px}
-    .card{border:1px solid #1f2a35;background:#0f141a;padding:14px;border-radius:10px;max-width:720px}
+    .mut{color:#a1a1aa;font-size:12px}
+    .card{border:1px solid #27272a;background:#111113;padding:14px;border-radius:0;max-width:860px}
+    .line{display:flex;justify-content:space-between;gap:12px;align-items:center}
   </style>
 </head>
 <body>
@@ -28,7 +29,7 @@ fetch('./index.json', {cache:'no-store'})
       const name = f.file || '';
       const hash = (f.sha256 || '').slice(0, 10);
       const li=document.createElement('li');
-      li.innerHTML = `<a href="${name}">${name}</a>${hash ? ` <span class="mut">#${hash}</span>` : ''}`;
+      li.innerHTML = `<div class="line"><a href="${name}">${name}</a>${hash ? `<span class="mut">#${hash}</span>` : ''}</div>`;
       ul.appendChild(li);
     });
   })

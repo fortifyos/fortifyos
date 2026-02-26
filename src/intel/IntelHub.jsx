@@ -241,6 +241,29 @@ export default function IntelHub({ onBack, isDark, onToggleTheme }) {
   }, [query, latest]);
 
   const keyIssues = safeArray(latest?.keyIssues).slice(0, 6);
+  const chartPalette = useMemo(
+    () =>
+      isDark
+        ? {
+            grid: "rgba(39,39,42,0.7)",
+            priceStroke: "#22c55e",
+            priceFillTop: "rgba(34,197,94,0.35)",
+            priceFillBottom: "rgba(34,197,94,0.03)",
+            calls: "rgba(228,228,231,0.92)",
+            puts: "rgba(239,68,68,0.9)",
+            risk: "rgba(245,158,11,0.92)",
+          }
+        : {
+            grid: "rgba(212,212,216,0.7)",
+            priceStroke: "#15803d",
+            priceFillTop: "rgba(21,128,61,0.28)",
+            priceFillBottom: "rgba(21,128,61,0.03)",
+            calls: "rgba(39,39,42,0.88)",
+            puts: "rgba(220,38,38,0.85)",
+            risk: "rgba(180,83,9,0.88)",
+          },
+    [isDark]
+  );
 
   return (
     <div className={`intelHub ${isDark ? "dark" : "light"}`}>
@@ -313,15 +336,15 @@ export default function IntelHub({ onBack, isDark, onToggleTheme }) {
                         <AreaChart data={priceSeries} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                           <defs>
                             <linearGradient id="intelFill" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="rgba(103,183,255,0.55)" />
-                              <stop offset="90%" stopColor="rgba(103,183,255,0.02)" />
+                              <stop offset="0%" stopColor={chartPalette.priceFillTop} />
+                              <stop offset="90%" stopColor={chartPalette.priceFillBottom} />
                             </linearGradient>
                           </defs>
-                          <CartesianGrid stroke="rgba(31,42,53,0.6)" strokeDasharray="3 3" />
+                          <CartesianGrid stroke={chartPalette.grid} strokeDasharray="3 3" />
                           <XAxis dataKey={priceSeries[0]?.date ? "date" : "d"} hide />
                           <YAxis hide domain={["auto","auto"]} />
                           <Tooltip />
-                          <Area type="monotone" dataKey={priceSeries[0]?.value ? "value" : "v"} stroke="rgba(103,183,255,0.95)" fill="url(#intelFill)" isAnimationActive />
+                          <Area type="monotone" dataKey={priceSeries[0]?.value ? "value" : "v"} stroke={chartPalette.priceStroke} fill="url(#intelFill)" isAnimationActive />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -336,12 +359,12 @@ export default function IntelHub({ onBack, isDark, onToggleTheme }) {
                     <div style={{height:220}}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={optionsBars} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                          <CartesianGrid stroke="rgba(31,42,53,0.6)" strokeDasharray="3 3" />
+                          <CartesianGrid stroke={chartPalette.grid} strokeDasharray="3 3" />
                           <XAxis dataKey="ticker" />
                           <YAxis hide />
                           <Tooltip />
-                          <Bar dataKey="calls" fill="rgba(103,183,255,0.9)" isAnimationActive />
-                          <Bar dataKey="puts" fill="rgba(255,92,122,0.85)" isAnimationActive />
+                          <Bar dataKey="calls" fill={chartPalette.calls} isAnimationActive />
+                          <Bar dataKey="puts" fill={chartPalette.puts} isAnimationActive />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -352,11 +375,11 @@ export default function IntelHub({ onBack, isDark, onToggleTheme }) {
                     <div style={{height:220}}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={riskBars} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                          <CartesianGrid stroke="rgba(31,42,53,0.6)" strokeDasharray="3 3" />
+                          <CartesianGrid stroke={chartPalette.grid} strokeDasharray="3 3" />
                           <XAxis dataKey="ticker" />
                           <YAxis hide domain={[0,100]} />
                           <Tooltip />
-                          <Bar dataKey="risk" fill="rgba(46,229,157,0.85)" isAnimationActive />
+                          <Bar dataKey="risk" fill={chartPalette.risk} isAnimationActive />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>

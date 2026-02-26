@@ -422,30 +422,43 @@ def build_reports(cfg: Dict) -> Tuple[List[TickerReport], List[Dict]]:
 
 def render_html(date: dt.date, reports: List[TickerReport], portfolio_risk_img: str, news_dist_img: str) -> str:
     css = """
-    :root{--bg:#0b0b0c;--fg:#f2f2f3;--mut:#a8a8ad;--acc:#39ff14;--card:#121214;}
+    :root{
+      --app-bg:#050505; --app-text:#f4f4f5; --panel-bg:#111113; --panel-border:#27272a;
+      --text-muted:#a1a1aa; --text-meta:#71717a; --accent:#22c55e; --danger:#ef4444;
+    }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--fg);}
-    .wrap{padding:14px 16px 16px;max-width:980px;margin:0 auto;}
-    .hdr{display:flex;justify-content:space-between;align-items:flex-end;border:1px solid #222;border-radius:10px;padding:10px 12px;background:linear-gradient(180deg,#0c0c0e,#0a0a0b);}
-    .title{font-size:16px;font-weight:700;letter-spacing:.2px}
-    .sub{font-size:11px;color:var(--mut)}
-    .stamp{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--mut);text-align:right}
+    body{
+      margin:0; font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      background:var(--app-bg); color:var(--app-text);
+    }
+    .wrap{padding:14px 16px 16px;max-width:1080px;margin:0 auto;}
+    .hdr{
+      display:flex;justify-content:space-between;align-items:flex-end;
+      border:1px solid var(--panel-border); border-radius:0; padding:10px 12px; background:var(--panel-bg);
+    }
+    .title{font-size:16px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .sub{font-size:11px;color:var(--text-muted)}
+    .stamp{font-size:11px;color:var(--text-meta);text-align:right}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .card{background:var(--card);border:1px solid #242428;border-radius:10px;padding:10px}
+    .card{background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:0;padding:10px}
     .kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
-    .k{border:1px solid #222;border-radius:8px;padding:6px 7px}
-    .k .l{font-size:10px;color:var(--mut)}
+    .k{border:1px solid var(--panel-border);border-radius:0;padding:6px 7px}
+    .k .l{font-size:10px;color:var(--text-meta);text-transform:uppercase;letter-spacing:.08em}
     .k .v{font-size:12px;font-weight:700;margin-top:2px}
     .row{display:grid;grid-template-columns:1.05fr .95fr;gap:10px;align-items:start;margin-top:8px}
-    img{max-width:100%;height:auto;border-radius:8px;border:1px solid #222}
-    .mini{font-size:11px;color:var(--mut);line-height:1.3}
-    .pill{display:inline-block;padding:2px 6px;border-radius:999px;border:1px solid #2a2a2f;font-size:10px;color:var(--mut);margin-right:6px}
-    .acc{color:var(--acc)}
+    img{max-width:100%;height:auto;border-radius:0;border:1px solid var(--panel-border)}
+    .mini{font-size:11px;color:var(--text-muted);line-height:1.35}
+    .pill{
+      display:inline-block;padding:2px 6px;border-radius:0;border:1px solid var(--panel-border);
+      font-size:10px;color:var(--text-muted);margin-right:6px;
+    }
+    .acc{color:var(--accent)}
     .news li{margin:2px 0}
-    .news a{color:#d7d7da;text-decoration:none}
+    .news a{color:var(--app-text);text-decoration:none}
     .news a:hover{text-decoration:underline}
     .tight{margin:0;padding-left:16px}
-    .footer{margin-top:10px;color:var(--mut);font-size:10px;font-family:ui-monospace,Menlo,Consolas,monospace}
+    .footer{margin-top:10px;color:var(--text-meta);font-size:10px}
+    @media (max-width: 900px){.grid{grid-template-columns:1fr}.kpi{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}}
     @media print{body{background:#fff;color:#000}.card,.hdr{break-inside:avoid}}
     """
 
