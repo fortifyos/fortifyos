@@ -2739,15 +2739,6 @@ useEffect(() => {
       <input ref={stmtFileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" multiple style={{ display: 'none' }}
              onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) handleStatementFiles(fs, stmtPickMode); e.target.value = ''; }} />
     </div>
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-      <button onClick={() => { setStmtPickMode('replace'); stmtFileRef.current?.click(); }} style={{ ...btn, padding: '8px 10px', fontSize: 10 }}>
-        <Upload size={12} /> REPLACE WITH FILES
-      </button>
-      <button onClick={() => { setStmtPickMode('append'); stmtFileRef.current?.click(); }} style={{ ...btnGhost, padding: '8px 10px', fontSize: 10 }}>
-        <Upload size={12} /> ADD MORE FILES
-      </button>
-    </div>
-
     <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
       <div style={{ display: 'grid', gap: 6, fontSize: 11, color: t.textDim, lineHeight: 1.35 }}>
         <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
