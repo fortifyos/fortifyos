@@ -4348,12 +4348,54 @@ function StatusStrip({ latest, t }) {
   );
 }
 
+function timeGreeting(d = new Date()) {
+  const h = d.getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function PulseTicker({ latest, t, now }) {
+  const stage = calcStage(latest);
+  const stageMeta = STAGE_META[stage] || STAGE_META[0];
+  const runway = runwayDaysFromLatest(latest);
+  const savingsRate = calcSavingsRate(latest);
+  const leak = dailyInterest(latest?.debts);
+  const nextActionText = nextAction(latest)?.text || 'System ready';
+  const nextPayday = nextWeekdayDates(Number(latest?.payroll?.weekday ?? 2), 1)[0];
+  const bills = (latest?.bills || []).slice(0, 3).map(b => `${b.name} due ${b.dueDay}`);
+  const tickItems = [
+    `Stage ${stage} ${stageMeta.name}`,
+    `Runway ${runway} days`,
+    `Savings rate ${savingsRate.toFixed(0)}%`,
+    leak > 0 ? `Leak $${leak.toFixed(2)}/day` : 'No daily leak detected',
+    nextPayday ? `Next payday ${nextPayday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : 'Payday schedule unset',
+    ...bills,
+    nextActionText,
+    now?.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) || '',
+  ].filter(Boolean);
+
+  const repeated = [...tickItems, ...tickItems];
+  return (
+    <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, overflow: 'hidden' }}>
+      <div className="fo-ticker-track" style={{ display: 'inline-flex', whiteSpace: 'nowrap', gap: 12, padding: '7px 10px', minWidth: '100%' }}>
+        {repeated.map((item, idx) => (
+          <span key={`${item}-${idx}`} style={{ fontSize: 10, color: idx % 3 === 0 ? t.accent : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            {item}{idx < repeated.length - 1 ? ' •' : ''}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
 function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onExport, onClear, onToggleTheme, syncFlash, onHome, fredMacro }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [now, setNow] = useState(() => new Date());
   const vis = settings.visibleModules;
   const ac = { red: 0, amber: 0, green: 0 };
   if (latest.debts?.some(d => d.balance > 2000)) ac.red++;
@@ -4377,6 +4419,11 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   const _urgentOpts = _opts.filter(o => { if (!o.expDate) return false; const d = Math.floor((new Date(o.expDate) - new Date()) / 86400000); return d >= 0 && d <= 7; });
   if (_urgentOpts.length > 0) ac.red += _urgentOpts.length;
 
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
@@ -4390,6 +4437,13 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
     <main style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
+      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 12px' }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
+        <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
+        </div>
+      </div>
+      <PulseTicker latest={latest} t={t} now={now} />
       <MacroBanner fredMacro={fredMacro} visible={vis.includes('macroBanner')} t={t} />
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
@@ -4603,6 +4657,7 @@ export default function FortifyOS() {
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes pulse { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 0 1px ${t.accent}60; } }
         @keyframes purplePulse { 0%,100% { box-shadow: 0 0 4px ${t.purple}40; border-color: ${t.purple}60; } 50% { box-shadow: 0 0 12px ${t.purple}80; border-color: ${t.purple}; } }
         @keyframes lastSeg { 0%,100% { box-shadow: 0 0 3px ${t.accent}40; } 50% { box-shadow: 0 0 8px ${t.accent}; } }
@@ -4615,6 +4670,7 @@ export default function FortifyOS() {
         .sync-row-3 { grid-template-columns: repeat(3, 1fr); }
         .status-metrics { grid-template-columns: repeat(4, 1fr); }
         .sync-row-debt { grid-template-columns: 2fr 1fr 1.5fr 1fr; }
+        .fo-ticker-track { animation: tickerScroll 38s linear infinite; }
         .hero-title { font-size: 56px; }
         .hero-sub { font-size: 15px; }
         .hero-buttons { flex-direction: row; }
@@ -4641,6 +4697,7 @@ export default function FortifyOS() {
           .sync-row-3 { grid-template-columns: 1fr !important; }
           .status-metrics { grid-template-columns: 1fr 1fr !important; }
           .sync-row-debt { grid-template-columns: 1fr !important; }
+          .fo-ticker-track { animation-duration: 52s !important; }
           .hero-title { font-size: 36px !important; }
           .hero-sub { font-size: 13px !important; }
           .hero-buttons { flex-direction: column !important; }
