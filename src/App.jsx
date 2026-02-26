@@ -4755,10 +4755,10 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0 }) {
   if (!visible) return null;
 
   const rrp     = fredMacro?.rrp?.value    ?? null;
-  const silver  = fredMacro?.silver?.value ?? marketLive?.silver?.price ?? null;
-  const silverChg = fredMacro?.silver?.change ?? marketLive?.silver?.chgPct ?? null;
-  const gold    = fredMacro?.gold?.value   ?? marketLive?.gold?.price ?? null;
-  const goldChg = fredMacro?.gold?.change  ?? marketLive?.gold?.chgPct ?? null;
+  const silver  = marketLive?.silver?.price ?? fredMacro?.silver?.value ?? null;
+  const silverChg = marketLive?.silver?.chgPct ?? fredMacro?.silver?.change ?? null;
+  const gold    = marketLive?.gold?.price ?? fredMacro?.gold?.value ?? null;
+  const goldChg = marketLive?.gold?.chgPct ?? fredMacro?.gold?.change ?? null;
   const oil = fredMacro?.oil ? { price: fredMacro.oil.value, chgPct: fredMacro.oil.change } : (marketLive?.oil || null);
   const spy = fredMacro?.spy ? { price: fredMacro.spy.value, chgPct: fredMacro.spy.change } : (marketLive?.spy || null);
   const vix = fredMacro?.vix ? { price: fredMacro.vix.value, chgPct: fredMacro.vix.change } : (marketLive?.vix || null);
@@ -4851,9 +4851,9 @@ function StatusStrip({ latest, t }) {
       </div>
 
       {/* Combined info strip — Stage | Next Action */}
-      <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', gap: 0 }}>
+      <div className="status-rail" style={{ background: t.surface, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', gap: 0 }}>
         {/* Stage */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
+        <div className="status-rail-stage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
@@ -4868,17 +4868,21 @@ function StatusStrip({ latest, t }) {
         </div>
 
         {/* Next Action */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 16px', flex: 1 }}>
+        <div className="status-rail-next" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 16px', flex: 1, minWidth: 0 }}>
           <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
-          <span style={{ fontSize: 10, color: t.textSecondary, textAlign: 'center' }}>{action.text}</span>
+          <span style={{ fontSize: 10, color: t.textSecondary, textAlign: 'center', lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function timeGreeting() {
-  return 'Good Day Sir';
+function timeGreeting(now = new Date()) {
+  const hour = now instanceof Date ? now.getHours() : new Date().getHours();
+  if (hour >= 5 && hour < 12) return 'Good Morning';
+  if (hour >= 12 && hour < 17) return 'Good Afternoon';
+  if (hour >= 17 && hour < 21) return 'Good Evening';
+  return 'Good Night';
 }
 
 function PulseTicker({ latest, t, now }) {
@@ -4970,7 +4974,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
-    <main style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
+    <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
       <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 12px' }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
         <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -5191,6 +5195,7 @@ function FortifyOSApp() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght;700&display=swap');
         * { box-sizing: border-box; margin: 0; }
+        html, body, #root { width: 100%; overflow-x: hidden; }
         
 /* Responsive layout */
 .fo-main { padding-left: 14px; padding-right: 14px; }
@@ -5226,6 +5231,21 @@ function FortifyOSApp() {
         .footer-stat-cell:last-child { border-right: none; }
         input, select, textarea { max-width: 100%; }
         @media (max-width: 768px) {
+          .dashboard-main {
+            padding: 62px 8px 48px !important;
+          }
+          .status-rail {
+            flex-direction: column !important;
+          }
+          .status-rail-stage {
+            border-right: none !important;
+            border-bottom: 1px solid ${t.borderDim} !important;
+            justify-content: flex-start !important;
+            flex-wrap: wrap !important;
+          }
+          .status-rail-next {
+            justify-content: flex-start !important;
+          }
           .sync-shell {
             width: 100vw !important;
             max-width: 100vw !important;
