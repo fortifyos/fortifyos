@@ -1196,6 +1196,26 @@ const ChartTip = ({ active, payload, label, t }) => {
   </div>);
 };
 
+function useMenuDismiss(menuOpen, setMenuOpen, menuRef) {
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown, { passive: true });
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [menuOpen, setMenuOpen, menuRef]);
+}
+
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
@@ -1204,7 +1224,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   const [faqOpen, setFaqOpen] = useState(null);
   const [dailyBurn, setDailyBurn] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const accent = t.accent;
+  useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   useEffect(() => { const id = setInterval(() => setBoot(p => p < 4 ? p + 1 : 4), 600); return () => clearInterval(id); }, []);
 
@@ -1253,7 +1275,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <Shield size={18} style={{ color: accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
-        <div style={{ position: 'relative' }}>
+        <div ref={menuRef} style={{ position: 'relative' }}>
           <button
             onClick={() => setMenuOpen(v => !v)}
             style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}
@@ -1482,8 +1504,10 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
   const [activeSection, setActiveSection] = useState(null);
   const [expandedTier, setExpandedTier] = useState({ start: true, core: true, data: false, advanced: false, why: false });
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const accent = t.accent;
   const sectionRefs = useRef({});
+  useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   const sty = {
     nav: { position: 'sticky', top: 0, zIndex: 50, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.surface, borderBottom: `1px solid ${t.borderDim}`, backdropFilter: 'blur(8px)' },
@@ -1574,7 +1598,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
             <span style={{ fontSize: 10, color: t.textDim }}>DOCS</span>
           </div>
         </div>
-        <div style={{ position: 'relative' }}>
+        <div ref={menuRef} style={{ position: 'relative' }}>
           <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Open actions">
             {menuOpen ? <X size={14} /> : <Menu size={14} />}
           </button>
@@ -5006,9 +5030,12 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
+  const quickMenuRef = useRef(null);
+  useMenuDismiss(quickMenuOpen, setQuickMenuOpen, quickMenuRef);
   const vis = settings.visibleModules;
   const ac = { red: 0, amber: 0, green: 0 };
-  if (latest.debts?.some(d => d.balance > 2000)) ac.red++;
+  const debts = Array.isArray(latest?.debts) ? latest.debts : [];
+  if (debts.some(d => (d?.balance || 0) > 2000)) ac.red++;
   if ((latest.macro?.triggersActive || 0) >= 2) ac.red++;
   ac.amber += (latest.budget?.categories || []).filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 0.75 && (c.actual / c.budgeted) < 1).length;
   if (runwayDays(latest.eFund) >= 60) ac.green++;
@@ -5040,7 +5067,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
       </div>
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
-      <div className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+      <div ref={quickMenuRef} className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
         <button
           className="dash-menu-toggle"
           onClick={() => setQuickMenuOpen(v => !v)}
@@ -5126,6 +5153,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [macro, setMacro] = useState(null);
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -5208,7 +5237,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
             <span style={{ color: t.textSecondary, fontSize: 12, marginLeft: 10 }}>RADAR</span>
           </div>
-          <div style={{ position: 'relative' }}>
+          <div ref={menuRef} style={{ position: 'relative' }}>
             <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, borderRadius: 8, width: 32, height: 32, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Open actions">
               {menuOpen ? <X size={12} /> : <Menu size={12} />}
             </button>
