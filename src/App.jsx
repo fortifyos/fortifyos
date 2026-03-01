@@ -3993,6 +3993,161 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
   </Card>);
 }
 
+// ═══════════════════════════════════════════════════
+// BILL CALENDAR — Monthly grid with due-date markers
+// ═══════════════════════════════════════════════════
+function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
+  if (!visible) return null;
+  const [viewDate, setViewDate] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const monthLabel = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+  const todayDay = today.getDate();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDow = new Date(year, month, 1).getDay();
+
+  const bills = latest?.bills || [];
+  const debts = (latest?.debts || []).filter(d => (d.balance || 0) > 0);
+  const freq = String(payFrequencyOverride || latest?.payroll?.frequency || 'WEEKLY').toUpperCase();
+  const weekday = Number(latest?.payroll?.weekday ?? 5);
+
+  // Build day → events map
+  const byDay = {};
+  const addEvent = (day, item) => {
+    const d = Number(day);
+    if (d >= 1 && d <= daysInMonth) {
+      if (!byDay[d]) byDay[d] = [];
+      byDay[d].push(item);
+    }
+  };
+
+  bills.forEach(b => {
+    if (b.dueDay) addEvent(b.dueDay, { name: b.name || 'Bill', amount: b.amount || 0, kind: 'bill' });
+  });
+
+  debts.forEach(d => {
+    if (!d.dueDate) return;
+    const parsed = new Date(d.dueDate);
+    if (!isNaN(parsed)) addEvent(parsed.getDate(), { name: d.name || 'Debt', amount: d.monthlyPayment || d.minPayment || 0, kind: 'debt' });
+  });
+
+  // Generate paydays for this specific month
+  const paydayDays = new Set();
+  if (freq === 'WEEKLY') {
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (new Date(year, month, d).getDay() === weekday) paydayDays.add(d);
+    }
+  } else if (freq === 'BIWEEKLY') {
+    let first = null;
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (new Date(year, month, d).getDay() === weekday) { first = d; break; }
+    }
+    if (first) for (let d = first; d <= daysInMonth; d += 14) paydayDays.add(d);
+  } else if (freq === 'SEMIMONTHLY') {
+    paydayDays.add(1); paydayDays.add(15);
+  } else if (freq === 'MONTHLY') {
+    paydayDays.add(1);
+  }
+
+  // Build flat cells array (nulls for empty prefix/suffix)
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+  return (
+    <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 14px' }}>
+      {/* Nav header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <button
+          onClick={() => setViewDate(new Date(year, month - 1, 1))}
+          style={{ background: 'none', border: 'none', color: t.textDim, cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: '2px 6px' }}
+        >‹</button>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{monthLabel}</div>
+          <div style={{ fontSize: 8, color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bill Calendar</div>
+        </div>
+        <button
+          onClick={() => setViewDate(new Date(year, month + 1, 1))}
+          style={{ background: 'none', border: 'none', color: t.textDim, cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: '2px 6px' }}
+        >›</button>
+      </div>
+
+      {/* Day-of-week labels */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 3 }}>
+        {['S','M','T','W','T','F','S'].map((d, i) => (
+          <div key={i} style={{ fontSize: 7, color: t.textGhost, textAlign: 'center', fontWeight: 700, letterSpacing: '0.06em', paddingBottom: 2 }}>{d}</div>
+        ))}
+      </div>
+
+      {/* Calendar weeks */}
+      {weeks.map((week, wi) => (
+        <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 1 }}>
+          {week.map((day, di) => {
+            if (day === null) return <div key={di} style={{ minHeight: 36 }} />;
+            const isToday = isCurrentMonth && day === todayDay;
+            const events = byDay[day] || [];
+            const isPay = paydayDays.has(day);
+            const isPast = isCurrentMonth && day < todayDay;
+
+            return (
+              <div key={di} style={{
+                minHeight: 36,
+                padding: '3px 2px 2px',
+                textAlign: 'center',
+                background: isToday ? `${t.accent}22` : 'transparent',
+                border: `1px solid ${isToday ? t.accent + '55' : t.borderDim + '44'}`,
+                overflow: 'hidden',
+                opacity: isPast ? 0.45 : 1,
+              }}>
+                <div style={{ fontSize: 9, fontWeight: isToday ? 700 : 400, color: isToday ? t.accent : t.textPrimary, lineHeight: 1, marginBottom: 2 }}>
+                  {day}
+                </div>
+                {isPay && (
+                  <div title="Payday" style={{ width: 4, height: 4, borderRadius: '50%', background: t.accent, margin: '0 auto 1px', opacity: 0.95 }} />
+                )}
+                {events.slice(0, 3).map((e, ei) => (
+                  <div key={ei} title={`${e.name}: ${fmt(e.amount)}`} style={{
+                    width: '100%', height: 2, background: e.kind === 'debt' ? t.warn : t.danger,
+                    marginBottom: 1, opacity: 0.85,
+                  }} />
+                ))}
+                {events.length > 3 && <div style={{ fontSize: 6, color: t.textGhost }}>+{events.length - 3}</div>}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 10, marginTop: 8, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ width: 8, height: 2, background: t.danger, opacity: 0.85 }} />
+          <span style={{ fontSize: 7, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bill</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ width: 8, height: 2, background: t.warn, opacity: 0.85 }} />
+          <span style={{ fontSize: 7, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Debt Payment</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ width: 4, height: 4, borderRadius: '50%', background: t.accent, opacity: 0.95 }} />
+          <span style={{ fontSize: 7, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Payday</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
   if (!visible) return null;
   const bills = latest?.bills || [];
@@ -5575,9 +5730,14 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           </div>
         )}
 
-        {/* Row 3 — Time-sensitive pair: upcoming bills + safety cushion */}
-        <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
-        <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
+        {/* Row 4 — Calendar · Bills · E-Fund: time-sensitive triple */}
+        {(vis.includes('planner') || vis.includes('eFund')) && (
+          <div className="bill-cal-row" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
+            <BillCalendarMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
+            <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
+            <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
+          </div>
+        )}
 
         {/* Row 4 — Debt: full width, strategic/monthly "What's my payoff plan?" */}
         {vis.includes('debt') && (
@@ -6747,6 +6907,7 @@ function FortifyOSApp() {
           .phase-label,.footer-label { display: none !important; }
           .main-grid { grid-template-columns: minmax(0, 1fr) !important; }
           .main-grid > * { min-width: 0 !important; width: 100% !important; }
+          .bill-cal-row { grid-template-columns: 1fr !important; }
           .sync-row-3 { grid-template-columns: 1fr !important; }
           .status-metrics { grid-template-columns: 1fr 1fr !important; }
           .sync-row-debt { grid-template-columns: 1fr !important; }
