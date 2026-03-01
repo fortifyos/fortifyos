@@ -35,7 +35,7 @@ jobs:
       - name: Run price updater
         env:
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-        run: corepack pnpm update-prices
+        run: corepack pnpm run update-prices
 
       - name: Commit updated prices
         run: |
