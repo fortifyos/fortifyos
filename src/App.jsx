@@ -5682,24 +5682,26 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           </div>
         </div>
         {/* Right — Net Worth + equity ownership bar */}
-        {_tA > 0 && (
+        {(_nwTotal !== 0 || _tA > 0) && (
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
             <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end', marginBottom: 8 }}>
               <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
               {snapshots.length > 1 && <span style={{ fontSize: 10, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
             </div>
-            {/* Equity ownership bar */}
-            <div style={{ width: 260, marginLeft: 'auto' }}>
-              <div style={{ display: 'flex', height: 7, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
-                <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
-                <div style={{ flex: 1, background: `${t.danger}50` }} />
+            {/* Equity ownership bar — only when asset breakdown exists */}
+            {_tA > 0 && (
+              <div style={{ width: 260, marginLeft: 'auto' }}>
+                <div style={{ display: 'flex', height: 7, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
+                  <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
+                  <div style={{ flex: 1, background: `${t.danger}50` }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8, letterSpacing: '0.04em' }}>
+                  <span style={{ color: t.accent }}>{_equityPct}% EQUITY OWNED</span>
+                  <span style={{ color: t.textGhost }}>A {fmt(_tA)} · D {fmt(_tL)}</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8, letterSpacing: '0.04em' }}>
-                <span style={{ color: t.accent }}>{_equityPct}% EQUITY OWNED</span>
-                <span style={{ color: t.textGhost }}>A {fmt(_tA)} · D {fmt(_tL)}</span>
-              </div>
-            </div>
+            )}
           </div>
         )}
       </div>
