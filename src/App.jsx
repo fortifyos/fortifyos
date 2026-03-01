@@ -5060,7 +5060,6 @@ function DailyLawHero({ t }) {
 
   return (
     <div style={{
-      gridColumn: '1 / -1',
       border: `1px solid ${t.accent}55`,
       background: `linear-gradient(135deg, ${t.surface} 0%, ${t.accent}0A 100%)`,
       padding: '22px 26px',
@@ -5768,11 +5767,14 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           </div>
         )}
       </div>
+
+      {/* ═══ DAILY LAW HERO — Right below greeting, above all modules ═══ */}
+      <div style={{ marginBottom: 12 }}>
+        <DailyLawHero t={t} />
+      </div>
+
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
-
-        {/* ═══ DAILY LAW HERO — Sets the tone. First thing you see. ═══ */}
-        <DailyLawHero t={t} />
 
         {/* Row 1 — CFO Daily Pulse: full width */}
         {vis.includes('directive') && (
