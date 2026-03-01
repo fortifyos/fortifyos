@@ -4955,6 +4955,9 @@ function DirectiveMod({ visible, latest, t }) {
       </div>
     )}
 
+    {/* ─── DIVIDER ─── */}
+    <div style={{ borderTop: `1px solid ${t.borderDim}`, margin: '12px 0' }} />
+
     {/* ═══ 7-STAGE PIPELINE ═══ */}
     <div style={{ marginBottom: 12 }}>
       <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Wealth Pipeline</div>
