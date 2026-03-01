@@ -3818,8 +3818,47 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
   </Card>);
 }
 
-function DebtMod({ latest, visible, t }) {
+function DebtMod({ latest, visible, t, onUpdateDebt }) {
   const [extraMonthly, setExtraMonthly] = useState('');
+  const [panel, setPanel] = useState(null); // { name, mode: 'pay'|'balance', value }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const thisMonth = today.slice(0, 7);
+
+  const openPanel = (debt, mode) => {
+    const prefill = mode === 'pay'
+      ? String(debt.minPayment || debt.monthlyPayment || '')
+      : String(debt.balance || '');
+    setPanel({ name: debt.name, mode, value: prefill });
+  };
+
+  const confirmPay = (debt) => {
+    const amount = parseFloat(panel.value);
+    if (!amount || amount <= 0) return;
+    const isFixed = (debt.totalTerms || 0) > 0;
+    let newBalance;
+    const patch = {};
+    if (isFixed) {
+      newBalance = Math.max(0, (debt.balance || 0) - amount);
+      patch.paymentsMade = (debt.paymentsMade || 0) + 1;
+    } else {
+      const monthlyInterest = ((debt.balance || 0) * ((debt.apr || 0) / 100)) / 12;
+      const principal = Math.max(0, amount - monthlyInterest);
+      newBalance = Math.max(0, (debt.balance || 0) - principal);
+    }
+    const history = [...(debt._payHistory || []), { date: today, amount, type: 'payment' }].slice(-24);
+    onUpdateDebt?.(debt.name, { ...patch, balance: +newBalance.toFixed(2), _paidCycle: thisMonth, _lastPaid: today, _lastPayAmt: amount, _payHistory: history });
+    setPanel(null);
+  };
+
+  const confirmBalance = (debt) => {
+    const newBalance = parseFloat(panel.value);
+    if (isNaN(newBalance) || newBalance < 0) return;
+    const history = [...(debt._payHistory || []), { date: today, amount: newBalance, type: 'balance-update' }].slice(-24);
+    onUpdateDebt?.(debt.name, { balance: +newBalance.toFixed(2), _balanceUpdated: today, _payHistory: history });
+    setPanel(null);
+  };
+
   const debts = (latest?.debts || []).sort((a, b) => {
     // Fixed-term debts sort by payments remaining (ascending), revolving by APR (descending)
     const aFixed = (a.totalTerms || 0) > 0;
@@ -3842,23 +3881,95 @@ function DebtMod({ latest, visible, t }) {
       const isLast = isFixed && remaining === 1;
       const isTarget = !isFixed && i === debts.indexOf(revolving[0]); // first revolving = avalanche target
 
+      const paidThisCycle = d._paidCycle === thisMonth;
+      const panelOpen = panel?.name === d.name;
+      const monthlyInterestAmt = ((d.balance || 0) * ((d.apr || 0) / 100)) / 12;
+      const btnStyle = (active) => ({
+        background: 'none', border: `1px solid ${active ? t.accent : t.borderDim}`,
+        color: active ? t.accent : t.textDim, fontSize: 8, padding: '2px 7px',
+        cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
+        letterSpacing: '0.05em', textTransform: 'uppercase',
+      });
+
       return (
       <div key={i} style={{ marginBottom: 12, borderLeft: isTarget ? `2px solid ${t.accent}` : 'none', paddingLeft: isTarget ? 8 : isFixed ? 0 : 10 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-          <span style={{ color: t.textSecondary }}>
-            {d.name}
-            {isFixed && <span style={{ fontSize: 8, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
-            {!isFixed && <span style={{ color: t.textDim }}> ({d.apr}%)</span>}
-          </span>
-          <span>
-            {isFixed
-              ? <span style={{ color: isLast ? t.accent : t.textSecondary }}>{pmtsMade} of {d.totalTerms} PMTS</span>
-              : <span>{fmt(d.balance)} <span style={{ color: t.textDim, fontSize: 9 }}>min {fmt(d.minPayment)}/mo</span></span>
-            }
-          </span>
+
+        {/* ── Row header ── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ color: t.textSecondary }}>
+              {d.name}
+              {isFixed && <span style={{ fontSize: 8, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
+              {!isFixed && <span style={{ color: t.textDim }}> ({d.apr}%)</span>}
+            </span>
+            {paidThisCycle && (
+              <span style={{ fontSize: 8, background: t.accentMuted, color: t.accent, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.04em', fontFamily: "'JetBrains Mono', monospace" }}>
+                ✓ PAID {d._lastPayAmt ? fmt(d._lastPayAmt) : ''}
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span>
+              {isFixed
+                ? <span style={{ color: isLast ? t.accent : t.textSecondary }}>{pmtsMade} of {d.totalTerms} PMTS</span>
+                : <span>{fmt(d.balance)} <span style={{ color: t.textDim, fontSize: 9 }}>min {fmt(d.minPayment)}/mo</span></span>
+              }
+            </span>
+            {onUpdateDebt && <>
+              <button style={btnStyle(panelOpen && panel.mode === 'pay')} onClick={() => panelOpen && panel.mode === 'pay' ? setPanel(null) : openPanel(d, 'pay')}>⚡ Pay</button>
+              <button style={btnStyle(panelOpen && panel.mode === 'balance')} onClick={() => panelOpen && panel.mode === 'balance' ? setPanel(null) : openPanel(d, 'balance')}>✏ Bal</button>
+            </>}
+          </div>
         </div>
 
-        {/* Segmented bar for fixed-term, standard bar for revolving */}
+        {/* ── Inline action panel ── */}
+        {panelOpen && (
+          <div style={{ margin: '6px 0 8px', padding: '10px 12px', background: t.elevated, border: `1px solid ${panel.mode === 'pay' ? t.accent : t.borderMid}`, animation: 'radarFadeUp 0.15s ease-out' }}>
+            {panel.mode === 'pay' ? (<>
+              <div style={{ fontSize: 9, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Mark Payment — {d.name}
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 10, color: t.textDim }}>$</span>
+                <input
+                  autoFocus
+                  value={panel.value}
+                  onChange={e => setPanel(p => ({ ...p, value: e.target.value }))}
+                  onKeyDown={e => { if (e.key === 'Enter') confirmPay(d); if (e.key === 'Escape') setPanel(null); }}
+                  inputMode="decimal"
+                  style={{ flex: 1, background: t.input, border: `1px solid ${t.accent}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 8px' }}
+                />
+                <button onClick={() => confirmPay(d)} style={{ background: t.accent, border: 'none', color: t.void, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>CONFIRM</button>
+                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+              </div>
+              {!isFixed && parseFloat(panel.value) > 0 && (
+                <div style={{ fontSize: 9, color: t.textDim }}>
+                  Interest: <span style={{ color: t.danger }}>{fmt(monthlyInterestAmt)}</span> · Principal: <span style={{ color: t.accent }}>{fmt(Math.max(0, parseFloat(panel.value) - monthlyInterestAmt))}</span> · New balance: <span style={{ color: t.textPrimary }}>{fmt(Math.max(0, (d.balance || 0) - Math.max(0, parseFloat(panel.value) - monthlyInterestAmt)))}</span>
+                </div>
+              )}
+            </>) : (<>
+              <div style={{ fontSize: 9, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Update Balance — {d.name}
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ fontSize: 10, color: t.textDim }}>$</span>
+                <input
+                  autoFocus
+                  value={panel.value}
+                  onChange={e => setPanel(p => ({ ...p, value: e.target.value }))}
+                  onKeyDown={e => { if (e.key === 'Enter') confirmBalance(d); if (e.key === 'Escape') setPanel(null); }}
+                  inputMode="decimal"
+                  style={{ flex: 1, background: t.input, border: `1px solid ${t.borderMid}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 8px' }}
+                />
+                <button onClick={() => confirmBalance(d)} style={{ background: t.elevated, border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>UPDATE</button>
+                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+              </div>
+              <div style={{ fontSize: 9, color: t.textDim, marginTop: 6 }}>Type the actual balance from your bank app or statement.</div>
+            </>)}
+          </div>
+        )}
+
+        {/* ── Progress bars ── */}
         {isFixed ? (
           <div style={{ display: 'flex', gap: 2, height: 6, marginBottom: 4 }}>
             {Array.from({ length: d.totalTerms }).map((_, idx) => {
@@ -3866,8 +3977,7 @@ function DebtMod({ latest, visible, t }) {
               const isNext = idx === pmtsMade;
               const isFinal = isLast && idx === d.totalTerms - 1;
               return (<div key={idx} style={{
-                flex: 1,
-                background: filled ? t.accent : t.elevated,
+                flex: 1, background: filled ? t.accent : t.elevated,
                 border: isNext ? `1px solid ${t.accent}` : `1px solid ${t.borderMid}`,
                 animation: isFinal ? 'lastSeg 1.5s ease-in-out infinite' : 'none',
                 transition: 'background 0.3s',
@@ -3878,7 +3988,7 @@ function DebtMod({ latest, visible, t }) {
           <ProgressBar percent={maxB > 0 ? (d.balance / maxB) * 100 : 0} color={isTarget ? t.danger : t.accent} t={t} />
         )}
 
-        {/* Subline: balance + mission end for fixed, nothing extra for revolving */}
+        {/* ── Subline ── */}
         {isFixed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: t.textDim }}>
             <span>{fmt(d.balance)} remaining{d.monthlyPayment > 0 ? ` • ${fmt(d.monthlyPayment)}/mo` : ''}</span>
@@ -5326,7 +5436,7 @@ function TransactionsMod({ latest, visible, t }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -5409,7 +5519,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         {/* Row 2 — Debt: full width, has a lot going on */}
         {vis.includes('debt') && (
           <div style={{ gridColumn: '1 / -1' }}>
-            <DebtMod latest={latest} visible t={t} />
+            <DebtMod latest={latest} visible t={t} onUpdateDebt={onUpdateDebt} />
           </div>
         )}
 
@@ -6486,6 +6596,17 @@ function FortifyOSApp() {
       return next;
     });
   }, [settings]);
+  const handleUpdateDebt = useCallback(async (debtName, patch) => {
+    setLatest(prev => {
+      const debts = (prev.debts || []).map(d =>
+        d.name === debtName ? { ...d, ...patch } : d
+      );
+      const nextLatest = { ...prev, debts };
+      store.set('fortify-latest', nextLatest);
+      return nextLatest;
+    });
+  }, []);
+
   const handleExport = useCallback(() => {
     const b = new Blob([JSON.stringify({ snapshots, latest, settings }, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(b);
@@ -6594,7 +6715,7 @@ function FortifyOSApp() {
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} />}
     </div>
   );
