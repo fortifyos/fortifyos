@@ -5053,10 +5053,15 @@ const DIRECTIVES = {
 function DailyLawHero({ t }) {
   const now = new Date();
   const monthIdx = now.getMonth();
-  const dayOfMonth = now.getDate();
   const theme = MONTHLY_THEMES[monthIdx];
+
+  // Day-of-year counter: Jan 1 = Day 1, resets every Jan 1.
+  // March 1 2026 = Day 60. Used for both law rotation and display.
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((now - yearStart) / (1000 * 60 * 60 * 24)) + 1;
+
   const pool = DIRECTIVES[theme.month] || DIRECTIVES.JAN;
-  const directive = pool[(dayOfMonth - 1) % pool.length];
+  const directive = pool[(dayOfYear - 1) % pool.length];
 
   return (
     <div style={{
@@ -5080,7 +5085,7 @@ function DailyLawHero({ t }) {
           </div>
         </div>
         <div style={{ fontSize: 8, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-          The Sovereignty Blueprint · Day {dayOfMonth}
+          The Sovereignty Blueprint · Day {dayOfYear}
         </div>
       </div>
 
