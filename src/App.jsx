@@ -3740,8 +3740,8 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
                 <div key={`ml-${i}`} style={{
                   flex: Math.max(1, l.value),
                   minWidth: `${Math.max(8, (l.value / mapTotal) * 100)}%`,
-                  background: '#2A1010',
-                  border: `1px solid ${t.danger}55`,
+                  background: `${t.danger}18`,
+                  border: `1px solid ${t.danger}40`,
                   display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                   padding: '5px 6px',
                 }}>
@@ -4999,6 +4999,9 @@ function DirectiveMod({ visible, latest, t }) {
         ))}
       </div>
     )}
+
+    {/* ─── DIVIDER ─── */}
+    <div style={{ borderTop: `1px solid ${t.borderDim}`, margin: '12px 0' }} />
 
     {/* ═══ TACTICAL DIRECTIVE ═══ */}
     <div style={{ marginBottom: 10 }}>
