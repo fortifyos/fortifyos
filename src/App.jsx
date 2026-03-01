@@ -5512,29 +5512,29 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
 
-        {/* Row 1 — Identity + Balance Sheet */}
+        {/* Row 1 — Pulse + Scoreboard: "Am I okay and what do I do today?" */}
         <DirectiveMod visible={vis.includes('directive')} latest={latest} t={t} />
         <NetWorthMod snapshots={snapshots} latest={latest} visible={vis.includes('netWorth')} t={t} />
 
-        {/* Row 2 — Debt: full width, has a lot going on */}
-        {vis.includes('debt') && (
-          <div style={{ gridColumn: '1 / -1' }}>
-            <DebtMod latest={latest} visible t={t} onUpdateDebt={onUpdateDebt} />
-          </div>
-        )}
-
-        {/* Row 3 — Cash flow pair */}
-        <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
-        <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
-
-        {/* Row 4 — Budget: full width, many categories */}
+        {/* Row 2 — Budget: full width, checked near-daily "Am I on track this month?" */}
         {vis.includes('budget') && (
           <div style={{ gridColumn: '1 / -1' }}>
             <BudgetMod latest={latest} visible t={t} />
           </div>
         )}
 
-        {/* Row 5 — Activity + Coverage pair */}
+        {/* Row 3 — Time-sensitive pair: upcoming bills + safety cushion */}
+        <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
+        <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
+
+        {/* Row 4 — Debt: full width, strategic/monthly "What's my payoff plan?" */}
+        {vis.includes('debt') && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <DebtMod latest={latest} visible t={t} onUpdateDebt={onUpdateDebt} />
+          </div>
+        )}
+
+        {/* Row 5 — Review + Coverage: historical lookup and protection check */}
         <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
 
