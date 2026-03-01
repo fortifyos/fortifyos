@@ -3668,143 +3668,85 @@ function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, 
 // DASHBOARD MODULES
 // ═══════════════════════════════════════════════════
 function NetWorthMod({ snapshots, latest, visible, t }) {
-  const [openAssets, setOpenAssets] = useState(true);
-  const [openLiabilities, setOpenLiabilities] = useState(true);
-  const hist = snapshots.map(s => ({ date: s.date?.slice(5) || '', value: s.netWorth?.total || 0 }));
-  const nw = latest?.netWorth || {}; const prev = snapshots.length > 1 ? snapshots[snapshots.length - 2]?.netWorth?.total || 0 : 0; const delta = (nw.total || 0) - prev;
+  if (!visible) return null;
+  const nw = latest?.netWorth || {};
   const assets = nw.assets || {};
   const cryptoVal = (latest?.portfolio?.crypto || []).reduce((s, c) => s + (Number(c.amount) || 0) * (Number(c.lastPrice) || 0), 0);
-  const eqVal = (latest?.portfolio?.equities || []).reduce((s, e) => s + (Number(e.shares) || 0) * (Number(e.lastPrice) || 0), 0);
-  const tCash = (assets.checking || 0) + (assets.savings || 0) + (assets.eFund || 0) + (assets.other || 0);
+  const eqVal    = (latest?.portfolio?.equities || []).reduce((s, e) => s + (Number(e.shares) || 0) * (Number(e.lastPrice) || 0), 0);
+  const tCash = (assets.checking||0)+(assets.savings||0)+(assets.eFund||0)+(assets.other||0);
   const tA = tCash + eqVal + cryptoVal;
   const tL = Object.values(nw.liabilities || {}).reduce((s, v) => s + (v || 0), 0);
 
-  // Build asset breakdown items (only show non-zero)
   const breakdown = [
     { label: 'Checking', value: assets.checking || 0, color: t.textPrimary },
-    { label: 'Savings', value: assets.savings || 0, color: t.accent },
-    { label: 'E-Fund', value: assets.eFund || 0, color: t.accent },
-    { label: 'Equity', value: eqVal, color: t.accent },
-    { label: 'Crypto', value: cryptoVal, color: t.crypto },
-    { label: 'Other', value: assets.other || 0, color: t.textSecondary },
+    { label: 'Savings',  value: assets.savings  || 0, color: t.accent },
+    { label: 'E-Fund',   value: assets.eFund    || 0, color: t.accent },
+    { label: 'Equity',   value: eqVal,                color: t.accent },
+    { label: 'Crypto',   value: cryptoVal,            color: t.crypto },
+    { label: 'Other',    value: assets.other    || 0, color: t.textSecondary },
   ].filter(b => b.value > 0);
+
   const liabilitiesList = Object.entries(nw.liabilities || {})
     .map(([name, value]) => ({ name, value: Number(value) || 0 }))
     .filter(l => l.value > 0)
     .sort((a, b) => b.value - a.value);
-  const mapAssets = breakdown.map(b => ({ label: b.label, value: b.value, color: b.color }));
-  const mapLiabs = liabilitiesList.map(l => ({ label: l.name, value: l.value, color: t.danger }));
-  const mapTotal = [...mapAssets, ...mapLiabs].reduce((s, x) => s + (x.value || 0), 0) || 1;
 
-  return (<Card title="Net Worth" visible={visible} delay={0} t={t}>
-    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
-      <span style={{ fontSize: 28, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}><AnimNum value={nw.total || 0} /></span>
-      {snapshots.length > 1 && <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 2, background: delta >= 0 ? t.accentMuted : '#3D0A0A', color: delta >= 0 ? t.accent : t.danger }}>{delta >= 0 ? '↑' : '↓'} {fmt(Math.abs(delta))}</span>}
-    </div>
-    <div style={{ height: 100, marginBottom: 12 }}>
-      {hist.length > 1 ? (<ResponsiveContainer width="100%" height="100%"><AreaChart data={hist} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
-        <defs><linearGradient id="nwG" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={t.accent} stopOpacity={0.25} /><stop offset="95%" stopColor={t.accent} stopOpacity={0} /></linearGradient></defs>
-        <XAxis dataKey="date" tick={{ fontSize: 9, fill: t.textDim }} axisLine={false} tickLine={false} /><YAxis hide domain={['dataMin - 500', 'dataMax + 500']} /><Tooltip content={<ChartTip t={t} />} />
-        <Area type="monotone" dataKey="value" stroke={t.accent} strokeWidth={1.5} fill="url(#nwG)" dot={false} />
-      </AreaChart></ResponsiveContainer>) : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.textDim, fontSize: 11 }}>Sync 2+ snapshots for chart</div>}
-    </div>
-    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 8 }}>
-      <div><span style={{ color: t.textSecondary, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assets </span>{fmt(tA)}</div>
-      <div><span style={{ color: t.textSecondary, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Liabilities </span>{fmt(tL)}</div>
-    </div>
-    {/* Money Map */}
-    {(mapAssets.length > 0 || mapLiabs.length > 0) && (
-      <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginBottom: 10 }}>
-        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Money Map</div>
-        <div style={{ display: 'grid', gap: 4 }}>
-          {mapAssets.length > 0 && (
-            <div style={{ display: 'flex', gap: 3, minHeight: 42 }}>
-              {mapAssets.map((a, i) => (
-                <div key={`ma-${i}`} style={{
-                  flex: Math.max(1, a.value),
-                  minWidth: `${Math.max(8, (a.value / mapTotal) * 100)}%`,
-                  background: t.accentMuted,
-                  border: `1px solid ${t.borderDim}`,
-                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                  padding: '5px 6px',
-                }}>
-                  <span style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{a.label}</span>
-                  <span style={{ fontSize: 10, color: a.color }}>{fmt(a.value)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          {mapLiabs.length > 0 && (
-            <div style={{ display: 'flex', gap: 3, minHeight: 34 }}>
-              {mapLiabs.map((l, i) => (
-                <div key={`ml-${i}`} style={{
-                  flex: Math.max(1, l.value),
-                  minWidth: `${Math.max(8, (l.value / mapTotal) * 100)}%`,
-                  background: `${t.danger}18`,
-                  border: `1px solid ${t.danger}40`,
-                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                  padding: '5px 6px',
-                }}>
-                  <span style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{l.label}</span>
-                  <span style={{ fontSize: 10, color: t.danger }}>-{fmt(l.value)}</span>
-                </div>
-              ))}
-            </div>
-          )}
+  const mapAssets = breakdown.map(b => ({ label: b.label, value: b.value, color: b.color }));
+  const mapLiabs  = liabilitiesList.map(l => ({ label: l.name, value: l.value }));
+  const mapTotal  = [...mapAssets, ...mapLiabs].reduce((s, x) => s + (x.value || 0), 0) || 1;
+
+  if (mapAssets.length === 0 && mapLiabs.length === 0) return null;
+
+  return (
+    <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 14px' }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Money Map</div>
+        <div style={{ display: 'flex', gap: 16, fontSize: 10 }}>
+          <span><span style={{ color: t.textDim, fontSize: 9 }}>ASSETS </span><span style={{ color: t.accent }}>{fmt(tA)}</span></span>
+          <span><span style={{ color: t.textDim, fontSize: 9 }}>LIABILITIES </span><span style={{ color: t.danger }}>{fmt(tL)}</span></span>
         </div>
       </div>
-    )}
-    {/* Collapsible Account Groups */}
-    <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginBottom: 8 }}>
-      <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Account Explorer</div>
-      <div style={{ border: `1px solid ${t.borderDim}`, marginBottom: 6 }}>
-        <button
-          onClick={() => setOpenAssets(v => !v)}
-          style={{ width: '100%', background: t.surface, border: 'none', borderBottom: openAssets ? `1px solid ${t.borderDim}` : 'none', color: t.textPrimary, padding: '7px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase', cursor: 'pointer' }}
-        >
-          <span>{openAssets ? '▼' : '▶'} Assets</span>
-          <span style={{ color: t.accent }}>{fmt(tA)}</span>
-        </button>
-        {openAssets && (
-          <div style={{ padding: 6, display: 'grid', gap: 4 }}>
-            {mapAssets.length ? mapAssets.map((a, i) => (
-              <div key={`asset-row-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
-                <span style={{ color: t.textDim }}>{a.label}</span>
-                <span style={{ color: a.color }}>{fmt(a.value)}</span>
+      {/* Map tiles */}
+      <div style={{ display: 'grid', gap: 3 }}>
+        {mapAssets.length > 0 && (
+          <div style={{ display: 'flex', gap: 3, minHeight: 44 }}>
+            {mapAssets.map((a, i) => (
+              <div key={`ma-${i}`} style={{
+                flex: Math.max(1, a.value),
+                minWidth: `${Math.max(6, (a.value / mapTotal) * 100)}%`,
+                background: t.accentMuted,
+                border: `1px solid ${t.borderDim}`,
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                padding: '5px 7px',
+              }}>
+                <span style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.label}</span>
+                <span style={{ fontSize: 10, color: a.color, fontVariantNumeric: 'tabular-nums' }}>{fmt(a.value)}</span>
               </div>
-            )) : <div style={{ fontSize: 10, color: t.textDim }}>No tracked assets</div>}
+            ))}
+          </div>
+        )}
+        {mapLiabs.length > 0 && (
+          <div style={{ display: 'flex', gap: 3, minHeight: 36 }}>
+            {mapLiabs.map((l, i) => (
+              <div key={`ml-${i}`} style={{
+                flex: Math.max(1, l.value),
+                minWidth: `${Math.max(6, (l.value / mapTotal) * 100)}%`,
+                background: `${t.danger}18`,
+                border: `1px solid ${t.danger}40`,
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                padding: '5px 7px',
+              }}>
+                <span style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.label}</span>
+                <span style={{ fontSize: 10, color: t.danger, fontVariantNumeric: 'tabular-nums' }}>-{fmt(l.value)}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
-      <div style={{ border: `1px solid ${t.borderDim}` }}>
-        <button
-          onClick={() => setOpenLiabilities(v => !v)}
-          style={{ width: '100%', background: t.surface, border: 'none', borderBottom: openLiabilities ? `1px solid ${t.borderDim}` : 'none', color: t.textPrimary, padding: '7px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase', cursor: 'pointer' }}
-        >
-          <span>{openLiabilities ? '▼' : '▶'} Liabilities</span>
-          <span style={{ color: t.danger }}>-{fmt(tL)}</span>
-        </button>
-        {openLiabilities && (
-          <div style={{ padding: 6, display: 'grid', gap: 4 }}>
-            {liabilitiesList.length ? liabilitiesList.map((l, i) => (
-              <div key={`liab-row-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
-                <span style={{ color: t.textDim }}>{l.name}</span>
-                <span style={{ color: t.danger }}>-{fmt(l.value)}</span>
-              </div>
-            )) : <div style={{ fontSize: 10, color: t.textDim }}>No tracked liabilities</div>}
-          </div>
-        )}
-      </div>
-    </div>
-    {/* Asset breakdown */}
-    {breakdown.length > 1 && (
-      <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8 }}>
-        <div style={{ display: 'flex', gap: 2, height: 6, marginBottom: 6 }}>
-          {breakdown.map((b, i) => (
-            <div key={i} style={{ flex: b.value, background: b.color, opacity: 0.7, transition: 'flex 0.6s ease-out' }} />
-          ))}
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+      {/* Legend */}
+      {breakdown.length > 1 && (
+        <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
           {breakdown.map((b, i) => (
             <div key={i} style={{ fontSize: 9, display: 'flex', alignItems: 'center', gap: 4 }}>
               <div style={{ width: 6, height: 6, background: b.color, opacity: 0.7, flexShrink: 0 }} />
@@ -3813,9 +3755,9 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
             </div>
           ))}
         </div>
-      </div>
-    )}
-  </Card>);
+      )}
+    </div>
+  );
 }
 
 function DebtMod({ latest, visible, t, onUpdateDebt }) {
@@ -5477,6 +5419,18 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     return () => clearInterval(id);
   }, []);
 
+  // ── Net Worth banner computations ──
+  const _nw = latest?.netWorth || {};
+  const _nwAssets = _nw.assets || {};
+  const _cryptoV = (latest?.portfolio?.crypto || []).reduce((s,c) => s+(Number(c.amount)||0)*(Number(c.lastPrice)||0), 0);
+  const _eqV = (latest?.portfolio?.equities || []).reduce((s,e) => s+(Number(e.shares)||0)*(Number(e.lastPrice)||0), 0);
+  const _tA = (_nwAssets.checking||0)+(_nwAssets.savings||0)+(_nwAssets.eFund||0)+(_nwAssets.other||0)+_eqV+_cryptoV;
+  const _tL = Object.values(_nw.liabilities||{}).reduce((s,v)=>s+(v||0), 0);
+  const _nwTotal = _nw.total || (_tA - _tL);
+  const _prevNW = snapshots.length > 1 ? (snapshots[snapshots.length-2]?.netWorth?.total || 0) : 0;
+  const _nwDelta = _nwTotal - _prevNW;
+  const _equityPct = _tA > 0 ? Math.round((_nwTotal / _tA) * 100) : 0;
+
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
@@ -5509,20 +5463,54 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
-      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 12px' }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
-        <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
+      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+        {/* Left — greeting */}
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
+          <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
+          </div>
         </div>
+        {/* Right — Net Worth + equity ownership bar */}
+        {_tA > 0 && (
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end', marginBottom: 8 }}>
+              <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
+              {snapshots.length > 1 && <span style={{ fontSize: 10, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
+            </div>
+            {/* Equity ownership bar */}
+            <div style={{ width: 260, marginLeft: 'auto' }}>
+              <div style={{ display: 'flex', height: 7, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
+                <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
+                <div style={{ flex: 1, background: `${t.danger}50` }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8, letterSpacing: '0.04em' }}>
+                <span style={{ color: t.accent }}>{_equityPct}% EQUITY OWNED</span>
+                <span style={{ color: t.textGhost }}>A {fmt(_tA)} · D {fmt(_tL)}</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
 
-        {/* Row 1 — Pulse + Scoreboard: "Am I okay and what do I do today?" */}
-        <DirectiveMod visible={vis.includes('directive')} latest={latest} t={t} />
-        <NetWorthMod snapshots={snapshots} latest={latest} visible={vis.includes('netWorth')} t={t} />
+        {/* Row 1 — CFO Daily Pulse: full width */}
+        {vis.includes('directive') && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <DirectiveMod visible latest={latest} t={t} />
+          </div>
+        )}
 
-        {/* Row 2 — Budget: full width, checked near-daily "Am I on track this month?" */}
+        {/* Row 2 — Money Map strip: full width, compact */}
+        {vis.includes('netWorth') && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <NetWorthMod snapshots={snapshots} latest={latest} visible t={t} />
+          </div>
+        )}
+
+        {/* Row 3 — Budget: full width, checked near-daily "Am I on track this month?" */}
         {vis.includes('budget') && (
           <div style={{ gridColumn: '1 / -1' }}>
             <BudgetMod latest={latest} visible t={t} />
