@@ -20,22 +20,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        run: corepack enable
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: corepack pnpm install --frozen-lockfile
+          node-version: '22'
 
       - name: Run price updater
         env:
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-        run: corepack pnpm run update-prices
+        run: node scripts/update-prices.js
 
       - name: Commit updated prices
         run: |
