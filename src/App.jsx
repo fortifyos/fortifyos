@@ -5801,7 +5801,22 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
       <div className="ms2-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 16px 28px' }}>
 
-        <div style={{ marginTop: 10, border: `1px solid ${query ? t.accent : t.borderMid}`, background: t.input, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, transition: 'border-color 0.2s' }}>
+        <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
+
+        <div style={{ marginTop: 12 }}>
+          <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <MarketIntelligenceMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('market')} t={t} isDark={isDark} fredMacro={macro || fredMacro} />
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
+        </div>
+
+        {/* ── Ticker search — sits directly above Watchlist / Ticker Intel ── */}
+        <div style={{ marginTop: 12, border: `1px solid ${query ? t.accent : t.borderMid}`, background: t.input, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, transition: 'border-color 0.2s' }}>
           {searchLoading
             ? <div style={{ width: 16, height: 16, border: `2px solid ${t.accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
             : <Eye size={16} color={query ? t.accent : t.textSecondary} />
@@ -5818,19 +5833,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               style={{ background: 'none', border: 'none', color: t.textDim, cursor: 'pointer', padding: '0 2px', fontSize: 16, lineHeight: 1, flexShrink: 0 }}
             >×</button>
           )}
-        </div>
-        <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
-
-        <div style={{ marginTop: 12 }}>
-          <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          <MarketIntelligenceMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('market')} t={t} isDark={isDark} fredMacro={macro || fredMacro} />
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
         </div>
 
         {/* ── TICKER INTEL PANEL (full-width, when searching) vs OVERVIEW GRID ── */}
