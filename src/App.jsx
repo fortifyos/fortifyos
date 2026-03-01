@@ -4845,6 +4845,48 @@ function DirectiveMod({ visible, latest, t }) {
       </div>
     )}
 
+    {/* ═══ 7-STAGE PIPELINE ═══ */}
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Wealth Pipeline</div>
+      <div style={{ display: 'flex', gap: 3 }}>
+        {STAGE_META.slice(0, 7).map((s, i) => {
+          const active = i === stage;
+          const done   = i < stage;
+          const bg     = done ? t.accent : active ? t[s.color] || t.accent : t.borderDim;
+          return (
+            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+              <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.25, transition: 'background 0.3s' }} />
+              <div style={{ fontSize: 7, color: active ? t[s.color] || t.accent : t.textGhost, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.2 }}>
+                {i + 1}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ fontSize: 9, color: t[meta.color] || t.accent, marginTop: 4, fontWeight: 600 }}>
+        Stage {stage}/7 · {meta.name}
+      </div>
+    </div>
+
+    {/* ═══ BUDGET ALERTS ═══ */}
+    {(blownCats.length > 0 || warnCats.length > 0) && (
+      <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Budget Alerts</div>
+        {blownCats.map((c, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10 }}>
+            <span style={{ color: t.danger, fontWeight: 700, fontSize: 9 }}>✕ BLOWN</span>
+            <span style={{ color: t.textSecondary }}>{c.name} — ${c.actual.toLocaleString()} / ${c.budgeted.toLocaleString()}</span>
+          </div>
+        ))}
+        {warnCats.map((c, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10 }}>
+            <span style={{ color: t.warn, fontWeight: 700, fontSize: 9 }}>⚠ WARN</span>
+            <span style={{ color: t.textSecondary }}>{c.name} — ${c.actual.toLocaleString()} / ${c.budgeted.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+    )}
+
     {/* ═══ TACTICAL DIRECTIVE ═══ */}
     <div style={{ marginBottom: 10 }}>
       <div style={{ fontSize: 13, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 2 }}>{directive.title}</div>
@@ -5359,14 +5401,33 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
+
+        {/* Row 1 — Identity + Balance Sheet */}
         <DirectiveMod visible={vis.includes('directive')} latest={latest} t={t} />
         <NetWorthMod snapshots={snapshots} latest={latest} visible={vis.includes('netWorth')} t={t} />
-        <DebtMod latest={latest} visible={vis.includes('debt')} t={t} />
+
+        {/* Row 2 — Debt: full width, has a lot going on */}
+        {vis.includes('debt') && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <DebtMod latest={latest} visible t={t} />
+          </div>
+        )}
+
+        {/* Row 3 — Cash flow pair */}
         <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
         <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
-        <BudgetMod latest={latest} visible={vis.includes('budget')} t={t} />
+
+        {/* Row 4 — Budget: full width, many categories */}
+        {vis.includes('budget') && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <BudgetMod latest={latest} visible t={t} />
+          </div>
+        )}
+
+        {/* Row 5 — Activity + Coverage pair */}
         <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
+
       </div>
     </main>
     <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 9, zIndex: 50 }}>
@@ -6464,7 +6525,7 @@ function FortifyOSApp() {
         ::selection { background: ${t.accentMuted}; color: ${t.accent}; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: ${t.void}; } ::-webkit-scrollbar-thumb { background: ${t.borderMid}; }
         .phase-label,.footer-label { display: block; }
-        .main-grid { grid-template-columns: repeat(2, 1fr); }
+        .main-grid { grid-template-columns: repeat(2, 1fr); align-items: start; }
         .sync-row-3 { grid-template-columns: repeat(3, 1fr); }
         .status-metrics { grid-template-columns: repeat(4, 1fr); }
         .sync-row-debt { grid-template-columns: 2fr 1fr 1.5fr 1fr; }
