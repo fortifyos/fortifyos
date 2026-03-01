@@ -188,6 +188,12 @@ jobs:
               print(f"FRED fetch failed, wrote fallback macro.json: {e}")
           PY
 
+      - name: Update market prices (Finnhub + CoinGecko + Yahoo fallback)
+        env:
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+        run: corepack pnpm update-prices
+        continue-on-error: true
+
       - name: Build
         run: DEPLOY_TARGET=pages corepack pnpm build
 
