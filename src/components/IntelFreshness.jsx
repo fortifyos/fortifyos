@@ -41,8 +41,14 @@ function computeNextRunAt(radarTZ = "America/New_York") {
   // Build a "local" date object in UTC, then adjust using the TZ offset at that instant.
   const targetDay = (hh >= 8) ? d + 1 : d;
 
+  // Use Date.UTC to safely handle month overflow (e.g., Feb 28 + 1 → Mar 1)
+  const safeDate = new Date(Date.UTC(y, m - 1, targetDay));
+  const sy = safeDate.getUTCFullYear();
+  const sm = safeDate.getUTCMonth() + 1;
+  const sd = safeDate.getUTCDate();
+
   // Create a naive ISO string for 08:00 in radarTZ date.
-  const isoLocal = `${y}-${pad2(m)}-${pad2(targetDay)}T08:00:00`;
+  const isoLocal = `${sy}-${pad2(sm)}-${pad2(sd)}T08:00:00`;
 
   // Convert to actual Date by interpreting isoLocal as if it's in radarTZ:
   // We get the timezone offset by comparing format in radarTZ to UTC.

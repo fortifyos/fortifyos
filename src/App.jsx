@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import IntelFreshness from './components/IntelFreshness.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -52,11 +52,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
 class AppErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorMsg: '' };
   }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  static getDerivedStateFromError(error) {
+    return { hasError: true, errorMsg: error?.message || String(error) };
   }
 
   componentDidCatch(error) {
@@ -92,6 +92,11 @@ class AppErrorBoundary extends React.Component {
           <div style={{ fontSize: 12, color: '#BFBFBF', lineHeight: 1.5, marginBottom: 12 }}>
             The app hit a runtime error and switched to recovery mode to prevent a blank screen.
           </div>
+          {this.state.errorMsg && (
+            <div style={{ fontSize: 11, color: '#FF5555', background: '#1A0000', border: '1px solid #440000', padding: '8px 10px', marginBottom: 12, wordBreak: 'break-all', lineHeight: 1.5 }}>
+              ERROR: {this.state.errorMsg}
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button
               style={{ background: '#00FF41', color: '#000', border: 'none', padding: '8px 12px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12 }}
@@ -811,6 +816,20 @@ function transactionsToSnapshot(txns, bankName) {
     name, budgeted: 0, actual: Math.round(cats[name] || 0),
   }));
   const dates = txns.map(t => t.date).filter(Boolean).sort();
+  // Build recent transactions list (up to 40, newest first)
+  const _recentTxns = [...txns]
+    .sort((a, b) => {
+      const da = a.date ? new Date(a.date) : new Date(0);
+      const db = b.date ? new Date(b.date) : new Date(0);
+      return db - da;
+    })
+    .slice(0, 40)
+    .map(t => ({
+      date: t.date || '',
+      description: (t.description || '').slice(0, 60),
+      amount: t.amount || 0,
+      category: categorize(t.description),
+    }));
   return {
     date: dates.length ? sanitizeDate(dates[dates.length - 1]) : new Date().toISOString().slice(0, 10),
     netWorth: { assets: { checking: 0, savings: 0, eFund: 0, other: 0 }, liabilities: {}, total: 0 },
@@ -823,6 +842,7 @@ function transactionsToSnapshot(txns, bankName) {
     bills: [],
     payroll: { frequency: 'WEEKLY', weekday: 2 },
     _meta: { source: bankName, transactions: txns.length, income: Math.round(income), totalExpense: Math.round(totalExpense), uncategorized: Math.round(cats['Uncategorized'] || 0), excludedTransfers: Math.round(excludedIncome) },
+    _recentTxns,
   };
 }
 
@@ -847,7 +867,7 @@ const DEFAULT_SNAPSHOT = {
   bills: [],
   payroll: { frequency: 'WEEKLY', weekday: 2 },
 };
-const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], payFrequency: 'WEEKLY', _v: 8 };
+const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'transactions', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], payFrequency: 'WEEKLY', _v: 9 };
 const fmt = (n) => { if (n == null || isNaN(n)) return '$0'; return '$' + Math.abs(Math.round(Number(n))).toLocaleString('en-US'); };
 const dailyInterest = (d) => d ? d.reduce((s, x) => s + ((x.balance || 0) * ((x.apr || 0) / 100)) / 365, 0) : 0;
 const totalDebt = (d) => d ? d.reduce((s, x) => s + (x.balance || 0), 0) : 0;
@@ -1177,7 +1197,7 @@ function ProgressBar({ percent, color, t }) {
 function Card({ title, children, visible = true, delay = 0, alert = false, t }) {
   if (!visible) return null;
   return (
-    <div style={{ background: t.surface, border: `1px solid ${alert ? t.danger + '60' : t.borderDim}`, borderRadius: 4, padding: '16px 20px', animation: `fadeIn 0.4s ease-out ${delay}ms both`, borderLeft: alert ? `2px solid ${t.danger}` : undefined, transition: 'border-color 0.2s' }}
+    <div style={{ background: t.surface, border: `1px solid ${alert ? t.danger + '60' : t.borderDim}`, borderRadius: 4, padding: '16px 20px', animation: `fadeIn 0.4s ease-out ${delay}ms both`, borderLeft: alert ? `2px solid ${t.danger}` : `1px solid ${t.borderDim}`, transition: 'border-color 0.2s' }}
       onMouseEnter={e => { if (!alert) e.currentTarget.style.borderColor = t.borderMid; }}
       onMouseLeave={e => { if (!alert) e.currentTarget.style.borderColor = t.borderDim; }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
@@ -1275,21 +1295,21 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <Shield size={18} style={{ color: accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
         </div>
-        <div ref={menuRef} style={{ position: 'relative' }}>
-          <button
-            onClick={() => setMenuOpen(v => !v)}
-            style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}
-            title="Open actions"
-          >
-            {menuOpen ? <X size={16} /> : <Menu size={16} />}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
+            {isDark ? <Sun size={15} /> : <Moon size={15} />}
           </button>
-          {menuOpen && (
-            <div style={{ position: 'absolute', right: 0, top: 42, width: 190, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
-              <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>RADAR</button>
-              <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>DOCS</button>
-              <button onClick={() => { setMenuOpen(false); onToggleTheme(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}>{isDark ? 'LIGHT MODE' : 'DARK MODE'}</button>
-            </div>
-          )}
+          <div ref={menuRef} style={{ position: 'relative' }}>
+            <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Menu">
+              {menuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+            {menuOpen && (
+              <div style={{ position: 'absolute', right: 0, top: 42, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Eye size={9} /> Radar</button>
+                <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><FileText size={9} /> Docs</button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -1598,16 +1618,20 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
             <span style={{ fontSize: 10, color: t.textDim }}>DOCS</span>
           </div>
         </div>
-        <div ref={menuRef} style={{ position: 'relative' }}>
-          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Open actions">
-            {menuOpen ? <X size={14} /> : <Menu size={14} />}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
+            {isDark ? <Sun size={14} /> : <Moon size={14} />}
           </button>
-          {menuOpen && (
-            <div style={{ position: 'absolute', right: 0, top: 38, width: 180, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>HOME</button>
-              <button onClick={() => { setMenuOpen(false); onToggleTheme(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}>{isDark ? 'LIGHT MODE' : 'DARK MODE'}</button>
-            </div>
-          )}
+          <div ref={menuRef} style={{ position: 'relative' }}>
+            <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Menu">
+              {menuOpen ? <X size={14} /> : <Menu size={14} />}
+            </button>
+            {menuOpen && (
+              <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
+                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Home</button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -3580,7 +3604,7 @@ useEffect(() => {
 function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, onClear, onClose, onToggleTheme, isDark, t }) {
   const [confirm, setConfirm] = useState('');
   if (!open) return null;
-  const mods = [{ key: 'macroBanner', label: 'Macro Banner (top strip)' }, { key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'planner', label: 'Bills & Payday Planner' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }, { key: 'macro', label: 'Macro Signals' }, { key: 'market', label: 'Market Intelligence' }];
+  const mods = [{ key: 'macroBanner', label: 'Macro Banner (top strip)' }, { key: 'directive', label: 'Daily Directive' }, { key: 'netWorth', label: 'Net Worth' }, { key: 'debt', label: 'Debt Destruction' }, { key: 'planner', label: 'Bills & Payday Planner' }, { key: 'eFund', label: 'Emergency Fund' }, { key: 'budget', label: 'Budget Status' }, { key: 'transactions', label: 'Transactions' }, { key: 'protection', label: 'Protection Layer' }, { key: 'portfolio', label: 'Portfolio' }, { key: 'macro', label: 'Macro Signals' }, { key: 'market', label: 'Market Intelligence' }];
   const payFrequency = String(settings?.payFrequency || 'WEEKLY').toUpperCase();
   const payFrequencyOptions = [
     { key: 'WEEKLY', label: 'Weekly' },
@@ -4357,63 +4381,133 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
   if (!visible) return null;
   const btcPrice = Number(fredMacro?.btc?.value || latest?.macro?.btcPrice || 0) || null;
 
-  // User model: Day 1 starts from the prior cycle top anchor (Oct 10, 2025), then count to Day 500.
-  const cycleAnchor = new Date('2025-10-10T00:00:00Z');
-  const cycleLengthDays = 500;
   const msDay = 86400000;
-  const utcToday = new Date();
-  const todayUTC = Date.UTC(utcToday.getFullYear(), utcToday.getMonth(), utcToday.getDate());
-  const anchorUTC = Date.UTC(cycleAnchor.getUTCFullYear(), cycleAnchor.getUTCMonth(), cycleAnchor.getUTCDate());
-  const daysFromAnchor = Math.floor((todayUTC - anchorUTC) / msDay);
-  const cycleDay = Math.max(0, daysFromAnchor + 1);
-  const daysRemaining = Math.max(0, cycleLengthDays - cycleDay);
-  const progressPct = Math.max(0, Math.min(100, (cycleDay / cycleLengthDays) * 100));
-  const targetDate = new Date(anchorUTC + (cycleLengthDays - 1) * msDay);
-  const targetLabel = targetDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  const anchorLabel = cycleAnchor.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  const cyclePhase = progressPct >= 90 ? 'LATE CYCLE' : progressPct >= 60 ? 'MID CYCLE' : 'EARLY CYCLE';
-  const phaseColor = progressPct >= 90 ? t.danger : progressPct >= 60 ? t.warn : t.accent;
+  const now = new Date();
+  const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // ── Halving anchors ──────────────────────────────────────────────
+  // Last halving: block 840,000 — April 20, 2024
+  const lastHalvingUTC  = Date.UTC(2024, 3, 20);
+  // Next halving: block 1,050,000 — estimated ~April 18, 2028
+  const nextHalvingUTC  = Date.UTC(2028, 3, 18);
+
+  // ── Position in current cycle ─────────────────────────────────
+  const daysPost = Math.floor((todayUTC - lastHalvingUTC) / msDay);   // days since last halving
+  const window500Closed = daysPost > 500;
+  const window500EndUTC = lastHalvingUTC + 500 * msDay;
+
+  // ── Next cycle signals ─────────────────────────────────────────
+  const nextBuyUTC         = nextHalvingUTC - 500 * msDay;            // 500 days pre-halving = buy zone
+  const daysToNextBuy      = Math.floor((nextBuyUTC - todayUTC) / msDay);
+  const daysToNextHalving  = Math.floor((nextHalvingUTC - todayUTC) / msDay);
+  const buyZoneOpen        = daysToNextBuy <= 0;
+
+  // ── Phase (relative to last halving) ──────────────────────────
+  let phase, phaseColor, phaseDesc;
+  if (daysPost < 0)        { phase = 'Pre-Halving';      phaseColor = t.textSecondary; phaseDesc = 'Before the April 2024 halving.'; }
+  else if (daysPost <= 200){ phase = 'Early Expansion';  phaseColor = t.accent;        phaseDesc = 'Post-halving. Supply shock narrative building, demand rising.'; }
+  else if (daysPost <= 350){ phase = 'Mid Expansion';    phaseColor = t.accent;        phaseDesc = 'Historically the strongest upside zone of the cycle.'; }
+  else if (daysPost <= 500){ phase = 'Distribution';     phaseColor = t.warn;          phaseDesc = 'Late expansion — near historical cycle top zone. Exercise caution.'; }
+  else                     { phase = 'Past Peak / Wait'; phaseColor = t.danger;        phaseDesc = '500-day window closed Aug 2025. Accumulation watch for next cycle.'; }
+
+  // ── Timeline bar: position marker within −500 → +500 window ──
+  // Full bar = 1000 days. Left edge = −500d (pre-halving buy zone). Centre = halving. Right = +500d.
+  const posInWindow = Math.max(0, Math.min(100, ((daysPost + 500) / 1000) * 100));
+
+  const fmtD = (utc) => new Date(utc).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   return (
-    <Card title="BTC 500-Day Cycle" visible={visible} delay={240} t={t}>
+    <Card title="BTC 500-Day Halving Cycle" visible={visible} delay={240} t={t}>
+
+      {/* ── Row 1: key KPIs ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
           <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Price</div>
           <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.crypto }}>{btcPrice ? fmt(btcPrice) : '—'}</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cycle Day</div>
-          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.textPrimary }}>{cycleDay} / {cycleLengthDays}</div>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Days Post-Halving</div>
+          <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: phaseColor, lineHeight: 1 }}>{daysPost}</div>
+          <div style={{ fontSize: 8, color: t.textDim, marginTop: 2 }}>of 500-day window</div>
+        </div>
+        <div style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${phaseColor}`, background: t.panel, padding: '8px 10px' }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Phase</div>
+          <div style={{ marginTop: 4, fontSize: 12, fontWeight: 700, color: phaseColor }}>{phase}</div>
+        </div>
+      </div>
+
+      {/* ── Timeline bar: −500 ··· HALVING ··· +500 ── */}
+      <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '10px 10px', marginBottom: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+          <span>−500d  Buy Zone</span>
+          <span>Halving  Apr 2024</span>
+          <span>+500d  Peak</span>
+        </div>
+        <div style={{ position: 'relative', height: 10, background: t.elevated, border: `1px solid ${t.borderDim}`, marginBottom: 6 }}>
+          {/* Accumulation zone: left half (pre-halving) */}
+          <div style={{ position: 'absolute', left: 0, width: '50%', height: '100%', background: `${t.accent}15` }} />
+          {/* Expansion zone: 50–85% (0–350d post) */}
+          <div style={{ position: 'absolute', left: '50%', width: '35%', height: '100%', background: `${t.accent}25` }} />
+          {/* Distribution zone: 85–100% (350–500d post) */}
+          <div style={{ position: 'absolute', left: '85%', width: '15%', height: '100%', background: `${t.warn}35` }} />
+          {/* Halving marker */}
+          <div style={{ position: 'absolute', left: '50%', top: 0, width: 2, height: '100%', background: t.crypto, transform: 'translateX(-50%)' }} />
+          {/* Current position indicator */}
+          <div style={{ position: 'absolute', left: `${posInWindow}%`, top: -3, width: 4, height: 16, background: phaseColor, transform: 'translateX(-50%)', zIndex: 2 }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 8, color: t.textDim, letterSpacing: '0.04em' }}>
+          <span style={{ color: t.accent }}>Accumulate</span>
+          <span style={{ color: t.accent }}>Expand</span>
+          <span style={{ color: t.warn }}>Distribute</span>
+        </div>
+        <div style={{ marginTop: 6, fontSize: 10, color: t.textSecondary, lineHeight: 1.5 }}>
+          {phaseDesc}
+        </div>
+      </div>
+
+      {/* ── Row 2: Last cycle window + Next cycle ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+        <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Last Halving</div>
+          <div style={{ marginTop: 2, fontSize: 11, fontWeight: 700, color: t.textPrimary }}>Apr 20, 2024</div>
+        </div>
+        <div style={{ borderLeft: `2px solid ${window500Closed ? t.textDim : t.warn}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>+500d Window</div>
+          <div style={{ marginTop: 2, fontSize: 11, fontWeight: 700, color: window500Closed ? t.textDim : t.warn }}>
+            {fmtD(window500EndUTC)}{window500Closed ? ' ✓' : ''}
+          </div>
+        </div>
+        <div style={{ borderLeft: `2px solid ${buyZoneOpen ? t.accent : t.purple}`, paddingLeft: 8 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {buyZoneOpen ? 'Buy Zone' : 'Next Buy Zone'}
+          </div>
+          <div style={{ marginTop: 2, fontSize: 11, fontWeight: 700, color: buyZoneOpen ? t.accent : t.purple }}>
+            {buyZoneOpen ? `Open (${Math.abs(daysToNextBuy)}d in)` : `in ${daysToNextBuy}d`}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Row 3: Next cycle countdown ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Halving (est.)</div>
+          <div style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: t.purple }}>~Apr 18, 2028</div>
+          <div style={{ fontSize: 9, color: t.textDim, marginTop: 2 }}>in {daysToNextHalving} days</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Days Remaining</div>
-          <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: phaseColor }}>{daysRemaining}</div>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Buy Window (est.)</div>
+          <div style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: buyZoneOpen ? t.accent : t.purple }}>
+            ~{fmtD(nextBuyUTC)}
+          </div>
+          <div style={{ fontSize: 9, color: buyZoneOpen ? t.accent : t.textDim, marginTop: 2 }}>
+            {buyZoneOpen ? 'Open now' : `in ${daysToNextBuy} days`}
+          </div>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
-        <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Anchor</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.textPrimary }}>Top {anchorLabel}</div>
-        </div>
-        <div style={{ borderLeft: `2px solid ${t.warn}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Target Day 500</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: t.warn }}>{targetLabel}</div>
-        </div>
-        <div style={{ borderLeft: `2px solid ${phaseColor}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Phase</div>
-          <div style={{ marginTop: 2, fontSize: 12, fontWeight: 700, color: phaseColor }}>{cyclePhase}</div>
-        </div>
-      </div>
-      <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-        <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-          Cycle Progress
-        </div>
-        <div style={{ height: 6, borderRadius: 999, background: t.elevated, border: `1px solid ${t.borderDim}`, overflow: 'hidden', marginBottom: 8 }}>
-          <div style={{ width: `${progressPct.toFixed(1)}%`, height: '100%', background: phaseColor }} />
-        </div>
-        <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.45 }}>
-          Day {cycleDay} of {cycleLengthDays} ({progressPct.toFixed(1)}%). Day 1 starts from the Oct 10, 2025 top anchor.
-        </div>
+
+      {/* ── Disclaimer ── */}
+      <div style={{ marginTop: 10, fontSize: 9, color: t.textGhost, lineHeight: 1.5, borderTop: `1px solid ${t.borderDim}`, paddingTop: 8 }}>
+        Pattern fit to 3 historical cycles — not a protocol rule. Ignores macro, regulation, ETF flows, and liquidity. Use as a loose timing framework only, not a mechanical trading rule.
       </div>
     </Card>
   );
@@ -4777,59 +4871,80 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
     let cancelled = false;
 
     (async () => {
-      try {
-        const fetchJsonWithCorsFallback = async (url) => {
-          const direct = await fetch(url);
-          if (direct.ok) return direct.json();
-          const proxied = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-          if (!proxied.ok) return null;
-          return proxied.json();
-        };
+      // ── CoinGecko: native CORS, no proxy needed ──────────────────────────
+      const fetchCoinGecko = async () => {
+        try {
+          const r = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true',
+            { headers: { 'Accept': 'application/json' } }
+          );
+          if (!r.ok) return {};
+          const j = await r.json();
+          const parse = (coin) => {
+            const price = j?.[coin]?.usd;
+            const chgPct = j?.[coin]?.usd_24h_change;
+            return (price != null) ? { price: +price, chgPct: chgPct != null ? +chgPct : null } : null;
+          };
+          return { btc: parse('bitcoin'), eth: parse('ethereum') };
+        } catch (_) { return {}; }
+      };
 
-        const fetchYahoo = async (symbol) => {
-          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
-          const j = await fetchJsonWithCorsFallback(url);
-          if (!j) return null;
-          const result = j?.chart?.result?.[0];
-          if (!result) return null;
-          const meta = result.meta || {};
-          let price = Number(meta.regularMarketPrice);
-          let prev = Number(meta.chartPreviousClose || meta.previousClose);
-          if (!Number.isFinite(price)) {
-            const closes = result.indicators?.quote?.[0]?.close || [];
-            const vals = closes.filter(v => Number.isFinite(v));
-            if (vals.length) price = vals[vals.length - 1];
-            if (vals.length > 1) prev = vals[vals.length - 2];
-          }
-          if (!Number.isFinite(price)) return null;
-          const chgPct = Number.isFinite(prev) && prev !== 0 ? ((price - prev) / prev) * 100 : null;
-          return { price, chgPct };
-        };
+      // ── Yahoo Finance via CORS proxies (try each in sequence) ─────────────
+      const PROXIES = [
+        (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+        (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+      ];
 
-        const [cgRes, oilY, vixY, spxY, nasY, goldY, silverY] = await Promise.allSettled([
-          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'),
-          fetchYahoo('CL=F'),
-          fetchYahoo('^VIX'),
-          fetchYahoo('^GSPC'),
-          fetchYahoo('^IXIC'),
-          fetchYahoo('GC=F'),
-          fetchYahoo('SI=F'),
-        ]);
+      const fetchYahoo = async (symbol) => {
+        const target = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
+        let j = null;
+        for (const proxy of PROXIES) {
+          try {
+            const r = await fetch(proxy(target), { headers: { 'Accept': 'application/json' } });
+            if (r.ok) { j = await r.json(); break; }
+          } catch (_) { /* try next proxy */ }
+        }
+        if (!j) return null;
+        const result = j?.chart?.result?.[0];
+        if (!result) return null;
+        const meta = result.meta || {};
+        let price = Number(meta.regularMarketPrice);
+        let prev  = Number(meta.chartPreviousClose ?? meta.previousClose);
+        if (!Number.isFinite(price)) {
+          const vals = (result.indicators?.quote?.[0]?.close ?? []).filter(v => Number.isFinite(v));
+          if (vals.length) price = vals[vals.length - 1];
+          if (vals.length > 1) prev = vals[vals.length - 2];
+        }
+        if (!Number.isFinite(price)) return null;
+        const chgPct = Number.isFinite(prev) && prev !== 0 ? ((price - prev) / prev) * 100 : null;
+        return { price, chgPct };
+      };
 
-        const cg = cgRes.status === 'fulfilled' && cgRes.value.ok ? await cgRes.value.json() : null;
-        const next = {
-          btc: cg?.bitcoin ? { price: Number(cg.bitcoin.usd), chgPct: Number(cg.bitcoin.usd_24h_change) } : null,
-          eth: cg?.ethereum ? { price: Number(cg.ethereum.usd), chgPct: Number(cg.ethereum.usd_24h_change) } : null,
-          oil: oilY.status === 'fulfilled' ? oilY.value : null,
-          vix: vixY.status === 'fulfilled' ? vixY.value : null,
-          sp500: spxY.status === 'fulfilled' ? spxY.value : null,
-          nasdaq: nasY.status === 'fulfilled' ? nasY.value : null,
-          gold: goldY.status === 'fulfilled' ? goldY.value : null,
-          silver: silverY.status === 'fulfilled' ? silverY.value : null,
-        };
-        next.spy = next.sp500 ? { ...next.sp500 } : null;
-        if (!cancelled) setMarketLive(next);
-      } catch (_) {}
+      // Fetch crypto (no proxy needed) and stocks (proxy needed) in parallel
+      const [cgResult, oilY, vixY, spxY, nasY, goldY, silverY] = await Promise.allSettled([
+        fetchCoinGecko(),
+        fetchYahoo('CL=F'),
+        fetchYahoo('^VIX'),
+        fetchYahoo('^GSPC'),
+        fetchYahoo('^IXIC'),
+        fetchYahoo('GC=F'),
+        fetchYahoo('SI=F'),
+      ]);
+
+      const ok = (r) => r.status === 'fulfilled' ? r.value : null;
+      const cg = ok(cgResult) || {};
+      const next = {
+        btc:    cg.btc    ?? null,
+        eth:    cg.eth    ?? null,
+        oil:    ok(oilY),
+        vix:    ok(vixY),
+        sp500:  ok(spxY),
+        nasdaq: ok(nasY),
+        gold:   ok(goldY),
+        silver: ok(silverY),
+      };
+      next.spy = next.sp500 ? { ...next.sp500 } : null;
+      if (!cancelled) setMarketLive(next);
     })();
 
     return () => { cancelled = true; };
@@ -4837,17 +4952,19 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
 
   if (!visible) return null;
 
-  const rrp     = fredMacro?.rrp?.value    ?? null;
-  const silver  = marketLive?.silver?.price ?? fredMacro?.silver?.value ?? null;
+  const rrp       = fredMacro?.rrp?.value ?? null;
+  // Live feeds preferred for all; fall back to FRED macro.json
+  const gold      = marketLive?.gold?.price   ?? fredMacro?.gold?.value   ?? null;
+  const goldChg   = marketLive?.gold?.chgPct  ?? fredMacro?.gold?.change  ?? null;
+  const silver    = marketLive?.silver?.price ?? fredMacro?.silver?.value ?? null;
   const silverChg = marketLive?.silver?.chgPct ?? fredMacro?.silver?.change ?? null;
-  const gold    = marketLive?.gold?.price ?? fredMacro?.gold?.value ?? null;
-  const goldChg = marketLive?.gold?.chgPct ?? fredMacro?.gold?.change ?? null;
-  const oil = fredMacro?.oil ? { price: fredMacro.oil.value, chgPct: fredMacro.oil.change } : (marketLive?.oil || null);
-  const spy = fredMacro?.spy ? { price: fredMacro.spy.value, chgPct: fredMacro.spy.change } : (marketLive?.spy || null);
-  const vix = fredMacro?.vix ? { price: fredMacro.vix.value, chgPct: fredMacro.vix.change } : (marketLive?.vix || null);
-  const sp500 = fredMacro?.sp500 ? { price: fredMacro.sp500.value, chgPct: fredMacro.sp500.change } : (marketLive?.sp500 || null);
-  const nasdaq = fredMacro?.nasdaq ? { price: fredMacro.nasdaq.value, chgPct: fredMacro.nasdaq.change } : (marketLive?.nasdaq || null);
-  const asOf    = fredMacro?.asOf ?? null;
+  // Live feeds preferred; fall back to FRED macro.json
+  const oil   = marketLive?.oil   ? { price: marketLive.oil.price,    chgPct: marketLive.oil.chgPct    } : (fredMacro?.oil   ? { price: fredMacro.oil.value,    chgPct: fredMacro.oil.change    } : null);
+  const spy   = marketLive?.spy   ? { price: marketLive.spy.price,    chgPct: marketLive.spy.chgPct    } : (fredMacro?.spy   ? { price: fredMacro.spy.value,    chgPct: fredMacro.spy.change    } : null);
+  const vix   = marketLive?.vix   ? { price: marketLive.vix.price,    chgPct: marketLive.vix.chgPct    } : (fredMacro?.vix   ? { price: fredMacro.vix.value,    chgPct: fredMacro.vix.change    } : null);
+  const sp500 = marketLive?.sp500 ? { price: marketLive.sp500.price,  chgPct: marketLive.sp500.chgPct  } : (fredMacro?.sp500 ? { price: fredMacro.sp500.value,  chgPct: fredMacro.sp500.change  } : null);
+  const nasdaq= marketLive?.nasdaq? { price: marketLive.nasdaq.price, chgPct: marketLive.nasdaq.chgPct } : (fredMacro?.nasdaq? { price: fredMacro.nasdaq.value, chgPct: fredMacro.nasdaq.change } : null);
+  const asOf  = marketLive ? null : (fredMacro?.asOf ?? null); // hide stale label when live data is shown
 
   const fmtP  = (n, dec = 0) => n == null ? '—' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`;
   const lbl   = { fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 };
@@ -4869,8 +4986,8 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
 
   const stripSequence = (
     <>
-      <PriceCell label="Bitcoin" value={fredMacro?.btc?.value ?? marketLive?.btc?.price ?? null} chg={fredMacro?.btc?.change ?? marketLive?.btc?.chgPct ?? null} color={t.crypto} />
-      <PriceCell label="ETH" value={fredMacro?.eth?.value ?? marketLive?.eth?.price ?? null} chg={fredMacro?.eth?.change ?? marketLive?.eth?.chgPct ?? null} color={t.purple} />
+      <PriceCell label="Bitcoin" value={marketLive?.btc?.price ?? fredMacro?.btc?.value ?? null} chg={marketLive?.btc?.chgPct ?? fredMacro?.btc?.change ?? null} color={t.crypto} />
+      <PriceCell label="ETH" value={marketLive?.eth?.price ?? fredMacro?.eth?.value ?? null} chg={marketLive?.eth?.chgPct ?? fredMacro?.eth?.change ?? null} color={t.purple} />
       <PriceCell label="Gold" value={gold} chg={goldChg} color="#FFD700" />
       <PriceCell label="Silver" value={silver} chg={silverChg} color="#C0C0C0" dec={2} />
       <PriceCell label="Oil" value={oil?.price ?? null} chg={oil?.chgPct ?? null} color={t.warn} dec={2} />
@@ -5023,11 +5140,152 @@ function PulseTicker({ latest, t, now, payFrequencyOverride }) {
 }
 
 // ═══════════════════════════════════════════════════
+// TRANSACTIONS MODULE
+// ═══════════════════════════════════════════════════
+const CAT_COLORS = {
+  Essential: '#4a8fff',
+  Medical: '#a8e06e',
+  'Debt Service': '#ff4a4a',
+  Savings: '#3effc4',
+  Discretionary: '#ffb340',
+  Income: '#3eff8b',
+  Uncategorized: '#888',
+};
+function TransactionsMod({ latest, visible, t }) {
+  const [showAll, setShowAll] = useState(false);
+  const txns = latest?._recentTxns || [];
+  const meta = latest?._meta || {};
+  if (!visible) return null;
+
+  const isEmpty = txns.length === 0 && !meta.transactions;
+  if (isEmpty) {
+    return (
+      <Card title="Transactions" visible={visible} delay={280} t={t}>
+        <div style={{ color: t.textDim, fontSize: 12, padding: '18px 0', textAlign: 'center' }}>
+          No transactions — sync a bank statement via <span style={{ color: t.accent }}>Import</span>
+        </div>
+      </Card>
+    );
+  }
+
+  const income = meta.income || 0;
+  const totalExpense = meta.totalExpense || 0;
+  const source = meta.source || 'Statement';
+  const count = meta.transactions || txns.length;
+
+  // Category expense totals for breakdown bar
+  const catTotals = {};
+  txns.forEach(tx => {
+    if (tx.amount < 0) {
+      catTotals[tx.category] = (catTotals[tx.category] || 0) + Math.abs(tx.amount);
+    }
+  });
+  const totalSpend = Object.values(catTotals).reduce((s, v) => s + v, 0) || Math.max(totalExpense, 1);
+  const catColor = (cat) => CAT_COLORS[cat] || '#888';
+  const displayTxns = showAll ? txns : txns.slice(0, 12);
+
+  return (
+    <Card title="Transactions" visible={visible} delay={280} t={t}>
+      {/* Scan Summary Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
+        <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Source</div>
+          <div style={{ fontSize: 9, color: t.textSecondary, fontWeight: 600, wordBreak: 'break-word' }}>{source}</div>
+        </div>
+        <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Parsed</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: t.accent, lineHeight: 1 }}>{count}<span style={{ fontSize: 9, fontWeight: 400, color: t.textDim }}> txns</span></div>
+        </div>
+        <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Net</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: income - totalExpense >= 0 ? t.accent : t.danger, lineHeight: 1 }}>{fmt(Math.abs(income - totalExpense))}<span style={{ fontSize: 8, color: income - totalExpense >= 0 ? t.accent : t.danger }}> {income - totalExpense >= 0 ? 'surplus' : 'deficit'}</span></div>
+        </div>
+      </div>
+
+      {/* Income vs Spend */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid ${t.accent}` }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Income</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, marginTop: 2 }}>{fmt(income)}</div>
+        </div>
+        <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid ${t.danger}` }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Spend</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: t.danger, marginTop: 2 }}>{fmt(totalExpense)}</div>
+        </div>
+        {meta.uncategorized > 0 && (
+          <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid #888` }}>
+            <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Uncategorized</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#888', marginTop: 2 }}>{fmt(meta.uncategorized)}</div>
+          </div>
+        )}
+      </div>
+
+      {/* Category Breakdown Bar */}
+      {Object.keys(catTotals).length > 0 && (
+        <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${t.borderDim}` }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Expense Breakdown</div>
+          <div style={{ display: 'flex', height: 10, borderRadius: 2, overflow: 'hidden', marginBottom: 8 }}>
+            {Object.entries(catTotals).sort((a, b) => b[1] - a[1]).map(([cat, val]) => (
+              <div key={cat} style={{ width: `${(val / totalSpend * 100).toFixed(1)}%`, background: catColor(cat), minWidth: 2 }} title={`${cat}: ${fmt(val)}`} />
+            ))}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
+            {Object.entries(catTotals).sort((a, b) => b[1] - a[1]).map(([cat, val]) => (
+              <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 7, height: 7, background: catColor(cat), flexShrink: 0 }} />
+                <span style={{ fontSize: 8, color: t.textDim }}>{cat} <span style={{ color: t.textSecondary, fontWeight: 600 }}>{fmt(val)}</span> <span style={{ color: t.textGhost }}>({(val / totalSpend * 100).toFixed(0)}%)</span></span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Transaction List */}
+      {txns.length > 0 ? (
+        <>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            Recent Transactions — {txns.length} total
+          </div>
+          {/* Column headers */}
+          <div style={{ display: 'flex', gap: 8, padding: '3px 8px', marginBottom: 3 }}>
+            <span style={{ fontSize: 7, color: t.textGhost, width: 52, flexShrink: 0, textTransform: 'uppercase' }}>Date</span>
+            <span style={{ fontSize: 7, color: t.textGhost, flex: 1, textTransform: 'uppercase' }}>Description</span>
+            <span style={{ fontSize: 7, color: t.textGhost, width: 68, flexShrink: 0, textAlign: 'center', textTransform: 'uppercase' }}>Category</span>
+            <span style={{ fontSize: 7, color: t.textGhost, width: 58, flexShrink: 0, textAlign: 'right', textTransform: 'uppercase' }}>Amount</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {displayTxns.map((tx, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 9 }}>
+                <span style={{ color: t.textGhost, flexShrink: 0, width: 52, fontVariantNumeric: 'tabular-nums' }}>{tx.date ? tx.date.slice(5) : '—'}</span>
+                <span style={{ color: t.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</span>
+                <span style={{ flexShrink: 0, width: 68, background: catColor(tx.category) + '22', color: catColor(tx.category), padding: '1px 4px', fontSize: 7, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', textAlign: 'center' }}>{tx.category}</span>
+                <span style={{ flexShrink: 0, fontWeight: 700, color: tx.amount >= 0 ? t.accent : t.danger, width: 58, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                  {tx.amount >= 0 ? '+' : ''}{fmt(tx.amount)}
+                </span>
+              </div>
+            ))}
+          </div>
+          {txns.length > 12 && (
+            <button
+              onClick={() => setShowAll(v => !v)}
+              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, padding: '7px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 8 }}
+            >{showAll ? '▲ Collapse' : `▼ Show All ${txns.length} Transactions`}</button>
+          )}
+        </>
+      ) : (
+        <div style={{ fontSize: 9, color: t.textGhost, textAlign: 'center', padding: '14px 0' }}>
+          Scan a bank statement to view transaction history
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0 }) {
   const [syncOpen, setSyncOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const quickMenuRef = useRef(null);
@@ -5069,6 +5327,11 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div ref={quickMenuRef} className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
         <button
+          onClick={onToggleTheme}
+          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        >{isDark ? <Sun size={13} /> : <Moon size={13} />}</button>
+        <button
           className="dash-menu-toggle"
           onClick={() => setQuickMenuOpen(v => !v)}
           style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
@@ -5077,60 +5340,33 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
-          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 32, minWidth: 190, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
-            <button
-              onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}
-              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
-            >
-              <Eye size={10} /> Radar
-            </button>
-            <button
-              onClick={() => { setQuickMenuOpen(false); onRefreshIntel && onRefreshIntel(); }}
-              style={{ width: '100%', background: 'none', border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
-            >
-              <RefreshCw size={10} style={{ animation: intelRefreshing ? 'spin 0.9s linear infinite' : 'none' }} />
-              {intelRefreshing ? 'Refreshing…' : 'Sync Intel'}
-            </button>
-            <button
-              onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }}
-              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', marginBottom: 6, cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
-            >
-              <Upload size={10} /> Data Sync
-            </button>
-            <button
-              onClick={() => { setQuickMenuOpen(false); setSettingsOpen(true); }}
-              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
-            >
-              <Settings size={10} /> Settings
-            </button>
+          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Eye size={9} /> Radar</button>
+            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Upload size={9} /> Import</button>
+            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Download size={9} /> Export</button>
+            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Settings size={9} /> Settings</button>
           </div>
         )}
       </div>
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
-      <IntelFreshness />
-
       <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 12px' }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
         <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
         </div>
       </div>
-      <PulseTicker latest={latest} t={t} now={now} payFrequencyOverride={settings?.payFrequency} />
-      <MacroBanner fredMacro={fredMacro} visible={vis.includes('macroBanner')} t={t} refreshNonce={intelRefreshNonce} />
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
         <DirectiveMod visible={vis.includes('directive')} latest={latest} t={t} />
         <NetWorthMod snapshots={snapshots} latest={latest} visible={vis.includes('netWorth')} t={t} />
-        <div style={{ gridColumn: '1 / -1' }}><MacroSignalsMod latest={latest} visible={vis.includes('macro')} t={t} fredMacro={fredMacro} /></div>
-        <div style={{ gridColumn: '1 / -1' }}><MarketIntelligenceMod latest={latest} visible={vis.includes('market')} t={t} isDark={isDark} fredMacro={fredMacro} /></div>
         <DebtMod latest={latest} visible={vis.includes('debt')} t={t} />
         <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
         <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
         <BudgetMod latest={latest} visible={vis.includes('budget')} t={t} />
+        <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
-        <PortfolioMod latest={latest} visible={vis.includes('portfolio')} t={t} />
       </div>
     </main>
     <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 9, zIndex: 50 }}>
@@ -5140,24 +5376,27 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <span className="footer-label" style={{ color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>FortifyOS</span>
     </footer>
     <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={onSync} t={t} />
-    <SettingsPanel open={settingsOpen} settings={settings} onToggle={onToggle} onSetPayFrequency={onSetPayFrequency} onExport={onExport} onClear={onClear} onClose={() => setSettingsOpen(false)} onToggleTheme={onToggleTheme} isDark={isDark} t={t} />
   </div>);
 }
 
 // ═══════════════════════════════════════════════════
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
-function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro }) {
-  const [loading, setLoading] = useState(true);
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings }) {
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [news, setNews] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(true);
+  const [searchResult, setSearchResult] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [tickerNews, setTickerNews] = useState([]);
+  const [chartData, setChartData] = useState([]);
   const menuRef = useRef(null);
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const bust = Date.now();
       const base = import.meta.env.BASE_URL || '/';
@@ -5170,206 +5409,667 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     } catch (_) {
       setIntel(null);
       setMacro(null);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  // Live news: CryptoCompare (live) → macro-news.json (static fallback updated by update-prices script)
+  const loadNews = useCallback(async () => {
+    setNewsLoading(true);
+    let loaded = false;
 
-  const pctText = (v) => {
-    const n = Number(v);
-    if (!Number.isFinite(n)) return 'n/a';
-    return `${n > 0 ? '+' : ''}${n.toFixed(2)}%`;
-  };
+    // 1. Try CryptoCompare live (has CORS in real browsers)
+    try {
+      const r = await fetch(
+        'https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest&limit=30',
+        { headers: { 'Accept': 'application/json' } }
+      );
+      if (r.ok) {
+        const j = await r.json();
+        const items = Array.isArray(j?.Data) ? j.Data : [];
+        if (items.length) {
+          setNews(items.map(item => ({
+            title:      item.title,
+            url:        item.url,
+            source:     { name: item.source_info?.name || item.source || 'CryptoCompare' },
+            published_on: item.published_on,
+            categories: item.categories || '',
+            tags:       item.tags || '',
+          })));
+          loaded = true;
+        }
+      }
+    } catch (_) {}
 
-  const chipTone = (n) => {
-    if (!Number.isFinite(n)) return t.textSecondary;
-    return n >= 0 ? t.accentBright : t.danger;
-  };
+    // 2. Fall back to static macro-news.json (written by `pnpm update-prices`)
+    if (!loaded) {
+      try {
+        const base = import.meta.env.BASE_URL || '/';
+        const r = await fetch(`${base}macro-news.json?v=${Date.now()}`, { cache: 'no-store' });
+        if (r.ok) {
+          const j = await r.json();
+          const items = Array.isArray(j?.items) ? j.items : [];
+          if (items.length) {
+            setNews(items.map(item => ({
+              title:        item.title,
+              url:          item.url,
+              source:       { name: item.source || 'CryptoCompare' },
+              published_on: item.published,
+              categories:   item.categories || '',
+              tags:         item.tags || '',
+            })));
+          }
+        }
+      } catch (_) {}
+    }
 
-  const btcCycle = useMemo(() => {
-    const halving = new Date('2024-04-20T00:00:00Z');
-    const now = new Date();
-    const days = Math.max(0, Math.floor((now - halving) / 86400000));
-    let phase = 'Early';
-    if (days >= 120 && days < 280) phase = 'Expansion';
-    if (days >= 280 && days < 430) phase = 'Distribution';
-    if (days >= 430) phase = 'Reset';
-    const score = Math.max(0, 100 - Math.abs(260 - days) * 0.35);
-    return { days, phase, score: Math.round(score) };
+    setNewsLoading(false);
   }, []);
 
-  const marketCards = [
-    { label: 'BTC', value: macro?.btc?.value, change: macro?.btc?.change },
-    { label: 'ETH', value: macro?.eth?.value, change: macro?.eth?.change },
-    { label: 'SPY', value: macro?.spy?.value, change: macro?.spy?.change },
-    { label: 'NASDAQ', value: macro?.nasdaq?.value, change: macro?.nasdaq?.change },
-    { label: 'VIX', value: macro?.vix?.value, change: macro?.vix?.change },
-    { label: 'OIL', value: macro?.oil?.value, change: macro?.oil?.change },
-  ];
+  useEffect(() => { load(); loadNews(); }, [load, loadNews]);
 
-  const macroCards = [
-    { label: 'WALCL', value: macro?.walcl?.value, source: macro?.source?.walcl || 'n/a' },
-    { label: 'TGA', value: macro?.tga?.value, source: macro?.source?.tga || 'n/a' },
-    { label: 'RRP', value: macro?.rrp?.value, source: macro?.source?.rrp || 'n/a' },
-    { label: 'GOLD', value: macro?.gold?.value, source: macro?.source?.gold || 'n/a' },
-    { label: 'SILVER', value: macro?.silver?.value, source: macro?.source?.silver || 'n/a' },
-  ];
+  // Debounced live ticker lookup — fires 600ms after query stops changing
+  useEffect(() => {
+    const sym = query.trim().toUpperCase();
+    if (!sym) { setSearchResult(null); setTickerNews([]); setChartData([]); return; }
+
+    // CoinGecko slug map for native-CORS crypto lookups
+    const CG_IDS = {
+      BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', ADA: 'cardano',
+      DOGE: 'dogecoin', XRP: 'ripple', BNB: 'binancecoin', AVAX: 'avalanche-2',
+      LINK: 'chainlink', DOT: 'polkadot', MATIC: 'matic-network', LTC: 'litecoin',
+      ARB: 'arbitrum', OP: 'optimism', ATOM: 'cosmos', UNI: 'uniswap',
+    };
+
+    const PROXY_LIST = [
+      (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+      (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+      (u) => `https://thingproxy.freeboard.io/fetch/${u}`,
+      (u) => `https://proxy.cors.sh/${u}`,
+      (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    ];
+
+    // Fire all proxies + two direct attempts in parallel — fastest non-null response wins
+    const fetchViaProxy = async (url) => {
+      const tryOne = async (fetchUrl) => {
+        try {
+          const r = await fetch(fetchUrl, {
+            headers: { 'Accept': 'application/json' },
+            signal: AbortSignal.timeout(8000),
+          });
+          if (!r.ok) return null;
+          const j = await r.json();
+          return j ?? null;
+        } catch { return null; }
+      };
+      const q2 = url.replace('query1.finance.yahoo.com', 'query2.finance.yahoo.com');
+      const attempts = [
+        tryOne(url),    // direct query1 (works in some environments)
+        tryOne(q2),     // direct query2 (sometimes more permissive CORS)
+        ...PROXY_LIST.map(p => tryOne(p(url))),
+      ];
+      try {
+        return await Promise.any(
+          attempts.map(p => p.then(v => {
+            if (v !== null && v !== undefined) return v;
+            return Promise.reject(new Error('null'));
+          }))
+        );
+      } catch { return null; }
+    };
+
+    const timer = setTimeout(async () => {
+      setSearchLoading(true);
+      let result = null;
+      let parsedChart = [];
+
+      const cgId = CG_IDS[sym];
+
+      // ── Path 0: macro.json static cache (instant, no network required) ───────
+      const cached = macro?.tickers?.[sym];
+      if (cached && cached.value != null) {
+        const chg = cached.change ?? 0;
+        result = {
+          ticker: sym,
+          name: sym,
+          price: cached.value,
+          change: chg,
+          risk_level: Math.abs(chg) > 5 ? 'HIGH' : Math.abs(chg) > 2 ? 'MEDIUM' : 'LOW',
+          news_class: chg > 0.5 ? 'Bullish' : chg < -0.5 ? 'Bearish' : 'Neutral',
+          action: chg > 0.5 ? 'Monitor' : chg < -2 ? 'Caution' : 'Watch',
+          _isSearchResult: true,
+          _cached: true,
+          _asOf: cached.asOf || macro?.asOf || null,
+        };
+        setSearchResult(result); // show immediately while live lookup continues
+      }
+
+      // ── Path A: CoinGecko (native CORS, no proxy needed for crypto) ──────────
+      if (cgId) {
+        try {
+          const [priceR, histR] = await Promise.all([
+            fetch(
+              `https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd&include_24hr_change=true`,
+              { headers: { 'Accept': 'application/json' } }
+            ),
+            fetch(
+              `https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`,
+              { headers: { 'Accept': 'application/json' } }
+            ),
+          ]);
+          if (priceR.ok) {
+            const pj = await priceR.json();
+            const d  = pj[cgId];
+            if (d?.usd != null) {
+              const chg = +(d.usd_24h_change ?? 0);
+              result = {
+                ticker:          sym,
+                name:            cgId.charAt(0).toUpperCase() + cgId.slice(1),
+                price:           d.usd,
+                change:          +chg.toFixed(3),
+                risk_level:      Math.abs(chg) > 5 ? 'HIGH' : Math.abs(chg) > 2 ? 'MEDIUM' : 'LOW',
+                news_class:      chg > 0.5 ? 'Bullish' : chg < -0.5 ? 'Bearish' : 'Neutral',
+                action:          chg > 0.5 ? 'Monitor' : chg < -2 ? 'Caution' : 'Watch',
+                _isSearchResult: true,
+              };
+            }
+          }
+          if (histR.ok) {
+            const hj = await histR.json();
+            parsedChart = (hj?.prices ?? []).map(([ts, p]) => ({
+              date:  new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+              price: +p.toFixed(2),
+            }));
+          }
+        } catch (_) {}
+      }
+
+      // ── Path B: Yahoo Finance via proxy (stocks, ETFs, futures, other crypto) ─
+      if (!result) {
+        const quoteJ = await fetchViaProxy(
+          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1mo&interval=1d`
+        );
+        const res  = quoteJ?.chart?.result?.[0];
+        const meta = res?.meta;
+        if (meta && meta.regularMarketPrice != null) {
+          const price  = meta.regularMarketPrice;
+          const prev   = meta.chartPreviousClose ?? meta.previousClose;
+          const chgPct = (prev && prev !== 0) ? ((price - prev) / prev) * 100 : 0;
+          result = {
+            ticker:          meta.symbol || sym,
+            name:            meta.longName || meta.shortName || sym,
+            price,
+            change:          chgPct,
+            risk_level:      Math.abs(chgPct) > 5 ? 'HIGH' : Math.abs(chgPct) > 2 ? 'MEDIUM' : 'LOW',
+            news_class:      chgPct > 0.5 ? 'Bullish' : chgPct < -0.5 ? 'Bearish' : 'Neutral',
+            action:          chgPct > 0.5 ? 'Monitor' : chgPct < -2 ? 'Caution' : 'Watch',
+            _isSearchResult: true,
+          };
+          // Parse 30-day historical closes for the chart
+          const timestamps = res.timestamp ?? [];
+          const closes     = res.indicators?.quote?.[0]?.close ?? [];
+          parsedChart = timestamps
+            .map((ts, i) => ({ ts, price: closes[i] }))
+            .filter(d => d.price != null && Number.isFinite(d.price))
+            .map(d => ({
+              date:  new Date(d.ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+              price: +d.price.toFixed(2),
+            }));
+        }
+      }
+
+      setSearchResult(result);
+      setChartData(parsedChart);
+
+      // ── Ticker-specific news: Google News RSS + Yahoo Finance in parallel ───────
+      const gnRssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(sym + ' stock')}&hl=en-US&gl=US&ceid=US:en`;
+      const yfNewsUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(sym)}&newsCount=15&quotesCount=0`;
+
+      // Fetch raw text/XML (not JSON) for RSS feeds
+      const fetchTextViaProxy = async (url) => {
+        const tryText = async (fetchUrl) => {
+          try {
+            const r = await fetch(fetchUrl, { signal: AbortSignal.timeout(8000) });
+            if (!r.ok) return null;
+            const text = await r.text();
+            return text.includes('<item>') ? text : null;
+          } catch { return null; }
+        };
+        const attempts = [
+          tryText(url),
+          ...PROXY_LIST.map(p => tryText(p(url))),
+        ];
+        try {
+          return await Promise.any(attempts.map(p => p.then(v => {
+            if (v) return v;
+            return Promise.reject(new Error('null'));
+          })));
+        } catch { return null; }
+      };
+
+      const parseRSS = (xml) => {
+        if (!xml) return [];
+        try {
+          const doc = new DOMParser().parseFromString(xml, 'text/xml');
+          return [...doc.querySelectorAll('item')].map(item => {
+            const rawTitle = item.querySelector('title')?.textContent ?? '';
+            const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/ - [^-]{3,40}$/, '').trim();
+            // RSS <link> text lives as a text node sibling
+            let url = '';
+            for (const n of item.childNodes) {
+              if (n.nodeType === 1 && n.tagName === 'link') {
+                url = (n.nextSibling?.nodeValue || n.textContent || '').trim();
+                break;
+              }
+            }
+            const pubDate = item.querySelector('pubDate')?.textContent;
+            const rawSrc  = item.querySelector('source')?.textContent ?? 'Google News';
+            const source  = rawSrc.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+            return {
+              title,
+              url,
+              source: { name: source },
+              published_on: pubDate ? Math.floor(new Date(pubDate).getTime() / 1000) : 0,
+            };
+          }).filter(item => item.title && item.url);
+        } catch { return []; }
+      };
+
+      // Fire both news sources simultaneously
+      const [rssText, yfJ] = await Promise.all([
+        fetchTextViaProxy(gnRssUrl),
+        fetchViaProxy(yfNewsUrl),
+      ]);
+
+      const gnNews = parseRSS(rssText);
+      const yfNews = (yfJ?.news ?? []).map(item => ({
+        title:        item.title,
+        url:          item.link,
+        source:       { name: item.publisher || 'Yahoo Finance' },
+        published_on: item.providerPublishTime,
+      }));
+      // For crypto tickers also include matching general news
+      const cryptoFallback = cgId
+        ? news.filter(item => `${item.title} ${item.categories || ''} ${item.tags || ''}`.toUpperCase().includes(sym))
+        : [];
+
+      // Merge + deduplicate by title, newest first
+      const seen = new Set();
+      const combined = [...gnNews, ...yfNews, ...cryptoFallback].filter(item => {
+        if (!item.title || seen.has(item.title)) return false;
+        seen.add(item.title);
+        return true;
+      }).sort((a, b) => (b.published_on || 0) - (a.published_on || 0));
+
+      setTickerNews(combined);
+      setSearchLoading(false);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [query, news]);
+
+  // Classify headline sentiment
+  const classifySentiment = (title = '') => {
+    const lo = title.toLowerCase();
+    if (/surge|rally|soar|gains?|rises?|bullish|breaks?|record|ath|approval|adoption|jumps?|pump|up \d|grew|higher|outperform/.test(lo)) return 'Bullish';
+    if (/drops?|falls?|crash|plunges?|bearish|declines?|concern|risk|selloff|fear|ban|rejects?|dumps?|lower|down \d|warning|losses/.test(lo)) return 'Bearish';
+    return 'Neutral';
+  };
+
+  const timeAgo = (unixTs) => {
+    const s = Math.floor(Date.now() / 1000) - unixTs;
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}d ago`;
+  };
+
+  // Derive watchlist tickers from news mention frequency + sentiment
+  const derivedTickers = useMemo(() => {
+    if (!news.length) return [];
+    const TICKERS = {
+      BTC: 'Bitcoin', ETH: 'Ethereum', XRP: 'XRP', SOL: 'Solana',
+      ADA: 'Cardano', DOGE: 'Dogecoin', BNB: 'BNB', AVAX: 'Avalanche',
+      LINK: 'Chainlink', DOT: 'Polkadot', MATIC: 'Polygon', LTC: 'Litecoin',
+      ARB: 'Arbitrum', OP: 'Optimism', ATOM: 'Cosmos', UNI: 'Uniswap',
+    };
+    const map = {};
+    for (const item of news) {
+      const upper = `${item.title} ${item.tags || ''} ${item.categories || ''}`.toUpperCase();
+      for (const [sym, name] of Object.entries(TICKERS)) {
+        if (upper.includes(sym)) {
+          if (!map[sym]) map[sym] = { ticker: sym, name, count: 0, bull: 0, bear: 0 };
+          map[sym].count++;
+          const s = classifySentiment(item.title);
+          if (s === 'Bullish') map[sym].bull++;
+          else if (s === 'Bearish') map[sym].bear++;
+        }
+      }
+    }
+    return Object.values(map)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+      .map(({ ticker, name, count, bull, bear }) => {
+        const news_class = bull > bear ? 'Bullish' : bear > bull ? 'Bearish' : 'Neutral';
+        const risk_level = bear >= 3 ? 'HIGH' : bear >= 1 ? 'MEDIUM' : 'LOW';
+        const action = news_class === 'Bullish' ? 'Monitor' : news_class === 'Bearish' ? 'Caution' : 'Watch';
+        return { ticker, name, risk_level, action, news_class, count };
+      });
+  }, [news]);
 
   const filteredTickers = useMemo(() => {
-    const arr = Array.isArray(intel?.tickers) ? intel.tickers : [];
+    const base = Array.isArray(intel?.tickers) && intel.tickers.length > 0
+      ? intel.tickers
+      : derivedTickers;
     const q = query.trim().toLowerCase();
-    if (!q) return arr;
-    return arr.filter((x) =>
+    const filtered = !q ? base : base.filter((x) =>
       String(x.ticker || x.symbol || '').toLowerCase().includes(q) ||
       String(x.name || '').toLowerCase().includes(q)
     );
-  }, [intel, query]);
+    // Prepend live quote result at top if found
+    if (searchResult) {
+      const already = filtered.some(x => (x.ticker || x.symbol) === searchResult.ticker);
+      return already ? filtered : [searchResult, ...filtered];
+    }
+    return filtered;
+  }, [intel, query, derivedTickers, searchResult]);
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <div className="ms2-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 28px' }}>
-        <div className="ms2-top" style={{ border: `1px solid ${t.borderMid}`, background: t.surface, padding: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Shield size={14} style={{ color: t.accent }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
-            <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
-            <span style={{ color: t.textSecondary, fontSize: 12, marginLeft: 10 }}>RADAR</span>
-          </div>
-          <div ref={menuRef} style={{ position: 'relative' }}>
-            <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, borderRadius: 8, width: 32, height: 32, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Open actions">
-              {menuOpen ? <X size={12} /> : <Menu size={12} />}
-            </button>
-            {menuOpen && (
-              <div style={{ position: 'absolute', right: 0, top: 38, width: 180, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6 }}>
-                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>DASHBOARD</button>
-                <button onClick={() => { setMenuOpen(false); load(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', textAlign: 'left' }}>REFRESH</button>
-                <button onClick={() => { setMenuOpen(false); onToggleTheme(); }} style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}>{isDark ? 'LIGHT MODE' : 'DARK MODE'}</button>
-              </div>
-            )}
-          </div>
+      {/* Fixed full-width header — matches Dashboard/Landing pattern exactly */}
+      <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <Shield size={14} style={{ color: t.accent }} />
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
+          <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
         </div>
+        <span style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
+        <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+          <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isDark ? <Sun size={13} /> : <Moon size={13} />}
+          </button>
+          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
+            {menuOpen ? <X size={12} /> : <Menu size={12} />}
+          </button>
+          {menuOpen && (
+            <div style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+            </div>
+          )}
+        </div>
+      </header>
+      <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
 
-        <div style={{ marginTop: 10, border: `1px solid ${t.borderMid}`, background: t.input, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Eye size={16} color={t.textSecondary} />
+      <div className="ms2-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 16px 28px' }}>
+
+        <div style={{ marginTop: 10, border: `1px solid ${query ? t.accent : t.borderMid}`, background: t.input, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, transition: 'border-color 0.2s' }}>
+          {searchLoading
+            ? <div style={{ width: 16, height: 16, border: `2px solid ${t.accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+            : <Eye size={16} color={query ? t.accent : t.textSecondary} />
+          }
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter tickers..."
+            placeholder="Search any ticker — PLTR, NVDA, BTC, ETH..."
             style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: t.textPrimary, fontFamily: 'inherit', fontSize: 13 }}
           />
+          {query && (
+            <button
+              onClick={() => { setQuery(''); setSearchResult(null); setTickerNews([]); setChartData([]); }}
+              style={{ background: 'none', border: 'none', color: t.textDim, cursor: 'pointer', padding: '0 2px', fontSize: 16, lineHeight: 1, flexShrink: 0 }}
+            >×</button>
+          )}
         </div>
-        <MacroBanner fredMacro={macro || fredMacro} visible={true} t={t} refreshNonce={0} rotating={true} />
+        <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
         <div style={{ marginTop: 12 }}>
-          <MacroSignalsMod latest={latest} visible={true} t={t} fredMacro={macro || fredMacro} />
+          <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
         </div>
 
         <div style={{ marginTop: 12 }}>
-          <MarketIntelligenceMod latest={latest} visible={true} t={t} isDark={isDark} fredMacro={macro || fredMacro} />
+          <MarketIntelligenceMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('market')} t={t} isDark={isDark} fredMacro={macro || fredMacro} />
         </div>
 
-        <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12 }}>
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
-            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Portfolio Regime</div>
-            {loading ? (
-              <div style={{ color: t.textSecondary, fontSize: 12 }}>Loading…</div>
-            ) : (
-              <div className="ms2-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Stance</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.overallStance || 'n/a'}</div></div>
-                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Regime</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.regimeMode || 'UNKNOWN'}</div></div>
-                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Most Bullish</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.mostBullish || 'n/a'}</div></div>
-                <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}><div style={{ fontSize: 10, color: t.textSecondary }}>Highest Risk</div><div style={{ fontSize: 13, fontWeight: 700 }}>{intel?.highestRisk || 'n/a'}</div></div>
+        <div style={{ marginTop: 12 }}>
+          <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
+        </div>
+
+        {/* ── TICKER INTEL PANEL (full-width, when searching) vs OVERVIEW GRID ── */}
+        {query ? (
+
+          /* ══ TICKER INTEL FULL-WIDTH PANEL ══════════════════════════════════ */
+          <div style={{ marginTop: 12, border: `2px solid ${t.accent}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.3s ease-out' }}>
+
+            {/* Header row */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  onClick={() => { setQuery(''); setSearchResult(null); setTickerNews([]); setChartData([]); }}
+                  style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 9, padding: '4px 10px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}
+                >← OVERVIEW</button>
+                <span style={{ fontSize: 9, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.12em', fontWeight: 700 }}>TICKER INTEL</span>
+              </div>
+              {searchLoading && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 10, height: 10, border: `2px solid ${t.accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+                  <span style={{ fontSize: 8, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>FETCHING LIVE DATA…</span>
+                </div>
+              )}
+            </div>
+
+            {/* Price card */}
+            {searchResult ? (() => {
+              const isUp      = searchResult.change >= 0;
+              const chgColor  = isUp ? t.accent : t.danger;
+              const riskColor = searchResult.risk_level === 'HIGH' ? t.danger : searchResult.risk_level === 'MEDIUM' ? t.warn : t.accent;
+              const ncColor   = searchResult.news_class === 'Bullish' ? t.accent : searchResult.news_class === 'Bearish' ? t.danger : t.textDim;
+              return (
+                <div style={{ border: `1px solid ${t.accent}`, background: isDark ? '#081408' : '#f0fff4', padding: '14px 16px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, animation: 'radarFadeUp 0.3s ease-out' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
+                      <span style={{ fontSize: 28, fontWeight: 900, color: t.accent, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.01em' }}>{searchResult.ticker}</span>
+                      {searchResult.name !== searchResult.ticker && (
+                        <span style={{ fontSize: 13, color: t.textSecondary }}>{searchResult.name}</span>
+                      )}
+                      {searchResult._cached
+                        ? <span style={{ fontSize: 8, background: '#444', color: '#aaa', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>CACHED{searchResult._asOf ? ` · ${searchResult._asOf}` : ''}</span>
+                        : <span style={{ fontSize: 8, background: t.accent, color: isDark ? '#000' : '#fff', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>LIVE</span>
+                      }
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                      <span style={{ fontSize: 26, fontWeight: 700, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>
+                        ${searchResult.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: chgColor }}>
+                        {isUp ? '▲' : '▼'} {isUp ? '+' : ''}{searchResult.change.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
+                    <span style={{ fontSize: 10, border: `1px solid ${riskColor}`, color: riskColor, padding: '3px 10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>{searchResult.risk_level} RISK</span>
+                    <span style={{ fontSize: 10, color: ncColor, fontFamily: "'JetBrains Mono', monospace" }}>{searchResult.news_class} · {searchResult.action}</span>
+                  </div>
+                </div>
+              );
+            })() : (
+              <div style={{ color: searchLoading ? t.textDim : t.danger, fontSize: 12, padding: '10px 0 14px', marginBottom: 14, borderBottom: `1px solid ${t.borderDim}` }}>
+                {searchLoading
+                  ? <>Looking up <strong style={{ color: t.accent }}>{query.toUpperCase()}</strong>…</>
+                  : <>No data found for <strong>{query.toUpperCase()}</strong> — check symbol and retry.</>}
               </div>
             )}
-          </div>
 
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
-            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Cycle</div>
-            <div style={{ display: 'grid', gap: 8 }}>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
-                <div style={{ fontSize: 10, color: t.textSecondary }}>Days Since Halving</div>
-                <div style={{ fontSize: 16, fontWeight: 800 }}>{btcCycle.days}</div>
-              </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
-                <div style={{ fontSize: 10, color: t.textSecondary }}>Phase</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>{btcCycle.phase}</div>
-              </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
-                <div style={{ fontSize: 10, color: t.textSecondary }}>Cycle Score</div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>{btcCycle.score}/100</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="ms2-grid-3" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12, gridColumn: 'span 2' }}>
-            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Markets</div>
-            <div className="ms2-market-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-              {marketCards.map((m) => (
-                <div key={m.label} style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
-                  <div style={{ fontSize: 10, color: t.textSecondary }}>{m.label}</div>
-                  <div style={{ fontSize: 14, fontWeight: 800 }}>{Number.isFinite(Number(m.value)) ? Number(m.value).toLocaleString() : 'n/a'}</div>
-                  <div style={{ fontSize: 11, color: chipTone(Number(m.change)) }}>{pctText(m.change)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
-            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Macro Inputs</div>
-            <div style={{ display: 'grid', gap: 8 }}>
-              {macroCards.map((m) => (
-                <div key={m.label} style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
-                  <div style={{ fontSize: 10, color: t.textSecondary }}>{m.label}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{Number.isFinite(Number(m.value)) ? Number(m.value).toLocaleString() : 'n/a'}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 12 }}>
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
-            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Watchlist</div>
-            <div style={{ display: 'grid', gap: 8 }}>
-              {(filteredTickers || []).slice(0, 10).map((x, i) => (
-                <div key={i} style={{ border: `1px solid ${t.borderDim}`, padding: 8, display: 'grid', gridTemplateColumns: '1fr auto', gap: 8 }}>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 800 }}>{x.ticker || x.symbol} <span style={{ fontSize: 11, color: t.textSecondary }}>{x.name || ''}</span></div>
-                    <div style={{ fontSize: 11, color: t.textSecondary }}>Risk: {x.risk_level || x.riskLevel || 'n/a'} · Action: {x.action || 'n/a'}</div>
+            {/* 30D price chart */}
+            {searchResult && chartData.length > 0 && (() => {
+              const isUp      = searchResult.change >= 0;
+              const lineColor = isUp ? t.accent : t.danger;
+              const gradId    = `ti_${searchResult.ticker}`;
+              const minP      = Math.min(...chartData.map(d => d.price));
+              const maxP      = Math.max(...chartData.map(d => d.price));
+              const pad       = (maxP - minP) * 0.1 || 1;
+              return (
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 8, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.08em' }}>
+                    30D PRICE CHART · {searchResult.ticker}
                   </div>
-                  <div style={{ fontSize: 11, color: t.textSecondary }}>{x.news_class || x.newsClass || 'Neutral'}</div>
+                  <ResponsiveContainer width="100%" height={130}>
+                    <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                      <defs>
+                        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor={lineColor} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="date" tick={{ fontSize: 7, fill: t.textGhost }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                      <YAxis hide domain={[minP - pad, maxP + pad]} />
+                      <Tooltip
+                        contentStyle={{ background: t.surface, border: `1px solid ${t.borderMid}`, fontSize: 9, padding: '4px 8px', fontFamily: "'JetBrains Mono', monospace" }}
+                        formatter={(v) => [`$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
+                        labelStyle={{ color: t.textSecondary, fontSize: 8 }}
+                      />
+                      <Area type="monotone" dataKey="price" stroke={lineColor} fill={`url(#${gradId})`} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: lineColor }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
-              ))}
-              {(!filteredTickers || !filteredTickers.length) && (
-                <div style={{ color: t.textSecondary, fontSize: 12 }}>No ticker intel yet.</div>
-              )}
+              );
+            })()}
+
+            {/* Ticker news section */}
+            <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{ fontSize: 9, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                  {query.toUpperCase()} NEWS
+                </span>
+                {searchLoading && <span style={{ fontSize: 8, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>scanning…</span>}
+              </div>
+              <div style={{ display: 'grid', gap: 6, maxHeight: 400, overflowY: 'auto' }}>
+                {tickerNews.length > 0 ? tickerNews.slice(0, 15).map((item, i) => {
+                  const sent      = classifySentiment(item.title);
+                  const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
+                  const sentBg    = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
+                  const srcName   = item.source?.name || 'News';
+                  const ago       = item.published_on ? timeAgo(item.published_on) : '';
+                  return (
+                    <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
+                      style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.2s ease-out ${0.025 * i}s both` }}>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
+                        <span style={{ background: sentBg, color: sentColor, fontSize: 7, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
+                        <div style={{ fontSize: 11, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <span style={{ fontSize: 9, color: t.textDim }}>{srcName}</span>
+                        {ago && <span style={{ fontSize: 9, color: t.textGhost }}>· {ago}</span>}
+                      </div>
+                    </a>
+                  );
+                }) : (
+                  <div style={{ color: t.textDim, fontSize: 11, padding: '8px 0' }}>
+                    {searchLoading
+                      ? `Fetching ${query.toUpperCase()} headlines…`
+                      : `No headlines found for ${query.toUpperCase()}.`}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 12 }}>
-            <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Narrative</div>
-            <div style={{ display: 'grid', gap: 8 }}>
-              {(Array.isArray(intel?.keyIssues) ? intel.keyIssues : []).slice(0, 4).map((k, i) => (
-                <div key={i} style={{ border: `1px solid ${t.borderDim}`, padding: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>{k.issue || `Issue ${i + 1}`}</div>
-                  <div style={{ fontSize: 11, color: t.accentBright, marginBottom: 3 }}>Bull: {k.bull || 'n/a'}</div>
-                  <div style={{ fontSize: 11, color: t.danger }}>Bear: {k.bear || 'n/a'}</div>
+        ) : (
+
+          /* ══ DEFAULT OVERVIEW GRID: Watchlist + Live News ═══════════════════ */
+          <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 12 }}>
+
+            {/* WATCHLIST */}
+            <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.4s both' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div style={{ fontSize: 9, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                  Watchlist
+                  {!newsLoading && filteredTickers.length > 0 && (
+                    <span style={{ marginLeft: 8, color: t.textGhost, fontWeight: 400 }}>· from live intel</span>
+                  )}
                 </div>
-              ))}
-              {(!intel?.keyIssues || intel.keyIssues.length === 0) && (
-                <div style={{ color: t.textSecondary, fontSize: 12 }}>No narrative issues available yet.</div>
-              )}
+                {newsLoading && <span style={{ fontSize: 8, color: t.textDim }}>scanning…</span>}
+              </div>
+              <div style={{ display: 'grid', gap: 5, maxHeight: 420, overflowY: 'auto' }}>
+                {filteredTickers.slice(0, 10).map((x, i) => {
+                  const risk      = String(x.risk_level || x.riskLevel || '').toUpperCase();
+                  const nc        = x.news_class || x.newsClass || 'Neutral';
+                  const riskColor = risk === 'HIGH' ? t.danger : risk === 'MEDIUM' ? t.warn : risk === 'LOW' ? t.accent : t.borderMid;
+                  const ncColor   = nc === 'Bullish' ? t.accent : nc === 'Bearish' ? t.danger : t.textDim;
+                  return (
+                    <div key={i} style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${riskColor}`, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, animation: `radarFadeUp 0.25s ease-out ${0.04 * i}s both` }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                          <span style={{ fontSize: 13, fontWeight: 800, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>{x.ticker || x.symbol}</span>
+                          {x.name && <span style={{ fontSize: 9, color: t.textSecondary }}>{x.name}</span>}
+                        </div>
+                        <div style={{ fontSize: 9, color: t.textDim, marginTop: 2 }}>
+                          {x.action || 'Watch'} · <span style={{ color: ncColor }}>{nc}</span>
+                        </div>
+                      </div>
+                      <div style={{ flexShrink: 0 }}>
+                        {risk && <span style={{ fontSize: 8, border: `1px solid ${riskColor}`, color: riskColor, padding: '2px 5px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{risk}</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+                {newsLoading && filteredTickers.length === 0 && (
+                  <div style={{ color: t.textDim, fontSize: 11, padding: '8px 0' }}>Scanning live markets…</div>
+                )}
+                {!newsLoading && filteredTickers.length === 0 && (
+                  <div style={{ color: t.textDim, fontSize: 11, padding: '8px 0' }}>No ticker intel loaded.</div>
+                )}
+              </div>
+            </div>
+
+            {/* LIVE NEWS FEED */}
+            <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: 9, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Live News Feed</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {newsLoading && <span style={{ fontSize: 8, color: t.textDim }}>loading…</span>}
+                  {!newsLoading && (
+                    <button onClick={loadNews} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontSize: 8, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>REFRESH</button>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'grid', gap: 6, maxHeight: 420, overflowY: 'auto' }}>
+                {news.length === 0 ? (
+                  <div style={{ color: t.textDim, fontSize: 11, padding: '12px 0' }}>
+                    {newsLoading ? 'Fetching live headlines…' : 'Unable to load news. Refresh to retry.'}
+                  </div>
+                ) : news.slice(0, 12).map((item, i) => {
+                  const sent      = classifySentiment(item.title);
+                  const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
+                  const sentBg    = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
+                  const srcName   = item.source?.name || item.sourceInfo?.name || 'CryptoCompare';
+                  const ago       = item.published_on ? timeAgo(item.published_on) : '';
+                  return (
+                    <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
+                      style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.25s ease-out ${0.03 * i}s both`, cursor: 'pointer' }}>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 5 }}>
+                        <span style={{ background: sentBg, color: sentColor, fontSize: 7, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
+                        <div style={{ fontSize: 11, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <span style={{ fontSize: 9, color: t.textDim }}>{srcName}</span>
+                        {ago && <span style={{ fontSize: 9, color: t.textGhost }}>· {ago}</span>}
+                        {item.categories && (
+                          <span style={{ fontSize: 8, color: t.textGhost, marginLeft: 'auto' }}>{item.categories.split('|').slice(0, 3).join(' · ')}</span>
+                        )}
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <style>{`
+          @keyframes radarFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          @keyframes radarBarIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+          @keyframes spin { to { transform: rotate(360deg); } }
           @media (max-width: 980px) {
-            .ms2-wrap { padding: 12px 10px 22px !important; }
+            .ms2-wrap { padding: 64px 10px 22px !important; }
             .ms2-top { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
             .ms2-grid { grid-template-columns: 1fr !important; }
             .ms2-grid-3 { grid-template-columns: 1fr !important; }
@@ -5385,6 +6085,153 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   );
 }
 
+
+// ═══════════════════════════════════════════════════
+// SETTINGS VIEW — Full-page, consistent with Docs/Radar
+// ═══════════════════════════════════════════════════
+function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear }) {
+  const [confirm, setConfirm] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  useMenuDismiss(menuOpen, setMenuOpen, menuRef);
+
+  const dashMods = [
+    { key: 'directive',    label: 'Daily Directive',        desc: 'Top-priority action each session' },
+    { key: 'netWorth',     label: 'Net Worth',              desc: 'Balance sheet + history chart' },
+    { key: 'debt',         label: 'Debt Destruction',       desc: 'APR-ranked avalanche payoff plan' },
+    { key: 'planner',      label: 'Bills & Payday Planner', desc: 'Upcoming bills and pay schedule' },
+    { key: 'eFund',        label: 'Emergency Fund',         desc: '4-phase e-fund build tracker' },
+    { key: 'budget',       label: 'Budget Status',          desc: 'Spending by category with enforcement' },
+    { key: 'transactions', label: 'Transactions',           desc: 'Parsed statement transaction history' },
+    { key: 'protection',   label: 'Protection Layer',       desc: 'Life insurance and funeral buffer' },
+  ];
+  const radarMods = [
+    { key: 'macroBanner',  label: 'Price Banner',           desc: 'Scrolling live prices strip' },
+    { key: 'macro',        label: 'Macro Signals',          desc: 'BTC halving cycle and market signals' },
+    { key: 'market',       label: 'Market Intelligence',    desc: 'FRED data: WALCL, TGA, RRP' },
+    { key: 'portfolio',    label: 'Portfolio',              desc: 'Your positions shown on Radar page' },
+  ];
+
+  const payFrequency = String(settings?.payFrequency || 'WEEKLY').toUpperCase();
+
+  return (
+    <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>
+      {/* Fixed header */}
+      <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <Shield size={14} style={{ color: t.accent }} />
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FORTIFYOS</span>
+          <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+        </div>
+        <span style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
+        <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+          <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isDark ? <Sun size={13} /> : <Moon size={13} />}
+          </button>
+          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
+            {menuOpen ? <X size={12} /> : <Menu size={12} />}
+          </button>
+          {menuOpen && (
+            <div style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+            </div>
+          )}
+        </div>
+      </header>
+      <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
+
+      {/* Page content */}
+      <main style={{ maxWidth: 680, margin: '0 auto', padding: '72px 16px 60px' }}>
+
+        {/* ── THEME ── */}
+        <section style={{ marginBottom: 32 }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Theme</div>
+          <div onClick={onToggleTheme} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: t.surface, border: `1px solid ${t.borderDim}`, cursor: 'pointer' }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
+            onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
+            <span style={{ fontSize: 12, color: t.textPrimary }}>{isDark ? 'Noir (Dark)' : 'Tactical (Light)'}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: t.accent }}>
+              {isDark ? <Moon size={14} /> : <Sun size={14} />}
+              <span style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase' }}>Click to toggle</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ── DASHBOARD MODULES ── */}
+        {(() => {
+          const renderModList = (modList) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {modList.map(m => {
+                const on = (settings?.visibleModules || []).includes(m.key);
+                return (
+                  <div key={m.key} onClick={() => onToggle(m.key)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: t.surface, border: `1px solid ${on ? t.borderDim : t.elevated}`, cursor: 'pointer', opacity: on ? 1 : 0.55, transition: 'all 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = on ? t.borderDim : t.elevated}>
+                    <div>
+                      <div style={{ fontSize: 11, color: on ? t.textPrimary : t.textDim, fontWeight: on ? 600 : 400 }}>{m.label}</div>
+                      <div style={{ fontSize: 9, color: t.textGhost, marginTop: 2 }}>{m.desc}</div>
+                    </div>
+                    <div style={{ width: 32, height: 16, borderRadius: 8, background: on ? t.accentMuted : t.elevated, position: 'relative', flexShrink: 0, transition: 'background 0.2s', border: `1px solid ${on ? t.accent + '60' : t.borderDim}` }}>
+                      <div style={{ width: 12, height: 12, borderRadius: '50%', position: 'absolute', top: 1, left: on ? 17 : 1, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+          return (
+            <>
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Dashboard Modules</div>
+                <div style={{ fontSize: 9, color: t.textGhost, marginBottom: 12 }}>Personal finance sections on your Dashboard</div>
+                {renderModList(dashMods)}
+              </section>
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Radar Modules</div>
+                <div style={{ fontSize: 9, color: t.textGhost, marginBottom: 12 }}>Sections visible on the Pre-Market Radar page</div>
+                {renderModList(radarMods)}
+              </section>
+            </>
+          );
+        })()}
+
+        {/* ── PAY SCHEDULE ── */}
+        <section style={{ marginBottom: 32 }}>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pay Schedule</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
+            {['WEEKLY', 'BIWEEKLY'].map(opt => {
+              const isActive = payFrequency === opt;
+              return (
+                <button key={opt} onClick={() => onSetPayFrequency?.(opt)} style={{ padding: '10px', background: isActive ? t.accentMuted : t.surface, border: `1px solid ${isActive ? t.accent : t.borderDim}`, color: isActive ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {opt === 'BIWEEKLY' ? 'Bi-Weekly' : 'Weekly'}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ fontSize: 9, color: t.textGhost }}>Applies to payday timeline and planner calculations.</div>
+        </section>
+
+        {/* ── DATA ── */}
+        <section>
+          <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Data</div>
+          <button onClick={onExport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
+            onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
+            <Download size={12} /> Export All Snapshots
+          </button>
+          <div style={{ fontSize: 9, color: t.textGhost, marginBottom: 16 }}>Downloads all snapshots and settings as a JSON backup file.</div>
+          <div style={{ border: `1px solid ${t.danger}30`, padding: '16px', background: t.danger + '08' }}>
+            <div style={{ fontSize: 9, color: t.danger, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>⚠ Danger Zone</div>
+            <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear all data' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', width: '100%', outline: 'none', marginBottom: 8, boxSizing: 'border-box' }} />
+            <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: '10px', background: confirm === 'CONFIRM' ? t.danger + '20' : t.elevated, border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', textTransform: 'uppercase' }}>
+              <Trash2 size={12} /> Clear All History
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
 
 function FortifyOSApp() {
   const [view, setView] = useState('loading');
@@ -5683,8 +6530,9 @@ function FortifyOSApp() {
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} />}
+      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} />}
     </div>
   );
 }
