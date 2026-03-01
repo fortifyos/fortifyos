@@ -5125,21 +5125,30 @@ function DailyLawHero({ t }) {
 function DirectiveMod({ visible, latest, t }) {
   const now = new Date();
 
-  // Data-aware context
+  // Stage + meta
   const stage = calcStage(latest || {});
   const meta = STAGE_META[stage] || STAGE_META[0];
+  const stageColor = t[meta.color] || t.accent;
+  const isDefense = stage <= 2;
+
+  // Metrics (formerly StatusStrip)
+  const velocity = calcVelocity(latest || {});
+  const monthlyBurn = monthlySpendBaseline(latest);
+  const dailyBurn = monthlyBurn / 30;
+  const savingsRate = calcSavingsRate(latest || {});
+  const days = runwayDaysFromLatest(latest);
+  const velColor = velocity >= 0.25 ? t.accent : velocity >= 0.10 ? t.warn : t.danger;
+  const srColor = savingsRate >= 20 ? t.accent : savingsRate >= 10 ? t.warn : savingsRate > 0 ? t.warn : t.danger;
+
+  // Interest drain + alerts
   const di = dailyInterest(latest?.debts);
   const cats = latest?.budget?.categories || [];
   const income = latest?.budget?.income || latest?._meta?.income || 0;
-  const totalSpent = totalBudgetSpent(latest);
   const blownCats = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 1);
-  const warnCats = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 0.75 && (c.actual / c.budgeted) < 1);
-  const velocity = calcVelocity(latest || {});
-  const days = runwayDaysFromLatest(latest);
-  const checking = latest?.netWorth?.assets?.checking || 0;
+  const warnCats  = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 0.75 && (c.actual / c.budgeted) < 1);
   const action = nextAction(latest);
 
-  // Bills due within 48hrs (from debts with dueDate if present)
+  // Bills due within 48 hrs
   const debts = latest?.debts || [];
   const soon = debts.filter(d => {
     if (!d.dueDate) return false;
@@ -5148,51 +5157,73 @@ function DirectiveMod({ visible, latest, t }) {
     return diff >= 0 && diff <= 48;
   });
 
-  const hasFinancialData = income > 0 || di > 0 || checking > 0;
-
   return (<Card title="CFO Daily Pulse" visible={visible} delay={20} t={t}>
-    {/* ═══ CFO SNAPSHOT ═══ */}
-    {hasFinancialData && (
-      <div style={{ marginBottom: 12, paddingBottom: 10, borderBottom: `1px solid ${t.borderDim}` }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-          <Shield size={12} style={{ color: t[meta.color] || t.accent }} />
-          <span style={{ fontSize: 9, fontWeight: 700, color: t[meta.color] || t.accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            STAGE {stage}/7 — {meta.mode} MODE
-          </span>
+
+    {/* ═══ 4-METRIC ROW ═══ */}
+    <div className="status-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, marginBottom: 2 }}>
+      <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Velocity</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
+        <div style={{ fontSize: 8, color: velColor, textTransform: 'uppercase' }}>{velocity >= 0.25 ? 'ON TRACK' : velocity >= 0.10 ? 'ALERT' : 'CRISIS'}<span style={{ color: t.textDim }}> / 25% target</span></div>
+      </div>
+      <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Burn</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
+        <div style={{ fontSize: 8, color: dailyBurn > 0 ? t.warn : t.accent, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : 'ZERO BURN'}</div>
+      </div>
+      <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Savings Rate</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{savingsRate >= 20 ? 'HEALTHY' : savingsRate > 0 ? 'LOW' : 'NO DATA'}</div>
+      </div>
+      <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Runway</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 10, fontWeight: 400 }}> days</span></div>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>E-Fund Phase {latest?.eFund?.phase || 1}/4</div>
+      </div>
+    </div>
+
+    {/* ═══ STAGE RAIL ═══ */}
+    <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
+        <span style={{ fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
+          <div style={{ fontSize: 8, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 Defense' : stage === 3 ? '🔓 Liberation' : '📈 Wealth'}</div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 8 }}>
-          {checking > 0 && <div>
-            <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Available</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: t.textPrimary }}>{fmt(checking)}</div>
-          </div>}
-          {di > 0 && <div>
-            <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Leaking</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: t.danger }}>${di.toFixed(2)}<span style={{ fontSize: 9, fontWeight: 400 }}>/day</span></div>
-          </div>}
-          {days > 0 && <div>
-            <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Runway</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 9, fontWeight: 400 }}> days</span></div>
-          </div>}
+        <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
+          {[0,1,2,3,4,5,6,7].map(i => (
+            <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.borderDim, opacity: i <= stage ? 1 : 0.3 }} />
+          ))}
         </div>
-        {/* Bills due soon */}
-        {soon.length > 0 && (
-          <div style={{ fontSize: 9, color: t.warn, marginBottom: 4 }}>
-            ⏰ Bills due &lt;48hrs: {soon.map(d => `${d.name} (${fmt(d.minPayment || d.monthlyPayment || 0)})`).join(', ')}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', flex: 1, minWidth: 0 }}>
+        <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
+        <span style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
+      </div>
+    </div>
+
+    {/* ═══ INTEREST DRAIN + BILLS SOON (inline alert row) ═══ */}
+    {(di > 0 || soon.length > 0) && (
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 12, paddingBottom: 12, borderBottom: `1px solid ${t.borderDim}` }}>
+        {di > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 8, color: t.danger, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.06em' }}>⚡ Leaking</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: t.danger }}>${di.toFixed(2)}/day</span>
+            <span style={{ fontSize: 9, color: t.textGhost }}>in interest</span>
           </div>
         )}
-        {/* Next action */}
-        <div style={{ fontSize: 10, color: t.textSecondary, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Zap size={10} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
-          <span>{action.text}</span>
-        </div>
+        {soon.length > 0 && (
+          <div style={{ fontSize: 9, color: t.warn, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span>⏰</span>
+            <span>Due &lt;48hrs: {soon.map(d => `${d.name} (${fmt(d.minPayment || d.monthlyPayment || 0)})`).join(', ')}</span>
+          </div>
+        )}
       </div>
     )}
 
-    {/* ─── DIVIDER ─── */}
-    <div style={{ borderTop: `1px solid ${t.borderDim}`, margin: '12px 0' }} />
-
-    {/* ═══ 7-STAGE PIPELINE ═══ */}
-    <div style={{ marginBottom: 12 }}>
+    {/* ═══ WEALTH PIPELINE ═══ */}
+    <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
       <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Wealth Pipeline</div>
       <div style={{ display: 'flex', gap: 3 }}>
         {STAGE_META.slice(0, 7).map((s, i) => {
@@ -5202,21 +5233,17 @@ function DirectiveMod({ visible, latest, t }) {
           return (
             <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
               <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.25, transition: 'background 0.3s' }} />
-              <div style={{ fontSize: 7, color: active ? t[s.color] || t.accent : t.textGhost, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.2 }}>
-                {i + 1}
-              </div>
+              <div style={{ fontSize: 7, color: active ? t[s.color] || t.accent : t.textGhost, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.2 }}>{i + 1}</div>
             </div>
           );
         })}
       </div>
-      <div style={{ fontSize: 9, color: t[meta.color] || t.accent, marginTop: 4, fontWeight: 600 }}>
-        Stage {stage}/7 · {meta.name}
-      </div>
+      <div style={{ fontSize: 9, color: stageColor, marginTop: 4, fontWeight: 600 }}>Stage {stage}/7 · {meta.name}</div>
     </div>
 
     {/* ═══ BUDGET ALERTS ═══ */}
     {(blownCats.length > 0 || warnCats.length > 0) && (
-      <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Budget Alerts</div>
         {blownCats.map((c, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10 }}>
@@ -5778,7 +5805,6 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <DailyLawHero t={t} />
       </div>
 
-      <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
 
         {/* Row 1 — CFO Daily Pulse: full width */}
