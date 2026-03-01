@@ -747,11 +747,12 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
   }
 
   const startBalMatch = String(rawText || '').match(/(?:beginning|previous|starting)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
-  const endBalMatch = String(rawText || '').match(/(?:ending|new|available)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  const endBalMatch = String(rawText || '').match(/(?:ending|new|available|statement|closing)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
   let balanceDiff = null;
+  let endBal = null;
   if (startBalMatch && endBalMatch) {
     const startBal = parseAmountLike(startBalMatch[1]);
-    const endBal = parseAmountLike(endBalMatch[1]);
+    endBal = parseAmountLike(endBalMatch[1]);
     const txnDelta = items.reduce((s, t) => s + (Number(t.amount) || 0), 0);
     if (startBal !== null && endBal !== null) {
       const expectedDelta = endBal - startBal;
@@ -760,14 +761,32 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
         warnings.push(`Balance reconciliation variance ${fmt(Math.abs(balanceDiff))}`);
       }
     }
-  } else if (bankKey !== 'generic') {
-    warnings.push('No statement balances detected for reconciliation');
+  } else {
+    // Try standalone ending/available balance pattern even without start balance
+    if (endBalMatch) endBal = parseAmountLike(endBalMatch[1]);
+    if (!endBal) {
+      const standaloneMatch = String(rawText || '').match(/(?:available|current|ledger)\s+balance[:\s]*(-?\$?\d[\d,]*\.\d{2})/i);
+      if (standaloneMatch) endBal = parseAmountLike(standaloneMatch[1]);
+    }
+    if (bankKey !== 'generic' && !endBal) {
+      warnings.push('No statement balances detected for reconciliation');
+    }
   }
 
   return {
     txns: items,
-    summary: { correctedSign, filledYear, balanceDiff, warnings },
+    summary: { correctedSign, filledYear, balanceDiff, endBal, warnings },
   };
+}
+
+// Detect whether a statement is for a credit card, savings, or checking account
+function detectAccountType(rawText = '') {
+  const t = String(rawText || '').toLowerCase();
+  const ccPatterns = /minimum payment due|credit limit|purchase apr|cash advance apr|statement balance|new balance due|payment due date|revolving credit|credit card account|credit account/i;
+  const savingsPatterns = /savings account|high.?yield|money market|hysa|savings deposit/i;
+  if (ccPatterns.test(t)) return 'credit_card';
+  if (savingsPatterns.test(t)) return 'savings';
+  return 'checking';
 }
 
 function txnsToPaymentLogCSV(txns) {
@@ -786,7 +805,7 @@ function txnsToPaymentLogCSV(txns) {
   return header.join(',') + '\n' + rows.join('\n');
 }
 
-function transactionsToSnapshot(txns, bankName) {
+function transactionsToSnapshot(txns, bankName, { endBalance = null, accountType = 'checking' } = {}) {
   // Filter out likely transfers/refunds from income — only count genuine income
   const TRANSFER_PATTERNS = /transfer|xfer|tfr|payment from|zelle.*from|venmo.*from|paypal.*from|refund|reversal|credit adjustment|cashback|reward|rebate|returned|chargeback/i;
   const INCOME_PATTERNS = /payroll|direct dep|salary|wage|income|employer|irs.*refund|tax refund/i;
@@ -830,10 +849,40 @@ function transactionsToSnapshot(txns, bankName) {
       amount: t.amount || 0,
       category: categorize(t.description),
     }));
+  // Build netWorth from ending balance if available
+  const nwAssets = { checking: 0, savings: 0, eFund: 0, other: 0 };
+  const nwLiabilities = {};
+  const stmtDebts = [];
+
+  if (endBalance !== null && endBalance > 0) {
+    if (accountType === 'credit_card') {
+      // Credit card ending balance = what you owe → liability
+      const debtName = bankName || 'Credit Card';
+      nwLiabilities[debtName] = endBalance;
+      stmtDebts.push({
+        name: debtName,
+        balance: endBalance,
+        apr: 0,
+        minPayment: 0,
+        type: 'REVOLVING',
+        dueDate: '',
+        _fromStatement: true,
+      });
+    } else if (accountType === 'savings') {
+      nwAssets.savings = endBalance;
+    } else {
+      // checking (default)
+      nwAssets.checking = endBalance;
+    }
+  }
+
+  const nwTotal = (nwAssets.checking + nwAssets.savings + nwAssets.eFund + nwAssets.other)
+    - Object.values(nwLiabilities).reduce((s, v) => s + v, 0);
+
   return {
     date: dates.length ? sanitizeDate(dates[dates.length - 1]) : new Date().toISOString().slice(0, 10),
-    netWorth: { assets: { checking: 0, savings: 0, eFund: 0, other: 0 }, liabilities: {}, total: 0 },
-    debts: [],
+    netWorth: { assets: nwAssets, liabilities: nwLiabilities, total: nwTotal },
+    debts: stmtDebts,
     eFund: { balance: 0, monthlyExpenses: Math.round(totalExpense), phase: 1 },
     budget: { income: Math.round(income), categories: budgetCats },
     macro: { netLiquidity: 0, liquidityTrend: 'NEUTRAL', btcPrice: 0, wyckoffPhase: 'Accumulation', fedWatchCut: 0, nextFomc: '', yieldCurve10Y2Y: 0, yieldTrend: 'flat', triggersActive: 0, activeTriggers: [] },
@@ -841,7 +890,7 @@ function transactionsToSnapshot(txns, bankName) {
     portfolio: { equities: [], options: [], crypto: [] },
     bills: [],
     payroll: { frequency: 'WEEKLY', weekday: 2 },
-    _meta: { source: bankName, transactions: txns.length, income: Math.round(income), totalExpense: Math.round(totalExpense), uncategorized: Math.round(cats['Uncategorized'] || 0), excludedTransfers: Math.round(excludedIncome) },
+    _meta: { source: bankName, transactions: txns.length, income: Math.round(income), totalExpense: Math.round(totalExpense), uncategorized: Math.round(cats['Uncategorized'] || 0), excludedTransfers: Math.round(excludedIncome), endBalance, accountType },
     _recentTxns,
   };
 }
@@ -2623,8 +2672,15 @@ const handleStatementFiles = async (files, mode = 'replace') => {
       reconAgg.correctedSign += reconciled.summary.correctedSign || 0;
       reconAgg.filledYear += reconciled.summary.filledYear || 0;
       if (typeof reconciled.summary.balanceDiff === 'number') reconAgg.balanceDiff = reconciled.summary.balanceDiff;
+      // Carry forward the most recent ending balance found
+      if (typeof reconciled.summary.endBal === 'number' && reconciled.summary.endBal > 0) {
+        reconAgg.endBal = reconciled.summary.endBal;
+      }
       reconAgg.warnings.push(...(reconciled.summary.warnings || []));
     }
+
+    // Detect account type from full merged raw text
+    const accountType = detectAccountType(mergedRaw);
 
     const dedup = [];
     const seen = new Set();
@@ -2655,7 +2711,14 @@ const handleStatementFiles = async (files, mode = 'replace') => {
       if (list.length > 1) log(`MERGED ${list.length} FILES INTO SINGLE MONTH VIEW`);
     }
 
-    const snap = transactionsToSnapshot(txns, stmtBankName);
+    const endBalance = reconAgg.endBal ?? null;
+    if (endBalance !== null) {
+      log(`BALANCE DETECTED: ${fmt(endBalance)} (${accountType.toUpperCase().replace('_', ' ')})`);
+    } else {
+      log('BALANCE: not detected — NW assets will remain at prior values');
+    }
+
+    const snap = transactionsToSnapshot(txns, stmtBankName, { endBalance, accountType });
     setParsedPreview(snap);
     const csv = txnsToPaymentLogCSV(txns);
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
