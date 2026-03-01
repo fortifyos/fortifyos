@@ -4683,156 +4683,225 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
 
 // ═══════════════════════════════════════════════════
 // DAILY DIRECTIVE ENGINE
-// Procedural 365-day cycle: monthly theme × pillar rotation
+// ═══════════════════════════════════════════════════
+// THE SOVEREIGNTY BLUEPRINT — Daily Law System
+// Source: The Sovereignty Blueprint (From Ground Zero
+// to Generational Wealth). 12 monthly pillars, 8 laws
+// each. Rotates by day of month.
 // ═══════════════════════════════════════════════════
 const MONTHLY_THEMES = [
-  { month: 'JAN', theme: 'Foundation & Audit', objective: 'Establish clean-slate baseline for all assets' },
-  { month: 'FEB', theme: 'Apprenticeship', objective: 'Skill acquisition and technical depth' },
-  { month: 'MAR', theme: 'Operational Hardening', objective: 'Eliminate vulnerabilities, exit tactical hell' },
-  { month: 'APR', theme: 'Social Engineering', objective: 'Defend against human-centric probes and deception' },
-  { month: 'MAY', theme: 'Adversary Emulation', objective: 'Think like the threat to find system gaps' },
-  { month: 'JUN', theme: 'Strategic Indirection', objective: 'Financial privacy and data footprint reduction' },
-  { month: 'JUL', theme: 'Sovereign Resilience', objective: 'Physical security and family protection' },
-  { month: 'AUG', theme: 'Master Persuasion', objective: 'Negotiate debt terms, rates, and agreements' },
-  { month: 'SEP', theme: 'Grand Strategy', objective: 'Shift from reactive survival to long-term dominance' },
-  { month: 'OCT', theme: 'The Dark Side', objective: 'Shadow accounts and hidden financial leaks' },
-  { month: 'NOV', theme: 'Rational Discipline', objective: 'Remove emotion from defensive execution' },
-  { month: 'DEC', theme: 'Legacy & Sublime', objective: 'Estate planning and multi-generational security' },
+  { month: 'JAN', theme: 'Zero-Based Sovereignty',     objective: 'Assign every dollar a job before the month begins' },
+  { month: 'FEB', theme: 'The Avalanche Protocol',     objective: 'Eliminate debt systematically — highest rate first' },
+  { month: 'MAR', theme: 'Fortress of Cash',           objective: 'Build liquidity architecture that buys optionality' },
+  { month: 'APR', theme: 'The Defensive Moat',         objective: 'Protect what you have built — insurance is infrastructure' },
+  { month: 'MAY', theme: 'Asset Architecture',         objective: 'Core 80%, satellite 20% — discipline before speculation' },
+  { month: 'JUN', theme: 'Real Estate: Cash Flow Lens',objective: 'Cash flow is the metric of sovereignty, not appreciation' },
+  { month: 'JUL', theme: 'Tax: The Hidden Returns',    objective: 'A dollar saved from tax compounds identically to a dollar earned' },
+  { month: 'AUG', theme: 'Income Velocity',            objective: 'Savings rate is the throttle — maximize it without mercy' },
+  { month: 'SEP', theme: 'Retirement Architecture',    objective: 'Define your Freedom Number and engineer the path to it' },
+  { month: 'OCT', theme: 'Dynasty Design',             objective: 'Wealth not transferred is wealth not built' },
+  { month: 'NOV', theme: 'The Discipline of Wealth',   objective: 'Wealth is not a destination. It is a discipline.' },
+  { month: 'DEC', theme: 'The Annual Audit',           objective: 'What you measure in December determines what you achieve in January' },
 ];
 
-const PILLARS = ['Cybersecurity', 'Finance', 'Infrastructure', 'Strategic'];
+const PILLARS = ['Foundation', 'The Moat', 'The Engine', 'The Summit'];
 
 const DIRECTIVES = {
   JAN: [
-    { pillar: 'Cybersecurity', title: 'The Law of the Clean Root', tactical: 'Every year is a fresh boot. Audit primary storage for sensitive files needing encryption. Wipe temp caches.' },
-    { pillar: 'Finance', title: 'The Law of the Baseline', tactical: 'You cannot defend what you haven\'t measured. Verify every asset balance against raw bank records today.' },
-    { pillar: 'Infrastructure', title: 'The Law of Inventory', tactical: 'An untracked asset is an undefended asset. Update your net worth snapshot with every account you own.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Kill Chain', tactical: 'Review your password manager. Any credential older than 12 months is a risk surface. Rotate the top 5.' },
-    { pillar: 'Finance', title: 'The Law of the First Dollar', tactical: 'Allocate every dollar of January income before it arrives. Unassigned cash gets absorbed by entropy.' },
-    { pillar: 'Strategic', title: 'The Law of the Annual Target', tactical: 'Set one financial number to hit by Dec 31. Write it down. Pin it where you\'ll see it daily.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Backup', tactical: 'Verify your critical data has at least two backup locations. If a drive dies today, what do you lose?' },
-    { pillar: 'Finance', title: 'The Law of the Hidden Tax', tactical: 'Review every subscription. Calculate annual cost, not monthly. Kill anything under 3 uses/month.' },
+    { pillar: 'Foundation', title: 'The Law of the Clean Slate', tactical: 'January is the most powerful financial month. What you establish now sets the trajectory for the year. Run the full audit: income, expenses, every account balance. The system starts with truth.' },
+    { pillar: 'Foundation', title: 'The Law of the First Dollar', tactical: 'Pay yourself first. Move your savings target before discretionary spending reaches your hands. Automation is not laziness — it is the discipline that survives willpower failures.' },
+    { pillar: 'Foundation', title: 'The Law of 50-30-20', tactical: 'Needs first. Goals second. Lifestyle last. This sequence is the architecture of control. Reverse it and you are funding someone else\'s freedom with your own.' },
+    { pillar: 'Foundation', title: 'The Law of the Hidden Tax', tactical: 'Total every subscription — annually, not monthly. The sum will surface $1,000+ you did not consciously choose to spend. Every ghost charge is a vote against your freedom.' },
+    { pillar: 'Foundation', title: 'The Law of the Annual Target', tactical: 'Set one financial number to hit by December 31st. A net worth floor. A debt ceiling. A savings milestone. One number. Written. Posted. Defended.' },
+    { pillar: 'Foundation', title: 'The Law of the Budget Slash', tactical: 'When velocity drops below 20%, the only response is compression. Audit discretionary. Cut without negotiation. Discipline is not a feeling — it is a protocol.' },
+    { pillar: 'Foundation', title: 'The Law of Inventory', tactical: 'An untracked asset is an unmanaged asset. Update your net worth snapshot with every account you own. What you cannot see, you cannot optimize.' },
+    { pillar: 'Foundation', title: 'The Law of the Baseline', tactical: 'You cannot improve what you have not measured. Verify every balance against raw bank records. The dashboard reflects reality only as accurately as your inputs.' },
   ],
   FEB: [
-    { pillar: 'Cybersecurity', title: 'The Law of Zero Trust', tactical: 'Never assume a connection is safe because it\'s familiar. Re-verify MFA on all financial accounts.' },
-    { pillar: 'Finance', title: 'The Law of the Daily Burn', tactical: 'High interest is a predator that never sleeps. Audit your BNPL countdown — when is your next Cash Flow Win?' },
-    { pillar: 'Infrastructure', title: 'The Law of Redundancy', tactical: 'A single point of failure in power or connectivity is a system risk. Verify backup power status.' },
-    { pillar: 'Cybersecurity', title: 'The Law of Hidden Assets', tactical: 'Forgotten accounts are the easiest entry points. Search your password manager for accounts inactive >180 days.' },
-    { pillar: 'Finance', title: 'The Law of the Quiet Exit', tactical: 'In B-Years, defend your wins. Review insurance policies to ensure valuables are correctly appraised.' },
-    { pillar: 'Cybersecurity', title: 'The Law of Social Defense', tactical: 'Phishing is adaptive. Today, treat every "Urgent" email as a hostile probe. Verify senders through secondary channels.' },
-    { pillar: 'Infrastructure', title: 'The Law of Data Hygiene', tactical: 'Physical clutter leads to digital entropy. Clean your workspace and verify thermal stability on primary devices.' },
-    { pillar: 'Strategic', title: 'The Law of the Review', tactical: 'Look back at this month\'s syncs. What was the biggest uncomfortable truth the dashboard surfaced? Hard-target it next month.' },
+    { pillar: 'Foundation', title: 'The Law of the Compounding Enemy', tactical: 'Interest does not negotiate. It compounds in silence while you sleep. Every minimum payment is a subscription to financial servitude — engineered to keep you paying, not to free you.' },
+    { pillar: 'Foundation', title: 'The Law of Velocity', tactical: 'Adding $100/month to your avalanche target moves freedom 4 years closer. The gap between minimum payments and aggressive payoff is measured in years and thousands of dollars surrendered.' },
+    { pillar: 'Foundation', title: 'The Law of the Target', tactical: 'Identify your highest APR. Direct every freed dollar there first. Mathematics is merciless and does not reward sentiment. The avalanche method is optimization, not choice.' },
+    { pillar: 'Foundation', title: 'The Law of the Rate Call', tactical: 'Call your creditor. State your payment history. Request a lower APR. The worst outcome is no. The best outcome compounds for years. This call takes 10 minutes.' },
+    { pillar: 'Foundation', title: 'The Law of the Minimum', tactical: 'A minimum payment was designed by your creditor, not for you. It was engineered to maximize interest extraction. Pay it and you are funding their quarter, not your freedom.' },
+    { pillar: 'Foundation', title: 'The Law of Principal', tactical: 'Until the interest portion costs less than your payment, you are renting the privilege of your own balance. Every dollar above the minimum is a dollar reclaiming your future cash flow.' },
+    { pillar: 'Foundation', title: 'The Law of Liberation', tactical: 'Every debt account closed is a cash flow event. Money that was captive becomes capital. The moment a balance hits zero, redirect that payment immediately to the next target.' },
+    { pillar: 'Foundation', title: 'The Law of the Balance Transfer', tactical: 'A 0% APR balance transfer does not eliminate debt — it buys time. Calculate the savings against the transfer fee. Used with discipline, it is a legitimate weapon in the avalanche arsenal.' },
   ],
   MAR: [
-    { pillar: 'Cybersecurity', title: 'The Law of the Hardened Shell', tactical: 'A system is only as strong as its configuration. Audit local firewall rules on your primary workstation.' },
-    { pillar: 'Finance', title: 'The Law of the Invisible Leak', tactical: 'Subscriptions are the background noise of financial entropy. Identify one recurring service to terminate today.' },
-    { pillar: 'Infrastructure', title: 'The Law of Physical Access', tactical: 'Digital security fails if physical security is bypassed. Verify storage devices are in a secure location.' },
-    { pillar: 'Cybersecurity', title: 'The Law of Least Privilege', tactical: 'Users should only have the access they need. Re-audit admin permissions across your workflows.' },
-    { pillar: 'Finance', title: 'The Law of the Acceleration', tactical: 'Run the debt payoff calculator. What if you added $50/month to your avalanche target? When does the payoff date move?' },
-    { pillar: 'Strategic', title: 'The Law of the Hardened Perimeter', tactical: 'Review your emergency fund runway. If income stopped today, how many days until system failure?' },
-    { pillar: 'Infrastructure', title: 'The Law of the Update', tactical: 'Unpatched systems are open doors. Check for OS and firmware updates on all devices.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Audit Trail', tactical: 'Review recent bank transactions for charges you don\'t recognize. Dispute anything suspicious within 24hrs.' },
+    { pillar: 'Foundation', title: 'The Law of Liquidity', tactical: 'Liquidity is not laziness. It is optionality. Cash buys choices that leverage cannot. The person with 6 months of reserves negotiates from strength. The person without negotiates from fear.' },
+    { pillar: 'Foundation', title: 'The Law of the Three Tiers', tactical: 'Tier 1 is immediate access — checking and physical cash. Tier 2 is high-yield savings — 30-day access. Tier 3 is CDs and bonds — 90-day access. Layer your fortress by access time, not by amount alone.' },
+    { pillar: 'Foundation', title: 'The Law of the Fortress', tactical: 'A fortress cannot be built under siege. Build your cash reserve before the emergency arrives, not during it. The time to dig a well is not when you are thirsty.' },
+    { pillar: 'Foundation', title: 'The Law of Runway', tactical: 'Six months of essential burn rate is not paranoia — it is the minimum viable moat between you and a decision made under duress. Calculate your exact runway in days. Know the number.' },
+    { pillar: 'Foundation', title: 'The Law of the Opportunity Fund', tactical: 'The Sovereignty Blueprint names cash set aside for asymmetric investment bets the Opportunity Fund. It is not idle money. It is loaded capital waiting for the right target.' },
+    { pillar: 'Foundation', title: 'The Law of the Rate', tactical: 'Your emergency fund should be earning. A high-yield savings account at current rates is free alpha. Idle cash in a checking account earning 0.01% is a silent, permanent loss.' },
+    { pillar: 'Foundation', title: 'The Law of the Refill', tactical: 'Once the fortress fund is deployed, refilling it becomes the first financial priority — ahead of investing, ahead of lifestyle. The moat must be restored before the next siege.' },
+    { pillar: 'Foundation', title: 'The Law of the Siege', tactical: 'When income stops, the fortress buys time. Time is the resource that converts crisis into strategy. Every month of reserves is a month in which you can think, not just react.' },
   ],
   APR: [
-    { pillar: 'Cybersecurity', title: 'The Law of Selective Disclosure', tactical: 'Information is ammunition. Audit social media for mentions of financial details, workplace, or device info.' },
-    { pillar: 'Finance', title: 'The Law of the Urgent Probe', tactical: 'Scammers use artificial urgency. If a "bank" calls with an emergency, hang up and call the number on your physical card.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Decoy', tactical: 'Misdirection protects the core. Use a secondary email for all non-critical signups. Protect your primary.' },
-    { pillar: 'Cybersecurity', title: 'The Law of Verification', tactical: 'Never click a link from a text message claiming to be your bank. Navigate directly to the site instead.' },
-    { pillar: 'Finance', title: 'The Law of Tax Efficiency', tactical: 'Review withholding. A large refund means you gave the government an interest-free loan. Adjust W-4 if needed.' },
-    { pillar: 'Strategic', title: 'The Law of the Pretexting Shield', tactical: 'Practice saying no. When someone asks for personal info, default to "I\'ll need to verify that" before sharing anything.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Isolation Zone', tactical: 'Guest WiFi should be separate from your primary network. Verify network segmentation today.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Paper Trail', tactical: 'Shred any physical mail containing account numbers. Dumpster diving is still one of the top attack vectors.' },
+    { pillar: 'The Moat', title: 'The Law of the Unprotected Asset', tactical: 'You cannot accumulate what you cannot protect. Insurance is not an expense — it is the infrastructure that keeps the accumulation engine running after a catastrophic event.' },
+    { pillar: 'The Moat', title: 'The Law of Income Replacement', tactical: '10x annual income in life coverage is the institutional minimum. Below that threshold, you are not insured — you are underinsured, which is a category of uninsured that feels safe but is not.' },
+    { pillar: 'The Moat', title: 'The Law of the Coverage Gap', tactical: 'Audit your coverage polygon: life, disability, property, health, liability. One unexamined gap can terminate decades of wealth accumulation in a single event. The audit protocol runs annually.' },
+    { pillar: 'The Moat', title: 'The Law of Term vs. Whole', tactical: 'Buy term. Invest the difference. Whole life is a financial product designed for the seller\'s margin, not your wealth. The institutional framework is clear: pure protection through term, pure growth through index funds.' },
+    { pillar: 'The Moat', title: 'The Law of the Umbrella', tactical: 'An umbrella policy covers what home and auto cannot. At $1M coverage for $200-400 per year, it is the highest leverage protection product available. Above your net worth threshold, it is mandatory.' },
+    { pillar: 'The Moat', title: 'The Law of Disability', tactical: 'You are three times more likely to become disabled than to die before retirement. Is your income insured? Short-term disability. Long-term disability. Without it, one accident dissolves the plan.' },
+    { pillar: 'The Moat', title: 'The Law of the Annual Audit Protocol', tactical: 'Coverage bought 5 years ago may not match the assets you have built since. The audit protocol runs annually: review every policy, verify every beneficiary, confirm every coverage limit.' },
+    { pillar: 'The Moat', title: 'The Law of the Dependent', tactical: 'Every dependent creates a coverage obligation. The calculation is specific: what do they need if you disappear today, for how many years, at what monthly cost? Run the number. Then buy the coverage.' },
   ],
   MAY: [
-    { pillar: 'Cybersecurity', title: 'The Law of the Red Team', tactical: 'Think like an attacker. If you wanted to drain your checking account, what\'s the easiest path? Now block it.' },
-    { pillar: 'Finance', title: 'The Law of the Stress Test', tactical: 'Model a 30% income drop. Which expenses survive the cut? Which debts become dangerous? Know before it happens.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Weak Link', tactical: 'Your security is your weakest device. Find the oldest/least-updated device on your network and patch or retire it.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Honeypot', tactical: 'Set up transaction alerts on every account. If a charge you didn\'t make appears, you want to know in minutes, not days.' },
-    { pillar: 'Finance', title: 'The Law of the Counterattack', tactical: 'Call your highest APR creditor. Ask for a rate reduction. The worst they say is no. The best saves you hundreds.' },
-    { pillar: 'Strategic', title: 'The Law of the Threat Model', tactical: 'List your top 3 financial fears. For each, write the specific trigger and the specific defense. Fear without a plan is paralysis.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Recovery', tactical: 'Test your backup. Actually restore a file from it. A backup you\'ve never tested is a backup that might not work.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Expired Key', tactical: 'Check for expired or soon-to-expire cards and licenses. Expired credentials cause cascading payment failures.' },
+    { pillar: 'The Engine', title: 'The Law of the Core', tactical: '80% of your portfolio should be boring. Total market index funds. International exposure. Bonds. Boring built every institutional fortune that ever existed. Excitement is a fee, not a feature.' },
+    { pillar: 'The Engine', title: 'The Law of Time in the Market', tactical: 'The market rewards patience without exception. Time in the market, not timing the market. The investor who misses the 10 best days in a decade loses most of the decade\'s return.' },
+    { pillar: 'The Engine', title: 'The Law of the Satellite', tactical: 'Speculation belongs in the 20%. Never the 80%. The satellite allocation is where asymmetric bets live — sector ETFs, individual stocks, crypto. The boundary between core and satellite must be enforced.' },
+    { pillar: 'The Engine', title: 'The Law of Drift', tactical: 'Rebalance when allocation drifts 5%, not on a calendar. The market decides timing. You decide structure. A portfolio that is never rebalanced is a portfolio that slowly becomes something you never chose.' },
+    { pillar: 'The Engine', title: 'The Law of the Low-Cost Vehicle', tactical: 'Every basis point of management fees is permanent, compounding drag on your final number. The institutional vehicle is the low-cost index ETF. The fee is the only guaranteed return in investing.' },
+    { pillar: 'The Engine', title: 'The Law of Global Exposure', tactical: 'Home-country bias is a hidden concentration risk masquerading as patriotism. The Sovereignty Blueprint requires international allocation. Diversification is engineering, not caution.' },
+    { pillar: 'The Engine', title: 'The Law of Compounding', tactical: 'At 8% annual return, money doubles every 9 years. The first decade of investing is the most structurally important. Starting at 25 instead of 35 does not add 10 years — it adds entire doublings.' },
+    { pillar: 'The Engine', title: 'The Law of the Noise', tactical: 'Daily market fluctuations are noise. Your allocation is the signal. The investor who watches prices daily is training themselves to make decisions on noise. Never confuse the two.' },
   ],
   JUN: [
-    { pillar: 'Finance', title: 'The Law of the Footprint', tactical: 'Review who has your SSN on file. Minimize it to only entities that legally require it.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Ghost Profile', tactical: 'Search your name + address online. Remove yourself from data broker sites. Reduce your digital surface area.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Air Gap', tactical: 'Your most sensitive documents should never touch cloud storage. Verify your local-only privacy wall is intact.' },
-    { pillar: 'Finance', title: 'The Law of the Phantom Account', tactical: 'Open a secondary checking account for online purchases only. Limit its balance to $200. If it gets compromised, damage is capped.' },
-    { pillar: 'Cybersecurity', title: 'The Law of Obfuscation', tactical: 'Use unique usernames across financial sites. Shared usernames are a correlation attack waiting to happen.' },
-    { pillar: 'Strategic', title: 'The Law of the Vanishing Point', tactical: 'Opt out of prescreened credit offers. Call 1-888-5-OPT-OUT. Every offer is a vector for identity theft.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Encrypted Vault', tactical: 'Verify that your tax documents, insurance policies, and financial records are stored in an encrypted container.' },
-    { pillar: 'Finance', title: 'The Law of the Credit Freeze', tactical: 'If you\'re not actively applying for credit, freeze your reports at all three bureaus. Thaw only when needed.' },
+    { pillar: 'The Engine', title: 'The Law of the Cap Rate', tactical: 'Cash flow, not appreciation, is the metric of sovereignty in real estate. If the cap rate does not work, no story makes it work. NOI divided by purchase price. Know this number before everything else.' },
+    { pillar: 'The Engine', title: 'The Law of the Deal Analyzer', tactical: 'Three numbers precede every real estate acquisition: cap rate, cash-on-cash return, and break-even month. If you cannot calculate all three before closing, you are not analyzing — you are guessing.' },
+    { pillar: 'The Engine', title: 'The Law of Cash Flow First', tactical: 'Appreciation is a bonus. Cash flow is the objective. Buying for appreciation is speculation. Buying for cash flow is investment. The institutional investor does not speculate with primary capital.' },
+    { pillar: 'The Engine', title: 'The Law of REIT vs. Direct', tactical: 'Direct ownership offers control, tax benefits, and high effort. REITs offer liquidity, diversification, and low effort. Neither is superior. Stage, capital, and bandwidth determine the correct vehicle.' },
+    { pillar: 'The Engine', title: 'The Law of the Management Layer', tactical: 'A rental property without a management plan is a second job with unpredictable hours. Price the labor before you buy. Property management at 8-10% of rent is not overhead — it is the cost of passive income.' },
+    { pillar: 'The Engine', title: 'The Law of Carry Cost', tactical: 'Every month of vacancy is a negative cash flow event with a fixed mortgage. Know your carrying cost before closing. The deal that looks good at 100% occupancy may destroy you at 80%.' },
+    { pillar: 'The Engine', title: 'The Law of Break-Even', tactical: 'Every deal has a break-even month. If you do not know yours, you do not know your risk horizon. Break-even is the month when cumulative cash flow turns positive. Calculate it before you wire the down payment.' },
+    { pillar: 'The Engine', title: 'The Law of the Market Cycle', tactical: 'Real estate rewards patience and punishes leverage at the wrong point in the cycle. The Benner Cycle and the real estate cycle are related. Stage determines strategy. Never buy at peak leverage into a peak market.' },
   ],
   JUL: [
-    { pillar: 'Infrastructure', title: 'The Law of Thermal Stability', tactical: 'Heat degrades hardware. Verify ventilation and ambient temperature in your workspace today.' },
-    { pillar: 'Finance', title: 'The Law of the Safety Net', tactical: 'Review your emergency fund against actual monthly expenses. Has inflation moved the target? Recalculate.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Family Vector', tactical: 'Family devices are your attack surface. Verify parental controls, updates, and passwords on all shared devices.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Vital Buffer', tactical: 'Operator uptime is system uptime. Audit your ergonomics and physical workspace to prevent long-term fatigue.' },
-    { pillar: 'Finance', title: 'The Law of the Mid-Year Audit', tactical: 'Pull up January\'s net worth. Compare to today. Are you on trajectory? If not, what changed and what do you adjust?' },
-    { pillar: 'Strategic', title: 'The Law of the Dependent Shield', tactical: 'Review beneficiary designations on all insurance and accounts. Are they current? One outdated form can derail everything.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Medical Record', tactical: 'Health data is high-value. Verify that medical portals use unique passwords and MFA is enabled.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Power Grid', tactical: 'A surge can destroy equipment and data. Verify UPS batteries and surge protectors are functional.' },
+    { pillar: 'The Engine', title: 'The Law of the Hidden Return', tactical: 'Tax optimization is the highest guaranteed return available. It requires no market risk, no additional capital, and no luck. It requires only knowledge of the rules and the discipline to apply them.' },
+    { pillar: 'The Engine', title: 'The Law of the Bracket', tactical: 'Defer income to manage marginal rates. Every dollar kept out of a higher bracket is pure, riskless alpha. Income timing is a tax lever most people never pull. Institutional investors pull it quarterly.' },
+    { pillar: 'The Engine', title: 'The Law of Asset Location', tactical: 'High-yield assets belong in sheltered accounts. Tax-inefficient assets in tax-free wrappers. Tax-efficient assets in taxable accounts. Asset location is the silent multiplier of lifetime portfolio returns.' },
+    { pillar: 'The Engine', title: 'The Law of the HSA', tactical: 'The Health Savings Account is the only triple-tax weapon in the code: pre-tax contribution, tax-free growth, tax-free withdrawal for qualified expenses. Max it before every other account. No exceptions.' },
+    { pillar: 'The Engine', title: 'The Law of Loss Harvesting', tactical: 'Offset realized gains with strategic losses. The IRS does not penalize for discipline. Tax-loss harvesting is not a trick — it is a tool written into the code for those who read it.' },
+    { pillar: 'The Engine', title: 'The Law of the Roth Conversion Window', tactical: 'A low-income year is a Roth conversion window that most people fail to use. Convert traditional IRA balances at lower bracket rates. Pay tax now at a discount. Grow tax-free forever.' },
+    { pillar: 'The Engine', title: 'The Law of the 401k', tactical: 'Every dollar contributed pre-tax is a dollar that compounds without the government\'s share for decades. Max your 401k contribution before any other investment vehicle. The math is not subtle.' },
+    { pillar: 'The Engine', title: 'The Law of the December 31 Deadline', tactical: 'Tax decisions not executed by midnight on December 31st are one full calendar year late. The window closes without ceremony. The tax code rewards the prepared and ignores the intentions of the unprepared.' },
   ],
   AUG: [
-    { pillar: 'Finance', title: 'The Law of the Opening Move', tactical: 'Call your lowest-balance creditor. Ask for a settlement or payoff discount. Closed accounts free cash flow.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Credential', tactical: 'Your certifications are economic weapons. Review your study velocity. Are you on pace for your target exam date?' },
-    { pillar: 'Finance', title: 'The Law of the Rate Call', tactical: 'Call your credit card company. State your payment history. Request a lower APR. Every percentage point saved compounds.' },
-    { pillar: 'Strategic', title: 'The Law of the Counter-Offer', tactical: 'Never accept the first offer on anything — insurance, salary, interest rate. The initial number is always negotiable.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Service Audit', tactical: 'Review your internet, phone, and insurance plans. Competitors may offer the same service for less. Get quotes.' },
-    { pillar: 'Finance', title: 'The Law of the Harvest', tactical: 'Side income is seed capital. Calculate your total side earnings this month. Apply the 50% profit tax rule.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Written Record', tactical: 'Document every financial negotiation — date, rep name, offer details. If they don\'t honor it, you have evidence.' },
-    { pillar: 'Finance', title: 'The Law of the Balance Transfer', tactical: 'Search for 0% APR balance transfer offers. Moving high-APR debt to 0% buys time. Calculate the savings vs. transfer fee.' },
+    { pillar: 'The Engine', title: 'The Law of the Throttle', tactical: 'Savings rate is the throttle. Income is the engine. A 25% savings rate in any income tier builds freedom. A 5% savings rate on a high income builds nothing but a comfortable waiting room.' },
+    { pillar: 'The Engine', title: 'The Law of Burn Rate', tactical: 'Burn rate is the ceiling on your runway. Audit it without mercy, then compress it. Every dollar removed from monthly expenses permanently extends your freedom horizon and accelerates your Freedom Number.' },
+    { pillar: 'The Engine', title: 'The Law of the Surplus', tactical: 'Income minus expenses equals velocity. If the delta is shrinking, something is leaking. Find it before the monthly close. A declining surplus is not a trend — it is a decision that has not been made yet.' },
+    { pillar: 'The Engine', title: 'The Law of the Side Harvest', tactical: 'Side income is seed capital. The first dollar earned outside your primary income stream is the most strategically important. It proves the model. Apply 50% to debt or investment. Keep 50% as fuel.' },
+    { pillar: 'The Engine', title: 'The Law of the Negotiation', tactical: 'Your salary is a negotiation, not a given. A single 10-minute conversation that yields a $5,000 raise compounds into six figures over a career. The negotiation gap is the largest single income lever available.' },
+    { pillar: 'The Engine', title: 'The Law of the Rate Call', tactical: 'Call every service provider annually. Request better rates. Savings compound identically to earnings. The difference is that savings require only a phone call, while earnings require a year of performance.' },
+    { pillar: 'The Engine', title: 'The Law of the Subscription Audit', tactical: 'Every recurring charge not delivering measurable value is a permanent drag on velocity. Terminate without mercy. The subscription economy is engineered to survive your inattention. Audit it.' },
+    { pillar: 'The Engine', title: 'The Law of the Parallel Income', tactical: 'A single income source is a single point of failure. The Sovereignty Blueprint requires income diversification, not just asset diversification. A second income stream is not a luxury — it is a resilience protocol.' },
   ],
   SEP: [
-    { pillar: 'Strategic', title: 'The Law of the Horizon', tactical: 'Plot your net worth 12 months forward at current trajectory. Is the number acceptable? If not, change the inputs today.' },
-    { pillar: 'Finance', title: 'The Law of the Compounding Dollar', tactical: 'Calculate what $50/month invested at 8% becomes in 10 years. Small consistent deposits build generational wealth.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Exit Plan', tactical: 'If your primary income disappeared tomorrow, what\'s your 90-day plan? Write it down. Review it quarterly.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Toolchain', tactical: 'Audit your financial tools. Are you using the best HYSA rate? The best budgeting method? Optimize the stack.' },
-    { pillar: 'Finance', title: 'The Law of the Phase Gate', tactical: 'Review Benner Cycle position. B-Year means defend, not chase. Are any positions violating defensive posture?' },
-    { pillar: 'Strategic', title: 'The Law of Asymmetric Returns', tactical: 'Identify one skill investment that could 2x your income within 24 months. Certifications, freelance rates, career pivot.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Succession Plan', tactical: 'If you\'re incapacitated, can your family access critical accounts? Document the minimum they\'d need, securely.' },
-    { pillar: 'Finance', title: 'The Law of the Runway Extension', tactical: 'Every dollar in your emergency fund buys one more day of independence. Calculate your exact runway in days.' },
+    { pillar: 'The Summit', title: 'The Law of the Freedom Number', tactical: 'Your Freedom Number is 25 times your annual spending. It is the only long-term financial number that matters. Below it, you are working. Above it, you are choosing. Calculate it. Then engineer the path.' },
+    { pillar: 'The Summit', title: 'The Law of Three Buckets', tactical: 'Taxable. Tax-deferred. Tax-free. All three buckets working in concert is retirement architecture. A single 401k is not a retirement plan — it is a single point of failure in a tax bracket you cannot predict.' },
+    { pillar: 'The Summit', title: 'The Law of Safe Withdrawal', tactical: 'The 3-4% dynamic withdrawal rule is the institutional standard for sustainable retirement income. A portfolio that survives 30 years of distribution is not assumed — it is engineered before you stop working.' },
+    { pillar: 'The Summit', title: 'The Law of Social Security Delay', tactical: 'Delaying Social Security to age 70 is the highest guaranteed return available to most Americans. Every year of delay increases the benefit by 8%. No market investment guarantees that return with that certainty.' },
+    { pillar: 'The Summit', title: 'The Law of the Bridge Account', tactical: 'A taxable bridge account funds the gap between early retirement and age 59½ without penalty. Without it, early retirement forces you into 10% penalty territory. Build the bridge before you need to cross it.' },
+    { pillar: 'The Summit', title: 'The Law of Inflation in Distribution', tactical: 'A retirement plan that ignores inflation is a plan that fails on a long enough timeline. Equities allocation must be maintained in distribution — not as a growth play, but as an inflation hedge.' },
+    { pillar: 'The Summit', title: 'The Law of Compounding Time', tactical: 'Wealth is not linear. It is exponential. A 25-year-old investor has a weapon a 45-year-old cannot purchase at any price: time. The first decade of investing compounds into the majority of the final portfolio value.' },
+    { pillar: 'The Summit', title: 'The Law of the Contribution Ceiling', tactical: 'Max Roth IRA. Max 401k. Max HSA. In that order of long-term tax efficiency at most income levels. These contribution limits are institutional tools available to individuals. Use the full ceiling every year.' },
   ],
   OCT: [
-    { pillar: 'Cybersecurity', title: 'The Law of the Shadow Device', tactical: 'Every IoT device is a portal. Audit your network for invisible devices — printers, cameras, appliances. Isolate them.' },
-    { pillar: 'Finance', title: 'The Law of the Ghost Subscription', tactical: 'Hunt for services you haven\'t used in 90 days. Every ghost subscription is a silent drain on your fortress.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Audit Log', tactical: 'Review your bank\'s login history. Any unrecognized sessions? Any locations that aren\'t yours? Investigate immediately.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Dark Corner', tactical: 'Check for accounts you opened and forgot. Old store cards, fintech apps, crypto exchanges. Each is an attack surface.' },
-    { pillar: 'Finance', title: 'The Law of the Financial Vampire', tactical: 'Small monthly leaks drain the fortress. Total every charge under $15 this month. The sum will surprise you.' },
-    { pillar: 'Strategic', title: 'The Law of the Shadow Budget', tactical: 'Your real budget is your bank statement, not your spreadsheet. Compare planned vs. actual. Close the gap.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Stale Credential', tactical: 'Saved passwords in browsers are shadow credentials. Audit and remove any stored in plain text.' },
-    { pillar: 'Finance', title: 'The Law of the Unclaimed Asset', tactical: 'Search your state\'s unclaimed property database. Money you forgot about might be waiting.' },
+    { pillar: 'The Summit', title: 'The Law of the Transfer', tactical: 'Wealth not transferred is wealth not built. An empire that dies with its builder was never truly an empire — it was a successful career. The architecture of transfer must be designed while the builder is alive.' },
+    { pillar: 'The Summit', title: 'The Law of the Trust', tactical: 'The revocable living trust bypasses probate — public, expensive, and slow. The trust is private, instant, and controllable. It is not a luxury for the wealthy. It is the standard for anyone with assets to protect.' },
+    { pillar: 'The Summit', title: 'The Law of the Letter of Intent', tactical: 'A letter of intent is not a legal document. It is a message to your heirs about your values, your wishes, and the principles behind the wealth. The law governs what you leave. The letter governs how it is remembered.' },
+    { pillar: 'The Summit', title: 'The Law of Beneficiary Alignment', tactical: 'An outdated beneficiary designation overrides a will. Verify every designation on every account, every year. One stale form filed before a divorce or remarriage can redirect an entire estate to the wrong person.' },
+    { pillar: 'The Summit', title: 'The Law of the Digital Estate', tactical: 'Crypto keys, passwords, and digital account access are estate assets. Without documented access, they are permanently inaccessible. Store them in a secured, documented vault accessible to your executor.' },
+    { pillar: 'The Summit', title: 'The Law of Generation-Skipping', tactical: 'A generation-skipping trust passes wealth directly to grandchildren, bypassing one full layer of estate taxation. The structure is legal, institutional, and used by every family that has successfully transferred generational wealth.' },
+    { pillar: 'The Summit', title: 'The Law of the 529', tactical: 'A 529 plan with 18 years of compounding and state tax deductions is the institutional approach to education funding. Open it at birth. Fund it consistently. Superfund it if tax law permits. Education compounds the same way capital does.' },
+    { pillar: 'The Summit', title: 'The Law of the Dynasty', tactical: 'Generational wealth is built once and lost in one generation of financial ignorance. The Sovereignty Blueprint is not just a system for you — it is a system to be taught. Wealth without financial education in the next generation is a countdown.' },
   ],
   NOV: [
-    { pillar: 'Finance', title: 'The Law of the Emotional Override', tactical: 'Black Friday is engineered urgency. Before any purchase over $50, wait 48 hours. If you still want it, buy it.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Cold Read', tactical: 'Review your last 5 financial decisions. Were any driven by fear, greed, or FOMO? Flag the pattern.' },
-    { pillar: 'Strategic', title: 'The Law of the Stoic Ledger', tactical: 'Markets will crash. Income will dip. The system survives because the math was done in advance, not in panic.' },
-    { pillar: 'Finance', title: 'The Law of the Holiday Budget', tactical: 'Set a hard dollar cap for holiday spending before the season starts. Communicate it to family. Defend it.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Year-End Prep', tactical: 'Organize tax documents now, not in April. Create folders for W-2s, 1099s, receipts. Future you will be grateful.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Seasonal Scam', tactical: 'Holiday phishing spikes in November. Shipping notifications, fake deals, charity scams. Verify everything.' },
-    { pillar: 'Finance', title: 'The Law of the Forced Allocation', tactical: 'Before holiday spending begins, move your savings target amount out of checking. Protect it from yourself.' },
-    { pillar: 'Strategic', title: 'The Law of the Annual Review', tactical: 'Start drafting your year-end financial review now. Net worth delta, debt killed, skills gained, income grown.' },
+    { pillar: 'The Summit', title: 'The Law of Discipline', tactical: 'Wealth is not a destination. It is a discipline. Measure what matters. Execute without emotion. The investor who checks the portfolio daily will underperform the investor who checks it quarterly by a predictable margin.' },
+    { pillar: 'The Summit', title: 'The Law of Exponential Growth', tactical: 'Wealth is not linear. It is exponential. The compounding curve is ruthless to those who start late and generous to those who start now. The time to plant this tree was 10 years ago. The second-best time is today.' },
+    { pillar: 'The Summit', title: 'The Law of Sequential Execution', tactical: 'Build from the ground up. Foundation before engine. Engine before summit. The hierarchy of financial needs is sequential, not optional. Skipping stages is how fortunes collapse — built on foundation that was never laid.' },
+    { pillar: 'The Summit', title: 'The Law of the Emotional Override', tactical: 'The market will generate fear and greed in equal measure, by design. The sovereign investor executes the plan regardless of sentiment. Panic selling and euphoric buying are the only two ways to guarantee underperformance.' },
+    { pillar: 'The Summit', title: 'The Law of the Hierarchy', tactical: 'Level 1: Foundation before Level 2: The Moat. The Moat before Level 3: The Engine. The Engine before Level 4: The Accelerator. The Accelerator before Level 5: The Summit. The sequence is the strategy.' },
+    { pillar: 'The Summit', title: 'The Law of the System', tactical: 'A plan remembered is not a plan. A system executed consistently is the only mechanism that generates wealth at scale. The difference between intention and outcome is automation, measurement, and accountability.' },
+    { pillar: 'The Summit', title: 'The Law of Patient Capital', tactical: 'The greatest financial advantage available to any individual is time. Compound interest is the only force that creates wealth without extraordinary risk. It requires only patience — the rarest financial asset.' },
+    { pillar: 'The Summit', title: 'The Law of the Monday Review', tactical: 'What you measure weekly, you can adjust monthly. What you ignore monthly becomes annual regret. The Monday Morning Review from The Sovereignty Blueprint is not a ritual — it is a control loop for your financial system.' },
   ],
   DEC: [
-    { pillar: 'Strategic', title: 'The Law of the Legacy Document', tactical: 'Review or create a will. Even a simple one. Without it, the state decides what happens to your assets.' },
-    { pillar: 'Finance', title: 'The Law of the Tax Harvest', tactical: 'If you have investment losses, consider harvesting them before Dec 31 to offset gains. Consult the math.' },
-    { pillar: 'Cybersecurity', title: 'The Law of the Annual Reset', tactical: 'Change passwords on your top 10 financial accounts. End the year with a clean credential state.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Archive', tactical: 'Back up this year\'s financial records to encrypted local storage. Label it. Store it separately from working files.' },
-    { pillar: 'Finance', title: 'The Law of the Beneficiary', tactical: 'Verify beneficiary designations on all life insurance, retirement accounts, and bank accounts. Update if needed.' },
-    { pillar: 'Strategic', title: 'The Law of the Next Phase', tactical: 'Review the Benner Cycle. What phase are you entering in January? Adjust your posture before the calendar turns.' },
-    { pillar: 'Infrastructure', title: 'The Law of the Clean Slate', tactical: 'Purge unused apps, close idle accounts, delete old files. Enter the new year with minimal attack surface.' },
-    { pillar: 'Finance', title: 'The Law of the Compound Year', tactical: 'Calculate your total debt destroyed, net worth gained, and skills acquired this year. Every dollar mattered.' },
+    { pillar: 'The Summit', title: 'The Law of the Year-End Close', tactical: 'What you measure in December determines what you achieve in January. Close the books with precision. The year-end financial review is not accounting — it is accountability for every decision made since January 1st.' },
+    { pillar: 'The Summit', title: 'The Law of the Net Worth Delta', tactical: 'One number summarizes the year: net worth delta. Is it positive? By how much? Against what trajectory? The single most honest measure of financial progress is whether your number moved in the right direction.' },
+    { pillar: 'The Summit', title: 'The Law of Tax Harvest', tactical: 'December 31st is a hard deadline. Tax decisions not executed by midnight are exactly one full year late. The window closes without warning and without extensions. Execute before the calendar turns.' },
+    { pillar: 'The Summit', title: 'The Law of the Beneficiary Audit', tactical: 'Verify all beneficiary designations before the year ends. One stale designation on a retirement account can override every estate planning document. It takes 10 minutes to verify. It takes decades to recover from not doing it.' },
+    { pillar: 'The Summit', title: 'The Law of the Next Phase', tactical: 'Review your wealth stage. Have you earned a level promotion in the hierarchy of financial needs? The Blueprint is sequential. Claim your next floor deliberately. Enter the new year knowing exactly which level you are executing.' },
+    { pillar: 'The Summit', title: 'The Law of the Compound Year', tactical: 'Total the debt you destroyed. Total the equity you built. Total the income you grew. Every number in that delta was a decision made under constraint. Honor the discipline it required. Then raise the standard for next year.' },
+    { pillar: 'The Summit', title: 'The Law of the Blueprint Review', tactical: 'The Sovereignty Blueprint is not read once. It is a living framework reviewed annually. Which level are you on? Which protocol is active? What changed in your financial architecture this year that changes the execution next year?' },
+    { pillar: 'The Summit', title: 'The Law of the Clean Slate', tactical: 'Enter the new year with minimal financial complexity. Close idle accounts. Simplify the system. Complexity is the enemy of execution. The financial system that can be reviewed in one hour is the one that will actually be reviewed.' },
   ],
 };
 
-function DirectiveMod({ visible, latest, t }) {
+// ═══════════════════════════════════════════════════
+// DAILY LAW HERO — Front-and-center financial wisdom
+// ═══════════════════════════════════════════════════
+function DailyLawHero({ t }) {
   const now = new Date();
   const monthIdx = now.getMonth();
   const dayOfMonth = now.getDate();
   const theme = MONTHLY_THEMES[monthIdx];
-  const monthKey = theme.month;
-  const pool = DIRECTIVES[monthKey] || DIRECTIVES.JAN;
+  const pool = DIRECTIVES[theme.month] || DIRECTIVES.JAN;
   const directive = pool[(dayOfMonth - 1) % pool.length];
+
+  return (
+    <div style={{
+      gridColumn: '1 / -1',
+      border: `1px solid ${t.accent}55`,
+      background: `linear-gradient(135deg, ${t.surface} 0%, ${t.accent}0A 100%)`,
+      padding: '22px 26px',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Top accent bar */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${t.accent}, ${t.accent}00)` }} />
+
+      {/* Meta row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ fontSize: 8, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.14em', background: `${t.accent}18`, padding: '2px 7px', border: `1px solid ${t.accent}40` }}>
+            {directive.pillar}
+          </div>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            {theme.month} · {theme.theme}
+          </div>
+        </div>
+        <div style={{ fontSize: 8, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          The Sovereignty Blueprint · Day {dayOfMonth}
+        </div>
+      </div>
+
+      {/* Law title */}
+      <div style={{
+        fontSize: 22,
+        fontWeight: 800,
+        color: t.textPrimary,
+        letterSpacing: '-0.02em',
+        lineHeight: 1.15,
+        marginBottom: 14,
+      }}>
+        {directive.title}
+      </div>
+
+      {/* Tactical wisdom — blockquote style */}
+      <div style={{
+        borderLeft: `3px solid ${t.accent}`,
+        paddingLeft: 14,
+        fontSize: 13,
+        color: t.textSecondary,
+        lineHeight: 1.75,
+        marginBottom: 14,
+        fontStyle: 'italic',
+      }}>
+        {directive.tactical}
+      </div>
+
+      {/* Monthly objective */}
+      <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        Monthly Objective · {theme.objective}
+      </div>
+    </div>
+  );
+}
+
+function DirectiveMod({ visible, latest, t }) {
+  const now = new Date();
 
   // Data-aware context
   const stage = calcStage(latest || {});
@@ -4942,20 +5011,6 @@ function DirectiveMod({ visible, latest, t }) {
       </div>
     )}
 
-    {/* ─── DIVIDER ─── */}
-    <div style={{ borderTop: `1px solid ${t.borderDim}`, margin: '12px 0' }} />
-
-    {/* ═══ TACTICAL DIRECTIVE ═══ */}
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 2 }}>{directive.title}</div>
-      <div style={{ fontSize: 9, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{directive.pillar} // {theme.month} — {theme.theme}</div>
-    </div>
-    <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 10, fontSize: 11, color: t.textSecondary, lineHeight: 1.6, marginBottom: 10 }}>
-      {directive.tactical}
-    </div>
-    <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-      Cycle: {theme.objective}
-    </div>
   </Card>);
 }
 
@@ -5495,6 +5550,9 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
       <StatusStrip latest={latest} t={t} />
       <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
+
+        {/* ═══ DAILY LAW HERO — Sets the tone. First thing you see. ═══ */}
+        <DailyLawHero t={t} />
 
         {/* Row 1 — CFO Daily Pulse: full width */}
         {vis.includes('directive') && (
