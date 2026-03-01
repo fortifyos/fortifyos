@@ -5161,26 +5161,39 @@ function DirectiveMod({ visible, latest, t }) {
 
     {/* ═══ 4-METRIC ROW ═══ */}
     <div className="status-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, marginBottom: 2 }}>
+
+      {/* Wealth Building (formerly Velocity) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Velocity</div>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Wealth Building</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
-        <div style={{ fontSize: 8, color: velColor, textTransform: 'uppercase' }}>{velocity >= 0.25 ? 'ON TRACK' : velocity >= 0.10 ? 'ALERT' : 'CRISIS'}<span style={{ color: t.textDim }}> / 25% target</span></div>
+        <div style={{ fontSize: 8, color: velColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{velocity >= 0.25 ? '✓ On Track' : velocity >= 0.10 ? '⚠ Low' : '✕ Critical'}</div>
+        <div style={{ fontSize: 7, color: t.textGhost }}>of income building wealth · goal 25%</div>
       </div>
+
+      {/* Daily Spending (formerly Daily Burn) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Burn</div>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Spending</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
-        <div style={{ fontSize: 8, color: dailyBurn > 0 ? t.warn : t.accent, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : 'ZERO BURN'}</div>
+        <div style={{ fontSize: 8, color: dailyBurn > 0 ? t.warn : t.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : 'No Spend'}</div>
+        <div style={{ fontSize: 7, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'zero spending tracked'}</div>
       </div>
+
+      {/* Money Saved (formerly Savings Rate) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Savings Rate</div>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Money Saved</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
-        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>{savingsRate >= 20 ? 'HEALTHY' : savingsRate > 0 ? 'LOW' : 'NO DATA'}</div>
+        <div style={{ fontSize: 8, color: srColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{savingsRate >= 20 ? '✓ Healthy' : savingsRate > 0 ? '⚠ Low' : '— No Data'}</div>
+        <div style={{ fontSize: 7, color: t.textGhost }}>of every dollar earned · goal 20%</div>
       </div>
+
+      {/* Emergency Cover (formerly Runway) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Runway</div>
+        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Emergency Cover</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 10, fontWeight: 400 }}> days</span></div>
-        <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase' }}>E-Fund Phase {latest?.eFund?.phase || 1}/4</div>
+        <div style={{ fontSize: 8, color: runwayColor(days, t), fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{days === 0 ? '✕ None' : days < 30 ? '⚠ Fragile' : days < 90 ? '↑ Building' : '✓ Secure'}</div>
+        <div style={{ fontSize: 7, color: t.textGhost }}>if income stopped today · goal 90d</div>
       </div>
+
     </div>
 
     {/* ═══ STAGE RAIL ═══ */}
@@ -5189,7 +5202,7 @@ function DirectiveMod({ visible, latest, t }) {
         <span style={{ fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
-          <div style={{ fontSize: 8, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 Defense' : stage === 3 ? '🔓 Liberation' : '📈 Wealth'}</div>
+          <div style={{ fontSize: 8, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
         </div>
         <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
           {[0,1,2,3,4,5,6,7].map(i => (
@@ -5222,24 +5235,32 @@ function DirectiveMod({ visible, latest, t }) {
       </div>
     )}
 
-    {/* ═══ WEALTH PIPELINE ═══ */}
-    <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
-      <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Wealth Pipeline</div>
-      <div style={{ display: 'flex', gap: 3 }}>
-        {STAGE_META.slice(0, 7).map((s, i) => {
-          const active = i === stage;
-          const done   = i < stage;
-          const bg     = done ? t.accent : active ? t[s.color] || t.accent : t.borderDim;
-          return (
-            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-              <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.25, transition: 'background 0.3s' }} />
-              <div style={{ fontSize: 7, color: active ? t[s.color] || t.accent : t.textGhost, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.2 }}>{i + 1}</div>
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ fontSize: 9, color: stageColor, marginTop: 4, fontWeight: 600 }}>Stage {stage}/7 · {meta.name}</div>
-    </div>
+    {/* ═══ WEALTH JOURNEY ═══ */}
+    {(() => {
+      const steps = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
+      return (
+        <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
+          <div style={{ fontSize: 8, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Your Wealth Journey</div>
+          <div style={{ display: 'flex', gap: 3 }}>
+            {steps.map((label, i) => {
+              const active = i === stage;
+              const done   = i < stage;
+              const bg     = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.borderDim;
+              return (
+                <div key={i} title={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                  <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.2, transition: 'background 0.3s' }} />
+                  <div style={{ fontSize: 6, color: active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textDim : t.textGhost, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{label}</div>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ fontSize: 9, color: stageColor, marginTop: 4, fontWeight: 600 }}>
+            You're here: <span style={{ color: t.textPrimary }}>{steps[stage] || meta.name}</span>
+            <span style={{ color: t.textGhost, fontWeight: 400 }}> · next: {steps[Math.min(stage + 1, 6)] || 'Legacy'}</span>
+          </div>
+        </div>
+      );
+    })()}
 
     {/* ═══ BUDGET ALERTS ═══ */}
     {(blownCats.length > 0 || warnCats.length > 0) && (
