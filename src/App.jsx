@@ -15,7 +15,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 /* ═══════════════════════════════════════════════════════════════
-   FORTIFYOS — UNIFIED v2.3
+   fortifyOS — UNIFIED v2.3
    Landing · Universal Sync Engine · Live Dashboard
    Enforcement Layer · Liberation Countdown · Never List
    "Protect first, grow second. Every dollar has a job."
@@ -88,7 +88,7 @@ class AppErrorBoundary extends React.Component {
     return (
       <div style={panel}>
         <div style={shell}>
-          <div style={{ color: '#00FF41', fontSize: 15, marginBottom: 12 }}>FORTIFYOS SAFE RECOVERY MODE</div>
+          <div style={{ color: '#00FF41', fontSize: 15, marginBottom: 12 }}>fortifyOS SAFE RECOVERY MODE</div>
           <div style={{ fontSize: 14, color: '#BFBFBF', lineHeight: 1.5, marginBottom: 12 }}>
             The app hit a runtime error and switched to recovery mode to prevent a blank screen.
           </div>
@@ -1520,7 +1520,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <nav style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}` }}>
         <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
           <Shield size={18} style={{ color: accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FORTIFYOS</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>fortifyOS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
@@ -1841,7 +1841,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <span style={{ color: t.borderMid }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
             <Shield size={14} style={{ color: accent }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: accent }}>FORTIFYOS</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: accent }}>fortifyOS</span>
             <span style={{ fontSize: 14, color: t.textDim }}>DOCS</span>
           </div>
         </div>
@@ -1866,10 +1866,10 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
         {/* Hero */}
         <div style={{ padding: '32px 0 24px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 32 }}>
           <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 28, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: 8 }}>
-            FORTIFYOS <span style={{ color: accent }}>// Docs</span>
+            fortifyOS <span style={{ color: accent }}>// Docs</span>
           </h1>
           <p style={{ color: t.textSecondary, fontSize: 15, maxWidth: 560, lineHeight: 1.7 }}>System field manual. From first sync to financial independence — the architecture, enforcement logic, and methodology behind every calculation.</p>
-          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — FORTIFYOS v2.2</span>
+          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — fortifyOS v2.2</span>
         </div>
 
         {/* Tiered TOC */}
@@ -2448,7 +2448,7 @@ cat snapshot.json | pbcopy`}</pre>
         </div>
 
         {/* ══════════════════════════════════════════════════════════
-           TIER 5: WHY FORTIFYOS
+           TIER 5: WHY fortifyOS
            ══════════════════════════════════════════════════════════ */}
 
         {/* 15 COMPETITIVE COMPARISON */}
@@ -2511,7 +2511,7 @@ cat snapshot.json | pbcopy`}</pre>
         <div style={{ textAlign: 'center', color: t.textDim, marginTop: 60, paddingTop: 16, borderTop: `1px solid ${t.borderDim}`, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
           <p>No data is sent to external servers.</p>
           <p style={{ marginTop: 6 }}>Protect first, grow second. Every dollar has a job.</p>
-          <p style={{ marginTop: 12, color: t.textGhost }}>KNOX v2.1 — FORTIFYOS v2.2</p>
+          <p style={{ marginTop: 12, color: t.textGhost }}>KNOX v2.1 — fortifyOS v2.2</p>
         </div>
       </div>
     </div>
@@ -7240,7 +7240,7 @@ function FortifyOSApp() {
         }
       `}</style>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
-      {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFYOS initializing...</div></div>}
+      {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>fortifyOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} />}
