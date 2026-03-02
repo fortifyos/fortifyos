@@ -7065,6 +7065,20 @@ function FortifyOSApp() {
         ...(data.eFund || {}),
         monthlyExpenses: Math.round(combinedSpent || merged.eFund?.monthlyExpenses || 3000),
       };
+
+      // Merge _recentTxns across all synced accounts — combine, dedup, sort newest-first, keep 100
+      const baseTxns  = Array.isArray(base._recentTxns)  ? base._recentTxns  : [];
+      const incomingTxns = Array.isArray(data._recentTxns) ? data._recentTxns : [];
+      const seen = new Set();
+      const allTxns = [];
+      for (const tx of [...baseTxns, ...incomingTxns]) {
+        const key = `${tx.date}|${tx.description}|${tx.amount}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        allTxns.push(tx);
+      }
+      allTxns.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      merged._recentTxns = allTxns.slice(0, 100);
     }
     // Recalculate net worth total to include crypto + equity + savings
     const assets = merged.netWorth.assets;
