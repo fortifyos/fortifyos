@@ -433,6 +433,9 @@ function preprocessStatementText(text, bankKey = 'generic') {
     out = out
       .replace(/\bTTY[: ]\d+\/\d+\b/gi, ' ')
       .replace(/\bMobile:\s*#?\d+\b/gi, ' ')
+      // Strip the leading empty-column "0 " artifact that USAA PDFs put before each date
+      // e.g. "0 12/29 USAA FUNDS TRANSFER CR $260.00 $279.33" → "12/29 ..."
+      .replace(/^0\s+(\d{1,2}\/\d{1,2})/gm, '$1')
       // Insert newline before MM/DD or MM/DD/YYYY that appears mid-line (column-layout PDF extraction)
       .replace(/([^\n])(\s)(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\s)/g, '$1\n$3')
       .replace(/\s{2,}/g, ' ');
@@ -595,6 +598,9 @@ function parseStatementTextToTransactions(text, options = {}) {
       /^date\s+description/i.test(line) ||
       /^activity summary/i.test(line) ||
       /^page\s+\d+\s+of\s+\d+/i.test(line) ||
+      /^phone:\s*\d/i.test(line) ||
+      /^\d{6,}/.test(line) ||           // long numeric strings (routing, conf#, account metadata)
+      /^0\s+0$/.test(line) ||           // empty Debits/Credits column artifact
       /^\d+\s*$/.test(line)
     );
     const usaaDirection = (line, desc = '') => {
@@ -862,9 +868,10 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
   }
 
   const raw = String(rawText || '');
-  // Same-line balance patterns
-  const startBalMatch = raw.match(/(?:beginning|previous|starting)\s+balance[^0-9\n\-]*(-?\$?\d[\d,]*\.\d{2})/i);
-  const endBalMatch   = raw.match(/(?:ending|new|available|statement|closing)\s+balance[^0-9\n\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  // Same-line balance patterns — allow spaces AND dashes between label and amount
+  // (USAA format: "Ending Balance - - - - $539.26")
+  const startBalMatch = raw.match(/(?:beginning|previous|starting)\s+balance[\s\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  const endBalMatch   = raw.match(/(?:ending|new|available|statement|closing)\s+balance[\s\-]*(-?\$?\d[\d,]*\.\d{2})/i);
   // Multi-line balance patterns: label on one line, amount on the very next line (column-layout PDFs)
   const startBalMatchML = !startBalMatch ? raw.match(/(?:beginning|previous|starting)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
   const endBalMatchML   = !endBalMatch   ? raw.match(/(?:ending|new|available|statement|closing)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
