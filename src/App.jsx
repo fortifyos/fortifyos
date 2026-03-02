@@ -6466,8 +6466,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Shield size={14} style={{ color: t.accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
-          <span style={{ color: t.textGhost, fontSize: 14 }}>v2.4</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>fortifyOS</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
@@ -6809,8 +6808,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
       <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Shield size={14} style={{ color: t.accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FORTIFYOS</span>
-          <span style={{ color: t.textGhost, fontSize: 14 }}>v2.4</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>fortifyOS</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
@@ -7231,12 +7229,12 @@ function FortifyOSApp() {
           .sync-row-debt { grid-template-columns: 1fr !important; }
           .fo-ticker-track { animation-duration: 52s !important; }
           .hero-title { font-size: 36px !important; }
-          .hero-sub { font-size: 13px !important; }
+          .hero-sub { font-size: 15px !important; }
           .hero-buttons { flex-direction: column !important; }
           .footer-stats { grid-template-columns: 1fr !important; }
           .footer-stat-cell { border-right: none !important; border-bottom: 1px solid ${t.borderDim}; }
           .footer-stat-cell:last-child { border-bottom: none; }
-          .stage-labels span { font-size: 6px !important; }
+          .stage-labels span { font-size: 14px !important; }
           .fo-main { overflow-x: hidden !important; }
           .dashboard-main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
         }
