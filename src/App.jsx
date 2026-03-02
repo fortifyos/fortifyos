@@ -433,12 +433,14 @@ function preprocessStatementText(text, bankKey = 'generic') {
     out = out
       .replace(/\bTTY[: ]\d+\/\d+\b/gi, ' ')
       .replace(/\bMobile:\s*#?\d+\b/gi, ' ')
-      // Strip the leading empty-column "0 " artifact that USAA PDFs put before each date
-      // e.g. "0 12/29 USAA FUNDS TRANSFER CR $260.00 $279.33" → "12/29 ..."
-      .replace(/^0\s+(\d{1,2}\/\d{1,2})/gm, '$1')
-      // Insert newline before MM/DD or MM/DD/YYYY that appears mid-line (column-layout PDF extraction)
-      .replace(/([^\n])(\s)(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\s)/g, '$1\n$3')
-      .replace(/\s{2,}/g, ' ');
+      // Handle "0 MM/DD" mid-line in dense (no-newline) PDF blobs — insert \n before it
+      .replace(/([^\n])[ \t]+0[ \t]+(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?(?:[ \t]|$))/g, '$1\n$2')
+      // Strip leading "0 " artifact at true line starts
+      .replace(/^0[ \t]+(\d{1,2}\/\d{1,2})/gm, '$1')
+      // Insert newline before any remaining mid-line MM/DD dates
+      .replace(/([^\n])[ \t]+(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?(?:[ \t]|$))/g, '$1\n$2')
+      // Collapse horizontal whitespace ONLY — intentionally does NOT match \n
+      .replace(/[ \t]{2,}/g, ' ');
   }
   return out.trim();
 }
@@ -5898,9 +5900,9 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
-        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span><span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>fortifyOS</span>
       </div>
-      <span className="phase-label" style={{ color: t.textDim, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
+      <span className="phase-label" style={{ color: t.textSecondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div ref={quickMenuRef} className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
         <button
           onClick={onToggleTheme}
@@ -5916,11 +5918,11 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
-          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Eye size={9} /> Radar</button>
-            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Upload size={9} /> Import</button>
-            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Download size={9} /> Export</button>
-            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Settings size={9} /> Settings</button>
+          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Eye size={9} /> Radar</button>
+            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Upload size={9} /> Import</button>
+            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Download size={9} /> Export</button>
+            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Settings size={9} /> Settings</button>
           </div>
         )}
       </div>
@@ -6011,10 +6013,20 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
     </main>
     <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 9, zIndex: 50 }}>
-      <span style={{ color: t.textDim }}>SYNC: {latest.date || 'never'} <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.textGhost }}>({daysSince(latest.date) === 0 ? 'today' : daysSince(latest.date) === 1 ? 'yesterday' : daysSince(latest.date) >= 999 ? 'no data' : `${daysSince(latest.date)}d ago`})</span></span>
+      <button
+        onClick={() => setSyncOpen(true)}
+        title="Import new statement to update"
+        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}
+      >
+        <span style={{ color: t.textDim }}>LAST SYNC: {latest.date || 'never'}</span>
+        <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.textGhost }}>
+          ({daysSince(latest.date) === 0 ? 'today' : daysSince(latest.date) === 1 ? 'yesterday' : daysSince(latest.date) >= 999 ? 'no data' : `${daysSince(latest.date)}d ago`})
+        </span>
+        {daysSince(latest.date) >= 7 && <span style={{ color: t.danger }}>↑ import</span>}
+      </button>
       {dailyInterest(latest?.debts) > 0 && <span style={{ color: t.danger, fontWeight: 700 }}>${dailyInterest(latest?.debts).toFixed(2)}/DAY LEAKING</span>}
       <div style={{ display: 'flex', gap: 6 }}><span style={{ color: t.danger }}>{ac.red}●</span><span style={{ color: t.warn }}>{ac.amber}●</span><span style={{ color: t.accent }}>{ac.green}●</span></div>
-      <span className="footer-label" style={{ color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>FortifyOS</span>
+      <span className="footer-label" style={{ color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>fortifyOS</span>
     </footer>
     <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={onSync} t={t} />
   </div>);
