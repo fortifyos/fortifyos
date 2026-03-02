@@ -637,7 +637,21 @@ function parseStatementTextToTransactions(text, options = {}) {
       /^phone:\s*\d/i.test(line) ||
       /^\d{6,}/.test(line) ||           // long numeric strings (routing, conf#, account metadata)
       /^0\s+0$/.test(line) ||           // empty Debits/Credits column artifact
-      /^\d+\s*$/.test(line)
+      /^\d+\s*$/.test(line) ||
+      // Summary / balance rows that should never be transactions
+      /^beginning\s+balance/i.test(line) ||
+      /^ending\s+balance/i.test(line) ||
+      /^total\s+(?:debits?|credits?|deposits?|withdrawals?)/i.test(line) ||
+      /^available\s+balance/i.test(line) ||
+      /^service\s+charg/i.test(line) ||
+      /^deposits?\s*(?:\/\s*credits?)?$/i.test(line) ||
+      /^withdrawals?\s*(?:\/\s*debits?)?$/i.test(line) ||
+      /^interest\s+(?:paid|earned|charged)/i.test(line) ||
+      /^fees?\s+charged/i.test(line) ||
+      /^debits?\s+amount/i.test(line) ||
+      /^credits?\s+amount/i.test(line) ||
+      /^account\s+summary/i.test(line) ||
+      /^balance\s+summary/i.test(line)
     );
     const usaaDirection = (line, desc = '') => {
       const s = `${line} ${desc}`.toLowerCase();
@@ -673,16 +687,22 @@ function parseStatementTextToTransactions(text, options = {}) {
       // Pull continuation lines (merchant/details) under the dated row.
       // Also collect amounts from following lines when date line had none (column-layout PDFs).
       let j = i + 1;
+      let descLinesAbsorbed = 0;
       while (j < rawLines.length) {
         const next = rawLines[j];
         if (!next || isNoiseLine(next) || dateHeadRx.test(next)) break;
         // Grab amounts from next lines when the date line itself had none
         if (!amounts.length) {
           const nextAmts = Array.from(next.matchAll(amountRx)).map(m => m[0]);
-          if (nextAmts.length) amounts = nextAmts;
+          if (nextAmts.length) { amounts = nextAmts; j++; continue; }
         }
+        // Cap description absorption at 2 continuation lines to prevent over-run
+        if (descLinesAbsorbed >= 2) break;
+        // Stop if line looks like a balance/summary row (has keyword + dollar amount)
+        if (/\b(?:balance|total|available|fee|interest|charge)\b/i.test(next) && amountRx.test(next)) break;
         if (/[A-Za-z]/.test(next) && !/^\*{4,}\d{2,4}$/.test(next)) {
           desc = normalizeMerchantDescription(`${desc} ${next}`.replace(/\s{2,}/g, ' ').trim());
+          descLinesAbsorbed++;
         }
         j++;
       }
@@ -5846,22 +5866,21 @@ function TransactionsMod({ latest, visible, t }) {
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
             Recent Transactions — {txns.length} total
           </div>
-          {/* Column headers */}
-          <div style={{ display: 'flex', gap: 8, padding: '3px 8px', marginBottom: 3 }}>
-            <span style={{ fontSize: 14, color: t.textGhost, width: 52, flexShrink: 0, textTransform: 'uppercase' }}>Date</span>
-            <span style={{ fontSize: 14, color: t.textGhost, flex: 1, textTransform: 'uppercase' }}>Description</span>
-            <span style={{ fontSize: 14, color: t.textGhost, width: 68, flexShrink: 0, textAlign: 'center', textTransform: 'uppercase' }}>Category</span>
-            <span style={{ fontSize: 14, color: t.textGhost, width: 58, flexShrink: 0, textAlign: 'right', textTransform: 'uppercase' }}>Amount</span>
-          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {displayTxns.map((tx, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 14 }}>
-                <span style={{ color: t.textGhost, flexShrink: 0, width: 52, fontVariantNumeric: 'tabular-nums' }}>{tx.date ? tx.date.slice(5) : '—'}</span>
-                <span style={{ color: t.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</span>
-                <span style={{ flexShrink: 0, width: 68, background: catColor(tx.category) + '22', color: catColor(tx.category), padding: '1px 4px', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', textAlign: 'center' }}>{tx.category}</span>
-                <span style={{ flexShrink: 0, fontWeight: 700, color: tx.amount >= 0 ? t.accent : t.danger, width: 58, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                  {tx.amount >= 0 ? '+' : ''}{fmt(tx.amount)}
-                </span>
+              <div key={i} style={{ padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 14 }}>
+                {/* Row 1: date + description + amount */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: t.textGhost, flexShrink: 0, width: 44, fontVariantNumeric: 'tabular-nums', fontSize: 13 }}>{tx.date ? tx.date.slice(5) : '—'}</span>
+                  <span style={{ color: t.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</span>
+                  <span style={{ flexShrink: 0, fontWeight: 700, color: tx.amount >= 0 ? t.accent : t.danger, textAlign: 'right', fontVariantNumeric: 'tabular-nums', minWidth: 60 }}>
+                    {tx.amount >= 0 ? '+' : ''}{fmt(tx.amount)}
+                  </span>
+                </div>
+                {/* Row 2: category badge */}
+                <div style={{ paddingLeft: 52, marginTop: 2 }}>
+                  <span style={{ display: 'inline-block', background: catColor(tx.category) + '22', color: catColor(tx.category), padding: '1px 5px', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{tx.category || 'Uncategorized'}</span>
+                </div>
               </div>
             ))}
           </div>
