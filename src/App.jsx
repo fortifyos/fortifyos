@@ -404,7 +404,7 @@ function parseAmountLike(s) {
 
 const STATEMENT_TEMPLATES = [
   // More-specific templates must come BEFORE generic overlapping ones
-  { key: 'cashapp', label: 'Cash App', detect: /(cash\s*app|square\s*cash|\$cashtag|block,?\s*inc|cash\s*out\s*to\s*bank|cash\s*in\s*from\s*bank|cashapp\.com)/i },
+  { key: 'cashapp', label: 'Cash App', detect: /(cash\s*app|square\s*cash|\$cashtag|block,?\s*inc|cash\s*out\s*to\s*bank|cash\s*in\s*from\s*bank|cashapp\.com|cash\s*app\s*card|cashtag|1-800-969-1940)/i },
   { key: 'capitalone', label: 'Capital One', detect: /(capital\s*one|capitalone\.com|cap\s*one)/i },
   // USAA: removed generic "funds transfer" — too broad, matches Cash App and others
   { key: 'usaa', label: 'USAA', detect: /(usaa|classic checking|ach withdrawal|ach dep)/i },
@@ -483,8 +483,8 @@ function parseStatementTextToTransactions(text, options = {}) {
   // ── Cash App parser ──────────────────────────────────────────────────────────
   if (bankKey === 'cashapp') {
     const txns = [];
-    // Cash App exports use ISO dates (2026-01-15) or "Jan 15, 2026"
-    const caDateRx = /(\d{4}-\d{2}-\d{2}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*\d{1,2},?\s*\d{4})/i;
+    // Cash App exports: ISO (2026-01-15), "Jan 15, 2026", or MM/DD/YYYY
+    const caDateRx = /(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{2,4}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*\d{1,2},?\s*\d{4})/i;
     const caAmtRx  = /([+\-]?\$?\d[\d,]*\.\d{2})/g;
     const caDirection = (typeStr = '', desc = '') => {
       const s = `${typeStr} ${desc}`.toLowerCase();
@@ -3147,7 +3147,7 @@ useEffect(() => {
 
   return (
     <div className="sync-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }} onClick={onClose}>
-      <div className="sync-shell" style={{ background: t.surface, border: `1px solid ${t.borderMid}`, maxWidth: 1100, width: 'min(98vw, 1100px)', maxHeight: '94vh', overflowY: 'auto', overflowX: 'hidden', borderRadius: 6, boxSizing: 'border-box' }} onClick={e => e.stopPropagation()}>
+      <div className="sync-shell" style={{ background: t.surface, border: `1px solid ${t.borderMid}`, maxWidth: 1100, width: 'min(98vw, 1100px)', maxHeight: '94vh', overflowY: 'auto', overflowX: 'hidden', borderRadius: 6, boxSizing: 'border-box', minWidth: 0 }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{ padding: '14px 16px', borderBottom: `1px solid ${t.borderDim}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.elevated }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -3168,7 +3168,7 @@ useEffect(() => {
           ))}
         </div>
 
-        <div className="sync-content" style={{ padding: 16 }}>
+        <div className="sync-content" style={{ padding: 16, minWidth: 0, overflow: 'hidden' }}>
 {/* ── STATEMENT TAB ── */}
 {tab === 'statement' && (<>
   <div style={{ display: 'grid', gap: 10 }}>
@@ -3219,8 +3219,9 @@ useEffect(() => {
       <div style={{
         padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.input,
         fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim,
+        overflowX: 'hidden', width: '100%', boxSizing: 'border-box',
       }}>
-        {logs.length ? logs.map((l, i) => <div key={i}>{l}</div>) : <div>Awaiting file…</div>}
+        {logs.length ? logs.map((l, i) => <div key={i} style={{ overflowWrap: 'break-word', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>{l}</div>) : <div>Awaiting file…</div>}
       </div>
       {(stmtTemplateLabel || stmtReconSummary) && (
         <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel, fontSize: 10, color: t.textSecondary }}>
@@ -3243,7 +3244,7 @@ useEffect(() => {
       )}
       {error && <div style={{ color: t.warn, fontSize: 11 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
     {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
-      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10 }}>
+      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10, minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', width: '100%' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' }}>
           <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
           <button onClick={() => { 
@@ -3267,7 +3268,7 @@ useEffect(() => {
             <RefreshCw size={14} /> TRY PARSE AGAIN
           </button>
         </div>
-        <div style={{ marginTop: 10, maxHeight: 180, overflow:'auto', whiteSpace:'pre-wrap', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim }}>
+        <div style={{ marginTop: 10, maxHeight: 180, overflowY: 'auto', overflowX: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim, width: '100%', boxSizing: 'border-box' }}>
           {stmtText}
         </div>
       </div>
