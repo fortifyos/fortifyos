@@ -429,6 +429,8 @@ function preprocessStatementText(text, bankKey = 'generic') {
     out = out
       .replace(/\bTTY[: ]\d+\/\d+\b/gi, ' ')
       .replace(/\bMobile:\s*#?\d+\b/gi, ' ')
+      // Insert newline before MM/DD or MM/DD/YYYY that appears mid-line (column-layout PDF extraction)
+      .replace(/([^\n])(\s)(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\s)/g, '$1\n$3')
       .replace(/\s{2,}/g, ' ');
   }
   return out.trim();
@@ -476,7 +478,8 @@ function parseStatementTextToTransactions(text, options = {}) {
 
   if (bankKey === 'usaa') {
     const txns = [];
-    const dateHeadRx = /^(\d{1,2}\/\d{1,2})\s+/;
+    // Support both MM/DD and MM/DD/YYYY formats (real USAA statements use MM/DD/YYYY)
+    const dateHeadRx = /^(\d{1,2}\/\d{1,2})(?:\/\d{2,4})?(?:\s|$)/;
     const amountRx = /\$?\d[\d,]*\.\d{2}/g;
     const isNoiseLine = (line) => (
       /^online:\s*usaa\.com/i.test(line) ||
@@ -510,28 +513,35 @@ function parseStatementTextToTransactions(text, options = {}) {
       if (isNoiseLine(line)) continue;
       const dm = line.match(dateHeadRx);
       if (!dm) continue;
+      // dm[1] is always MM/DD — strip any trailing /YYYY from the remainder
       const rowDate = dm[1];
-      const amounts = Array.from(line.matchAll(amountRx)).map(m => m[0]);
-      if (!amounts.length) continue;
-      const amountToken = amounts.length >= 2 ? amounts[0] : amounts[0]; // first money token is debit/credit; trailing token is often running balance
+      const restOfLine = line.slice(dm[0].length).replace(/^\d{2,4}\s*/, '').trim(); // strip year if date-only token
+      let amounts = Array.from(line.matchAll(amountRx)).map(m => m[0]);
 
-      let desc = normalizeMerchantDescription(line
-        .replace(dateHeadRx, '')
+      let desc = normalizeMerchantDescription(restOfLine
         .replace(amountRx, ' ')
         .replace(/\s{2,}/g, ' ')
         .trim());
 
       // Pull continuation lines (merchant/details) under the dated row.
+      // Also collect amounts from following lines when date line had none (column-layout PDFs).
       let j = i + 1;
       while (j < rawLines.length) {
         const next = rawLines[j];
         if (!next || isNoiseLine(next) || dateHeadRx.test(next)) break;
+        // Grab amounts from next lines when the date line itself had none
+        if (!amounts.length) {
+          const nextAmts = Array.from(next.matchAll(amountRx)).map(m => m[0]);
+          if (nextAmts.length) amounts = nextAmts;
+        }
         if (/[A-Za-z]/.test(next) && !/^\*{4,}\d{2,4}$/.test(next)) {
           desc = normalizeMerchantDescription(`${desc} ${next}`.replace(/\s{2,}/g, ' ').trim());
         }
         j++;
       }
       i = j - 1;
+      if (!amounts.length) continue; // no amount found on date line or continuation — skip
+      const amountToken = amounts[0]; // first token is the transaction amount; last is typically running balance
       pushTxn(rowDate, desc, amountToken, line);
     }
 
@@ -746,13 +756,20 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
     items[i] = withTxnConfidence(row, `${row.date || ''} ${row.description || ''} ${row.amount ?? ''}`);
   }
 
-  const startBalMatch = String(rawText || '').match(/(?:beginning|previous|starting)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
-  const endBalMatch = String(rawText || '').match(/(?:ending|new|available|statement|closing)\s+balance[^0-9\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  const raw = String(rawText || '');
+  // Same-line balance patterns
+  const startBalMatch = raw.match(/(?:beginning|previous|starting)\s+balance[^0-9\n\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  const endBalMatch   = raw.match(/(?:ending|new|available|statement|closing)\s+balance[^0-9\n\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  // Multi-line balance patterns: label on one line, amount on the very next line (column-layout PDFs)
+  const startBalMatchML = !startBalMatch ? raw.match(/(?:beginning|previous|starting)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
+  const endBalMatchML   = !endBalMatch   ? raw.match(/(?:ending|new|available|statement|closing)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
+  const resolvedStartBal = startBalMatch || startBalMatchML;
+  const resolvedEndBal   = endBalMatch   || endBalMatchML;
   let balanceDiff = null;
   let endBal = null;
-  if (startBalMatch && endBalMatch) {
-    const startBal = parseAmountLike(startBalMatch[1]);
-    endBal = parseAmountLike(endBalMatch[1]);
+  if (resolvedStartBal && resolvedEndBal) {
+    const startBal = parseAmountLike(resolvedStartBal[1]);
+    endBal = parseAmountLike(resolvedEndBal[1]);
     const txnDelta = items.reduce((s, t) => s + (Number(t.amount) || 0), 0);
     if (startBal !== null && endBal !== null) {
       const expectedDelta = endBal - startBal;
@@ -763,9 +780,9 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
     }
   } else {
     // Try standalone ending/available balance pattern even without start balance
-    if (endBalMatch) endBal = parseAmountLike(endBalMatch[1]);
+    if (resolvedEndBal) endBal = parseAmountLike(resolvedEndBal[1]);
     if (!endBal) {
-      const standaloneMatch = String(rawText || '').match(/(?:available|current|ledger)\s+balance[:\s]*(-?\$?\d[\d,]*\.\d{2})/i);
+      const standaloneMatch = raw.match(/(?:available|current|ledger|account)\s+balance[:\s\n]*(-?\$?\d[\d,]*\.\d{2})/i);
       if (standaloneMatch) endBal = parseAmountLike(standaloneMatch[1]);
     }
     if (bankKey !== 'generic' && !endBal) {
