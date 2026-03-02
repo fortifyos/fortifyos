@@ -481,66 +481,91 @@ function parseStatementTextToTransactions(text, options = {}) {
     .filter(Boolean);
 
   // ── Cash App parser ──────────────────────────────────────────────────────────
+  // Actual Cash App statement format (from PDF export):
+  //   Jan 1  To Savings Transfer              $0.00  $0.80       ← debit (no +)
+  //   Jan 2  From USAA Bank x1353 Standard transfer  $0.00  + $10.00  ← credit (+)
+  //   Jan 23 sale of BTC 0.09516752 Bitcoin sale  $63.45  + $8,395.65
+  // Year comes from page headers: "January 2026"
   if (bankKey === 'cashapp') {
     const txns = [];
-    // Cash App exports: ISO (2026-01-15), "Jan 15, 2026", or MM/DD/YYYY
-    const caDateRx = /(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{2,4}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*\d{1,2},?\s*\d{4})/i;
-    const caAmtRx  = /([+\-]?\$?\d[\d,]*\.\d{2})/g;
-    const caDirection = (typeStr = '', desc = '') => {
-      const s = `${typeStr} ${desc}`.toLowerCase();
-      if (/payment\s*received|cash\s*in|direct\s*dep|refund|reward|boost\s*earn/i.test(s)) return 1;
-      if (/payment\s*sent|cash\s*out|purchase|withdrawal|bitcoin\s*purchase/i.test(s)) return -1;
-      return 0;
-    };
-    const isNoiseCA = (l) => (
-      /^(date|type|note|status|total|cash app statement|square cash|page\s+\d+)/i.test(l) ||
-      // Filter ToS / legal / dispute-resolution sentences that contain incidental dates
-      /starting on or after|range of fees|terms of service|contact us|dispute|in order for us|you will need to provide|write us at|call us at|tap cash app|select contact support|if you (have|think|believe|need)|please (note|see|review)|updated instant transfer|updated terms/i.test(l) ||
-      // Long lines that are clearly prose (>120 chars, no dollar amount) are almost never transactions
+    const CA_MONTHS = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 };
+    // Line-start date: "Jan 1", "Feb 23", etc. (no year — inferred from page header)
+    const CA_LINE_RX = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)\.?\s+(\d{1,2})\b/i;
+    // Dollar token (with optional leading + or -)
+    const CA_AMT_RX  = /([+\-]\s*)?\$(\d[\d,]*\.\d{2})/g;
+
+    const isCANoise = (l) => (
+      /^\d+\s*\/\s*\d+$/.test(l) ||                              // "1 / 12"
+      /^(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{4}$/i.test(l) ||
+      /^(account statement|transactions)$/i.test(l) ||
+      /^date description details fee amount$/i.test(l) ||
+      /^balance on|^money in|^money out|^fees\s/i.test(l) ||
+      /^\$[\d,]+\.\d{2}(\s+\$[\d,]+\.\d{2}){1,3}$/.test(l) ||  // "$8.16 $17.51 $25.67"
+      /starting on or after|range of fees|terms of service|contact us as soon|in order for us|you will need to provide|write us at|call us at|tap cash app|select contact support|please (note|see|review)|updated instant transfer|updated terms/i.test(l) ||
       (l.length > 120 && !/\$\d/.test(l))
     );
 
+    let currentYear = new Date().getFullYear();
+
     for (let i = 0; i < rawLines.length; i++) {
       const line = rawLines[i];
-      if (!line || isNoiseCA(line)) continue;
-      const dm = line.match(caDateRx);
+      if (!line) continue;
+
+      // Capture year from full-month headers like "January 2026"
+      const hdrM = line.match(/^(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})$/i);
+      if (hdrM) { currentYear = parseInt(hdrM[2]); continue; }
+
+      if (isCANoise(line)) continue;
+
+      // Must start with an abbreviated month + day
+      const dm = line.match(CA_LINE_RX);
       if (!dm) continue;
-      const date = normalizeDateLike(dm[1]);
-      if (!date) continue;
+      const month = CA_MONTHS[dm[1].toLowerCase().slice(0, 4)] || CA_MONTHS[dm[1].toLowerCase().slice(0, 3)];
+      if (!month) continue;
+      const day = parseInt(dm[2]);
+      const date = `${currentYear}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 
-      // Collect amounts on this line and up to 2 continuation lines
-      let combined = line;
-      let j = i + 1;
-      while (j < rawLines.length && j - i <= 3) {
-        const next = rawLines[j];
-        if (!next || caDateRx.test(next)) break;
-        combined += ' ' + next;
-        j++;
+      // Collect all dollar-amount matches on this line
+      const dollarHits = Array.from(line.matchAll(CA_AMT_RX));
+      if (!dollarHits.length) continue;
+
+      // Last hit = transaction amount; sign before it tells direction
+      const lastHit  = dollarHits[dollarHits.length - 1];
+      const signStr  = (lastHit[1] || '').replace(/\s/g, '');
+      const amtVal   = parseFloat(lastHit[2].replace(/,/g, ''));
+      if (isNaN(amtVal) || amtVal < 0.01) continue;
+
+      // Credit = explicit '+'; debit = no sign or '-'
+      // Also check description keywords as fallback
+      let signed;
+      if (signStr === '+') {
+        signed = amtVal;
+      } else if (signStr === '-') {
+        signed = -amtVal;
+      } else {
+        const ctx = line.slice(dm[0].length).toLowerCase();
+        const isCredit = /\bfrom (usaa|.* bank|savings)\b|payroll|direct deposit|drawdown|stock sale|bitcoin sale|refund|reward|cash in\b/i.test(ctx);
+        signed = isCredit ? amtVal : -amtVal;
       }
-      i = j - 1;
 
-      const allAmts = Array.from(combined.matchAll(caAmtRx)).map(m => m[0]).filter(Boolean);
-      if (!allAmts.length) continue;
+      // Description: between date token and the start of the fee amount
+      // (fee = second-to-last dollar amount; amount = last)
+      const feeIdx = dollarHits.length >= 2
+        ? dollarHits[dollarHits.length - 2].index
+        : dollarHits[0].index;
+      let desc = line.slice(dm[0].length, feeIdx).replace(/\s{2,}/g, ' ').trim();
 
-      // Pick the signed / explicit-sign token; otherwise first token
-      const amtToken = allAmts.find(a => /^[+\-]/.test(a)) || allAmts[0];
-      let amt = parseAmountLike(amtToken);
-      if (amt === null) continue;
+      // Absorb continuation line if it's pure location text (no $, no date, short)
+      const nextL = rawLines[i + 1];
+      if (nextL && !CA_LINE_RX.test(nextL) && !isCANoise(nextL) && !/\$\d/.test(nextL) && nextL.length < 50) {
+        desc = `${desc} ${nextL}`.replace(/\s{2,}/g, ' ').trim();
+        i++;
+      }
 
-      // Strip date, amount tokens, noise words to build description
-      let desc = normalizeMerchantDescription(
-        combined
-          .replace(caDateRx, '')
-          .replace(caAmtRx, ' ')
-          .replace(/\b(completed|pending|failed|usd|status|type|note)\b/gi, ' ')
-          .replace(/\s{2,}/g, ' ')
-          .trim()
-      );
-      if (!desc || (desc.match(/[A-Za-z]/g) || []).length < 3) continue;
+      desc = normalizeMerchantDescription(desc);
+      if (!desc || (desc.match(/[A-Za-z]/g) || []).length < 2) continue;
 
-      const dir = caDirection(combined, desc);
-      const signed = dir > 0 ? Math.abs(amt) : dir < 0 ? -Math.abs(amt) : (/^[+]/.test(amtToken) ? Math.abs(amt) : -Math.abs(amt));
-      txns.push(withTxnConfidence({ date, description: desc, amount: signed }, combined));
+      txns.push(withTxnConfidence({ date, description: desc, amount: signed }, line));
     }
 
     const seen = new Set();
@@ -864,6 +889,15 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
     if (!endBal) {
       const standaloneMatch = raw.match(/(?:available|current|ledger|account)\s+balance[:\s\n]*(-?\$?\d[\d,]*\.\d{2})/i);
       if (standaloneMatch) endBal = parseAmountLike(standaloneMatch[1]);
+    }
+    // Cash App: "Balance on Jan 1  Change this month  Balance on Jan 31\n$8.16  $17.51  $25.67"
+    // The ending balance is the LAST of the three values on the amounts line
+    if (!endBal && bankKey === 'cashapp') {
+      const caBalBlock = raw.match(/balance on .+?\n(\$[\d,]+\.\d{2}\s+\$[\d,]+\.\d{2}\s+\$[\d,]+\.\d{2})/i);
+      if (caBalBlock) {
+        const vals = caBalBlock[1].match(/\$[\d,]+\.\d{2}/g);
+        if (vals && vals.length >= 1) endBal = parseAmountLike(vals[vals.length - 1]);
+      }
     }
     if (bankKey !== 'generic' && !endBal) {
       warnings.push('No statement balances detected for reconciliation');
