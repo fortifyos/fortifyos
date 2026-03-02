@@ -492,7 +492,13 @@ function parseStatementTextToTransactions(text, options = {}) {
       if (/payment\s*sent|cash\s*out|purchase|withdrawal|bitcoin\s*purchase/i.test(s)) return -1;
       return 0;
     };
-    const isNoiseCA = (l) => /^(date|type|note|status|total|cash app statement|square cash|page\s+\d+)/i.test(l);
+    const isNoiseCA = (l) => (
+      /^(date|type|note|status|total|cash app statement|square cash|page\s+\d+)/i.test(l) ||
+      // Filter ToS / legal / dispute-resolution sentences that contain incidental dates
+      /starting on or after|range of fees|terms of service|contact us|dispute|in order for us|you will need to provide|write us at|call us at|tap cash app|select contact support|if you (have|think|believe|need)|please (note|see|review)|updated instant transfer|updated terms/i.test(l) ||
+      // Long lines that are clearly prose (>120 chars, no dollar amount) are almost never transactions
+      (l.length > 120 && !/\$\d/.test(l))
+    );
 
     for (let i = 0; i < rawLines.length; i++) {
       const line = rawLines[i];
@@ -3277,56 +3283,50 @@ useEffect(() => {
 
     {/* Editable transaction table */}
     {parsedPreview && (
-      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, minWidth: 0, width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+        {/* Row 1: title + confidence stats */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
           <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: 10, color: t.textDim }}>
-              Rules {merchantRules.length}
-            </div>
-            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: 10, color: t.textDim }}>
-              <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
-              <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
-              <span style={{ color: t.danger }}>Low {confidenceCounts.low || 0}</span>
-            </div>
-            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', fontSize: 10, color: lowReviewComplete ? t.accent : t.warn }}>
-              Review {reviewedLowCount}/{lowConfidenceIndices.length || 0}
-            </div>
-            <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '8px 10px', fontSize: 10 }}>
-              {showLowConfidence ? 'HIDE LOW-CONFIDENCE' : 'SHOW LOW-CONFIDENCE'}
-            </button>
-            <button
-              onClick={() => {
-                if (!lowConfidenceRows.length) return;
-                setReviewLowConfidence(v => !v);
-                setReviewCursor(0);
-              }}
-              disabled={!lowConfidenceRows.length}
-              style={{ ...btnGhost, padding: '8px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
-            >
-              {reviewLowConfidence ? 'EXIT LOW-REVIEW' : `REVIEW LOW ONLY (${lowConfidenceRows.length})`}
-            </button>
-            <button
-              onClick={() => {
-                const all = lowConfidenceRows.map(r => r.idx).filter(idx => typeof idx === 'number');
-                setReviewedLowIndices(prev => Array.from(new Set([...prev, ...all])));
-                setError('');
-                log(`LOW-CONFIDENCE QUICK REVIEW: ${all.length} ROWS MARKED`);
-              }}
-              disabled={!lowConfidenceRows.length}
-              style={{ ...btnGhost, padding: '8px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
-            >
-              MARK ALL LOW REVIEWED
-            </button>
-            {csvBlobUrl && (
-              <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Download size={14} /> DOWNLOAD payment-log.csv
-              </a>
-            )}
-            <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, opacity: (!parsedPreview) ? 0.6 : 1 }}>
-              <Shield size={14} /> COMMIT SYNC
-            </button>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 10 }}>
+            <span style={{ color: t.textDim }}>Rules {merchantRules.length}</span>
+            <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
+            <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
+            <span style={{ color: t.danger }}>Low {confidenceCounts.low || 0}</span>
+            <span style={{ color: lowReviewComplete ? t.accent : t.warn }}>Review {reviewedLowCount}/{lowConfidenceIndices.length || 0}</span>
           </div>
+        </div>
+        {/* Row 2: action buttons — wraps freely */}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginTop: 8 }}>
+          <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '6px 10px', fontSize: 10 }}>
+            {showLowConfidence ? 'Hide Low' : 'Show Low'}
+          </button>
+          <button
+            onClick={() => { if (!lowConfidenceRows.length) return; setReviewLowConfidence(v => !v); setReviewCursor(0); }}
+            disabled={!lowConfidenceRows.length}
+            style={{ ...btnGhost, padding: '6px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+          >
+            {reviewLowConfidence ? 'Exit Review' : `Review Low (${lowConfidenceRows.length})`}
+          </button>
+          <button
+            onClick={() => {
+              const all = lowConfidenceRows.map(r => r.idx).filter(idx => typeof idx === 'number');
+              setReviewedLowIndices(prev => Array.from(new Set([...prev, ...all])));
+              setError('');
+              log(`LOW-CONFIDENCE QUICK REVIEW: ${all.length} ROWS MARKED`);
+            }}
+            disabled={!lowConfidenceRows.length}
+            style={{ ...btnGhost, padding: '6px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+          >
+            Mark Reviewed
+          </button>
+          {csvBlobUrl && (
+            <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10 }}>
+              <Download size={12} /> CSV
+            </a>
+          )}
+          <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, padding: '6px 14px', fontSize: 10, opacity: (!parsedPreview) ? 0.6 : 1 }}>
+            <Shield size={12} /> Commit Sync
+          </button>
         </div>
         {reviewLowConfidence && lowConfidenceRows.length > 0 && (
           <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 10, color: t.textDim }}>
@@ -3349,8 +3349,8 @@ useEffect(() => {
           </div>
         )}
 
-        <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch' }}>
-          <table style={{ width: '100%', minWidth: 920, borderCollapse: 'collapse', fontSize: 11 }}>
+        <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch', width: '100%' }}>
+          <table style={{ width: '100%', minWidth: 580, borderCollapse: 'collapse', fontSize: 11 }}>
             <thead>
               <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 10 }}>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
