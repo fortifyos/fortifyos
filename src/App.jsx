@@ -1493,7 +1493,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     return () => clearTimeout(delay);
   }, []);
 
-  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.3s', fontFamily: "'JetBrains Mono', monospace", fontSize: 11 });
+  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.3s', fontFamily: "'JetBrains Mono', monospace", fontSize: 13 });
 
   const stages = [
     { n: 0, name: 'Chaos', color: t.danger },
@@ -1835,7 +1835,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
       <nav style={sty.nav}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={onBack} style={{ background: 'none', border: 'none', color: t.textSecondary, cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>
+          <button onClick={onBack} style={{ background: 'none', border: 'none', color: t.textSecondary, cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}>
             <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> BACK
           </button>
           <span style={{ color: t.borderMid }}>|</span>
@@ -2023,15 +2023,15 @@ cd %USERPROFILE%\\FORTIFY && claude
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '16px 0', margin: '16px 0', overflow: 'hidden' }}>
           {/* Legend */}
           <div style={{ display: 'flex', gap: 16, padding: '0 18px 12px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 8, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
               <div style={{ width: 8, height: 8, background: accent, flexShrink: 0 }} />
               <span style={{ color: t.textSecondary }}>Uploaded to Claude Project</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
               <div style={{ width: 8, height: 8, background: t.danger, flexShrink: 0 }} />
               <span style={{ color: t.textSecondary }}>LOCAL ONLY — Never upload</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
               <div style={{ width: 8, height: 8, background: t.textDim, flexShrink: 0 }} />
               <span style={{ color: t.textSecondary }}>Working directory</span>
             </div>
@@ -2404,7 +2404,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         ].map(([k, d], i) => (
           <div key={i} style={sty.cmd}>
             <span style={{ color: accent, fontSize: 12, minWidth: 130 }}>{k}</span>
-            <span style={{ color: t.textDim, fontSize: 11 }}>{d}</span>
+            <span style={{ color: t.textDim, fontSize: 13 }}>{d}</span>
           </div>
         ))}
         <h3 style={{ ...sty.h3, marginTop: 20 }}>Natural Language</h3>
@@ -2420,7 +2420,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         ].map(([k, d], i) => (
           <div key={i} style={sty.cmd}>
             <span style={{ color: accent, fontSize: 12, minWidth: 200 }}>{k}</span>
-            <span style={{ color: t.textDim, fontSize: 11 }}>{d}</span>
+            <span style={{ color: t.textDim, fontSize: 13 }}>{d}</span>
           </div>
         ))}
 
@@ -3325,7 +3325,7 @@ useEffect(() => {
           )}
         </div>
       )}
-      {error && <div style={{ color: t.warn, fontSize: 11 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
+      {error && <div style={{ color: t.warn, fontSize: 13 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
     {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
       <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10, minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', width: '100%' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' }}>
@@ -3364,7 +3364,7 @@ useEffect(() => {
         {/* Row 1: title + confidence stats */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
           <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 10 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 12 }}>
             <span style={{ color: t.textDim }}>Rules {merchantRules.length}</span>
             <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
             <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
@@ -3374,7 +3374,7 @@ useEffect(() => {
         </div>
         {/* Row 2: action buttons — wraps freely */}
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginTop: 8 }}>
-          <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '6px 10px', fontSize: 10 }}>
+          <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '6px 10px', fontSize: 12 }}>
             {showLowConfidence ? 'Hide Low' : 'Show Low'}
           </button>
           <button
@@ -3397,7 +3397,7 @@ useEffect(() => {
             Mark Reviewed
           </button>
           {csvBlobUrl && (
-            <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10 }}>
+            <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12 }}>
               <Download size={12} /> CSV
             </a>
           )}
@@ -3408,10 +3408,10 @@ useEffect(() => {
         {reviewLowConfidence && lowConfidenceRows.length > 0 && (
           <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 12, color: t.textDim }}>
             <span>Reviewing low-confidence row {reviewCursor + 1} / {lowConfidenceRows.length}</span>
-            <button onClick={() => setReviewCursor(c => Math.max(0, c - 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 10 }} disabled={reviewCursor === 0}>
+            <button onClick={() => setReviewCursor(c => Math.max(0, c - 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 12 }} disabled={reviewCursor === 0}>
               PREV
             </button>
-            <button onClick={() => setReviewCursor(c => Math.min(lowConfidenceRows.length - 1, c + 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 10 }} disabled={reviewCursor >= lowConfidenceRows.length - 1}>
+            <button onClick={() => setReviewCursor(c => Math.min(lowConfidenceRows.length - 1, c + 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 12 }} disabled={reviewCursor >= lowConfidenceRows.length - 1}>
               NEXT
             </button>
             <button
@@ -3419,7 +3419,7 @@ useEffect(() => {
                 const idx = lowConfidenceRows[reviewCursor]?.idx;
                 if (typeof idx === 'number') setReviewedLowIndices(prev => (prev.includes(idx) ? prev : [...prev, idx]));
               }}
-              style={{ ...btn, padding: '6px 8px', fontSize: 10 }}
+              style={{ ...btn, padding: '6px 8px', fontSize: 12 }}
             >
               MARK REVIEWED
             </button>
@@ -3427,9 +3427,9 @@ useEffect(() => {
         )}
 
         <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch', width: '100%' }}>
-          <table style={{ width: '100%', minWidth: 580, borderCollapse: 'collapse', fontSize: 11 }}>
+          <table style={{ width: '100%', minWidth: 580, borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 10 }}>
+              <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 12 }}>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Payee</th>
                 <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Confidence</th>
@@ -3521,7 +3521,7 @@ useEffect(() => {
     {/* Optional raw extracted text */}
     {stmtText && (
       <details style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
-            <summary style={{ cursor: 'pointer', color: t.textDim, fontSize: 11 }}>View extracted text</summary>
+            <summary style={{ cursor: 'pointer', color: t.textDim, fontSize: 13 }}>View extracted text</summary>
         <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, color: t.textDim, marginTop: 10, fontFamily: "'JetBrains Mono', monospace" }}>
           {stmtText.slice(0, 20000)}{stmtText.length > 20000 ? '\\n…(truncated)…' : ''}
         </pre>
@@ -3685,10 +3685,10 @@ useEffect(() => {
                   if (totalBudgeted === 0 && totalSpent === 0) return null;
                   const remaining = totalBudgeted - totalSpent;
                   return (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 10 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 12 }}>
                       <span style={{ color: t.textDim }}>TOTAL</span>
                       <span style={{ color: t.textSecondary }}>{fmt(totalBudgeted)}</span>
-                      <span style={{ color: totalSpent > totalBudgeted && totalBudgeted > 0 ? t.danger : t.textSecondary }}>{fmt(totalSpent)} <span style={{ color: remaining >= 0 ? t.accent : t.danger, fontSize: 9 }}>{remaining >= 0 ? `${fmt(remaining)} left` : `${fmt(Math.abs(remaining))} over`}</span></span>
+                      <span style={{ color: totalSpent > totalBudgeted && totalBudgeted > 0 ? t.danger : t.textSecondary }}>{fmt(totalSpent)} <span style={{ color: remaining >= 0 ? t.accent : t.danger, fontSize: 12 }}>{remaining >= 0 ? `${fmt(remaining)} left` : `${fmt(Math.abs(remaining))} over`}</span></span>
                     </div>
                   );
                 })()}
@@ -3826,7 +3826,7 @@ useEffect(() => {
                   </div>
                 );
               })()}
-              {success && <div style={{ color: t.accent, fontSize: 11 }}>✓ SYNC COMMITTED</div>}
+              {success && <div style={{ color: t.accent, fontSize: 13 }}>✓ SYNC COMMITTED</div>}
               <button onClick={handleGuided} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase' }}>BUILD & SYNC</button>
             </div>
           )}
@@ -3940,9 +3940,9 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Money Map</div>
-        <div style={{ display: 'flex', gap: 16, fontSize: 10 }}>
-          <span><span style={{ color: t.textDim, fontSize: 9 }}>ASSETS </span><span style={{ color: t.accent }}>{fmt(tA)}</span></span>
-          <span><span style={{ color: t.textDim, fontSize: 9 }}>LIABILITIES </span><span style={{ color: t.danger }}>{fmt(tL)}</span></span>
+        <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
+          <span><span style={{ color: t.textDim, fontSize: 12 }}>ASSETS </span><span style={{ color: t.accent }}>{fmt(tA)}</span></span>
+          <span><span style={{ color: t.textDim, fontSize: 12 }}>LIABILITIES </span><span style={{ color: t.danger }}>{fmt(tL)}</span></span>
         </div>
       </div>
       {/* Map tiles */}
@@ -4054,7 +4054,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
   return (<Card title="Debt Destruction" visible={visible} delay={80} alert={debts.some(d => d.balance > 2000)} t={t}>
     <div style={{ marginBottom: 14 }}><div style={{ fontSize: 28, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}><AnimNum value={total} /></div>
       {di > 0 && <div style={{ color: t.danger, fontSize: 12, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}><AnimNum value={di} decimals={2} style={{ color: t.danger }} />/day interest burn</div>}</div>
-    {debts.length === 0 ? <div style={{ color: t.textDim, fontSize: 11 }}>No debts tracked</div> : debts.map((d, i) => {
+    {debts.length === 0 ? <div style={{ color: t.textDim, fontSize: 13 }}>No debts tracked</div> : debts.map((d, i) => {
       const isFixed = (d.totalTerms || 0) > 0;
       const pmtsMade = d.paymentsMade || 0;
       const remaining = isFixed ? d.totalTerms - pmtsMade : 0;
@@ -4092,7 +4092,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
             <span>
               {isFixed
                 ? <span style={{ color: isLast ? t.accent : t.textSecondary }}>{pmtsMade} of {d.totalTerms} PMTS</span>
-                : <span>{fmt(d.balance)} <span style={{ color: t.textDim, fontSize: 9 }}>min {fmt(d.minPayment)}/mo</span></span>
+                : <span>{fmt(d.balance)} <span style={{ color: t.textDim, fontSize: 12 }}>min {fmt(d.minPayment)}/mo</span></span>
               }
             </span>
             {onUpdateDebt && <>
@@ -4221,7 +4221,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
             </div>
             {extra > 0 && <div style={{ fontSize: 13, color: t.textSecondary }}>With {fmt(extra)} extra: <span style={{ color: t.accent }}>{acceleratedCustom * 30}d</span></div>}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
             <div style={{ color: t.textDim }}>+50%/mo extra: <span style={{ color: t.accent }}>{accelerated50 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated50)} mo saved)</span></div>
             <div style={{ color: t.textDim }}>+100%/mo extra: <span style={{ color: t.accent }}>{accelerated100 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated100)} mo saved)</span></div>
           </div>
@@ -4425,7 +4425,7 @@ function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
   return (
     <Card title="Bills & Payday Planner" visible={visible} delay={120} t={t}>
       <div style={{ display: 'grid', gap: 8 }}>
-        {timeline.length === 0 && <div style={{ color: t.textDim, fontSize: 11 }}>No bill or payday events tracked yet. Add in Manual Sync.</div>}
+        {timeline.length === 0 && <div style={{ color: t.textDim, fontSize: 13 }}>No bill or payday events tracked yet. Add in Manual Sync.</div>}
         {timeline.map((e, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 6 }}>
             <div>
@@ -4603,14 +4603,14 @@ function BudgetMod({ latest, visible, t }) {
     )}
 
     {/* Category rows */}
-    {cats.length === 0 ? <div style={{ color: t.textDim, fontSize: 11 }}>No budget data</div> : <>
+    {cats.length === 0 ? <div style={{ color: t.textDim, fontSize: 13 }}>No budget data</div> : <>
       {income > 0 && totalSpent === 0 && (
         <div style={{ padding: '8px 12px', marginBottom: 10, background: t.warn + '12', border: `1px solid ${t.warn}40`, borderLeft: `3px solid ${t.warn}`, fontSize: 12, color: t.warn, lineHeight: 1.5 }}>
           ⚠ Income detected ({fmt(income)}) but $0 across all categories. Re-sync via Guided tab with actual spend, or your bank CSV may need sign correction.
         </div>
       )}
       {cats.map((c, i) => { const pct = c.budgeted > 0 ? (c.actual / c.budgeted) * 100 : (c.actual > 0 ? 100 : 0); return (<div key={i} style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 12, marginBottom: 3 }}><span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.name}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 11 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 13, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 12, marginBottom: 3 }}><span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.name}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 13 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 13, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
       {c.budgeted > 0 && <ProgressBar percent={pct} t={t} />}
       {c.budgeted === 0 && c.actual > 0 && <div style={{ height: 6, background: t.accent, marginBottom: 4, opacity: 0.5 }} />}
     </div>); })}
@@ -4654,7 +4654,7 @@ function ProtectionMod({ latest, visible, t }) {
   const hasData = li.deathBenefit > 0 || fb.current > 0;
 
   return (<Card title="Protection • Life & Coverage" visible={visible} delay={300} alert={convUrgent} t={t}>
-    {!hasData ? <div style={{ color: t.textDim, fontSize: 11 }}>No protection data — sync via Guided tab</div> : <>
+    {!hasData ? <div style={{ color: t.textDim, fontSize: 13 }}>No protection data — sync via Guided tab</div> : <>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
         <div>
           <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Death Benefit</div>
@@ -4672,7 +4672,7 @@ function ProtectionMod({ latest, visible, t }) {
       {fb.target > 0 && <div style={{ marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
           <span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Funeral Buffer</span>
-          <span><span style={{ color: t.textPrimary }}>{fmt(fb.current)}</span> <span style={{ color: t.textDim }}>/ {fmt(fb.target)}</span> <span style={{ color: pctColor(fbPct, t), fontSize: 9 }}>{Math.round(fbPct)}%</span></span>
+          <span><span style={{ color: t.textPrimary }}>{fmt(fb.current)}</span> <span style={{ color: t.textDim }}>/ {fmt(fb.target)}</span> <span style={{ color: pctColor(fbPct, t), fontSize: 12 }}>{Math.round(fbPct)}%</span></span>
         </div>
         <ProgressBar percent={fbPct} color={fb.current === 0 ? t.danger : undefined} t={t} />
       </div>}
@@ -4680,7 +4680,7 @@ function ProtectionMod({ latest, visible, t }) {
       {/* Conversion Alert */}
       {convAlert && <div style={{ padding: '8px 10px', fontSize: 12, marginTop: 4, background: convUrgent ? t.warn + '12' : t.surface, border: `1px solid ${convUrgent ? t.warn : t.borderDim}`, color: convUrgent ? t.warn : t.textDim }}>
         {convUrgent ? '⌛ ' : '🔒 '}{convAlert}
-        {li.conversionDeadline && <span style={{ color: t.textGhost, marginLeft: 8, fontSize: 9 }}>Deadline: {li.conversionDeadline}</span>}
+        {li.conversionDeadline && <span style={{ color: t.textGhost, marginLeft: 8, fontSize: 12 }}>Deadline: {li.conversionDeadline}</span>}
       </div>}
 
       {/* Expiration */}
@@ -4709,7 +4709,7 @@ function PortfolioMod({ latest, visible, t }) {
   const hasData = equities.length > 0 || options.length > 0 || crypto.length > 0;
 
   return (<Card title="Portfolio" visible={visible} delay={360} t={t}>
-    {!hasData ? <div style={{ color: t.textDim, fontSize: 11 }}>No positions tracked — sync via Guided tab</div> : <>
+    {!hasData ? <div style={{ color: t.textDim, fontSize: 13 }}>No positions tracked — sync via Guided tab</div> : <>
       {/* Summary row */}
       {(() => {
         const cols = [];
@@ -4749,7 +4749,7 @@ function PortfolioMod({ latest, visible, t }) {
         const mv = (e.shares || 0) * (e.lastPrice || 0);
         const cost = (e.shares || 0) * (e.avgCost || 0);
         const pl = mv - cost;
-        return (<div key={`eq-${i}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: `1px solid ${t.borderDim}`, fontSize: 11 }}>
+        return (<div key={`eq-${i}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: `1px solid ${t.borderDim}`, fontSize: 13 }}>
           <div>
             <span style={{ color: t.accent, fontWeight: 700 }}>{e.ticker || '???'}</span>
             <span style={{ color: t.textDim, fontSize: 13, marginLeft: 6 }}>{e.shares} shares @ {fmt(e.avgCost)}</span>
@@ -4775,7 +4775,7 @@ function PortfolioMod({ latest, visible, t }) {
           animation: isUrgent ? 'purplePulse 2s ease-in-out infinite' : 'none',
         }}>
           <div>
-            <span style={{ color: t.purple, fontWeight: 700, fontSize: 11 }}>{o.ticker || '???'} {o.type || 'CALL'}</span>
+            <span style={{ color: t.purple, fontWeight: 700, fontSize: 13 }}>{o.ticker || '???'} {o.type || 'CALL'}</span>
             {o.strikePrice > 0 && <span style={{ color: t.textDim, fontSize: 13, marginLeft: 4 }}>${o.strikePrice}</span>}
             <div style={{ fontSize: 13, color: isUrgent ? t.purple : t.textDim }}>{o.contracts} contract{o.contracts !== 1 ? 's' : ''} • Exp: {o.expDate || '—'}</div>
           </div>
@@ -4806,7 +4806,7 @@ function PortfolioMod({ latest, visible, t }) {
             background: t.cryptoMuted,
           }}>
             <div>
-              <span style={{ color: t.crypto, fontWeight: 700, fontSize: 11 }}>{c.coin || '???'}</span>
+              <span style={{ color: t.crypto, fontWeight: 700, fontSize: 13 }}>{c.coin || '???'}</span>
               <span style={{ color: t.textDim, fontSize: 13, marginLeft: 6 }}>{amt} @ {fmt(cost)}</span>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -5442,14 +5442,14 @@ function DirectiveMod({ visible, latest, t }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Budget Alerts</div>
         {blownCats.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10 }}>
-            <span style={{ color: t.danger, fontWeight: 700, fontSize: 9 }}>✕ BLOWN</span>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+            <span style={{ color: t.danger, fontWeight: 700, fontSize: 12 }}>✕ BLOWN</span>
             <span style={{ color: t.textSecondary }}>{c.name} — ${c.actual.toLocaleString()} / ${c.budgeted.toLocaleString()}</span>
           </div>
         ))}
         {warnCats.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10 }}>
-            <span style={{ color: t.warn, fontWeight: 700, fontSize: 9 }}>⚠ WARN</span>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+            <span style={{ color: t.warn, fontWeight: 700, fontSize: 12 }}>⚠ WARN</span>
             <span style={{ color: t.textSecondary }}>{c.name} — ${c.actual.toLocaleString()} / ${c.budgeted.toLocaleString()}</span>
           </div>
         ))}
@@ -5855,7 +5855,7 @@ function TransactionsMod({ latest, visible, t }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {displayTxns.map((tx, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 9 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 12 }}>
                 <span style={{ color: t.textGhost, flexShrink: 0, width: 52, fontVariantNumeric: 'tabular-nums' }}>{tx.date ? tx.date.slice(5) : '—'}</span>
                 <span style={{ color: t.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</span>
                 <span style={{ flexShrink: 0, width: 68, background: catColor(tx.category) + '22', color: catColor(tx.category), padding: '1px 4px', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', textAlign: 'center' }}>{tx.category}</span>
@@ -6050,7 +6050,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <button
         onClick={() => setSyncOpen(true)}
         title="Import new statement to update"
-        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'JetBrains Mono', monospace", fontSize: 9 }}
+        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}
       >
         <span style={{ color: t.textDim }}>LAST SYNC: {latest.date || 'never'}</span>
         <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.textGhost }}>
@@ -6467,7 +6467,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Shield size={14} style={{ color: t.accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
-          <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+          <span style={{ color: t.textGhost, fontSize: 12 }}>v2.4</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
@@ -6613,7 +6613,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                       <Tooltip
                         contentStyle={{ background: t.surface, border: `1px solid ${t.borderMid}`, fontSize: 13, padding: '4px 8px', fontFamily: "'JetBrains Mono', monospace" }}
                         formatter={(v) => [`$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
-                        labelStyle={{ color: t.textSecondary, fontSize: 8 }}
+                        labelStyle={{ color: t.textSecondary, fontSize: 13 }}
                       />
                       <Area type="monotone" dataKey="price" stroke={lineColor} fill={`url(#${gradId})`} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: lineColor }} />
                     </AreaChart>
@@ -6810,7 +6810,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Shield size={14} style={{ color: t.accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FORTIFYOS</span>
-          <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
+          <span style={{ color: t.textGhost, fontSize: 12 }}>v2.4</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
