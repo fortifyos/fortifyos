@@ -481,11 +481,11 @@ function parseStatementTextToTransactions(text, options = {}) {
     .filter(Boolean);
 
   // ── Cash App parser ──────────────────────────────────────────────────────────
-  // Actual Cash App statement format (from PDF export):
-  //   Jan 1  To Savings Transfer              $0.00  $0.80       ← debit (no +)
-  //   Jan 2  From USAA Bank x1353 Standard transfer  $0.00  + $10.00  ← credit (+)
-  //   Jan 23 sale of BTC 0.09516752 Bitcoin sale  $63.45  + $8,395.65
-  // Year comes from page headers: "January 2026"
+  // Cash App statement format (from PDF export):
+  //   Jan 1  Merchant Name                    $0.00  $12.34      ← debit (no +)
+  //   Jan 2  From Bank Standard transfer       $0.00  + $100.00  ← credit (+)
+  //   Jan 15 Bitcoin sale                      $1.00  + $500.00
+  // Year is inferred from page headers: "January 2026"
   if (bankKey === 'cashapp') {
     const txns = [];
     const CA_MONTHS = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 };
