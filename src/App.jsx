@@ -402,21 +402,35 @@ function parseAmountLike(s) {
   return neg ? -Math.abs(n) : n;
 }
 
-const STATEMENT_TEMPLATES = [
-  // More-specific templates must come BEFORE generic overlapping ones
-  { key: 'cashapp', label: 'Cash App', detect: /(cash\s*app|square\s*cash|\$cashtag|block,?\s*inc|cash\s*out\s*to\s*bank|cash\s*in\s*from\s*bank|cashapp\.com|cash\s*app\s*card|cashtag|1-800-969-1940)/i },
-  { key: 'capitalone', label: 'Capital One', detect: /(capital\s*one|capitalone\.com|cap\s*one)/i },
-  // USAA: removed generic "funds transfer" — too broad, matches Cash App and others
+// Bank-issuer templates — matched against header area first (top ~600 chars)
+const BANK_TEMPLATES = [
   { key: 'usaa', label: 'USAA', detect: /(usaa|classic checking|ach withdrawal|ach dep)/i },
-  { key: 'chase', label: 'Chase', detect: /(chase|jpmorgan|transaction date|post date|debit card purchase)/i },
+  { key: 'capitalone', label: 'Capital One', detect: /(capital\s*one|capitalone\.com|cap\s*one)/i },
+  { key: 'chase', label: 'Chase', detect: /(chase|jpmorgan)/i },
   { key: 'bofa', label: 'Bank of America', detect: /(bank of america|bofa|running bal|bankofamerica)/i },
   { key: 'wellsfargo', label: 'Wells Fargo', detect: /(wells fargo|wellsfargo)/i },
   { key: 'citi', label: 'Citi', detect: /(citi|citibank)/i },
 ];
+// Non-bank / payment-app templates — only match when no bank header found
+// (their names frequently appear as transaction descriptions in bank statements)
+const APP_TEMPLATES = [
+  { key: 'cashapp', label: 'Cash App', detect: /(cash\s*app|square\s*cash|\$cashtag|block,?\s*inc|cash\s*out\s*to\s*bank|cash\s*in\s*from\s*bank|cashapp\.com|cash\s*app\s*card|cashtag|1-800-969-1940)/i },
+];
+const ALL_TEMPLATES = [...BANK_TEMPLATES, ...APP_TEMPLATES];
 
 function detectStatementTemplate(rawText = '', fileName = '') {
   const source = `${fileName || ''}\n${rawText || ''}`;
-  for (const tpl of STATEMENT_TEMPLATES) {
+  // Pass 1 — check the statement header (first ~600 chars) for bank-issuer names
+  const header = source.slice(0, 600);
+  for (const tpl of BANK_TEMPLATES) {
+    if (tpl.detect.test(header)) return tpl;
+  }
+  // Pass 2 — full-text match for banks (e.g. bank name only appears mid-page)
+  for (const tpl of BANK_TEMPLATES) {
+    if (tpl.detect.test(source)) return tpl;
+  }
+  // Pass 3 — payment apps (Cash App, etc.) — only if no bank matched
+  for (const tpl of APP_TEMPLATES) {
     if (tpl.detect.test(source)) return tpl;
   }
   return { key: 'generic', label: 'Generic' };
