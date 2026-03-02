@@ -403,7 +403,11 @@ function parseAmountLike(s) {
 }
 
 const STATEMENT_TEMPLATES = [
-  { key: 'usaa', label: 'USAA', detect: /(usaa|classic checking|funds transfer|ach withdrawal|ach dep)/i },
+  // More-specific templates must come BEFORE generic overlapping ones
+  { key: 'cashapp', label: 'Cash App', detect: /(cash\s*app|square\s*cash|\$cashtag|block,?\s*inc|cash\s*out\s*to\s*bank|cash\s*in\s*from\s*bank|cashapp\.com)/i },
+  { key: 'capitalone', label: 'Capital One', detect: /(capital\s*one|capitalone\.com|cap\s*one)/i },
+  // USAA: removed generic "funds transfer" — too broad, matches Cash App and others
+  { key: 'usaa', label: 'USAA', detect: /(usaa|classic checking|ach withdrawal|ach dep)/i },
   { key: 'chase', label: 'Chase', detect: /(chase|jpmorgan|transaction date|post date|debit card purchase)/i },
   { key: 'bofa', label: 'Bank of America', detect: /(bank of america|bofa|running bal|bankofamerica)/i },
   { key: 'wellsfargo', label: 'Wells Fargo', detect: /(wells fargo|wellsfargo)/i },
@@ -476,6 +480,76 @@ function parseStatementTextToTransactions(text, options = {}) {
     .map(l => (l || '').replace(/\t/g, ' ').trim())
     .filter(Boolean);
 
+  // ── Cash App parser ──────────────────────────────────────────────────────────
+  if (bankKey === 'cashapp') {
+    const txns = [];
+    // Cash App exports use ISO dates (2026-01-15) or "Jan 15, 2026"
+    const caDateRx = /(\d{4}-\d{2}-\d{2}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*\d{1,2},?\s*\d{4})/i;
+    const caAmtRx  = /([+\-]?\$?\d[\d,]*\.\d{2})/g;
+    const caDirection = (typeStr = '', desc = '') => {
+      const s = `${typeStr} ${desc}`.toLowerCase();
+      if (/payment\s*received|cash\s*in|direct\s*dep|refund|reward|boost\s*earn/i.test(s)) return 1;
+      if (/payment\s*sent|cash\s*out|purchase|withdrawal|bitcoin\s*purchase/i.test(s)) return -1;
+      return 0;
+    };
+    const isNoiseCA = (l) => /^(date|type|note|status|total|cash app statement|square cash|page\s+\d+)/i.test(l);
+
+    for (let i = 0; i < rawLines.length; i++) {
+      const line = rawLines[i];
+      if (!line || isNoiseCA(line)) continue;
+      const dm = line.match(caDateRx);
+      if (!dm) continue;
+      const date = normalizeDateLike(dm[1]);
+      if (!date) continue;
+
+      // Collect amounts on this line and up to 2 continuation lines
+      let combined = line;
+      let j = i + 1;
+      while (j < rawLines.length && j - i <= 3) {
+        const next = rawLines[j];
+        if (!next || caDateRx.test(next)) break;
+        combined += ' ' + next;
+        j++;
+      }
+      i = j - 1;
+
+      const allAmts = Array.from(combined.matchAll(caAmtRx)).map(m => m[0]).filter(Boolean);
+      if (!allAmts.length) continue;
+
+      // Pick the signed / explicit-sign token; otherwise first token
+      const amtToken = allAmts.find(a => /^[+\-]/.test(a)) || allAmts[0];
+      let amt = parseAmountLike(amtToken);
+      if (amt === null) continue;
+
+      // Strip date, amount tokens, noise words to build description
+      let desc = normalizeMerchantDescription(
+        combined
+          .replace(caDateRx, '')
+          .replace(caAmtRx, ' ')
+          .replace(/\b(completed|pending|failed|usd|status|type|note)\b/gi, ' ')
+          .replace(/\s{2,}/g, ' ')
+          .trim()
+      );
+      if (!desc || (desc.match(/[A-Za-z]/g) || []).length < 3) continue;
+
+      const dir = caDirection(combined, desc);
+      const signed = dir > 0 ? Math.abs(amt) : dir < 0 ? -Math.abs(amt) : (/^[+]/.test(amtToken) ? Math.abs(amt) : -Math.abs(amt));
+      txns.push(withTxnConfidence({ date, description: desc, amount: signed }, combined));
+    }
+
+    const seen = new Set();
+    const out = [];
+    for (const t of txns) {
+      const key = `${t.date}|${t.description}|${t.amount}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(t);
+    }
+    out.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
+    return out;
+  }
+
+  // ── USAA parser ──────────────────────────────────────────────────────────────
   if (bankKey === 'usaa') {
     const txns = [];
     // Support both MM/DD and MM/DD/YYYY formats (real USAA statements use MM/DD/YYYY)
@@ -797,9 +871,13 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
 }
 
 // Detect whether a statement is for a credit card, savings, or checking account
-function detectAccountType(rawText = '') {
+function detectAccountType(rawText = '', bankKey = '') {
+  // Certain banks are always credit-card issuers in this context
+  if (/^(capitalone|citi)$/.test(bankKey)) return 'credit_card';
+  // Cash App is always checking-equivalent (debit)
+  if (bankKey === 'cashapp') return 'checking';
   const t = String(rawText || '').toLowerCase();
-  const ccPatterns = /minimum payment due|credit limit|purchase apr|cash advance apr|statement balance|new balance due|payment due date|revolving credit|credit card account|credit account/i;
+  const ccPatterns = /minimum payment due|credit limit|purchase apr|cash advance apr|statement balance|new balance due|payment due date|revolving credit|credit card account|credit account|capital one/i;
   const savingsPatterns = /savings account|high.?yield|money market|hysa|savings deposit/i;
   if (ccPatterns.test(t)) return 'credit_card';
   if (savingsPatterns.test(t)) return 'savings';
@@ -2679,10 +2757,12 @@ const handleStatementFiles = async (files, mode = 'replace') => {
       ? { ...stmtReconSummary, warnings: [...(stmtReconSummary.warnings || [])] }
       : { correctedSign: 0, filledYear: 0, balanceDiff: null, warnings: [] };
     let detectedTemplate = append ? stmtTemplateLabel : '';
+    let detectedBankKey = 'generic';
 
     for (const file of list) {
       const { rawText, template, reconciled } = await parseStatementInput(file);
       detectedTemplate = detectedTemplate && detectedTemplate !== template.label ? 'Mixed Templates' : template.label;
+      detectedBankKey = template.key || 'generic';
       mergedRaw = `${mergedRaw}${mergedRaw ? '\n\n--- NEXT FILE ---\n\n' : ''}${rawText || ''}`;
       mergedText = mergedRaw;
       mergedTxns = [...mergedTxns, ...reconciled.txns];
@@ -2696,8 +2776,8 @@ const handleStatementFiles = async (files, mode = 'replace') => {
       reconAgg.warnings.push(...(reconciled.summary.warnings || []));
     }
 
-    // Detect account type from full merged raw text
-    const accountType = detectAccountType(mergedRaw);
+    // Detect account type — pass bankKey so Capital One/Citi are always credit_card
+    const accountType = detectAccountType(mergedRaw, detectedBankKey);
 
     const dedup = [];
     const seen = new Set();
