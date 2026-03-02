@@ -60,7 +60,7 @@ class AppErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error) {
-    console.error('FortifyOS runtime error:', error);
+    console.error('fortifyOS runtime error:', error);
   }
 
   render() {
@@ -1507,11 +1507,11 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   ];
 
   const faqs = [
-    { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
+    { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. fortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
     { q: 'Is my financial data safe?', a: 'Your data is stored locally in this browser profile. The 20 instruction files in the cloud contain zero financial data. Your actual numbers live in 4 local CSV files and local snapshots—disable browser sync if you want single-device isolation. Sensitive fields (SSNs, account/card numbers, emails, phones) are auto-redacted before any processing or display.' },
-    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FortifyOS auto-parses your bank exports (CSV/PDF) and screenshots, tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
+    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. fortifyOS auto-parses your bank exports (CSV/PDF) and screenshots, tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
     { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and at least one statement export (CSV, PDF, or screenshot). Setup is ~30–45 minutes on desktop. After that, daily use is 2–5 minutes — upload new statements when needed and run your morning snapshot.' },
-    { q: 'Can I use it on my phone?', a: 'Yes. You can run FortifyOS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
+    { q: 'Can I use it on my phone?', a: 'Yes. You can run fortifyOS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
   ];
 
   return (
@@ -1556,7 +1556,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 
           {/* Sub */}
           <p style={{ color: t.textSecondary, maxWidth: 520, margin: '0 auto 36px', lineHeight: 1.7 }} className="hero-sub">
-            You know what you should do with your money. You can't execute it. FortifyOS is the financial operating system that enforces discipline — calculates your debt order, blocks premature investments, and tells you exactly what to do every morning.
+            You know what you should do with your money. You can't execute it. fortifyOS is the financial operating system that enforces discipline — calculates your debt order, blocks premature investments, and tells you exactly what to do every morning.
           </p>
 
           {/* CTAs */}
@@ -1800,7 +1800,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
       { id: 'commands', num: '12', label: 'Command Reference' },
       { id: 'claude-code', num: '13', label: 'Desktop Parsing (Claude Code)' },
     ]},
-    { key: 'why', label: 'Why FortifyOS', items: [
+    { key: 'why', label: 'Why fortifyOS', items: [
       { id: 'comparison', num: '15', label: 'Competitive Comparison' },
     ]},
   ];
@@ -1896,7 +1896,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
 
         {/* 01 THE 7 STAGES */}
         <h2 id="doc-stages" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>01</span> The 7 Stages</h2>
-        <p style={sty.p}>FortifyOS maps your entire financial life onto a <strong style={{ color: t.textPrimary }}>7-stage journey</strong> — from chaos to generational wealth. Your current stage is calculated from live data, not a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
+        <p style={sty.p}>fortifyOS maps your entire financial life onto a <strong style={{ color: t.textPrimary }}>7-stage journey</strong> — from chaos to generational wealth. Your current stage is calculated from live data, not a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
 
         {/* Stage progress visualization */}
         <div style={{ display: 'flex', gap: 2, margin: '18px 0 6px' }}>
@@ -1935,16 +1935,16 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <strong style={{ color: t.textPrimary }}>Defense Mode:</strong> Most users enter at Stage 0 or 1. The system enforces Defense Mode (Stages 0–3) — all investment logic is locked until Stage 3 is mathematically verified from your live data. This is a feature, not a limitation.
         </div>
         <div style={sty.note(t.warn)}>
-          <strong style={{ color: t.textPrimary }}>BNPL Alert:</strong> Buy Now Pay Later platforms fragment debt across apps, making it invisible to your budget. FortifyOS tracks BNPL installments remaining — not just balances — and categorizes untracked outflow as Lifestyle by default. Nothing hides.
+          <strong style={{ color: t.textPrimary }}>BNPL Alert:</strong> Buy Now Pay Later platforms fragment debt across apps, making it invisible to your budget. fortifyOS tracks BNPL installments remaining — not just balances — and categorizes untracked outflow as Lifestyle by default. Nothing hides.
         </div>
 
         {/* 02 HOW IT WORKS */}
         <h2 id="doc-how-it-works" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>02</span> How It Works</h2>
-        <p style={sty.p}>FortifyOS runs inside Claude AI through a skill package called <strong style={{ color: t.textPrimary }}>KNOX</strong> (Knowledge Nexus Operations eXecution) — 24 files that give Claude a persistent financial identity, enforcement logic, and data processing capability. Three layers keep your data safe and the system operational.</p>
+        <p style={sty.p}>fortifyOS runs inside Claude AI through a skill package called <strong style={{ color: t.textPrimary }}>KNOX</strong> (Knowledge Nexus Operations eXecution) — 24 files that give Claude a persistent financial identity, enforcement logic, and data processing capability. Three layers keep your data safe and the system operational.</p>
 
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
-            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV or upload a text-based statement PDF. FortifyOS extracts transactions locally, runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
+            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV or upload a text-based statement PDF. fortifyOS extracts transactions locally, runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
             { num: '2', title: 'SYSTEM CALCULATES', desc: 'KNOX determines your stage, ranks debts by APR, calculates daily interest burn, projects cash flow, and checks every action against safety rails — in real time.' },
             { num: '3', title: 'EXECUTE WITH CONFIDENCE', desc: 'Get a Morning Pulse with exactly what to do today. Weekly HUD tracks direction. Monthly reports show the math. The system enforces — you decide.' },
           ].map((c, i) => (
@@ -2010,7 +2010,7 @@ cd %USERPROFILE%\\FORTIFY && claude
 # 8. Submit first statement → system operational`}</pre>
 
         <h3 style={sty.h3}>Mobile (Daily Interface) — 5 min</h3>
-        <p style={sty.p}>Download the Claude app (iOS or Android), sign in with the same Anthropic account, and open the FortifyOS Project. KNOX loads automatically. You get full daily briefings, payment checks, market updates, and emergency commands. Desktop is required for CSV data processing — mobile is your daily command line.</p>
+        <p style={sty.p}>Download the Claude app (iOS or Android), sign in with the same Anthropic account, and open the fortifyOS Project. KNOX loads automatically. You get full daily briefings, payment checks, market updates, and emergency commands. Desktop is required for CSV data processing — mobile is your daily command line.</p>
 
         <div style={sty.note()}>
           <strong style={{ color: t.textPrimary }}>Daily time investment:</strong> 2–5 minutes. Say "Good morning" and the system tells you exactly what to do today.
@@ -2111,7 +2111,7 @@ cd %USERPROFILE%\\FORTIFY && claude
 
         {/* 04 THE ENFORCEMENT ENGINE */}
         <h2 id="doc-enforcement" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>04</span> The Enforcement Engine</h2>
-        <p style={sty.p}>This is the core differentiator. Other tools track what happened. FortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
+        <p style={sty.p}>This is the core differentiator. Other tools track what happened. fortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
 
         <h3 style={sty.h3}>Layer 1: Validation Loop (Pre-Execution)</h3>
         <p style={sty.p}>Before any action, KNOX runs three checks. If any fails, the system halts and explains why before proceeding.</p>
@@ -2453,11 +2453,11 @@ cat snapshot.json | pbcopy`}</pre>
 
         {/* 15 COMPETITIVE COMPARISON */}
         <h2 id="doc-comparison" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>15</span> Competitive Comparison</h2>
-        <p style={sty.p}>FortifyOS is not a budgeting app, a chatbot, or a dashboard. Here's how it compares to the alternatives.</p>
+        <p style={sty.p}>fortifyOS is not a budgeting app, a chatbot, or a dashboard. Here's how it compares to the alternatives.</p>
 
         <h3 style={sty.h3}>vs. Budgeting Apps (Mint, YNAB, Copilot, Monarch)</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Budgeting Apps</th><th style={{ ...sty.th, color: accent }}>FortifyOS</th></tr></thead>
+          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Budgeting Apps</th><th style={{ ...sty.th, color: accent }}>fortifyOS</th></tr></thead>
           <tbody>
             {[
               ['Approach', 'Track what happened', 'Enforce what should happen'],
@@ -2474,7 +2474,7 @@ cat snapshot.json | pbcopy`}</pre>
 
         <h3 style={sty.h3}>vs. Financial Advisors</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Advisors</th><th style={{ ...sty.th, color: accent }}>FortifyOS</th></tr></thead>
+          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Advisors</th><th style={{ ...sty.th, color: accent }}>fortifyOS</th></tr></thead>
           <tbody>
             {[
               ['Approach', 'Give advice', 'Run calculations and show the math'],
@@ -2489,7 +2489,7 @@ cat snapshot.json | pbcopy`}</pre>
 
         <h3 style={sty.h3}>vs. Generic AI (ChatGPT, Gemini, Generic Claude)</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Generic AI</th><th style={{ ...sty.th, color: accent }}>FortifyOS</th></tr></thead>
+          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Generic AI</th><th style={{ ...sty.th, color: accent }}>fortifyOS</th></tr></thead>
           <tbody>
             {[
               ['Approach', 'Answer questions', 'Enforce a system'],
@@ -2504,7 +2504,7 @@ cat snapshot.json | pbcopy`}</pre>
         </table>
 
         <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Important:</strong> FortifyOS does not replace a licensed financial advisor for legal or tax advice. It is a system that enforces financial discipline through math, not a source of regulated financial guidance.
+          <strong style={{ color: t.textPrimary }}>Important:</strong> fortifyOS does not replace a licensed financial advisor for legal or tax advice. It is a system that enforces financial discipline through math, not a source of regulated financial guidance.
         </div>
 
         {/* Footer */}
@@ -5968,7 +5968,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
           <div style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
+            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · fortifyOS operational
           </div>
         </div>
         {/* Right — Net Worth + equity ownership bar */}
@@ -7250,7 +7250,7 @@ function FortifyOSApp() {
   );
 }
 
-export default function FortifyOS() {
+export default function fortifyOS() {
   return (
     <AppErrorBoundary>
       <FortifyOSApp />
