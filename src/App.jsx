@@ -93,7 +93,7 @@ class AppErrorBoundary extends React.Component {
             The app hit a runtime error and switched to recovery mode to prevent a blank screen.
           </div>
           {this.state.errorMsg && (
-            <div style={{ fontSize: 11, color: '#FF5555', background: '#1A0000', border: '1px solid #440000', padding: '8px 10px', marginBottom: 12, wordBreak: 'break-all', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: '#FF5555', background: '#1A0000', border: '1px solid #440000', padding: '8px 10px', marginBottom: 12, wordBreak: 'break-all', lineHeight: 1.5 }}>
               ERROR: {this.state.errorMsg}
             </div>
           )}
@@ -1428,7 +1428,7 @@ function Card({ title, children, visible = true, delay = 0, alert = false, t }) 
       onMouseEnter={e => { if (!alert) e.currentTarget.style.borderColor = t.borderMid; }}
       onMouseLeave={e => { if (!alert) e.currentTarget.style.borderColor = t.borderDim; }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{title}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{title}</span>
         {alert && <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.danger, boxShadow: `0 0 6px ${t.danger}` }} />}
       </div>
       {children}
@@ -1438,8 +1438,8 @@ function Card({ title, children, visible = true, delay = 0, alert = false, t }) 
 
 const ChartTip = ({ active, payload, label, t }) => {
   if (!active || !payload?.length) return null;
-  return (<div style={{ background: t.elevated, border: `1px solid ${t.borderMid}`, padding: '6px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textPrimary }}>
-    <div style={{ color: t.textSecondary, fontSize: 11, marginBottom: 2 }}>{label}</div><div>{fmt(payload[0].value)}</div>
+  return (<div style={{ background: t.elevated, border: `1px solid ${t.borderMid}`, padding: '6px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.textPrimary }}>
+    <div style={{ color: t.textSecondary, fontSize: 13, marginBottom: 2 }}>{label}</div><div>{fmt(payload[0].value)}</div>
   </div>);
 };
 
@@ -1532,8 +1532,8 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             </button>
             {menuOpen && (
               <div style={{ position: 'absolute', right: 0, top: 42, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Eye size={9} /> Radar</button>
-                <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><FileText size={9} /> Docs</button>
+                <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Eye size={9} /> Radar</button>
+                <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><FileText size={9} /> Docs</button>
               </div>
             )}
           </div>
@@ -1596,7 +1596,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ HOW IT WORKS — 3 STEPS ═══ */}
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>How It Works</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>How It Works</div>
           <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Three steps. Five minutes a day.</h2>
 
           <div className="sync-row-3" style={{ display: 'grid', gap: 2 }}>
@@ -1611,7 +1611,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
                   <s.Icon size={16} style={{ color: t.textDim }} />
                 </div>
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, marginBottom: 6, color: t.textPrimary, letterSpacing: '0.04em' }}>{s.title}</div>
-                <div style={{ fontSize: 11, color: t.textDim, lineHeight: 1.65 }}>{s.desc}</div>
+                <div style={{ fontSize: 13, color: t.textDim, lineHeight: 1.65 }}>{s.desc}</div>
               </div>
             ))}
           </div>
@@ -1621,7 +1621,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ THE 7 STAGES ═══ */}
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>The Journey</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>The Journey</div>
           <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 6, color: t.textPrimary }}>7 Stages. Mathematically Gated.</h2>
           <p style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24, maxWidth: 560 }}>Every user enters at their current stage. The system moves you forward — and blocks you from skipping ahead. Your stage is calculated from real data, never a static label.</p>
 
@@ -1635,7 +1635,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           </div>
           <div className="stage-labels" style={{ display: 'flex', gap: 3, marginBottom: 20 }}>
             {stages.map((s, i) => (
-              <span key={i} style={{ flex: 1, fontSize: 11, color: i <= 1 ? s.color : t.textDim, textTransform: 'uppercase', textAlign: 'center', fontFamily: "'JetBrains Mono', monospace" }}>{s.n}</span>
+              <span key={i} style={{ flex: 1, fontSize: 13, color: i <= 1 ? s.color : t.textDim, textTransform: 'uppercase', textAlign: 'center', fontFamily: "'JetBrains Mono', monospace" }}>{s.n}</span>
             ))}
           </div>
 
@@ -1649,8 +1649,8 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
               <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'center', background: t.surface, border: `1px solid ${t.borderDim}`, padding: '12px 16px' }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: r.color, minWidth: 36 }}>{r.stage}</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, letterSpacing: '0.04em', marginBottom: 2 }}>{r.label}</div>
-                  <div style={{ fontSize: 11, color: t.textDim, lineHeight: 1.5 }}>{r.detail}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: t.textPrimary, letterSpacing: '0.04em', marginBottom: 2 }}>{r.label}</div>
+                  <div style={{ fontSize: 13, color: t.textDim, lineHeight: 1.5 }}>{r.detail}</div>
                 </div>
               </div>
             ))}
@@ -1671,9 +1671,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
               { label: 'Redaction', val: 'Automatic (Sentinel)', sub: 'SSNs, card numbers, routing numbers' },
             ].map((c, i) => (
               <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 14, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>{c.label}</div>
+                <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>{c.label}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: t.textPrimary, marginBottom: 2 }}>{c.val}</div>
-                <div style={{ fontSize: 10, color: t.textDim }}>{c.sub}</div>
+                <div style={{ fontSize: 12, color: t.textDim }}>{c.sub}</div>
               </div>
             ))}
           </div>
@@ -1695,7 +1695,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ FAQ ═══ */}
       <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>FAQ</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>FAQ</div>
           <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Common Questions</h2>
 
           {faqs.map((f, i) => (
@@ -1735,7 +1735,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
         ].map((s, i) => (
           <div key={i} className="footer-stat-cell" style={{ padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <s.Icon size={20} style={{ color: accent, marginBottom: 4 }} />
-            <span style={{ fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{s.label}</span>
+            <span style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{s.label}</span>
             <span style={{ fontSize: 14, fontWeight: 700 }}>{s.val}</span>
           </div>
         ))}
@@ -1766,16 +1766,16 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
     pre: { background: t.surface, padding: '14px 18px', border: `1px solid ${t.borderDim}`, overflow: 'auto', color: t.accentDim || accent, fontSize: 12, lineHeight: 1.6, margin: '14px 0' },
     note: (c) => ({ borderLeft: `2px solid ${c || accent}`, padding: '10px 14px', color: t.textSecondary, margin: '16px 0', background: t.surface, fontSize: 12 }),
     formula: { background: t.surface, border: `1px solid ${t.borderDim}`, padding: '14px 18px', margin: '14px 0', textAlign: 'center', fontSize: 14, color: accent },
-    th: { border: `1px solid ${t.borderDim}`, padding: '8px 12px', textAlign: 'left', fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', background: t.surface },
+    th: { border: `1px solid ${t.borderDim}`, padding: '8px 12px', textAlign: 'left', fontSize: 12, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', background: t.surface },
     td: { border: `1px solid ${t.borderDim}`, padding: '8px 12px', fontSize: 12, color: t.textSecondary },
     card: { background: t.surface, border: `1px solid ${t.borderDim}`, padding: 14 },
     rail: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 12, color: t.textSecondary },
     cmd: { display: 'flex', gap: 16, padding: '6px 0', borderBottom: `1px solid ${t.borderDim}`, alignItems: 'baseline', flexWrap: 'wrap' },
     tierHead: (open) => ({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', cursor: 'pointer', userSelect: 'none', borderBottom: open ? 'none' : `1px solid ${t.borderDim}`, marginBottom: open ? 0 : 4 }),
-    tierLabel: { fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700 },
+    tierLabel: { fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700 },
   };
   const Code = ({ children }) => <code style={sty.code}>{children}</code>;
-  const Lbl = ({ children }) => <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{children}</div>;
+  const Lbl = ({ children }) => <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{children}</div>;
 
   // Tiered TOC structure
   const TOC_TIERS = [
@@ -1842,7 +1842,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
             <Shield size={14} style={{ color: accent }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, color: accent }}>FORTIFYOS</span>
-            <span style={{ fontSize: 10, color: t.textDim }}>DOCS</span>
+            <span style={{ fontSize: 12, color: t.textDim }}>DOCS</span>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1855,7 +1855,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
             </button>
             {menuOpen && (
               <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
-                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Home</button>
+                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Home</button>
               </div>
             )}
           </div>
@@ -1869,12 +1869,12 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
             FORTIFYOS <span style={{ color: accent }}>// Docs</span>
           </h1>
           <p style={{ color: t.textSecondary, fontSize: 13, maxWidth: 560, lineHeight: 1.7 }}>System field manual. From first sync to financial independence — the architecture, enforcement logic, and methodology behind every calculation.</p>
-          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — FORTIFYOS v2.2</span>
+          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — FORTIFYOS v2.2</span>
         </div>
 
         {/* Tiered TOC */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '16px 20px', marginBottom: 32 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Navigation</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Navigation</div>
           {TOC_TIERS.map(tier => (
             <div key={tier.key} style={{ marginBottom: 4 }}>
               <div style={sty.tierHead(expandedTier[tier.key])} onClick={() => toggleTier(tier.key)}>
@@ -1906,7 +1906,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
         </div>
         <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
           {['0: Chaos','1: Stable','2: Safe','3: Free','4: Secure','5: Indep.','6: Freedom','7: Legacy'].map((l, i) => (
-            <span key={i} style={{ flex: 1, fontSize: 7, color: i <= 1 ? accent : t.textDim, textTransform: 'uppercase', textAlign: 'center' }}>{l}</span>
+            <span key={i} style={{ flex: 1, fontSize: 12, color: i <= 1 ? accent : t.textDim, textTransform: 'uppercase', textAlign: 'center' }}>{l}</span>
           ))}
         </div>
 
@@ -1951,9 +1951,9 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
             <div key={i} style={sty.card}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: accent }}>{c.num}</span>
-                <span style={{ fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{c.title}</span>
+                <span style={{ fontSize: 13, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{c.title}</span>
               </div>
-              <div style={{ fontSize: 11, color: t.textDim, lineHeight: 1.6 }}>{c.desc}</div>
+              <div style={{ fontSize: 13, color: t.textDim, lineHeight: 1.6 }}>{c.desc}</div>
             </div>
           ))}
         </div>
@@ -2039,12 +2039,12 @@ cd %USERPROFILE%\\FORTIFY && claude
 
           {/* Tree */}
           {(() => {
-            const treeStyle = { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 2.0, padding: '0 18px' };
+            const treeStyle = { fontFamily: "'JetBrains Mono', monospace", fontSize: 13, lineHeight: 2.0, padding: '0 18px' };
             const line = (indent, connector, name, tag, color) => (
               <div style={{ ...treeStyle, paddingLeft: indent * 18, display: 'flex', alignItems: 'center', gap: 0 }}>
                 <span style={{ color: t.textDim, whiteSpace: 'pre' }}>{connector} </span>
                 <span style={{ color: color || t.textSecondary }}>{name}</span>
-                {tag && <span style={{ fontSize: 11, color: tag.color || t.textDim, marginLeft: 8, textTransform: 'uppercase', letterSpacing: '0.06em', border: `1px solid ${(tag.color || t.textDim)}40`, padding: '1px 5px', whiteSpace: 'nowrap' }}>{tag.text}</span>}
+                {tag && <span style={{ fontSize: 13, color: tag.color || t.textDim, marginLeft: 8, textTransform: 'uppercase', letterSpacing: '0.06em', border: `1px solid ${(tag.color || t.textDim)}40`, padding: '1px 5px', whiteSpace: 'nowrap' }}>{tag.text}</span>}
               </div>
             );
             return (<div>
@@ -2064,8 +2064,8 @@ cd %USERPROFILE%\\FORTIFY && claude
               {line(2, '├──', 'trade-framework.md', { text: 'Cloud', color: accent }, accent)}
 
               {/* Skill files */}
-              <div style={{ ...treeStyle, paddingLeft: 2 * 18, color: t.textDim, fontSize: 11, lineHeight: 1.4, padding: '2px 0 2px 54px' }}>
-                ├── sk01–sk13 skill files (.md) <span style={{ border: `1px solid ${accent}40`, padding: '1px 5px', marginLeft: 4, fontSize: 11, color: accent }}>Cloud</span>
+              <div style={{ ...treeStyle, paddingLeft: 2 * 18, color: t.textDim, fontSize: 13, lineHeight: 1.4, padding: '2px 0 2px 54px' }}>
+                ├── sk01–sk13 skill files (.md) <span style={{ border: `1px solid ${accent}40`, padding: '1px 5px', marginLeft: 4, fontSize: 13, color: accent }}>Cloud</span>
               </div>
 
               {/* Local CSVs */}
@@ -2095,7 +2095,7 @@ cd %USERPROFILE%\\FORTIFY && claude
             ].map((c, i) => (
               <div key={i} style={{ flex: 1, textAlign: 'center', padding: '8px 4px' }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color: c.color, fontFamily: "'JetBrains Mono', monospace" }}>{c.n}</div>
-                <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.label}</div>
+                <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.label}</div>
               </div>
             ))}
           </div>
@@ -2125,7 +2125,7 @@ cd %USERPROFILE%\\FORTIFY && claude
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: accent, flexShrink: 0 }}>{c.num}</span>
               <div>
                 <div style={{ fontSize: 12, color: t.textPrimary, marginBottom: 4 }}>{c.q}</div>
-                <div style={{ fontSize: 10, color: t.textDim }}>{c.detail}</div>
+                <div style={{ fontSize: 12, color: t.textDim }}>{c.detail}</div>
               </div>
             </div>
           ))}
@@ -2195,7 +2195,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         </div>
         <div style={{ display: 'flex', gap: 3, marginBottom: 14 }}>
           {['Phase 1: $1K ✓', 'Phase 2: 1 Month', 'Phase 3: 3 Months', 'Phase 4: 6 Months'].map((l, i) => (
-            <span key={i} style={{ flex: 1, fontSize: 11, color: t.textDim, textTransform: 'uppercase' }}>{l}</span>
+            <span key={i} style={{ flex: 1, fontSize: 13, color: t.textDim, textTransform: 'uppercase' }}>{l}</span>
           ))}
         </div>
 
@@ -2251,7 +2251,7 @@ cd %USERPROFILE%\\FORTIFY && claude
             { title: 'JSON PASTE (SECONDARY)', desc: 'Paste a structured JSON snapshot from CLI tools, any AI/tool output, or export scripts. Schema validated before commit.' },
             { title: 'MANUAL ENTRY (FALLBACK)', desc: 'Guided form for assets, debts, monthly expenses, and budget categories. Live calculations update as you type.' },
           ].map((c, i) => (
-            <div key={i} style={sty.card}><div style={{ fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{c.title}</div><div style={{ fontSize: 11, color: t.textDim }}>{c.desc}</div></div>
+            <div key={i} style={sty.card}><div style={{ fontSize: 13, color: accent, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{c.title}</div><div style={{ fontSize: 13, color: t.textDim }}>{c.desc}</div></div>
           ))}
         </div>
         <div style={sty.note()}>
@@ -2508,7 +2508,7 @@ cat snapshot.json | pbcopy`}</pre>
         </div>
 
         {/* Footer */}
-        <div style={{ textAlign: 'center', color: t.textDim, marginTop: 60, paddingTop: 16, borderTop: `1px solid ${t.borderDim}`, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+        <div style={{ textAlign: 'center', color: t.textDim, marginTop: 60, paddingTop: 16, borderTop: `1px solid ${t.borderDim}`, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
           <p>No data is sent to external servers.</p>
           <p style={{ marginTop: 6 }}>Protect first, grow second. Every dollar has a job.</p>
           <p style={{ marginTop: 12, color: t.textGhost }}>KNOX v2.1 — FORTIFYOS v2.2</p>
@@ -2558,7 +2558,7 @@ const btn = {
     color: t.accent,
     cursor: 'pointer',
     fontFamily: "'JetBrains Mono', monospace",
-    fontSize: 11,
+    fontSize: 13,
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
     borderRadius: 4,
@@ -2570,12 +2570,12 @@ const btn = {
     cursor: 'pointer',
     borderRadius: 4,
     fontFamily: "'JetBrains Mono', monospace",
-    fontSize: 10,
+    fontSize: 12,
   };
   const link = {
     color: t.accent,
     textDecoration: 'none',
-    fontSize: 10,
+    fontSize: 12,
     textTransform: 'uppercase',
     letterSpacing: '0.06em',
     border: `1px solid ${t.borderDim}`,
@@ -3224,7 +3224,7 @@ useEffect(() => {
   const addDebt = () => setGDebts([...gDebts, { name: '', apr: '', balance: '', minPayment: '', type: 'REVOLVING', totalTerms: '', paymentsMade: '', monthlyPayment: '', dueDate: '' }]);
   const upDebt = (i, f, v) => { const d = [...gDebts]; d[i][f] = v; setGDebts(d); };
   const inp = { background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '8px 10px', width: '100%', outline: 'none', borderRadius: 2, boxSizing: 'border-box' };
-  const lbl = { color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3, display: 'block' };
+  const lbl = { color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3, display: 'block' };
 
   if (!open) return null;
 
@@ -3235,7 +3235,7 @@ useEffect(() => {
         <div style={{ padding: '14px 16px', borderBottom: `1px solid ${t.borderDim}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.elevated }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Database size={14} style={{ color: t.accent }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary }}>Universal Sync Terminal</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary }}>Universal Sync Terminal</span>
           </div>
           <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'transparent', border: 'none', padding: 0, margin: 0, cursor: 'pointer' }}><X size={16} style={{ color: t.textDim }} /></button>
         </div>
@@ -3244,7 +3244,7 @@ useEffect(() => {
           {[{ k: 'statement', l: 'File Import' }, { k: 'guided', l: 'Manual' }].map(tb => (
             <button key={tb.k} onClick={() => { setTab(tb.k); setError(''); setParsedPreview(null); }} style={{
               flex: 1, padding: 10, background: 'none', border: 'none', cursor: 'pointer',
-              fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: 'uppercase',
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 12, textTransform: 'uppercase',
               color: tab === tb.k ? t.accent : t.textDim,
               borderBottom: tab === tb.k ? `2px solid ${t.accent}` : '2px solid transparent',
             }}>{tb.l}</button>
@@ -3264,8 +3264,8 @@ useEffect(() => {
              onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) handleStatementFiles(fs, stmtPickMode); e.target.value = ''; }} />
     </div>
     <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
-      <div style={{ display: 'grid', gap: 6, fontSize: 11, color: t.textDim, lineHeight: 1.35 }}>
-        <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
+      <div style={{ display: 'grid', gap: 6, fontSize: 13, color: t.textDim, lineHeight: 1.35 }}>
+        <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
         <div>• Best: Download a <b>text-based PDF</b> from your bank portal (not scanned/image-only).</div>
         <div>• Screenshots supported via local OCR. Keep captures sharp and include full transaction rows.</div>
         <div>• Sentinel redaction runs before parsing; review the extracted table before sync.</div>
@@ -3290,24 +3290,24 @@ useEffect(() => {
       {processing
         ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
         : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
-      <div style={{ fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+      <div style={{ fontSize: 13, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         {processing ? 'Processing...' : 'Drag & drop one or more files'}
       </div>
-      <div style={{ fontSize: 11, color: t.textGhost }}>PDF · PNG · JPG — parsed locally, merged into one timeline</div>
+      <div style={{ fontSize: 13, color: t.textGhost }}>PDF · PNG · JPG — parsed locally, merged into one timeline</div>
     </div>
 
     {/* Logs */}
     <div style={{ display: 'grid', gap: 6 }}>
-      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Parse Log</div>
+      <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Parse Log</div>
       <div style={{
         padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.input,
-        fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim,
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textDim,
         overflowX: 'hidden', width: '100%', boxSizing: 'border-box',
       }}>
         {logs.length ? logs.map((l, i) => <div key={i} style={{ overflowWrap: 'break-word', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>{l}</div>) : <div>Awaiting file…</div>}
       </div>
       {(stmtTemplateLabel || stmtReconSummary) && (
-        <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel, fontSize: 10, color: t.textSecondary }}>
+        <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel, fontSize: 12, color: t.textSecondary }}>
           <div><span style={{ color: t.textDim }}>Template:</span> <span style={{ color: t.accent }}>{stmtTemplateLabel || 'Generic'}</span></div>
           {stmtReconSummary && (
             <div style={{ marginTop: 4 }}>
@@ -3329,7 +3329,7 @@ useEffect(() => {
     {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
       <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10, minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', width: '100%' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
+          <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
           <button onClick={() => { 
             try { 
               const tpl = detectStatementTemplate(stmtRawText || stmtText, stmtFile?.name || '');
@@ -3351,7 +3351,7 @@ useEffect(() => {
             <RefreshCw size={14} /> TRY PARSE AGAIN
           </button>
         </div>
-        <div style={{ marginTop: 10, maxHeight: 180, overflowY: 'auto', overflowX: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.textDim, width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ marginTop: 10, maxHeight: 180, overflowY: 'auto', overflowX: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textDim, width: '100%', boxSizing: 'border-box' }}>
           {stmtText}
         </div>
       </div>
@@ -3363,7 +3363,7 @@ useEffect(() => {
       <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, minWidth: 0, width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
         {/* Row 1: title + confidence stats */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
+          <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 10 }}>
             <span style={{ color: t.textDim }}>Rules {merchantRules.length}</span>
             <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
@@ -3380,7 +3380,7 @@ useEffect(() => {
           <button
             onClick={() => { if (!lowConfidenceRows.length) return; setReviewLowConfidence(v => !v); setReviewCursor(0); }}
             disabled={!lowConfidenceRows.length}
-            style={{ ...btnGhost, padding: '6px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+            style={{ ...btnGhost, padding: '6px 10px', fontSize: 12, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
           >
             {reviewLowConfidence ? 'Exit Review' : `Review Low (${lowConfidenceRows.length})`}
           </button>
@@ -3392,7 +3392,7 @@ useEffect(() => {
               log(`LOW-CONFIDENCE QUICK REVIEW: ${all.length} ROWS MARKED`);
             }}
             disabled={!lowConfidenceRows.length}
-            style={{ ...btnGhost, padding: '6px 10px', fontSize: 10, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+            style={{ ...btnGhost, padding: '6px 10px', fontSize: 12, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
           >
             Mark Reviewed
           </button>
@@ -3401,12 +3401,12 @@ useEffect(() => {
               <Download size={12} /> CSV
             </a>
           )}
-          <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, padding: '6px 14px', fontSize: 10, opacity: (!parsedPreview) ? 0.6 : 1 }}>
+          <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, padding: '6px 14px', fontSize: 12, opacity: (!parsedPreview) ? 0.6 : 1 }}>
             <Shield size={12} /> Commit Sync
           </button>
         </div>
         {reviewLowConfidence && lowConfidenceRows.length > 0 && (
-          <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 10, color: t.textDim }}>
+          <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 12, color: t.textDim }}>
             <span>Reviewing low-confidence row {reviewCursor + 1} / {lowConfidenceRows.length}</span>
             <button onClick={() => setReviewCursor(c => Math.max(0, c - 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 10 }} disabled={reviewCursor === 0}>
               PREV
@@ -3463,20 +3463,20 @@ useEffect(() => {
                     <td style={{ padding: '8px 6px' }}>
                       <input value={tx.date || ''} onChange={e => updateStmtTxn(idx, 'date', e.target.value)} style={{
                         width: 'clamp(88px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
                       }} />
                     </td>
                     <td style={{ padding: '8px 6px' }}>
                       <input value={tx.description || ''} onChange={e => updateStmtTxn(idx, 'description', e.target.value)} style={{
                         width: 'clamp(160px, 36vw, 420px)', maxWidth: '52vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
                       }} />
                     </td>
                     <td style={{ padding: '8px 6px' }}>
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 74, padding: '6px 8px', borderRadius: 999, border: `1px solid ${confidenceColor}`,
-                        color: confidenceColor, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em',
+                        color: confidenceColor, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em',
                         fontFamily: "'JetBrains Mono', monospace",
                       }}>
                         {(tx.confidence || 'low').toUpperCase()}
@@ -3485,7 +3485,7 @@ useEffect(() => {
                     <td style={{ padding: '8px 6px' }}>
   <select value={(tx.category ?? '')} onChange={e => updateStmtTxn(idx, 'category', e.target.value)} style={{
     width: 'clamp(130px, 24vw, 220px)', maxWidth: '36vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-    background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+    background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
   }}>
     <option value="">{`AUTO · ${inferredCat}`}</option>
     {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
@@ -3495,7 +3495,7 @@ useEffect(() => {
                       <input value={typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0)}
                              onChange={e => updateStmtTxn(idx, 'amount', e.target.value)} style={{
                         width: 'clamp(92px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, textAlign: 'right',
+                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, textAlign: 'right',
                       }} />
                     </td>
                     <td style={{ padding: '8px 6px', textAlign: 'right' }}>
@@ -3509,11 +3509,11 @@ useEffect(() => {
             </tbody>
           </table>
           {!showLowConfidence && confidenceCounts.low > 0 && (
-            <div style={{ marginTop: 8, fontSize: 10, color: t.textDim }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: t.textDim }}>
               {confidenceCounts.low} low-confidence rows hidden. Toggle "SHOW LOW-CONFIDENCE" to review/edit.
             </div>
           )}
-          {stmtTxns.length > 200 && <div style={{ marginTop: 8, fontSize: 10, color: t.textDim }}>Showing first 200 rows. Export includes all rows.</div>}
+          {stmtTxns.length > 200 && <div style={{ marginTop: 8, fontSize: 12, color: t.textDim }}>Showing first 200 rows. Export includes all rows.</div>}
         </div>
       </div>
     )}
@@ -3522,14 +3522,14 @@ useEffect(() => {
     {stmtText && (
       <details style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
             <summary style={{ cursor: 'pointer', color: t.textDim, fontSize: 11 }}>View extracted text</summary>
-        <pre style={{ whiteSpace: 'pre-wrap', fontSize: 10, color: t.textDim, marginTop: 10, fontFamily: "'JetBrains Mono', monospace" }}>
+        <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, color: t.textDim, marginTop: 10, fontFamily: "'JetBrains Mono', monospace" }}>
           {stmtText.slice(0, 20000)}{stmtText.length > 20000 ? '\\n…(truncated)…' : ''}
         </pre>
       </details>
     )}
 
     {/* Privacy */}
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: t.warn }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 13, color: t.warn }}>
       <ShieldAlert size={11} />
       <span>Stored locally in this browser profile. Disable browser sync for single-device isolation.</span>
     </div>
@@ -3550,7 +3550,7 @@ useEffect(() => {
       <div style={{
         width: '100%', marginTop: 12, padding: '14px 0',
         background: t.elevated, border: `1px solid ${t.borderDim}`,
-        fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
         color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
       }}>
         SYNC DISABLED — UPLOAD &amp; PARSE A STATEMENT FIRST
@@ -3563,7 +3563,7 @@ useEffect(() => {
           {tab === 'json' && (<>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={lbl}>Paste JSON Snapshot</span>
-              <span style={{ fontSize: 11, color: t.textGhost }}>CLI / Any Tool or AI output</span>
+              <span style={{ fontSize: 13, color: t.textGhost }}>CLI / Any Tool or AI output</span>
             </div>
             <textarea value={json} onChange={e => setJson(e.target.value)}
               placeholder={'{\n  "date": "2026-02-21",\n  "netWorth": { ... },\n  "debts": [ ... ],\n  "eFund": { ... }\n}'}
@@ -3572,14 +3572,14 @@ useEffect(() => {
             {/* Log for JSON */}
             {logs.length > 0 && tab === 'json' && (
               <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: 8, marginBottom: 8, borderRadius: 4, maxHeight: 80, overflow: 'hidden' }}>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: t.accentDim }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.accentDim }}>
                   {logs.slice(0, 4).map((l, i) => <div key={i}>{l}</div>)}
                 </div>
               </div>
             )}
             {parsedPreview && <button onClick={confirmSync} style={{ width: '100%', padding: 14, background: t.accent, color: t === THEMES.dark ? '#000' : '#FFF', border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', marginBottom: 8 }}>CONFIRM & SYNC</button>}
             {!parsedPreview && <button onClick={handlePasteSync} disabled={jsonValidating || !json} style={{ width: '100%', padding: 14, background: jsonValidating ? t.elevated : t.accent, color: jsonValidating ? t.textDim : (t === THEMES.dark ? '#000' : '#FFF'), border: 'none', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, cursor: jsonValidating ? 'wait' : 'pointer', textTransform: 'uppercase' }}>{jsonValidating ? 'VALIDATING...' : 'VALIDATE SCHEMA'}</button>}
-            {error && <div style={{ color: t.danger, fontSize: 11, marginTop: 8 }}><AlertCircle size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />{error}</div>}
+            {error && <div style={{ color: t.danger, fontSize: 13, marginTop: 8 }}><AlertCircle size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />{error}</div>}
           </>)}
 
           {/* ── GUIDED TAB ── */}
@@ -3587,7 +3587,7 @@ useEffect(() => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {/* Assets */}
               <div>
-                <div style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Assets</div>
+                <div style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Assets</div>
                 <div className="sync-row-debt" style={{ display: 'grid', gap: 8 }}>
                   <div><label style={lbl}>Checking</label><CurrencyInput t={t} value={gCheck} onChange={e => setGCheck(e.target.value)} placeholder="0" /></div>
                   <div><label style={lbl}>Savings</label><CurrencyInput t={t} value={gSavings} onChange={e => setGSavings(e.target.value)} placeholder="0" /></div>
@@ -3597,7 +3597,7 @@ useEffect(() => {
               </div>
               {/* Debts */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Debts</span><button onClick={addDebt} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 11, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><span style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Debts</span><button onClick={addDebt} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 13, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button></div>
                 {gDebts.map((d, i) => (<div key={i} style={{ marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${t.borderDim}` }}>
                   <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
                     {['REVOLVING', 'BNPL', 'TERM'].map(tp => (
@@ -3605,7 +3605,7 @@ useEffect(() => {
                         background: d.type === tp ? (tp === 'BNPL' ? t.warn + '20' : t.accentMuted) : 'none',
                         border: `1px solid ${d.type === tp ? (tp === 'BNPL' ? t.warn : t.accent) : t.borderDim}`,
                         color: d.type === tp ? (tp === 'BNPL' ? t.warn : t.accent) : t.textDim,
-                        fontSize: 11, padding: '2px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 13, padding: '2px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
                         textTransform: 'uppercase', letterSpacing: '0.06em',
                       }}>{tp}</button>
                     ))}
@@ -3628,7 +3628,7 @@ useEffect(() => {
                       <div><label style={lbl}>Payments Made</label><input style={inp} placeholder="0" value={d.paymentsMade} onChange={e => upDebt(i, 'paymentsMade', e.target.value)} inputMode="numeric" /></div>
                       <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 4 }}>
                         {parseInt(d.totalTerms) > 0 && parseInt(d.paymentsMade) >= 0 && (
-                          <span style={{ fontSize: 11, color: parseInt(d.totalTerms) - parseInt(d.paymentsMade || 0) <= 1 ? t.accent : t.textDim }}>
+                          <span style={{ fontSize: 13, color: parseInt(d.totalTerms) - parseInt(d.paymentsMade || 0) <= 1 ? t.accent : t.textDim }}>
                             {parseInt(d.totalTerms) - parseInt(d.paymentsMade || 0)} remaining
                           </span>
                         )}
@@ -3639,7 +3639,7 @@ useEffect(() => {
               </div>
               {/* Monthly burn rate + income */}
               <div>
-                <div style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Income & Expenses</div>
+                <div style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Income & Expenses</div>
                 <div className="sync-row-3" style={{ display: 'grid', gap: 8 }}>
                   <div><label style={lbl}>Monthly Income</label><CurrencyInput t={t} value={gIncome} onChange={e => setGIncome(e.target.value)} placeholder="3500" /></div>
                   <div><label style={lbl}>Monthly Expenses</label><CurrencyInput t={t} value={gMonthly} onChange={e => setGMonthly(e.target.value)} placeholder="3000" /></div>
@@ -3653,8 +3653,8 @@ useEffect(() => {
               {/* Bills */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bill Calendar</span>
-                  <button onClick={addBill} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 11, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
+                  <span style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bill Calendar</span>
+                  <button onClick={addBill} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 13, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
                 </div>
                 {gBills.map((b, i) => (
                   <div key={i} className="sync-row-3" style={{ display: 'grid', gap: 8, marginBottom: 8 }}>
@@ -3666,7 +3666,7 @@ useEffect(() => {
               </div>
               {/* Budget categories */}
               <div>
-                <div style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Budget Allocation</div>
+                <div style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Budget Allocation</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginBottom: 6 }}>
                   <span style={{ ...lbl, marginBottom: 0 }}>Category</span>
                   <span style={{ ...lbl, marginBottom: 0 }}>Budget</span>
@@ -3674,7 +3674,7 @@ useEffect(() => {
                 </div>
                 {gBudget.map((b, i) => (
                   <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginBottom: 4, alignItems: 'center' }}>
-                    <span style={{ fontSize: 10, color: t.textSecondary }}>{b.name}</span>
+                    <span style={{ fontSize: 12, color: t.textSecondary }}>{b.name}</span>
                     <CurrencyInput t={t} value={b.budgeted} onChange={e => upBudget(i, 'budgeted', e.target.value)} placeholder="0" />
                     <CurrencyInput t={t} value={b.actual} onChange={e => upBudget(i, 'actual', e.target.value)} placeholder="0" />
                   </div>
@@ -3695,7 +3695,7 @@ useEffect(() => {
               </div>
               {/* Protection */}
               <div>
-                <div style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Protection Layer</div>
+                <div style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Protection Layer</div>
                 <div className="sync-row-3" style={{ display: 'grid', gap: 8, marginBottom: 8 }}>
                   <div><label style={lbl}>Provider</label><input style={inp} placeholder="e.g. USAA" value={gProvider} onChange={e => setGProvider(e.target.value)} /></div>
                   <div><label style={lbl}>Type</label>
@@ -3720,8 +3720,8 @@ useEffect(() => {
               {/* Portfolio — Equities */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Equity Positions</span>
-                  <button onClick={addEquity} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 11, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
+                  <span style={{ color: t.accent, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Equity Positions</span>
+                  <button onClick={addEquity} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 13, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
                 </div>
                 {gEquities.map((e, i) => (
                   <div key={i} className="sync-row-debt" style={{ display: 'grid', gap: 6, marginBottom: 8 }}>
@@ -3736,8 +3736,8 @@ useEffect(() => {
               {/* Portfolio — Options */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.purple, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Options Exposure</span>
-                  <button onClick={addOption} style={{ background: 'none', border: `1px solid ${t.purple}40`, color: t.purple, fontSize: 11, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
+                  <span style={{ color: t.purple, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Options Exposure</span>
+                  <button onClick={addOption} style={{ background: 'none', border: `1px solid ${t.purple}40`, color: t.purple, fontSize: 13, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
                 </div>
                 {gOptions.map((o, i) => (
                   <div key={i} style={{ marginBottom: 10 }}>
@@ -3762,8 +3762,8 @@ useEffect(() => {
               {/* Portfolio — Crypto */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.crypto, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Crypto Holdings</span>
-                  <button onClick={addCrypto} style={{ background: 'none', border: `1px solid ${t.crypto}40`, color: t.crypto, fontSize: 11, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
+                  <span style={{ color: t.crypto, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Crypto Holdings</span>
+                  <button onClick={addCrypto} style={{ background: 'none', border: `1px solid ${t.crypto}40`, color: t.crypto, fontSize: 13, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
                 </div>
                 {gCrypto.map((c, i) => (
                   <div key={i} className="sync-row-debt" style={{ display: 'grid', gap: 6, marginBottom: 8 }}>
@@ -3773,7 +3773,7 @@ useEffect(() => {
                     <div><label style={lbl}>Current Price</label><CurrencyInput t={t} value={c.lastPrice} onChange={ev => upCrypto(i, 'lastPrice', ev.target.value)} placeholder="0" /></div>
                   </div>
                 ))}
-                <div style={{ fontSize: 11, color: t.textDim, marginTop: 2 }}>BTC accumulation window: Oct 2026. Track holdings now — system will alert when DCA activates.</div>
+                <div style={{ fontSize: 13, color: t.textDim, marginTop: 2 }}>BTC accumulation window: Oct 2026. Track holdings now — system will alert when DCA activates.</div>
               </div>
 
               {/* Benner Cycle Phase — strategic setting only */}
@@ -3784,7 +3784,7 @@ useEffect(() => {
                   <option value="B-Year (Sell)">B-Year (Sell)</option>
                   <option value="C-Year (Hold)">C-Year (Hold)</option>
                 </select>
-                <div style={{ fontSize: 11, color: t.textDim, marginTop: 3 }}>Strategic cycle position — 2026 = B-Year (Sell). Macro intel delivered via morning brief.</div>
+                <div style={{ fontSize: 13, color: t.textDim, marginTop: 3 }}>Strategic cycle position — 2026 = B-Year (Sell). Macro intel delivered via morning brief.</div>
               </div>
 
               {/* Live calculations */}
@@ -3810,18 +3810,18 @@ useEffect(() => {
                 if (!hasData) return null;
                 return (
                   <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: 12, borderRadius: 4 }}>
-                    <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Live Calculation</div>
+                    <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Live Calculation</div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
-                      <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>TOTAL ASSETS</span><span style={{ color: t.accent }}>{fmt(totalAssets)}</span>{eqVal > 0 && <span style={{ fontSize: 11, color: t.textGhost, marginLeft: 4 }}>(+{fmt(eqVal)} equity)</span>}{cryptoVal > 0 && <span style={{ fontSize: 11, color: t.crypto, marginLeft: 4 }}>(+{fmt(cryptoVal)} crypto)</span>}</div>
-                      <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>TOTAL DEBT</span><span style={{ color: dTotal > 0 ? t.danger : t.textPrimary }}>{fmt(dTotal)}</span></div>
-                      <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>NET WORTH</span><span style={{ color: nw >= 0 ? t.accent : t.danger, fontWeight: 700, fontSize: 16 }}>{nw < 0 ? '-' : ''}{fmt(Math.abs(nw))}</span></div>
-                      <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>DAILY INTEREST BURN</span><span style={{ color: di > 0 ? t.danger : t.textPrimary }}>{fmt(di)}/day</span></div>
-                      {ef > 0 && <div style={{ gridColumn: '1 / -1' }}><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>E-FUND RUNWAY</span><span style={{ color: runway >= 60 ? t.accent : runway >= 30 ? t.warn : t.danger }}>{runway} days</span><span style={{ color: t.textGhost, fontSize: 11, marginLeft: 6 }}>at {fmt(mo)}/mo burn</span></div>}
-                      {totalBudgeted > 0 && <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>BUDGET USED</span><span style={{ color: totalSpent > totalBudgeted ? t.danger : t.accent }}>{Math.round((totalSpent / totalBudgeted) * 100)}%</span></div>}
-                      {inc > 0 && totalSpent > 0 && <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>SAVINGS RATE</span><span style={{ color: (inc - totalSpent) > 0 ? t.accent : t.danger }}>{Math.round(((inc - totalSpent) / inc) * 100)}%</span></div>}
-                      {optVal > 0 && <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>OPTIONS EXPOSURE</span><span style={{ color: t.purple }}>{fmt(optVal)}</span></div>}
-                      {cryptoVal > 0 && <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>CRYPTO VALUE</span><span style={{ color: t.crypto }}>{fmt(cryptoVal)}</span></div>}
-                      {netToFamily > 0 && <div><span style={{ color: t.textDim, fontSize: 11, display: 'block' }}>NET TO FAMILY</span><span style={{ color: netToFamily < mo * 12 ? t.warn : t.accent }}>{fmt(netToFamily)}</span></div>}
+                      <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>TOTAL ASSETS</span><span style={{ color: t.accent }}>{fmt(totalAssets)}</span>{eqVal > 0 && <span style={{ fontSize: 13, color: t.textGhost, marginLeft: 4 }}>(+{fmt(eqVal)} equity)</span>}{cryptoVal > 0 && <span style={{ fontSize: 13, color: t.crypto, marginLeft: 4 }}>(+{fmt(cryptoVal)} crypto)</span>}</div>
+                      <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>TOTAL DEBT</span><span style={{ color: dTotal > 0 ? t.danger : t.textPrimary }}>{fmt(dTotal)}</span></div>
+                      <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>NET WORTH</span><span style={{ color: nw >= 0 ? t.accent : t.danger, fontWeight: 700, fontSize: 16 }}>{nw < 0 ? '-' : ''}{fmt(Math.abs(nw))}</span></div>
+                      <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>DAILY INTEREST BURN</span><span style={{ color: di > 0 ? t.danger : t.textPrimary }}>{fmt(di)}/day</span></div>
+                      {ef > 0 && <div style={{ gridColumn: '1 / -1' }}><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>E-FUND RUNWAY</span><span style={{ color: runway >= 60 ? t.accent : runway >= 30 ? t.warn : t.danger }}>{runway} days</span><span style={{ color: t.textGhost, fontSize: 13, marginLeft: 6 }}>at {fmt(mo)}/mo burn</span></div>}
+                      {totalBudgeted > 0 && <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>BUDGET USED</span><span style={{ color: totalSpent > totalBudgeted ? t.danger : t.accent }}>{Math.round((totalSpent / totalBudgeted) * 100)}%</span></div>}
+                      {inc > 0 && totalSpent > 0 && <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>SAVINGS RATE</span><span style={{ color: (inc - totalSpent) > 0 ? t.accent : t.danger }}>{Math.round(((inc - totalSpent) / inc) * 100)}%</span></div>}
+                      {optVal > 0 && <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>OPTIONS EXPOSURE</span><span style={{ color: t.purple }}>{fmt(optVal)}</span></div>}
+                      {cryptoVal > 0 && <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>CRYPTO VALUE</span><span style={{ color: t.crypto }}>{fmt(cryptoVal)}</span></div>}
+                      {netToFamily > 0 && <div><span style={{ color: t.textDim, fontSize: 13, display: 'block' }}>NET TO FAMILY</span><span style={{ color: netToFamily < mo * 12 ? t.warn : t.accent }}>{fmt(netToFamily)}</span></div>}
                     </div>
                   </div>
                 );
@@ -3852,22 +3852,22 @@ function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, 
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
       <div style={{ width: 280, background: t.surface, borderLeft: `1px solid ${t.borderDim}`, height: '100%', padding: 20, overflow: 'auto', animation: 'slideIn 0.25s ease-out' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Settings</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Settings</span>
           <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'transparent', border: 'none', padding: 0, margin: 0, cursor: 'pointer' }}><X size={14} style={{ color: t.textSecondary }} /></button>
         </div>
-        <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Theme</div>
+        <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Theme</div>
         <div onClick={onToggleTheme} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', cursor: 'pointer', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 16 }}>
-          <span style={{ fontSize: 11, color: t.textPrimary }}>{isDark ? 'Noir (Dark)' : 'Tactical (Light)'}</span>
+          <span style={{ fontSize: 13, color: t.textPrimary }}>{isDark ? 'Noir (Dark)' : 'Tactical (Light)'}</span>
           {isDark ? <Moon size={14} style={{ color: t.accent }} /> : <Sun size={14} style={{ color: t.accent }} />}
         </div>
-        <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Modules</div>
+        <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Modules</div>
         {mods.map(m => { const on = settings.visibleModules.includes(m.key); return (
           <div key={m.key} onClick={() => onToggle(m.key)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', cursor: 'pointer', borderBottom: `1px solid ${t.borderDim}` }}>
-            <span style={{ fontSize: 11, color: on ? t.textPrimary : t.textDim }}>{m.label}</span>
+            <span style={{ fontSize: 13, color: on ? t.textPrimary : t.textDim }}>{m.label}</span>
             <div style={{ width: 28, height: 14, borderRadius: 7, background: on ? t.accentMuted : t.elevated, position: 'relative', transition: 'background 0.2s' }}><div style={{ width: 10, height: 10, borderRadius: '50%', position: 'absolute', top: 2, left: on ? 16 : 2, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} /></div>
           </div>);
         })}
-        <div style={{ marginTop: 20, color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Pay Schedule</div>
+        <div style={{ marginTop: 20, color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Pay Schedule</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
           {payFrequencyOptions.map(opt => {
             const isActive = payFrequency === opt.key;
@@ -3882,7 +3882,7 @@ function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, 
                   border: `1px solid ${isActive ? t.accent : t.borderDim}`,
                   color: isActive ? t.accent : t.textSecondary,
                   fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 10,
+                  fontSize: 12,
                   cursor: 'pointer',
                   textTransform: 'uppercase',
                 }}
@@ -3892,11 +3892,11 @@ function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, 
             );
           })}
         </div>
-        <div style={{ color: t.textDim, fontSize: 11, marginBottom: 10 }}>Applies to payday timeline and ticker calculations.</div>
-        <div style={{ marginTop: 20, color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Data</div>
-        <button onClick={onExport} style={{ width: '100%', padding: 8, background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}><Download size={12} /> Export All</button>
-        <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '6px 8px', width: '100%', outline: 'none', marginBottom: 6, boxSizing: 'border-box' }} />
-        <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: 8, background: confirm === 'CONFIRM' ? t.danger + '20' : t.elevated, border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}><Trash2 size={12} /> Clear History</button>
+        <div style={{ color: t.textDim, fontSize: 13, marginBottom: 10 }}>Applies to payday timeline and ticker calculations.</div>
+        <div style={{ marginTop: 20, color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Data</div>
+        <button onClick={onExport} style={{ width: '100%', padding: 8, background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}><Download size={12} /> Export All</button>
+        <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '6px 8px', width: '100%', outline: 'none', marginBottom: 6, boxSizing: 'border-box' }} />
+        <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: 8, background: confirm === 'CONFIRM' ? t.danger + '20' : t.elevated, border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}><Trash2 size={12} /> Clear History</button>
       </div>
     </div>
   );
@@ -3939,7 +3939,7 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
     <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 14px' }}>
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Money Map</div>
+        <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Money Map</div>
         <div style={{ display: 'flex', gap: 16, fontSize: 10 }}>
           <span><span style={{ color: t.textDim, fontSize: 9 }}>ASSETS </span><span style={{ color: t.accent }}>{fmt(tA)}</span></span>
           <span><span style={{ color: t.textDim, fontSize: 9 }}>LIABILITIES </span><span style={{ color: t.danger }}>{fmt(tL)}</span></span>
@@ -3958,8 +3958,8 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                 padding: '5px 7px',
               }}>
-                <span style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.label}</span>
-                <span style={{ fontSize: 10, color: a.color, fontVariantNumeric: 'tabular-nums' }}>{fmt(a.value)}</span>
+                <span style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.label}</span>
+                <span style={{ fontSize: 12, color: a.color, fontVariantNumeric: 'tabular-nums' }}>{fmt(a.value)}</span>
               </div>
             ))}
           </div>
@@ -3975,8 +3975,8 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                 padding: '5px 7px',
               }}>
-                <span style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.label}</span>
-                <span style={{ fontSize: 10, color: t.danger, fontVariantNumeric: 'tabular-nums' }}>-{fmt(l.value)}</span>
+                <span style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.label}</span>
+                <span style={{ fontSize: 12, color: t.danger, fontVariantNumeric: 'tabular-nums' }}>-{fmt(l.value)}</span>
               </div>
             ))}
           </div>
@@ -3986,7 +3986,7 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
       {breakdown.length > 1 && (
         <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
           {breakdown.map((b, i) => (
-            <div key={i} style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div key={i} style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 4 }}>
               <div style={{ width: 6, height: 6, background: b.color, opacity: 0.7, flexShrink: 0 }} />
               <span style={{ color: t.textDim }}>{b.label}</span>
               <span style={{ color: b.color }}>{fmt(b.value)}</span>
@@ -4053,7 +4053,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
   const revolving = debts.filter(d => !(d.totalTerms > 0));
   return (<Card title="Debt Destruction" visible={visible} delay={80} alert={debts.some(d => d.balance > 2000)} t={t}>
     <div style={{ marginBottom: 14 }}><div style={{ fontSize: 28, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}><AnimNum value={total} /></div>
-      {di > 0 && <div style={{ color: t.danger, fontSize: 10, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}><AnimNum value={di} decimals={2} style={{ color: t.danger }} />/day interest burn</div>}</div>
+      {di > 0 && <div style={{ color: t.danger, fontSize: 12, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}><AnimNum value={di} decimals={2} style={{ color: t.danger }} />/day interest burn</div>}</div>
     {debts.length === 0 ? <div style={{ color: t.textDim, fontSize: 11 }}>No debts tracked</div> : debts.map((d, i) => {
       const isFixed = (d.totalTerms || 0) > 0;
       const pmtsMade = d.paymentsMade || 0;
@@ -4066,7 +4066,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
       const monthlyInterestAmt = ((d.balance || 0) * ((d.apr || 0) / 100)) / 12;
       const btnStyle = (active) => ({
         background: 'none', border: `1px solid ${active ? t.accent : t.borderDim}`,
-        color: active ? t.accent : t.textDim, fontSize: 11, padding: '2px 7px',
+        color: active ? t.accent : t.textDim, fontSize: 13, padding: '2px 7px',
         cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
         letterSpacing: '0.05em', textTransform: 'uppercase',
       });
@@ -4075,15 +4075,15 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
       <div key={i} style={{ marginBottom: 12, borderLeft: isTarget ? `2px solid ${t.accent}` : 'none', paddingLeft: isTarget ? 8 : isFixed ? 0 : 10 }}>
 
         {/* ── Row header ── */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11, marginBottom: 4 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, marginBottom: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <span style={{ color: t.textSecondary }}>
               {d.name}
-              {isFixed && <span style={{ fontSize: 11, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
+              {isFixed && <span style={{ fontSize: 13, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
               {!isFixed && <span style={{ color: t.textDim }}> ({d.apr}%)</span>}
             </span>
             {paidThisCycle && (
-              <span style={{ fontSize: 11, background: t.accentMuted, color: t.accent, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.04em', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ fontSize: 13, background: t.accentMuted, color: t.accent, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.04em', fontFamily: "'JetBrains Mono', monospace" }}>
                 ✓ PAID {d._lastPayAmt ? fmt(d._lastPayAmt) : ''}
               </span>
             )}
@@ -4106,11 +4106,11 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
         {panelOpen && (
           <div style={{ margin: '6px 0 8px', padding: '10px 12px', background: t.elevated, border: `1px solid ${panel.mode === 'pay' ? t.accent : t.borderMid}`, animation: 'radarFadeUp 0.15s ease-out' }}>
             {panel.mode === 'pay' ? (<>
-              <div style={{ fontSize: 11, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 13, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Mark Payment — {d.name}
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: 10, color: t.textDim }}>$</span>
+                <span style={{ fontSize: 12, color: t.textDim }}>$</span>
                 <input
                   autoFocus
                   value={panel.value}
@@ -4119,20 +4119,20 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
                   inputMode="decimal"
                   style={{ flex: 1, background: t.input, border: `1px solid ${t.accent}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 8px' }}
                 />
-                <button onClick={() => confirmPay(d)} style={{ background: t.accent, border: 'none', color: t.void, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>CONFIRM</button>
-                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+                <button onClick={() => confirmPay(d)} style={{ background: t.accent, border: 'none', color: t.void, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>CONFIRM</button>
+                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
               </div>
               {!isFixed && parseFloat(panel.value) > 0 && (
-                <div style={{ fontSize: 11, color: t.textDim }}>
+                <div style={{ fontSize: 13, color: t.textDim }}>
                   Interest: <span style={{ color: t.danger }}>{fmt(monthlyInterestAmt)}</span> · Principal: <span style={{ color: t.accent }}>{fmt(Math.max(0, parseFloat(panel.value) - monthlyInterestAmt))}</span> · New balance: <span style={{ color: t.textPrimary }}>{fmt(Math.max(0, (d.balance || 0) - Math.max(0, parseFloat(panel.value) - monthlyInterestAmt)))}</span>
                 </div>
               )}
             </>) : (<>
-              <div style={{ fontSize: 11, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 13, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Update Balance — {d.name}
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span style={{ fontSize: 10, color: t.textDim }}>$</span>
+                <span style={{ fontSize: 12, color: t.textDim }}>$</span>
                 <input
                   autoFocus
                   value={panel.value}
@@ -4141,10 +4141,10 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
                   inputMode="decimal"
                   style={{ flex: 1, background: t.input, border: `1px solid ${t.borderMid}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 8px' }}
                 />
-                <button onClick={() => confirmBalance(d)} style={{ background: t.elevated, border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>UPDATE</button>
-                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+                <button onClick={() => confirmBalance(d)} style={{ background: t.elevated, border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>UPDATE</button>
+                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
               </div>
-              <div style={{ fontSize: 11, color: t.textDim, marginTop: 6 }}>Type the actual balance from your bank app or statement.</div>
+              <div style={{ fontSize: 13, color: t.textDim, marginTop: 6 }}>Type the actual balance from your bank app or statement.</div>
             </>)}
           </div>
         )}
@@ -4170,7 +4170,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
 
         {/* ── Subline ── */}
         {isFixed && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textDim }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: t.textDim }}>
             <span>{fmt(d.balance)} remaining{d.monthlyPayment > 0 ? ` • ${fmt(d.monthlyPayment)}/mo` : ''}</span>
             <span style={{ color: isLast ? t.accent : t.textDim }}>
               {remaining > 0 ? `${remaining} left` : '✓ COMPLETE'}
@@ -4180,8 +4180,8 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
         )}
       </div>);
     })}
-    {revolving.length > 0 && <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginTop: 4, fontSize: 10, color: t.textSecondary }}>Avalanche target: <span style={{ color: t.accent }}>{revolving[0]?.name}</span> ({revolving[0]?.apr}% APR)</div>}
-    {debts.length > 0 && di > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 11, color: t.textDim }}>
+    {revolving.length > 0 && <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginTop: 4, fontSize: 12, color: t.textSecondary }}>Avalanche target: <span style={{ color: t.accent }}>{revolving[0]?.name}</span> ({revolving[0]?.apr}% APR)</div>}
+    {debts.length > 0 && di > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 13, color: t.textDim }}>
       <span>Monthly interest: <span style={{ color: t.danger }}>{fmt(Math.round(di * 30))}</span></span>
       <span>Annual if unchanged: <span style={{ color: t.danger }}>{fmt(Math.round(di * 365))}</span></span>
     </div>}
@@ -4203,12 +4203,12 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
       return (
         <div style={{ marginTop: 8, padding: '10px 12px', background: t.elevated, border: `1px solid ${t.accent}30`, borderLeft: `3px solid ${t.accent}` }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>🔓 Liberation Countdown</span>
-            <span style={{ fontSize: 11, color: t.textDim }}>{libDateStr}</span>
+            <span style={{ fontSize: 13, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>🔓 Liberation Countdown</span>
+            <span style={{ fontSize: 13, color: t.textDim }}>{libDateStr}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 8 }}>
             <span style={{ fontSize: 22, fontWeight: 700, color: t.accent }}>{liberationDays}</span>
-            <span style={{ fontSize: 10, color: t.textSecondary }}>days at current pace</span>
+            <span style={{ fontSize: 12, color: t.textSecondary }}>days at current pace</span>
           </div>
           {/* Progress toward zero */}
           <div style={{ height: 4, background: t.borderDim, marginBottom: 8 }}>
@@ -4216,10 +4216,10 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
           </div>
           <div style={{ marginBottom: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, alignItems: 'end' }}>
             <div>
-              <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Extra Payment / Month</div>
-              <input value={extraMonthly} onChange={e => setExtraMonthly(e.target.value)} placeholder="100" inputMode="decimal" style={{ width: '100%', background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 8px' }} />
+              <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Extra Payment / Month</div>
+              <input value={extraMonthly} onChange={e => setExtraMonthly(e.target.value)} placeholder="100" inputMode="decimal" style={{ width: '100%', background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 8px' }} />
             </div>
-            {extra > 0 && <div style={{ fontSize: 11, color: t.textSecondary }}>With {fmt(extra)} extra: <span style={{ color: t.accent }}>{acceleratedCustom * 30}d</span></div>}
+            {extra > 0 && <div style={{ fontSize: 13, color: t.textSecondary }}>With {fmt(extra)} extra: <span style={{ color: t.accent }}>{acceleratedCustom * 30}d</span></div>}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9 }}>
             <div style={{ color: t.textDim }}>+50%/mo extra: <span style={{ color: t.accent }}>{accelerated50 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated50)} mo saved)</span></div>
@@ -4312,8 +4312,8 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
           style={{ background: 'none', border: 'none', color: t.textDim, cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: '2px 6px' }}
         >‹</button>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{monthLabel}</div>
-          <div style={{ fontSize: 11, color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bill Calendar</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{monthLabel}</div>
+          <div style={{ fontSize: 13, color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bill Calendar</div>
         </div>
         <button
           onClick={() => setViewDate(new Date(year, month + 1, 1))}
@@ -4324,7 +4324,7 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
       {/* Day-of-week labels */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 3 }}>
         {['S','M','T','W','T','F','S'].map((d, i) => (
-          <div key={i} style={{ fontSize: 7, color: t.textGhost, textAlign: 'center', fontWeight: 700, letterSpacing: '0.06em', paddingBottom: 2 }}>{d}</div>
+          <div key={i} style={{ fontSize: 12, color: t.textGhost, textAlign: 'center', fontWeight: 700, letterSpacing: '0.06em', paddingBottom: 2 }}>{d}</div>
         ))}
       </div>
 
@@ -4348,7 +4348,7 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
                 overflow: 'hidden',
                 opacity: isPast ? 0.45 : 1,
               }}>
-                <div style={{ fontSize: 11, fontWeight: isToday ? 700 : 400, color: isToday ? t.accent : t.textPrimary, lineHeight: 1, marginBottom: 2 }}>
+                <div style={{ fontSize: 13, fontWeight: isToday ? 700 : 400, color: isToday ? t.accent : t.textPrimary, lineHeight: 1, marginBottom: 2 }}>
                   {day}
                 </div>
                 {isPay && (
@@ -4360,7 +4360,7 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
                     marginBottom: 1, opacity: 0.85,
                   }} />
                 ))}
-                {events.length > 3 && <div style={{ fontSize: 6, color: t.textGhost }}>+{events.length - 3}</div>}
+                {events.length > 3 && <div style={{ fontSize: 12, color: t.textGhost }}>+{events.length - 3}</div>}
               </div>
             );
           })}
@@ -4371,15 +4371,15 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
       <div style={{ display: 'flex', gap: 10, marginTop: 8, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <div style={{ width: 8, height: 2, background: t.danger, opacity: 0.85 }} />
-          <span style={{ fontSize: 7, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bill</span>
+          <span style={{ fontSize: 12, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bill</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <div style={{ width: 8, height: 2, background: t.warn, opacity: 0.85 }} />
-          <span style={{ fontSize: 7, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Debt Payment</span>
+          <span style={{ fontSize: 12, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Debt Payment</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <div style={{ width: 4, height: 4, borderRadius: '50%', background: t.accent, opacity: 0.95 }} />
-          <span style={{ fontSize: 7, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Payday</span>
+          <span style={{ fontSize: 12, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Payday</span>
         </div>
       </div>
     </div>
@@ -4429,10 +4429,10 @@ function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
         {timeline.map((e, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 6 }}>
             <div>
-              <div style={{ fontSize: 11, color: e.type === 'payday' ? t.accent : e.type === 'debt' ? t.warn : t.textPrimary }}>{e.label}</div>
-              <div style={{ fontSize: 11, color: t.textDim }}>{e.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+              <div style={{ fontSize: 13, color: e.type === 'payday' ? t.accent : e.type === 'debt' ? t.warn : t.textPrimary }}>{e.label}</div>
+              <div style={{ fontSize: 13, color: t.textDim }}>{e.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
             </div>
-            <div style={{ fontSize: 10, color: e.type === 'payday' ? t.accent : t.textSecondary }}>
+            <div style={{ fontSize: 12, color: e.type === 'payday' ? t.accent : t.textSecondary }}>
               {e.amount > 0 ? `${e.type === 'payday' ? '+' : '-'}${fmt(e.amount)}` : '—'}
             </div>
           </div>
@@ -4448,12 +4448,12 @@ function EFundMod({ latest, visible, t }) {
   const phase = bal >= targets[3] ? 4 : bal >= targets[2] ? 3 : bal >= targets[1] ? 2 : bal >= targets[0] ? 1 : 0;
   const labels = ['$1K Starter', '1 Month', '3 Months', '6 Months'];
   return (<Card title="Emergency Fund" visible={visible} delay={160} t={t}>
-    <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>{targets.map((tgt, i) => { const filled = bal >= tgt; const pf = (!filled && i === phase) ? Math.min((bal / tgt) * 100, 100) : filled ? 100 : 0; return (<div key={i} style={{ flex: 1 }}><div style={{ height: 8, background: t.elevated, overflow: 'hidden' }}><div style={{ height: '100%', width: `${pf}%`, background: t.accent, transition: 'width 1s ease-out' }} /></div><div style={{ fontSize: 11, color: filled ? t.accentDim : t.textDim, marginTop: 3, textTransform: 'uppercase' }}>{labels[i]} {filled && '✓'}</div></div>); })}</div>
+    <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>{targets.map((tgt, i) => { const filled = bal >= tgt; const pf = (!filled && i === phase) ? Math.min((bal / tgt) * 100, 100) : filled ? 100 : 0; return (<div key={i} style={{ flex: 1 }}><div style={{ height: 8, background: t.elevated, overflow: 'hidden' }}><div style={{ height: '100%', width: `${pf}%`, background: t.accent, transition: 'width 1s ease-out' }} /></div><div style={{ fontSize: 13, color: filled ? t.accentDim : t.textDim, marginTop: 3, textTransform: 'uppercase' }}>{labels[i]} {filled && '✓'}</div></div>); })}</div>
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Balance</div><div style={{ fontSize: 18, fontWeight: 700 }}><AnimNum value={bal} /></div></div>
-      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Runway</div><div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days} Days</div></div>
-      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Monthly Exp</div><div style={{ color: t.textSecondary }}>{fmt(monthly)}</div></div>
-      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Phase</div><div style={{ color: t.textSecondary }}>{phase}/4 — {labels[Math.min(phase, 3)]}</div></div>
+      <div><div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Balance</div><div style={{ fontSize: 18, fontWeight: 700 }}><AnimNum value={bal} /></div></div>
+      <div><div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Runway</div><div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days} Days</div></div>
+      <div><div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Monthly Exp</div><div style={{ color: t.textSecondary }}>{fmt(monthly)}</div></div>
+      <div><div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Phase</div><div style={{ color: t.textSecondary }}>{phase}/4 — {labels[Math.min(phase, 3)]}</div></div>
     </div>
   </Card>);
 }
@@ -4522,7 +4522,7 @@ function BudgetMod({ latest, visible, t }) {
   else if (slashActive) slashDiagnosis = 'Low velocity — audit all non-Essential recurring charges';
 
   return (<Card title="Budget Allocation" visible={visible} delay={240} alert={violations.some(v => v.severity === 'danger')} t={t}>
-    <div style={{ marginBottom: 10, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+    <div style={{ marginBottom: 10, fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
       Policy: Essential + Medical + Debt Service + E-Fund Savings first; Discretionary last.
     </div>
 
@@ -4540,13 +4540,13 @@ function BudgetMod({ latest, visible, t }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <AlertCircle size={12} style={{ color: slashCrisis ? t.danger : t.warn, flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: slashCrisis ? t.danger : t.warn, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: slashCrisis ? t.danger : t.warn, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 {slashCrisis ? '🚨 BUDGET SLASH — CRISIS PROTOCOL' : '⚠ BUDGET SLASH — ACTIVE'}
               </span>
-              <span style={{ fontSize: 11, color: t.textDim, marginLeft: 'auto' }}>V={Math.round(velocity * 100)}% / 25% target</span>
+              <span style={{ fontSize: 13, color: t.textDim, marginLeft: 'auto' }}>V={Math.round(velocity * 100)}% / 25% target</span>
             </div>
-            <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.5 }}>{slashDiagnosis}</div>
-            {slashCrisis && <div style={{ fontSize: 11, color: t.danger, marginTop: 4, textTransform: 'uppercase' }}>⬤ Lifestyle frozen — audit all non-Essential recurring charges</div>}
+            <div style={{ fontSize: 12, color: t.textSecondary, lineHeight: 1.5 }}>{slashDiagnosis}</div>
+            {slashCrisis && <div style={{ fontSize: 13, color: t.danger, marginTop: 4, textTransform: 'uppercase' }}>⬤ Lifestyle frozen — audit all non-Essential recurring charges</div>}
           </div>
         )}
 
@@ -4556,9 +4556,9 @@ function BudgetMod({ latest, visible, t }) {
             padding: '6px 10px', marginBottom: i < violations.length - 1 ? 4 : 0,
             background: v.severity === 'danger' ? t.danger + '08' : t.warn + '08',
             border: `1px solid ${v.severity === 'danger' ? t.danger : t.warn}30`,
-            display: 'flex', alignItems: 'center', gap: 8, fontSize: 10,
+            display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
           }}>
-            <span style={{ color: v.severity === 'danger' ? t.danger : t.warn, fontSize: 11, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{v.code}</span>
+            <span style={{ color: v.severity === 'danger' ? t.danger : t.warn, fontSize: 13, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{v.code}</span>
             <span style={{ color: t.textSecondary }}>{v.text}</span>
           </div>
         ))}
@@ -4568,15 +4568,15 @@ function BudgetMod({ latest, visible, t }) {
     {income > 0 && (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${t.borderDim}` }}>
         <div>
-          <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Income</div>
+          <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Income</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: t.accent }}>{fmt(income)}</div>
         </div>
         <div>
-          <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Spent</div>
+          <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Spent</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: t.textPrimary }}>{fmt(totalSpent)}</div>
         </div>
         <div>
-          <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Surplus</div>
+          <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Surplus</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: surplus >= 0 ? t.accent : t.danger }}>{surplus < 0 ? '-' : ''}{fmt(Math.abs(surplus))}</div>
         </div>
       </div>
@@ -4587,16 +4587,16 @@ function BudgetMod({ latest, visible, t }) {
       <div style={{ display: 'flex', gap: 12, marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${t.borderDim}` }}>
         {income > 0 && (
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Savings Rate</div>
+            <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Savings Rate</div>
             <span style={{ fontSize: 14, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}%</span>
-            <span style={{ fontSize: 11, color: t.textDim, marginLeft: 4 }}>/ 25% target</span>
+            <span style={{ fontSize: 13, color: t.textDim, marginLeft: 4 }}>/ 25% target</span>
           </div>
         )}
         {disc && (
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Daily Discretionary</div>
+            <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Daily Discretionary</div>
             <span style={{ fontSize: 14, fontWeight: 700, color: dailyDisc > 5 ? t.textPrimary : t.danger }}>${dailyDisc.toFixed(2)}</span>
-            <span style={{ fontSize: 11, color: t.textDim, marginLeft: 4 }}>/day • {daysLeft}d left</span>
+            <span style={{ fontSize: 13, color: t.textDim, marginLeft: 4 }}>/day • {daysLeft}d left</span>
           </div>
         )}
       </div>
@@ -4605,12 +4605,12 @@ function BudgetMod({ latest, visible, t }) {
     {/* Category rows */}
     {cats.length === 0 ? <div style={{ color: t.textDim, fontSize: 11 }}>No budget data</div> : <>
       {income > 0 && totalSpent === 0 && (
-        <div style={{ padding: '8px 12px', marginBottom: 10, background: t.warn + '12', border: `1px solid ${t.warn}40`, borderLeft: `3px solid ${t.warn}`, fontSize: 10, color: t.warn, lineHeight: 1.5 }}>
+        <div style={{ padding: '8px 12px', marginBottom: 10, background: t.warn + '12', border: `1px solid ${t.warn}40`, borderLeft: `3px solid ${t.warn}`, fontSize: 12, color: t.warn, lineHeight: 1.5 }}>
           ⚠ Income detected ({fmt(income)}) but $0 across all categories. Re-sync via Guided tab with actual spend, or your bank CSV may need sign correction.
         </div>
       )}
       {cats.map((c, i) => { const pct = c.budgeted > 0 ? (c.actual / c.budgeted) * 100 : (c.actual > 0 ? 100 : 0); return (<div key={i} style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 10, marginBottom: 3 }}><span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.name}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 11 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 11, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 12, marginBottom: 3 }}><span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.name}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 11 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 13, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
       {c.budgeted > 0 && <ProgressBar percent={pct} t={t} />}
       {c.budgeted === 0 && c.actual > 0 && <div style={{ height: 6, background: t.accent, marginBottom: 4, opacity: 0.5 }} />}
     </div>); })}
@@ -4657,20 +4657,20 @@ function ProtectionMod({ latest, visible, t }) {
     {!hasData ? <div style={{ color: t.textDim, fontSize: 11 }}>No protection data — sync via Guided tab</div> : <>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
         <div>
-          <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Death Benefit</div>
+          <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Death Benefit</div>
           <div style={{ fontSize: 22, fontWeight: 700 }}><AnimNum value={li.deathBenefit || 0} /></div>
-          {li.provider && <div style={{ fontSize: 11, color: t.textDim, marginTop: 2 }}>{li.type || 'TERM'} • {li.provider}{li.monthlyPremium > 0 ? ` • ${fmt(li.monthlyPremium)}/mo` : ''}</div>}
+          {li.provider && <div style={{ fontSize: 13, color: t.textDim, marginTop: 2 }}>{li.type || 'TERM'} • {li.provider}{li.monthlyPremium > 0 ? ` • ${fmt(li.monthlyPremium)}/mo` : ''}</div>}
         </div>
         <div>
-          <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net to Family</div>
+          <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net to Family</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: coverageColor }}><AnimNum value={netToFamily} /></div>
-          <div style={{ fontSize: 11, color: coverageColor, marginTop: 2 }}>{coverageMonths > 0 ? `${coverageMonths} months coverage` : 'COVERAGE GAP'}{debtTotal > 0 ? ` (−${fmt(debtTotal)} debt)` : ''}</div>
+          <div style={{ fontSize: 13, color: coverageColor, marginTop: 2 }}>{coverageMonths > 0 ? `${coverageMonths} months coverage` : 'COVERAGE GAP'}{debtTotal > 0 ? ` (−${fmt(debtTotal)} debt)` : ''}</div>
         </div>
       </div>
 
       {/* Funeral Buffer */}
       {fb.target > 0 && <div style={{ marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 3 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
           <span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Funeral Buffer</span>
           <span><span style={{ color: t.textPrimary }}>{fmt(fb.current)}</span> <span style={{ color: t.textDim }}>/ {fmt(fb.target)}</span> <span style={{ color: pctColor(fbPct, t), fontSize: 9 }}>{Math.round(fbPct)}%</span></span>
         </div>
@@ -4678,13 +4678,13 @@ function ProtectionMod({ latest, visible, t }) {
       </div>}
 
       {/* Conversion Alert */}
-      {convAlert && <div style={{ padding: '8px 10px', fontSize: 10, marginTop: 4, background: convUrgent ? t.warn + '12' : t.surface, border: `1px solid ${convUrgent ? t.warn : t.borderDim}`, color: convUrgent ? t.warn : t.textDim }}>
+      {convAlert && <div style={{ padding: '8px 10px', fontSize: 12, marginTop: 4, background: convUrgent ? t.warn + '12' : t.surface, border: `1px solid ${convUrgent ? t.warn : t.borderDim}`, color: convUrgent ? t.warn : t.textDim }}>
         {convUrgent ? '⌛ ' : '🔒 '}{convAlert}
         {li.conversionDeadline && <span style={{ color: t.textGhost, marginLeft: 8, fontSize: 9 }}>Deadline: {li.conversionDeadline}</span>}
       </div>}
 
       {/* Expiration */}
-      {li.expirationDate && <div style={{ fontSize: 11, color: t.textGhost, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Policy expires: {li.expirationDate}</div>}
+      {li.expirationDate && <div style={{ fontSize: 13, color: t.textGhost, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Policy expires: {li.expirationDate}</div>}
     </>}
   </Card>);
 }
@@ -4721,23 +4721,23 @@ function PortfolioMod({ latest, visible, t }) {
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols.length}, 1fr)`, gap: 12, marginBottom: 14 }}>
             {cols.includes('equity') && (
               <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 8 }}>
-                <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Equity</div>
+                <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Equity</div>
                 <div style={{ fontSize: 18, fontWeight: 700 }}><AnimNum value={totalEquityValue} /></div>
-                {totalEquityCost > 0 && <div style={{ fontSize: 11, color: equityPL >= 0 ? t.accent : t.danger, marginTop: 2 }}>{equityPL >= 0 ? '↑' : '↓'} {fmt(Math.abs(equityPL))} P&L</div>}
+                {totalEquityCost > 0 && <div style={{ fontSize: 13, color: equityPL >= 0 ? t.accent : t.danger, marginTop: 2 }}>{equityPL >= 0 ? '↑' : '↓'} {fmt(Math.abs(equityPL))} P&L</div>}
               </div>
             )}
             {cols.includes('options') && (
               <div style={{ borderLeft: `2px solid ${t.purple}`, paddingLeft: 8 }}>
-                <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Options</div>
+                <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Options</div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: t.purple }}><AnimNum value={totalOptionsValue} /></div>
-                <div style={{ fontSize: 11, color: t.purpleDim, marginTop: 2 }}>{options.length} contract{options.length !== 1 ? 's' : ''}</div>
+                <div style={{ fontSize: 13, color: t.purpleDim, marginTop: 2 }}>{options.length} contract{options.length !== 1 ? 's' : ''}</div>
               </div>
             )}
             {cols.includes('crypto') && (
               <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
-                <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Crypto</div>
+                <div style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Crypto</div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: t.crypto }}><AnimNum value={totalCryptoValue} /></div>
-                {totalCryptoCost > 0 && <div style={{ fontSize: 11, color: cryptoPL >= 0 ? t.crypto : t.danger, marginTop: 2 }}>{cryptoPL >= 0 ? '↑' : '↓'} {fmt(Math.abs(cryptoPL))} P&L</div>}
+                {totalCryptoCost > 0 && <div style={{ fontSize: 13, color: cryptoPL >= 0 ? t.crypto : t.danger, marginTop: 2 }}>{cryptoPL >= 0 ? '↑' : '↓'} {fmt(Math.abs(cryptoPL))} P&L</div>}
               </div>
             )}
           </div>
@@ -4752,11 +4752,11 @@ function PortfolioMod({ latest, visible, t }) {
         return (<div key={`eq-${i}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: `1px solid ${t.borderDim}`, fontSize: 11 }}>
           <div>
             <span style={{ color: t.accent, fontWeight: 700 }}>{e.ticker || '???'}</span>
-            <span style={{ color: t.textDim, fontSize: 11, marginLeft: 6 }}>{e.shares} shares @ {fmt(e.avgCost)}</span>
+            <span style={{ color: t.textDim, fontSize: 13, marginLeft: 6 }}>{e.shares} shares @ {fmt(e.avgCost)}</span>
           </div>
           <div style={{ textAlign: 'right' }}>
             <span>{fmt(mv)}</span>
-            {cost > 0 && <span style={{ color: pl >= 0 ? t.accent : t.danger, fontSize: 11, marginLeft: 6 }}>{pl >= 0 ? '+' : ''}{fmt(pl)}</span>}
+            {cost > 0 && <span style={{ color: pl >= 0 ? t.accent : t.danger, fontSize: 13, marginLeft: 6 }}>{pl >= 0 ? '+' : ''}{fmt(pl)}</span>}
           </div>
         </div>);
       })}
@@ -4776,12 +4776,12 @@ function PortfolioMod({ latest, visible, t }) {
         }}>
           <div>
             <span style={{ color: t.purple, fontWeight: 700, fontSize: 11 }}>{o.ticker || '???'} {o.type || 'CALL'}</span>
-            {o.strikePrice > 0 && <span style={{ color: t.textDim, fontSize: 11, marginLeft: 4 }}>${o.strikePrice}</span>}
-            <div style={{ fontSize: 11, color: isUrgent ? t.purple : t.textDim }}>{o.contracts} contract{o.contracts !== 1 ? 's' : ''} • Exp: {o.expDate || '—'}</div>
+            {o.strikePrice > 0 && <span style={{ color: t.textDim, fontSize: 13, marginLeft: 4 }}>${o.strikePrice}</span>}
+            <div style={{ fontSize: 13, color: isUrgent ? t.purple : t.textDim }}>{o.contracts} contract{o.contracts !== 1 ? 's' : ''} • Exp: {o.expDate || '—'}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: t.textPrimary }}>{fmt(mv)}</div>
-            <div style={{ fontSize: 11, color: isExpired ? t.danger : isUrgent ? t.purple : t.textDim, textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 13, color: isExpired ? t.danger : isUrgent ? t.purple : t.textDim, textTransform: 'uppercase' }}>
               {isExpired ? 'EXPIRED' : isUrgent ? '⚡ EXPIRING' : `${daysToExp}d left`}
             </div>
           </div>
@@ -4807,11 +4807,11 @@ function PortfolioMod({ latest, visible, t }) {
           }}>
             <div>
               <span style={{ color: t.crypto, fontWeight: 700, fontSize: 11 }}>{c.coin || '???'}</span>
-              <span style={{ color: t.textDim, fontSize: 11, marginLeft: 6 }}>{amt} @ {fmt(cost)}</span>
+              <span style={{ color: t.textDim, fontSize: 13, marginLeft: 6 }}>{amt} @ {fmt(cost)}</span>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: t.crypto }}>{fmt(mv)}</div>
-              {basis > 0 && <div style={{ fontSize: 11, color: pl >= 0 ? t.crypto : t.danger }}>
+              {basis > 0 && <div style={{ fontSize: 13, color: pl >= 0 ? t.crypto : t.danger }}>
                 {pl >= 0 ? '+' : ''}{fmt(pl)} ({pl >= 0 ? '+' : ''}{plPct}%)
               </div>}
             </div>
@@ -4867,23 +4867,23 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       {/* ── Row 1: key KPIs ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Price</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Price</div>
           <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.crypto }}>{btcPrice ? fmt(btcPrice) : '—'}</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Days Post-Halving</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Days Post-Halving</div>
           <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, color: phaseColor, lineHeight: 1 }}>{daysPost}</div>
-          <div style={{ fontSize: 11, color: t.textDim, marginTop: 2 }}>of 500-day window</div>
+          <div style={{ fontSize: 13, color: t.textDim, marginTop: 2 }}>of 500-day window</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${phaseColor}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Phase</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Phase</div>
           <div style={{ marginTop: 4, fontSize: 12, fontWeight: 700, color: phaseColor }}>{phase}</div>
         </div>
       </div>
 
       {/* ── Timeline bar: −500 ··· HALVING ··· +500 ── */}
       <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '10px 10px', marginBottom: 10 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
           <span>−500d  Buy Zone</span>
           <span>Halving  Apr 2024</span>
           <span>+500d  Peak</span>
@@ -4900,12 +4900,12 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
           {/* Current position indicator */}
           <div style={{ position: 'absolute', left: `${posInWindow}%`, top: -3, width: 4, height: 16, background: phaseColor, transform: 'translateX(-50%)', zIndex: 2 }} />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textDim, letterSpacing: '0.04em' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: t.textDim, letterSpacing: '0.04em' }}>
           <span style={{ color: t.accent }}>Accumulate</span>
           <span style={{ color: t.accent }}>Expand</span>
           <span style={{ color: t.warn }}>Distribute</span>
         </div>
-        <div style={{ marginTop: 6, fontSize: 10, color: t.textSecondary, lineHeight: 1.5 }}>
+        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary, lineHeight: 1.5 }}>
           {phaseDesc}
         </div>
       </div>
@@ -4913,20 +4913,20 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       {/* ── Row 2: Last cycle window + Next cycle ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Last Halving</div>
-          <div style={{ marginTop: 2, fontSize: 11, fontWeight: 700, color: t.textPrimary }}>Apr 20, 2024</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Last Halving</div>
+          <div style={{ marginTop: 2, fontSize: 13, fontWeight: 700, color: t.textPrimary }}>Apr 20, 2024</div>
         </div>
         <div style={{ borderLeft: `2px solid ${window500Closed ? t.textDim : t.warn}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>+500d Window</div>
-          <div style={{ marginTop: 2, fontSize: 11, fontWeight: 700, color: window500Closed ? t.textDim : t.warn }}>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>+500d Window</div>
+          <div style={{ marginTop: 2, fontSize: 13, fontWeight: 700, color: window500Closed ? t.textDim : t.warn }}>
             {fmtD(window500EndUTC)}{window500Closed ? ' ✓' : ''}
           </div>
         </div>
         <div style={{ borderLeft: `2px solid ${buyZoneOpen ? t.accent : t.purple}`, paddingLeft: 8 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             {buyZoneOpen ? 'Buy Zone' : 'Next Buy Zone'}
           </div>
-          <div style={{ marginTop: 2, fontSize: 11, fontWeight: 700, color: buyZoneOpen ? t.accent : t.purple }}>
+          <div style={{ marginTop: 2, fontSize: 13, fontWeight: 700, color: buyZoneOpen ? t.accent : t.purple }}>
             {buyZoneOpen ? `Open (${Math.abs(daysToNextBuy)}d in)` : `in ${daysToNextBuy}d`}
           </div>
         </div>
@@ -4935,23 +4935,23 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       {/* ── Row 3: Next cycle countdown ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Halving (est.)</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Halving (est.)</div>
           <div style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: t.purple }}>~Apr 18, 2028</div>
-          <div style={{ fontSize: 11, color: t.textDim, marginTop: 2 }}>in {daysToNextHalving} days</div>
+          <div style={{ fontSize: 13, color: t.textDim, marginTop: 2 }}>in {daysToNextHalving} days</div>
         </div>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Buy Window (est.)</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Buy Window (est.)</div>
           <div style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: buyZoneOpen ? t.accent : t.purple }}>
             ~{fmtD(nextBuyUTC)}
           </div>
-          <div style={{ fontSize: 11, color: buyZoneOpen ? t.accent : t.textDim, marginTop: 2 }}>
+          <div style={{ fontSize: 13, color: buyZoneOpen ? t.accent : t.textDim, marginTop: 2 }}>
             {buyZoneOpen ? 'Open now' : `in ${daysToNextBuy} days`}
           </div>
         </div>
       </div>
 
       {/* ── Disclaimer ── */}
-      <div style={{ marginTop: 10, fontSize: 11, color: t.textGhost, lineHeight: 1.5, borderTop: `1px solid ${t.borderDim}`, paddingTop: 8 }}>
+      <div style={{ marginTop: 10, fontSize: 13, color: t.textGhost, lineHeight: 1.5, borderTop: `1px solid ${t.borderDim}`, paddingTop: 8 }}>
         Pattern fit to 3 historical cycles — not a protocol rule. Ignores macro, regulation, ETF flows, and liquidity. Use as a loose timing framework only, not a mechanical trading rule.
       </div>
     </Card>
@@ -4991,7 +4991,7 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
 
   // ── Styles ────────────────────────────────────────────────────────
   const card  = { background: t.surface, border: `1px solid ${t.borderDim}`, borderRadius: 4, padding: 14, marginBottom: 0 };
-  const lbl   = { fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 };
+  const lbl   = { fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 };
   const metricBox = (borderColor) => ({
     padding: '10px 12px',
     borderRadius: 4,
@@ -5012,8 +5012,8 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Activity size={14} style={{ color: t.accent }} />
           <div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Market Intelligence</div>
-            <div style={{ fontSize: 11, color: t.textDim }}>{fredMacro?.asOf ? `FRED as of ${fredMacro.asOf}` : 'FRED Macro Narrative'}</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Market Intelligence</div>
+            <div style={{ fontSize: 13, color: t.textDim }}>{fredMacro?.asOf ? `FRED as of ${fredMacro.asOf}` : 'FRED Macro Narrative'}</div>
           </div>
         </div>
       </div>
@@ -5023,17 +5023,17 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
         <div style={metricBox()}>
           <div style={lbl}>Fed Cycle</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: qtqe === 'QT' ? t.danger : qtqe === 'QE' ? t.accent : t.warn }}>{qtqe ?? '—'}</div>
-          <div style={{ fontSize: 11, color: t.textDim }}>{walcl ? `WALCL $${(walcl/1000).toFixed(2)}T` : 'no FRED data'}</div>
+          <div style={{ fontSize: 13, color: t.textDim }}>{walcl ? `WALCL $${(walcl/1000).toFixed(2)}T` : 'no FRED data'}</div>
         </div>
         <div style={metricBox()}>
           <div style={{ ...lbl, color: t.accent }}>Net Liquidity</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: netLiq != null && netLiq > 5000000 ? t.accent : netLiq != null ? t.warn : t.textDim }}>{netLiq != null ? `$${(netLiq/1000).toFixed(2)}T` : '—'}</div>
-          <div style={{ fontSize: 11, color: t.textDim }}>WALCL − TGA − RRP</div>
+          <div style={{ fontSize: 13, color: t.textDim }}>WALCL − TGA − RRP</div>
         </div>
         <div style={metricBox()}>
           <div style={lbl}>RRP</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{rrp != null ? `$${(rrp/1000).toFixed(2)}T` : '—'}</div>
-          <div style={{ fontSize: 11, color: t.textDim }}>overnight reverse repo</div>
+          <div style={{ fontSize: 13, color: t.textDim }}>overnight reverse repo</div>
         </div>
       </div>
 
@@ -5042,19 +5042,19 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
         <div style={metricBox()}>
           <div style={lbl}>WALCL</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: t.textPrimary }}>{walcl != null ? `$${(walcl/1000).toFixed(2)}T` : '—'}</div>
-          <div style={{ fontSize: 11, color: t.textDim }}>Fed balance sheet</div>
+          <div style={{ fontSize: 13, color: t.textDim }}>Fed balance sheet</div>
         </div>
         <div style={metricBox()}>
           <div style={lbl}>TGA</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{tga != null ? `$${(tga/1000).toFixed(2)}T` : '—'}</div>
-          <div style={{ fontSize: 11, color: t.textDim }}>Treasury General Account</div>
+          <div style={{ fontSize: 13, color: t.textDim }}>Treasury General Account</div>
         </div>
         <div style={metricBox()}>
           <div style={lbl}>As Of</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: t.textPrimary, lineHeight: 1.15, wordBreak: 'break-word', overflowWrap: 'anywhere', textAlign: 'center', maxWidth: '100%' }}>
             {fredMacro?.asOf || '—'}
           </div>
-          <div style={{ fontSize: 11, color: t.textDim }}>FRED data timestamp</div>
+          <div style={{ fontSize: 13, color: t.textDim }}>FRED data timestamp</div>
         </div>
       </div>
 
@@ -5062,12 +5062,12 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
       <div style={{ padding: '10px 14px', border: `1px solid ${t.accent}20`, background: t.accentMuted, borderRadius: 4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
           <Eye size={10} style={{ color: t.accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Macro Narrative</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Macro Narrative</span>
         </div>
-        <div style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.6 }}>{buildNarrative()}</div>
+        <div style={{ fontSize: 12, color: t.textSecondary, lineHeight: 1.6 }}>{buildNarrative()}</div>
       </div>
 
-      <div style={{ marginTop: 8, fontSize: 11, color: t.textGhost, lineHeight: 1.35 }}>
+      <div style={{ marginTop: 8, fontSize: 13, color: t.textGhost, lineHeight: 1.35 }}>
         Informational only. Defense Mode (Stages 0–3): no investment action permitted.
       </div>
     </div>
@@ -5252,14 +5252,14 @@ function DailyLawHero({ t }) {
       {/* Meta row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.14em', background: `${t.accent}18`, padding: '2px 7px', border: `1px solid ${t.accent}40` }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.14em', background: `${t.accent}18`, padding: '2px 7px', border: `1px solid ${t.accent}40` }}>
             {directive.pillar}
           </div>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             {theme.month} · {theme.theme}
           </div>
         </div>
-        <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
           The Sovereignty Blueprint · Day {dayOfYear}
         </div>
       </div>
@@ -5290,7 +5290,7 @@ function DailyLawHero({ t }) {
       </div>
 
       {/* Monthly objective */}
-      <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+      <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         Monthly Objective · {theme.objective}
       </div>
     </div>
@@ -5339,34 +5339,34 @@ function DirectiveMod({ visible, latest, t }) {
 
       {/* Wealth Building (formerly Velocity) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Wealth Building</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
-        <div style={{ fontSize: 11, color: velColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{velocity >= 0.25 ? '✓ On Track' : velocity >= 0.10 ? '⚠ Low' : '✕ Critical'}</div>
-        <div style={{ fontSize: 7, color: t.textGhost }}>of income building wealth · goal 25%</div>
+        <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Wealth Building</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 12, fontWeight: 400 }}>%</span></div>
+        <div style={{ fontSize: 13, color: velColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{velocity >= 0.25 ? '✓ On Track' : velocity >= 0.10 ? '⚠ Low' : '✕ Critical'}</div>
+        <div style={{ fontSize: 12, color: t.textGhost }}>of income building wealth · goal 25%</div>
       </div>
 
       {/* Daily Spending (formerly Daily Burn) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Spending</div>
+        <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Spending</div>
         <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
-        <div style={{ fontSize: 11, color: dailyBurn > 0 ? t.warn : t.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : 'No Spend'}</div>
-        <div style={{ fontSize: 7, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'zero spending tracked'}</div>
+        <div style={{ fontSize: 13, color: dailyBurn > 0 ? t.warn : t.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : 'No Spend'}</div>
+        <div style={{ fontSize: 12, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'zero spending tracked'}</div>
       </div>
 
       {/* Money Saved (formerly Savings Rate) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Money Saved</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
-        <div style={{ fontSize: 11, color: srColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{savingsRate >= 20 ? '✓ Healthy' : savingsRate > 0 ? '⚠ Low' : '— No Data'}</div>
-        <div style={{ fontSize: 7, color: t.textGhost }}>of every dollar earned · goal 20%</div>
+        <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Money Saved</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 12, fontWeight: 400 }}>%</span></div>
+        <div style={{ fontSize: 13, color: srColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{savingsRate >= 20 ? '✓ Healthy' : savingsRate > 0 ? '⚠ Low' : '— No Data'}</div>
+        <div style={{ fontSize: 12, color: t.textGhost }}>of every dollar earned · goal 20%</div>
       </div>
 
       {/* Emergency Cover (formerly Runway) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Emergency Cover</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 10, fontWeight: 400 }}> days</span></div>
-        <div style={{ fontSize: 11, color: runwayColor(days, t), fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{days === 0 ? '✕ None' : days < 30 ? '⚠ Fragile' : days < 90 ? '↑ Building' : '✓ Secure'}</div>
-        <div style={{ fontSize: 7, color: t.textGhost }}>if income stopped today · goal 90d</div>
+        <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Emergency Cover</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 12, fontWeight: 400 }}> days</span></div>
+        <div style={{ fontSize: 13, color: runwayColor(days, t), fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{days === 0 ? '✕ None' : days < 30 ? '⚠ Fragile' : days < 90 ? '↑ Building' : '✓ Secure'}</div>
+        <div style={{ fontSize: 12, color: t.textGhost }}>if income stopped today · goal 90d</div>
       </div>
 
     </div>
@@ -5376,8 +5376,8 @@ function DirectiveMod({ visible, latest, t }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
         <span style={{ fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
-          <div style={{ fontSize: 11, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
+          <div style={{ fontSize: 13, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
         </div>
         <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
           {[0,1,2,3,4,5,6,7].map(i => (
@@ -5387,7 +5387,7 @@ function DirectiveMod({ visible, latest, t }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', flex: 1, minWidth: 0 }}>
         <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
-        <span style={{ fontSize: 10, color: t.textSecondary, lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
+        <span style={{ fontSize: 12, color: t.textSecondary, lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
       </div>
     </div>
 
@@ -5396,13 +5396,13 @@ function DirectiveMod({ visible, latest, t }) {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 12, paddingBottom: 12, borderBottom: `1px solid ${t.borderDim}` }}>
         {di > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 11, color: t.danger, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.06em' }}>⚡ Leaking</span>
+            <span style={{ fontSize: 13, color: t.danger, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.06em' }}>⚡ Leaking</span>
             <span style={{ fontSize: 12, fontWeight: 700, color: t.danger }}>${di.toFixed(2)}/day</span>
-            <span style={{ fontSize: 11, color: t.textGhost }}>in interest</span>
+            <span style={{ fontSize: 13, color: t.textGhost }}>in interest</span>
           </div>
         )}
         {soon.length > 0 && (
-          <div style={{ fontSize: 11, color: t.warn, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ fontSize: 13, color: t.warn, display: 'flex', alignItems: 'center', gap: 4 }}>
             <span>⏰</span>
             <span>Due &lt;48hrs: {soon.map(d => `${d.name} (${fmt(d.minPayment || d.monthlyPayment || 0)})`).join(', ')}</span>
           </div>
@@ -5415,7 +5415,7 @@ function DirectiveMod({ visible, latest, t }) {
       const steps = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
       return (
         <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Your Wealth Journey</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Your Wealth Journey</div>
           <div style={{ display: 'flex', gap: 3 }}>
             {steps.map((label, i) => {
               const active = i === stage;
@@ -5424,12 +5424,12 @@ function DirectiveMod({ visible, latest, t }) {
               return (
                 <div key={i} title={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                   <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.2, transition: 'background 0.3s' }} />
-                  <div style={{ fontSize: 6, color: active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textDim : t.textGhost, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{label}</div>
+                  <div style={{ fontSize: 12, color: active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.3, whiteSpace: 'normal', wordBreak: 'break-word', maxWidth: '100%' }}>{label}</div>
                 </div>
               );
             })}
           </div>
-          <div style={{ fontSize: 11, color: stageColor, marginTop: 4, fontWeight: 600 }}>
+          <div style={{ fontSize: 13, color: stageColor, marginTop: 4, fontWeight: 600 }}>
             You're here: <span style={{ color: t.textPrimary }}>{steps[stage] || meta.name}</span>
             <span style={{ color: t.textGhost, fontWeight: 400 }}> · next: {steps[Math.min(stage + 1, 6)] || 'Legacy'}</span>
           </div>
@@ -5440,7 +5440,7 @@ function DirectiveMod({ visible, latest, t }) {
     {/* ═══ BUDGET ALERTS ═══ */}
     {(blownCats.length > 0 || warnCats.length > 0) && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Budget Alerts</div>
+        <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Budget Alerts</div>
         {blownCats.map((c, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10 }}>
             <span style={{ color: t.danger, fontWeight: 700, fontSize: 9 }}>✕ BLOWN</span>
@@ -5567,7 +5567,7 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
   const asOf  = marketLive ? null : (fredMacro?.asOf ?? null); // hide stale label when live data is shown
 
   const fmtP  = (n, dec = 0) => n == null ? '—' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`;
-  const lbl   = { fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 };
+  const lbl   = { fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 };
 
   const cell = { flex: '1 1 0', minWidth: 90, padding: '6px 10px', borderRight: `1px solid ${t.borderDim}`, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' };
   const lastCell = { flex: '1 1 0', minWidth: 90, padding: '6px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' };
@@ -5577,7 +5577,7 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
       <div style={lbl}>{label}</div>
       <div style={{ fontSize: 12, fontWeight: 700, color: color || t.textPrimary, whiteSpace: 'nowrap' }}>{fmtP(value, dec)}</div>
       {chg != null && (
-        <div style={{ fontSize: 11, color: chg >= 0 ? t.accent : t.danger, marginTop: 1 }}>
+        <div style={{ fontSize: 13, color: chg >= 0 ? t.accent : t.danger, marginTop: 1 }}>
           {`${chg >= 0 ? '+' : ''}${Number(chg).toFixed(2)}%`}
         </div>
       )}
@@ -5605,17 +5605,17 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
           <div className="fo-ticker-track" style={{ display: 'inline-flex', alignItems: 'stretch', whiteSpace: 'nowrap', minWidth: 'max-content' }}>
             <div style={{ display: 'inline-flex', alignItems: 'stretch', flexShrink: 0 }}>
               {stripSequence}
-              {asOf && <div style={{ paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center', borderRight: `1px solid ${t.borderDim}` }}><div style={{ fontSize: 11, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+              {asOf && <div style={{ paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center', borderRight: `1px solid ${t.borderDim}` }}><div style={{ fontSize: 13, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
             </div>
             <div style={{ display: 'inline-flex', alignItems: 'stretch', flexShrink: 0 }}>
               {stripSequence}
-              {asOf && <div style={{ paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center', borderRight: `1px solid ${t.borderDim}` }}><div style={{ fontSize: 11, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+              {asOf && <div style={{ paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center', borderRight: `1px solid ${t.borderDim}` }}><div style={{ fontSize: 13, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
             </div>
           </div>
         ) : (
           <>
             {stripSequence}
-            {asOf && <div style={{ marginLeft: 'auto', paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><div style={{ fontSize: 11, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
+            {asOf && <div style={{ marginLeft: 'auto', paddingRight: 12, paddingLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><div style={{ fontSize: 13, color: t.textGhost, whiteSpace: 'nowrap' }}>FRED · {asOf}</div></div>}
           </>
         )}
       </div>
@@ -5645,27 +5645,27 @@ function StatusStrip({ latest, t }) {
       <div className="status-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, marginBottom: 2 }}>
         {/* Velocity */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Velocity</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
-          <div style={{ fontSize: 11, color: velColor, textTransform: 'uppercase' }}>{velocity >= 0.25 ? 'ON TRACK' : velocity >= 0.10 ? 'ALERT' : 'CRISIS'}<span style={{ color: t.textDim }}> / 25% target</span></div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Velocity</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 12, fontWeight: 400 }}>%</span></div>
+          <div style={{ fontSize: 13, color: velColor, textTransform: 'uppercase' }}>{velocity >= 0.25 ? 'ON TRACK' : velocity >= 0.10 ? 'ALERT' : 'CRISIS'}<span style={{ color: t.textDim }}> / 25% target</span></div>
         </div>
         {/* Daily Burn */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Burn</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Burn</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
-          <div style={{ fontSize: 11, color: dailyBurn > 0 ? t.warn : t.accent, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : 'ZERO BURN'}</div>
+          <div style={{ fontSize: 13, color: dailyBurn > 0 ? t.warn : t.accent, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : 'ZERO BURN'}</div>
         </div>
         {/* Savings Rate */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Savings Rate</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 10, fontWeight: 400 }}>%</span></div>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase' }}>{savingsRate >= 20 ? 'HEALTHY' : savingsRate > 0 ? 'LOW' : 'NO DATA'}</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Savings Rate</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 12, fontWeight: 400 }}>%</span></div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase' }}>{savingsRate >= 20 ? 'HEALTHY' : savingsRate > 0 ? 'LOW' : 'NO DATA'}</div>
         </div>
         {/* Runway */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Runway</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(runwayDaysFromLatest(latest), t) }}>{runwayDaysFromLatest(latest)}<span style={{ fontSize: 10, fontWeight: 400 }}> days</span></div>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase' }}>E-Fund Phase {latest?.eFund?.phase || 1}/4</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Runway</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(runwayDaysFromLatest(latest), t) }}>{runwayDaysFromLatest(latest)}<span style={{ fontSize: 12, fontWeight: 400 }}> days</span></div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase' }}>E-Fund Phase {latest?.eFund?.phase || 1}/4</div>
         </div>
       </div>
 
@@ -5675,8 +5675,8 @@ function StatusStrip({ latest, t }) {
         <div className="status-rail-stage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
-            <div style={{ fontSize: 11, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 Defense' : stage === 3 ? '🔓 Liberation' : '📈 Wealth'}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
+            <div style={{ fontSize: 13, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{isDefense ? '🛡 Defense' : stage === 3 ? '🔓 Liberation' : '📈 Wealth'}</div>
           </div>
           {/* Progress bar */}
           <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
@@ -5689,7 +5689,7 @@ function StatusStrip({ latest, t }) {
         {/* Next Action */}
         <div className="status-rail-next" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 16px', flex: 1, minWidth: 0 }}>
           <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
-          <span style={{ fontSize: 10, color: t.textSecondary, textAlign: 'center', lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
+          <span style={{ fontSize: 12, color: t.textSecondary, textAlign: 'center', lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
         </div>
       </div>
     </div>
@@ -5730,7 +5730,7 @@ function PulseTicker({ latest, t, now, payFrequencyOverride }) {
     <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, overflow: 'hidden' }}>
       <div className="fo-ticker-track" style={{ display: 'inline-flex', whiteSpace: 'nowrap', gap: 12, padding: '7px 10px', minWidth: '100%' }}>
         {repeated.map((item, idx) => (
-          <span key={`${item}-${idx}`} style={{ fontSize: 10, color: idx % 3 === 0 ? t.accent : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <span key={`${item}-${idx}`} style={{ fontSize: 12, color: idx % 3 === 0 ? t.accent : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             {item}{idx < repeated.length - 1 ? ' •' : ''}
           </span>
         ))}
@@ -5789,32 +5789,32 @@ function TransactionsMod({ latest, visible, t }) {
       {/* Scan Summary Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
         <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Source</div>
-          <div style={{ fontSize: 11, color: t.textSecondary, fontWeight: 600, wordBreak: 'break-word' }}>{source}</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Source</div>
+          <div style={{ fontSize: 13, color: t.textSecondary, fontWeight: 600, wordBreak: 'break-word' }}>{source}</div>
         </div>
         <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Parsed</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: t.accent, lineHeight: 1 }}>{count}<span style={{ fontSize: 11, fontWeight: 400, color: t.textDim }}> txns</span></div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Parsed</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: t.accent, lineHeight: 1 }}>{count}<span style={{ fontSize: 13, fontWeight: 400, color: t.textDim }}> txns</span></div>
         </div>
         <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Net</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: income - totalExpense >= 0 ? t.accent : t.danger, lineHeight: 1 }}>{fmt(Math.abs(income - totalExpense))}<span style={{ fontSize: 11, color: income - totalExpense >= 0 ? t.accent : t.danger }}> {income - totalExpense >= 0 ? 'surplus' : 'deficit'}</span></div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Net</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: income - totalExpense >= 0 ? t.accent : t.danger, lineHeight: 1 }}>{fmt(Math.abs(income - totalExpense))}<span style={{ fontSize: 13, color: income - totalExpense >= 0 ? t.accent : t.danger }}> {income - totalExpense >= 0 ? 'surplus' : 'deficit'}</span></div>
         </div>
       </div>
 
       {/* Income vs Spend */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid ${t.accent}` }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Income</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Income</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, marginTop: 2 }}>{fmt(income)}</div>
         </div>
         <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid ${t.danger}` }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Spend</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Spend</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: t.danger, marginTop: 2 }}>{fmt(totalExpense)}</div>
         </div>
         {meta.uncategorized > 0 && (
           <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid #888` }}>
-            <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Uncategorized</div>
+            <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Uncategorized</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#888', marginTop: 2 }}>{fmt(meta.uncategorized)}</div>
           </div>
         )}
@@ -5823,7 +5823,7 @@ function TransactionsMod({ latest, visible, t }) {
       {/* Category Breakdown Bar */}
       {Object.keys(catTotals).length > 0 && (
         <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${t.borderDim}` }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Expense Breakdown</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Expense Breakdown</div>
           <div style={{ display: 'flex', height: 10, borderRadius: 2, overflow: 'hidden', marginBottom: 8 }}>
             {Object.entries(catTotals).sort((a, b) => b[1] - a[1]).map(([cat, val]) => (
               <div key={cat} style={{ width: `${(val / totalSpend * 100).toFixed(1)}%`, background: catColor(cat), minWidth: 2 }} title={`${cat}: ${fmt(val)}`} />
@@ -5833,7 +5833,7 @@ function TransactionsMod({ latest, visible, t }) {
             {Object.entries(catTotals).sort((a, b) => b[1] - a[1]).map(([cat, val]) => (
               <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 7, height: 7, background: catColor(cat), flexShrink: 0 }} />
-                <span style={{ fontSize: 11, color: t.textDim }}>{cat} <span style={{ color: t.textSecondary, fontWeight: 600 }}>{fmt(val)}</span> <span style={{ color: t.textGhost }}>({(val / totalSpend * 100).toFixed(0)}%)</span></span>
+                <span style={{ fontSize: 13, color: t.textDim }}>{cat} <span style={{ color: t.textSecondary, fontWeight: 600 }}>{fmt(val)}</span> <span style={{ color: t.textGhost }}>({(val / totalSpend * 100).toFixed(0)}%)</span></span>
               </div>
             ))}
           </div>
@@ -5843,22 +5843,22 @@ function TransactionsMod({ latest, visible, t }) {
       {/* Transaction List */}
       {txns.length > 0 ? (
         <>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
             Recent Transactions — {txns.length} total
           </div>
           {/* Column headers */}
           <div style={{ display: 'flex', gap: 8, padding: '3px 8px', marginBottom: 3 }}>
-            <span style={{ fontSize: 7, color: t.textGhost, width: 52, flexShrink: 0, textTransform: 'uppercase' }}>Date</span>
-            <span style={{ fontSize: 7, color: t.textGhost, flex: 1, textTransform: 'uppercase' }}>Description</span>
-            <span style={{ fontSize: 7, color: t.textGhost, width: 68, flexShrink: 0, textAlign: 'center', textTransform: 'uppercase' }}>Category</span>
-            <span style={{ fontSize: 7, color: t.textGhost, width: 58, flexShrink: 0, textAlign: 'right', textTransform: 'uppercase' }}>Amount</span>
+            <span style={{ fontSize: 12, color: t.textGhost, width: 52, flexShrink: 0, textTransform: 'uppercase' }}>Date</span>
+            <span style={{ fontSize: 12, color: t.textGhost, flex: 1, textTransform: 'uppercase' }}>Description</span>
+            <span style={{ fontSize: 12, color: t.textGhost, width: 68, flexShrink: 0, textAlign: 'center', textTransform: 'uppercase' }}>Category</span>
+            <span style={{ fontSize: 12, color: t.textGhost, width: 58, flexShrink: 0, textAlign: 'right', textTransform: 'uppercase' }}>Amount</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {displayTxns.map((tx, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 9 }}>
                 <span style={{ color: t.textGhost, flexShrink: 0, width: 52, fontVariantNumeric: 'tabular-nums' }}>{tx.date ? tx.date.slice(5) : '—'}</span>
                 <span style={{ color: t.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</span>
-                <span style={{ flexShrink: 0, width: 68, background: catColor(tx.category) + '22', color: catColor(tx.category), padding: '1px 4px', fontSize: 7, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', textAlign: 'center' }}>{tx.category}</span>
+                <span style={{ flexShrink: 0, width: 68, background: catColor(tx.category) + '22', color: catColor(tx.category), padding: '1px 4px', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', textAlign: 'center' }}>{tx.category}</span>
                 <span style={{ flexShrink: 0, fontWeight: 700, color: tx.amount >= 0 ? t.accent : t.danger, width: 58, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                   {tx.amount >= 0 ? '+' : ''}{fmt(tx.amount)}
                 </span>
@@ -5868,12 +5868,12 @@ function TransactionsMod({ latest, visible, t }) {
           {txns.length > 12 && (
             <button
               onClick={() => setShowAll(v => !v)}
-              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '7px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 8 }}
+              style={{ width: '100%', background: 'none', border: `1px solid ${t.borderMid}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '7px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 8 }}
             >{showAll ? '▲ Collapse' : `▼ Show All ${txns.length} Transactions`}</button>
           )}
         </>
       ) : (
-        <div style={{ fontSize: 11, color: t.textGhost, textAlign: 'center', padding: '14px 0' }}>
+        <div style={{ fontSize: 13, color: t.textGhost, textAlign: 'center', padding: '14px 0' }}>
           Scan a bank statement to view transaction history
         </div>
       )}
@@ -5936,7 +5936,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
         <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>fortifyOS</span>
       </div>
-      <span className="phase-label" style={{ color: t.textSecondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
+      <span className="phase-label" style={{ color: t.textSecondary, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div ref={quickMenuRef} className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
         <button
           onClick={onToggleTheme}
@@ -5946,17 +5946,17 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <button
           className="dash-menu-toggle"
           onClick={() => setQuickMenuOpen(v => !v)}
-          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
+          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
           title="Open actions menu"
         >
           {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
           <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Eye size={9} /> Radar</button>
-            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Upload size={9} /> Import</button>
-            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Download size={9} /> Export</button>
-            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Settings size={9} /> Settings</button>
+            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Eye size={9} /> Radar</button>
+            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Upload size={9} /> Import</button>
+            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Download size={9} /> Export</button>
+            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Settings size={9} /> Settings</button>
           </div>
         )}
       </div>
@@ -5967,17 +5967,17 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         {/* Left — greeting */}
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
-          <div style={{ fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 12, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · FortifyOS operational
           </div>
         </div>
         {/* Right — Net Worth + equity ownership bar */}
         {(_nwTotal !== 0 || _tA > 0) && (
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
+            <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end', marginBottom: 8 }}>
               <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
-              {snapshots.length > 1 && <span style={{ fontSize: 10, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
+              {snapshots.length > 1 && <span style={{ fontSize: 12, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
             </div>
             {/* Equity ownership bar — only when asset breakdown exists */}
             {_tA > 0 && (
@@ -5986,7 +5986,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
                   <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
                   <div style={{ flex: 1, background: `${t.danger}50` }} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, letterSpacing: '0.04em' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, letterSpacing: '0.04em' }}>
                   <span style={{ color: t.accent }}>{_equityPct}% EQUITY OWNED</span>
                   <span style={{ color: t.textGhost }}>A {fmt(_tA)} · D {fmt(_tL)}</span>
                 </div>
@@ -6046,7 +6046,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 
       </div>
     </main>
-    <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 11, zIndex: 50 }}>
+    <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 13, zIndex: 50 }}>
       <button
         onClick={() => setSyncOpen(true)}
         title="Import new statement to update"
@@ -6469,17 +6469,17 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FORTIFYOS</span>
           <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
         </div>
-        <span style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
+        <span style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             {isDark ? <Sun size={13} /> : <Moon size={13} />}
           </button>
-          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
+          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
             {menuOpen ? <X size={12} /> : <Menu size={12} />}
           </button>
           {menuOpen && (
             <div style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
             </div>
           )}
         </div>
@@ -6533,14 +6533,14 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <button
                   onClick={() => { setQuery(''); setSearchResult(null); setTickerNews([]); setChartData([]); }}
-                  style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 11, padding: '4px 10px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}
+                  style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 13, padding: '4px 10px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}
                 >← OVERVIEW</button>
-                <span style={{ fontSize: 11, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.12em', fontWeight: 700 }}>TICKER INTEL</span>
+                <span style={{ fontSize: 13, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.12em', fontWeight: 700 }}>TICKER INTEL</span>
               </div>
               {searchLoading && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <div style={{ width: 10, height: 10, border: `2px solid ${t.accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                  <span style={{ fontSize: 11, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>FETCHING LIVE DATA…</span>
+                  <span style={{ fontSize: 13, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>FETCHING LIVE DATA…</span>
                 </div>
               )}
             </div>
@@ -6560,8 +6560,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                         <span style={{ fontSize: 13, color: t.textSecondary }}>{searchResult.name}</span>
                       )}
                       {searchResult._cached
-                        ? <span style={{ fontSize: 11, background: '#444', color: '#aaa', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>CACHED{searchResult._asOf ? ` · ${searchResult._asOf}` : ''}</span>
-                        : <span style={{ fontSize: 11, background: t.accent, color: isDark ? '#000' : '#fff', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>LIVE</span>
+                        ? <span style={{ fontSize: 13, background: '#444', color: '#aaa', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>CACHED{searchResult._asOf ? ` · ${searchResult._asOf}` : ''}</span>
+                        : <span style={{ fontSize: 13, background: t.accent, color: isDark ? '#000' : '#fff', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>LIVE</span>
                       }
                     </div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
@@ -6574,8 +6574,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
-                    <span style={{ fontSize: 10, border: `1px solid ${riskColor}`, color: riskColor, padding: '3px 10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>{searchResult.risk_level} RISK</span>
-                    <span style={{ fontSize: 10, color: ncColor, fontFamily: "'JetBrains Mono', monospace" }}>{searchResult.news_class} · {searchResult.action}</span>
+                    <span style={{ fontSize: 12, border: `1px solid ${riskColor}`, color: riskColor, padding: '3px 10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>{searchResult.risk_level} RISK</span>
+                    <span style={{ fontSize: 12, color: ncColor, fontFamily: "'JetBrains Mono', monospace" }}>{searchResult.news_class} · {searchResult.action}</span>
                   </div>
                 </div>
               );
@@ -6597,7 +6597,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               const pad       = (maxP - minP) * 0.1 || 1;
               return (
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 11, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.08em' }}>
+                  <div style={{ fontSize: 13, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.08em' }}>
                     30D PRICE CHART · {searchResult.ticker}
                   </div>
                   <ResponsiveContainer width="100%" height={130}>
@@ -6608,10 +6608,10 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                           <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="date" tick={{ fontSize: 7, fill: t.textGhost }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: t.textGhost }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
                       <YAxis hide domain={[minP - pad, maxP + pad]} />
                       <Tooltip
-                        contentStyle={{ background: t.surface, border: `1px solid ${t.borderMid}`, fontSize: 11, padding: '4px 8px', fontFamily: "'JetBrains Mono', monospace" }}
+                        contentStyle={{ background: t.surface, border: `1px solid ${t.borderMid}`, fontSize: 13, padding: '4px 8px', fontFamily: "'JetBrains Mono', monospace" }}
                         formatter={(v) => [`$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
                         labelStyle={{ color: t.textSecondary, fontSize: 8 }}
                       />
@@ -6625,10 +6625,10 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             {/* Ticker news section */}
             <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                <span style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
                   {query.toUpperCase()} NEWS
                 </span>
-                {searchLoading && <span style={{ fontSize: 11, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>scanning…</span>}
+                {searchLoading && <span style={{ fontSize: 13, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>scanning…</span>}
               </div>
               <div style={{ display: 'grid', gap: 6, maxHeight: 400, overflowY: 'auto' }}>
                 {tickerNews.length > 0 ? tickerNews.slice(0, 15).map((item, i) => {
@@ -6641,17 +6641,17 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                     <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
                       style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.2s ease-out ${0.025 * i}s both` }}>
                       <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
-                        <span style={{ background: sentBg, color: sentColor, fontSize: 7, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
-                        <div style={{ fontSize: 11, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
+                        <span style={{ background: sentBg, color: sentColor, fontSize: 12, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
+                        <div style={{ fontSize: 13, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
                       </div>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <span style={{ fontSize: 11, color: t.textDim }}>{srcName}</span>
-                        {ago && <span style={{ fontSize: 11, color: t.textGhost }}>· {ago}</span>}
+                        <span style={{ fontSize: 13, color: t.textDim }}>{srcName}</span>
+                        {ago && <span style={{ fontSize: 13, color: t.textGhost }}>· {ago}</span>}
                       </div>
                     </a>
                   );
                 }) : (
-                  <div style={{ color: t.textDim, fontSize: 11, padding: '8px 0' }}>
+                  <div style={{ color: t.textDim, fontSize: 13, padding: '8px 0' }}>
                     {searchLoading
                       ? `Fetching ${query.toUpperCase()} headlines…`
                       : `No headlines found for ${query.toUpperCase()}.`}
@@ -6669,13 +6669,13 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             {/* WATCHLIST */}
             <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.4s both' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <div style={{ fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                <div style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
                   Watchlist
                   {!newsLoading && filteredTickers.length > 0 && (
                     <span style={{ marginLeft: 8, color: t.textGhost, fontWeight: 400 }}>· from live intel</span>
                   )}
                 </div>
-                {newsLoading && <span style={{ fontSize: 11, color: t.textDim }}>scanning…</span>}
+                {newsLoading && <span style={{ fontSize: 13, color: t.textDim }}>scanning…</span>}
               </div>
               <div style={{ display: 'grid', gap: 5, maxHeight: 420, overflowY: 'auto' }}>
                 {filteredTickers.slice(0, 10).map((x, i) => {
@@ -6688,23 +6688,23 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                           <span style={{ fontSize: 13, fontWeight: 800, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>{x.ticker || x.symbol}</span>
-                          {x.name && <span style={{ fontSize: 11, color: t.textSecondary }}>{x.name}</span>}
+                          {x.name && <span style={{ fontSize: 13, color: t.textSecondary }}>{x.name}</span>}
                         </div>
-                        <div style={{ fontSize: 11, color: t.textDim, marginTop: 2 }}>
+                        <div style={{ fontSize: 13, color: t.textDim, marginTop: 2 }}>
                           {x.action || 'Watch'} · <span style={{ color: ncColor }}>{nc}</span>
                         </div>
                       </div>
                       <div style={{ flexShrink: 0 }}>
-                        {risk && <span style={{ fontSize: 11, border: `1px solid ${riskColor}`, color: riskColor, padding: '2px 5px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{risk}</span>}
+                        {risk && <span style={{ fontSize: 13, border: `1px solid ${riskColor}`, color: riskColor, padding: '2px 5px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{risk}</span>}
                       </div>
                     </div>
                   );
                 })}
                 {newsLoading && filteredTickers.length === 0 && (
-                  <div style={{ color: t.textDim, fontSize: 11, padding: '8px 0' }}>Scanning live markets…</div>
+                  <div style={{ color: t.textDim, fontSize: 13, padding: '8px 0' }}>Scanning live markets…</div>
                 )}
                 {!newsLoading && filteredTickers.length === 0 && (
-                  <div style={{ color: t.textDim, fontSize: 11, padding: '8px 0' }}>No ticker intel loaded.</div>
+                  <div style={{ color: t.textDim, fontSize: 13, padding: '8px 0' }}>No ticker intel loaded.</div>
                 )}
               </div>
             </div>
@@ -6712,17 +6712,17 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             {/* LIVE NEWS FEED */}
             <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Live News Feed</span>
+                <span style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Live News Feed</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {newsLoading && <span style={{ fontSize: 11, color: t.textDim }}>loading…</span>}
+                  {newsLoading && <span style={{ fontSize: 13, color: t.textDim }}>loading…</span>}
                   {!newsLoading && (
-                    <button onClick={loadNews} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontSize: 11, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>REFRESH</button>
+                    <button onClick={loadNews} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontSize: 13, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>REFRESH</button>
                   )}
                 </div>
               </div>
               <div style={{ display: 'grid', gap: 6, maxHeight: 420, overflowY: 'auto' }}>
                 {news.length === 0 ? (
-                  <div style={{ color: t.textDim, fontSize: 11, padding: '12px 0' }}>
+                  <div style={{ color: t.textDim, fontSize: 13, padding: '12px 0' }}>
                     {newsLoading ? 'Fetching live headlines…' : 'Unable to load news. Refresh to retry.'}
                   </div>
                 ) : news.slice(0, 12).map((item, i) => {
@@ -6735,14 +6735,14 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                     <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
                       style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.25s ease-out ${0.03 * i}s both`, cursor: 'pointer' }}>
                       <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 5 }}>
-                        <span style={{ background: sentBg, color: sentColor, fontSize: 7, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
-                        <div style={{ fontSize: 11, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
+                        <span style={{ background: sentBg, color: sentColor, fontSize: 12, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
+                        <div style={{ fontSize: 13, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
                       </div>
                       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <span style={{ fontSize: 11, color: t.textDim }}>{srcName}</span>
-                        {ago && <span style={{ fontSize: 11, color: t.textGhost }}>· {ago}</span>}
+                        <span style={{ fontSize: 13, color: t.textDim }}>{srcName}</span>
+                        {ago && <span style={{ fontSize: 13, color: t.textGhost }}>· {ago}</span>}
                         {item.categories && (
-                          <span style={{ fontSize: 11, color: t.textGhost, marginLeft: 'auto' }}>{item.categories.split('|').slice(0, 3).join(' · ')}</span>
+                          <span style={{ fontSize: 13, color: t.textGhost, marginLeft: 'auto' }}>{item.categories.split('|').slice(0, 3).join(' · ')}</span>
                         )}
                       </div>
                     </a>
@@ -6812,17 +6812,17 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FORTIFYOS</span>
           <span style={{ color: t.textGhost, fontSize: 9 }}>v2.4</span>
         </div>
-        <span style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
+        <span style={{ color: t.textDim, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             {isDark ? <Sun size={13} /> : <Moon size={13} />}
           </button>
-          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
+          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
             {menuOpen ? <X size={12} /> : <Menu size={12} />}
           </button>
           {menuOpen && (
             <div style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
             </div>
           )}
         </div>
@@ -6834,14 +6834,14 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
 
         {/* ── THEME ── */}
         <section style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Theme</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Theme</div>
           <div onClick={onToggleTheme} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: t.surface, border: `1px solid ${t.borderDim}`, cursor: 'pointer' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
             onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
             <span style={{ fontSize: 12, color: t.textPrimary }}>{isDark ? 'Noir (Dark)' : 'Tactical (Light)'}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: t.accent }}>
               {isDark ? <Moon size={14} /> : <Sun size={14} />}
-              <span style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase' }}>Click to toggle</span>
+              <span style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase' }}>Click to toggle</span>
             </div>
           </div>
         </section>
@@ -6857,8 +6857,8 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
                     onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
                     onMouseLeave={e => e.currentTarget.style.borderColor = on ? t.borderDim : t.elevated}>
                     <div>
-                      <div style={{ fontSize: 11, color: on ? t.textPrimary : t.textDim, fontWeight: on ? 600 : 400 }}>{m.label}</div>
-                      <div style={{ fontSize: 11, color: t.textGhost, marginTop: 2 }}>{m.desc}</div>
+                      <div style={{ fontSize: 13, color: on ? t.textPrimary : t.textDim, fontWeight: on ? 600 : 400 }}>{m.label}</div>
+                      <div style={{ fontSize: 13, color: t.textGhost, marginTop: 2 }}>{m.desc}</div>
                     </div>
                     <div style={{ width: 32, height: 16, borderRadius: 8, background: on ? t.accentMuted : t.elevated, position: 'relative', flexShrink: 0, transition: 'background 0.2s', border: `1px solid ${on ? t.accent + '60' : t.borderDim}` }}>
                       <div style={{ width: 12, height: 12, borderRadius: '50%', position: 'absolute', top: 1, left: on ? 17 : 1, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} />
@@ -6871,13 +6871,13 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
           return (
             <>
               <section style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Dashboard Modules</div>
-                <div style={{ fontSize: 11, color: t.textGhost, marginBottom: 12 }}>Personal finance sections on your Dashboard</div>
+                <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Dashboard Modules</div>
+                <div style={{ fontSize: 13, color: t.textGhost, marginBottom: 12 }}>Personal finance sections on your Dashboard</div>
                 {renderModList(dashMods)}
               </section>
               <section style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Radar Modules</div>
-                <div style={{ fontSize: 11, color: t.textGhost, marginBottom: 12 }}>Sections visible on the Pre-Market Radar page</div>
+                <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Radar Modules</div>
+                <div style={{ fontSize: 13, color: t.textGhost, marginBottom: 12 }}>Sections visible on the Pre-Market Radar page</div>
                 {renderModList(radarMods)}
               </section>
             </>
@@ -6886,33 +6886,33 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
 
         {/* ── PAY SCHEDULE ── */}
         <section style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pay Schedule</div>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pay Schedule</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
             {['WEEKLY', 'BIWEEKLY'].map(opt => {
               const isActive = payFrequency === opt;
               return (
-                <button key={opt} onClick={() => onSetPayFrequency?.(opt)} style={{ padding: '10px', background: isActive ? t.accentMuted : t.surface, border: `1px solid ${isActive ? t.accent : t.borderDim}`, color: isActive ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <button key={opt} onClick={() => onSetPayFrequency?.(opt)} style={{ padding: '10px', background: isActive ? t.accentMuted : t.surface, border: `1px solid ${isActive ? t.accent : t.borderDim}`, color: isActive ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {opt === 'BIWEEKLY' ? 'Bi-Weekly' : 'Weekly'}
                 </button>
               );
             })}
           </div>
-          <div style={{ fontSize: 11, color: t.textGhost }}>Applies to payday timeline and planner calculations.</div>
+          <div style={{ fontSize: 13, color: t.textGhost }}>Applies to payday timeline and planner calculations.</div>
         </section>
 
         {/* ── DATA ── */}
         <section>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Data</div>
-          <button onClick={onExport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Data</div>
+          <button onClick={onExport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
             onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
             <Download size={12} /> Export All Snapshots
           </button>
-          <div style={{ fontSize: 11, color: t.textGhost, marginBottom: 16 }}>Downloads all snapshots and settings as a JSON backup file.</div>
+          <div style={{ fontSize: 13, color: t.textGhost, marginBottom: 16 }}>Downloads all snapshots and settings as a JSON backup file.</div>
           <div style={{ border: `1px solid ${t.danger}30`, padding: '16px', background: t.danger + '08' }}>
-            <div style={{ fontSize: 11, color: t.danger, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>⚠ Danger Zone</div>
-            <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear all data' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, padding: '8px 10px', width: '100%', outline: 'none', marginBottom: 8, boxSizing: 'border-box' }} />
-            <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: '10px', background: confirm === 'CONFIRM' ? t.danger + '20' : t.elevated, border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 13, color: t.danger, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>⚠ Danger Zone</div>
+            <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear all data' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '8px 10px', width: '100%', outline: 'none', marginBottom: 8, boxSizing: 'border-box' }} />
+            <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: '10px', background: confirm === 'CONFIRM' ? t.danger + '20' : t.elevated, border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', textTransform: 'uppercase' }}>
               <Trash2 size={12} /> Clear All History
             </button>
           </div>
