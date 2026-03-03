@@ -1099,7 +1099,7 @@ function transactionsToSnapshot(txns, bankName, { endBalance = null, accountType
 const DEFAULT_SNAPSHOT = {
   date: new Date().toISOString().slice(0, 10),
   netWorth: { assets: { checking: 0, savings: 0, eFund: 0, other: 0 }, liabilities: {}, total: 0 },
-  debts: [], eFund: { balance: 0, monthlyExpenses: 3000, phase: 1 },
+  debts: [], eFund: { balance: 0, monthlyExpenses: 0, phase: 1 },
   budget: { categories: [
     { name: 'Essential', budgeted: 2000, actual: 0 }, { name: 'Discretionary', budgeted: 300, actual: 0 },
     { name: 'Medical', budgeted: 300, actual: 0 }, { name: 'Debt Service', budgeted: 0, actual: 0 },
@@ -4647,7 +4647,7 @@ function ProtectionMod({ latest, visible, t }) {
   const fb = prot.funeralBuffer || { target: 10000, current: 0 };
   const debtTotal = totalDebt(latest?.debts);
   const netToFamily = (li.deathBenefit || 0) - debtTotal;
-  const monthly = latest?.eFund?.monthlyExpenses || 3000;
+  const monthly = latest?.eFund?.monthlyExpenses || monthlySpendBaseline(latest);
   const coverageMonths = monthly > 0 ? Math.floor(netToFamily / monthly) : 0;
   const coverageColor = netToFamily <= 0 ? t.danger : coverageMonths < 12 ? t.warn : t.accent;
   const fbPct = fb.target > 0 ? Math.min((fb.current / fb.target) * 100, 100) : 0;
@@ -5424,22 +5424,24 @@ function DirectiveMod({ visible, latest, t }) {
     </div>
 
     {/* ═══ STAGE RAIL ═══ */}
-    <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', alignItems: 'stretch', marginBottom: 12 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderRight: `1px solid ${t.borderDim}`, flexShrink: 0 }}>
-        <span style={{ fontSize: 18, fontWeight: 700, color: stageColor }}>{stage}</span>
-        <div>
+    <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', flexDirection: 'column', marginBottom: 12 }}>
+      {/* Row 1: stage number + name + dots */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderBottom: `1px solid ${t.borderDim}` }}>
+        <span style={{ fontSize: 18, fontWeight: 700, color: stageColor, flexShrink: 0 }}>{stage}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
-          <div style={{ fontSize: 15, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
+          <div style={{ fontSize: 14, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
         </div>
-        <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
+        <div style={{ display: 'flex', gap: 2, alignItems: 'center', flexShrink: 0 }}>
           {[0,1,2,3,4,5,6,7].map(i => (
             <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.borderDim, opacity: i <= stage ? 1 : 0.3 }} />
           ))}
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', flex: 1, minWidth: 0 }}>
+      {/* Row 2: next action — full width so text never gets squeezed */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 16px' }}>
         <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
-        <span style={{ fontSize: 14, color: t.textSecondary, lineHeight: 1.35, overflowWrap: 'anywhere' }}>{action.text}</span>
+        <span style={{ fontSize: 14, color: t.textSecondary, lineHeight: 1.35 }}>{action.text}</span>
       </div>
     </div>
 
@@ -5464,19 +5466,20 @@ function DirectiveMod({ visible, latest, t }) {
 
     {/* ═══ WEALTH JOURNEY ═══ */}
     {(() => {
-      const steps = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
+      const steps     = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
+      const stepsShort = ['Stable','Safe','Debt\nFree','Invest.','Protect.','Indep.','Legacy'];
       return (
         <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Your Wealth Journey</div>
           <div style={{ display: 'flex', gap: 3 }}>
-            {steps.map((label, i) => {
+            {stepsShort.map((label, i) => {
               const active = i === stage;
               const done   = i < stage;
               const bg     = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.borderDim;
               return (
-                <div key={i} title={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                <div key={i} title={steps[i]} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                   <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.2, transition: 'background 0.3s' }} />
-                  <div style={{ fontSize: 14, color: active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.3, whiteSpace: 'normal', wordBreak: 'break-word', maxWidth: '100%' }}>{label}</div>
+                  <div style={{ fontSize: 11, color: active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.25, whiteSpace: 'pre-line' }}>{label}</div>
                 </div>
               );
             })}
@@ -5959,7 +5962,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   // Protection alerts
   const _pli = latest.protection?.lifeInsurance;
   if (_pli?.conversionDeadline) { const _cd = new Date(_pli.conversionDeadline); const _al = new Date(_cd); _al.setFullYear(_al.getFullYear() - (_pli.alertLeadTimeYears || 5)); if (new Date() >= _al) ac.amber++; }
-  if (_pli?.deathBenefit > 0) { const _ntf = _pli.deathBenefit - totalDebt(latest.debts); if (_ntf < (latest.eFund?.monthlyExpenses || 3000) * 12) ac.amber++; else ac.green++; }
+  if (_pli?.deathBenefit > 0) { const _ntf = _pli.deathBenefit - totalDebt(latest.debts); const _mo = latest.eFund?.monthlyExpenses || monthlySpendBaseline(latest); if (_mo > 0 && _ntf < _mo * 12) ac.amber++; else if (_ntf > 0) ac.green++; }
   // Portfolio alerts
   const _opts = latest.portfolio?.options || [];
   const _urgentOpts = _opts.filter(o => { if (!o.expDate) return false; const d = Math.floor((new Date(o.expDate) - new Date()) / 86400000); return d >= 0 && d <= 7; });
@@ -7112,7 +7115,7 @@ function FortifyOSApp() {
       merged.eFund = {
         ...(base.eFund || {}),
         ...(data.eFund || {}),
-        monthlyExpenses: Math.round(combinedSpent || merged.eFund?.monthlyExpenses || 3000),
+        monthlyExpenses: Math.round(combinedSpent || merged.eFund?.monthlyExpenses || 0),
       };
 
       // Merge _recentTxns across all synced accounts — combine, dedup, sort newest-first, keep 100

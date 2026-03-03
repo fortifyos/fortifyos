@@ -7,6 +7,7 @@ export default defineConfig(() => {
 
   return {
     base: isPages ? '/fortifyos/' : '/',
+    server: { host: '127.0.0.1' },
     plugins: [
       react(),
       VitePWA({
