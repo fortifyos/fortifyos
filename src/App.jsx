@@ -5317,6 +5317,38 @@ function DailyLawHero({ t }) {
   );
 }
 
+function InfoTip({ text, t }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: 'relative', display: 'inline-block', marginLeft: 4, verticalAlign: 'middle' }}>
+      <span
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onTouchStart={(e) => { e.stopPropagation(); setShow(v => !v); }}
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 14, height: 14, borderRadius: '50%',
+          border: `1px solid ${t.borderMid}`, color: t.textGhost,
+          fontSize: 10, cursor: 'pointer', userSelect: 'none', fontWeight: 700, lineHeight: 1,
+        }}
+      >?</span>
+      {show && (
+        <div style={{
+          position: 'absolute', bottom: '130%', left: '50%', transform: 'translateX(-50%)',
+          background: t.surface, border: `1px solid ${t.borderMid}`,
+          padding: '8px 10px', width: 210, zIndex: 9999,
+          fontSize: 13, color: t.textSecondary, lineHeight: 1.45,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+          textTransform: 'none', letterSpacing: 'normal', fontWeight: 400,
+          textAlign: 'left', pointerEvents: 'none',
+        }}>
+          {text}
+        </div>
+      )}
+    </span>
+  );
+}
+
 function DirectiveMod({ visible, latest, t }) {
   const now = new Date();
 
@@ -5359,7 +5391,7 @@ function DirectiveMod({ visible, latest, t }) {
 
       {/* Wealth Building (formerly Velocity) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Wealth Building</div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Wealth Building<InfoTip t={t} text="% of income actively working toward financial progress — extra debt payments, savings contributions, and investing. Formula: (savings + extra debt payments) ÷ income. Target: 25%+" /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 14, fontWeight: 400 }}>%</span></div>
         <div style={{ fontSize: 15, color: velColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{velocity >= 0.25 ? '✓ On Track' : velocity >= 0.10 ? '⚠ Low' : '✕ Critical'}</div>
         <div style={{ fontSize: 14, color: t.textGhost }}>of income building wealth · goal 25%</div>
@@ -5367,7 +5399,7 @@ function DirectiveMod({ visible, latest, t }) {
 
       {/* Daily Spending (formerly Daily Burn) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Spending</div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Daily Spending<InfoTip t={t} text="Average daily spend based on your tracked monthly expenses. Calculated as: total monthly spend ÷ 30. Sync a bank statement to populate this with real data." /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.textDim }}>${dailyBurn.toFixed(2)}</div>
         <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.textGhost, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : '— No Data'}</div>
         <div style={{ fontSize: 14, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'sync a statement'}</div>
@@ -5375,7 +5407,7 @@ function DirectiveMod({ visible, latest, t }) {
 
       {/* Money Saved (formerly Savings Rate) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Money Saved</div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Money Saved<InfoTip t={t} text="Savings rate = savings ÷ gross income. Includes emergency fund contributions, investment deposits, and any money not spent. Target: 20%+ of income saved." /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 14, fontWeight: 400 }}>%</span></div>
         <div style={{ fontSize: 15, color: srColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{savingsRate >= 20 ? '✓ Healthy' : savingsRate > 0 ? '⚠ Low' : '— No Data'}</div>
         <div style={{ fontSize: 14, color: t.textGhost }}>of every dollar earned · goal 20%</div>
@@ -5383,7 +5415,7 @@ function DirectiveMod({ visible, latest, t }) {
 
       {/* Emergency Cover (formerly Runway) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Emergency Cover</div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Emergency Cover<InfoTip t={t} text="Days your emergency fund would sustain you if income stopped today. Formula: e-fund balance ÷ (monthly expenses ÷ 30). Update your e-fund balance in Settings. Target: 90 days." /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 14, fontWeight: 400 }}> days</span></div>
         <div style={{ fontSize: 15, color: runwayColor(days, t), fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{days === 0 ? '✕ None' : days < 30 ? '⚠ Fragile' : days < 90 ? '↑ Building' : '✓ Secure'}</div>
         <div style={{ fontSize: 14, color: t.textGhost }}>if income stopped today · goal 90d</div>
