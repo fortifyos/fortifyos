@@ -1220,6 +1220,9 @@ function calcStage(latest) {
   const income = latest?.budget?.income || latest?._meta?.income || 0;
   const totalSpent = totalBudgetSpent(latest);
 
+  // No meaningful data yet — stay at stage 0
+  if (income === 0 && bal === 0 && debt === 0 && monthly === 0) return 0;
+
   // Stage 0: expenses exceed income or no buffer
   if (income > 0 && totalSpent > income) return 0;
   if (bal < 1000 && debt > 0) return 0;
@@ -2619,7 +2622,6 @@ const btn = {
     { name: 'Essential', budgeted: '', actual: '' },
     { name: 'Discretionary', budgeted: '', actual: '' },
     { name: 'Medical', budgeted: '', actual: '' },
-    { name: 'Debt Service', budgeted: '', actual: '' },
     { name: 'Savings', budgeted: '', actual: '' },
   ]);
   const upBudget = (i, f, v) => { const b = [...gBudget]; b[i][f] = v; setGBudget(b); };
@@ -3201,9 +3203,13 @@ useEffect(() => {
       };
     });
     const tL = debts.reduce((s, d) => s + d.balance, 0);
-    const budgetCats = gBudget.map(b => ({ name: b.name, budgeted: parseFloat(b.budgeted) || 0, actual: parseFloat(b.actual) || 0 }));
+    const debtServiceBudgeted = gDebts.filter(d => d.balance).reduce((s, d) => s + (parseFloat(d.minPayment) || 0), 0);
+    const budgetCats = [
+      ...gBudget.map(b => ({ name: b.name, budgeted: parseFloat(b.budgeted) || 0, actual: parseFloat(b.actual) || 0 })),
+      { name: 'Debt Service', budgeted: debtServiceBudgeted, actual: 0 },
+    ];
     const monthly = budgetCats.reduce((s, b) => s + b.budgeted, 0) || 0;
-    const phase = efund >= monthly * 6 ? 4 : efund >= monthly * 3 ? 3 : efund >= monthly ? 2 : efund >= 1000 ? 1 : 0;
+    const phase = (monthly > 0 && efund >= monthly * 6) ? 4 : (monthly > 0 && efund >= monthly * 3) ? 3 : (monthly > 0 && efund >= monthly) ? 2 : efund >= 1000 ? 1 : 0;
     const income = parseFloat(gIncome) || 0;
     const protection = {
       lifeInsurance: { provider: gProvider, type: gPolicyType, deathBenefit: parseFloat(gBenefit) || 0, monthlyPremium: parseFloat(gPremium) || 0, expirationDate: gPolicyExp, conversionDeadline: gConvDeadline, alertLeadTimeYears: parseInt(gLeadYears) || 5 },
@@ -3697,8 +3703,24 @@ useEffect(() => {
                     <CurrencyInput t={t} value={b.budgeted} onChange={e => upBudget(i, 'budgeted', e.target.value)} placeholder="0" />
                   </div>
                 ))}
+                {/* Debt Payments — auto-calculated from min payments in Debts section */}
                 {(() => {
-                  const totalBudgeted = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0);
+                  const dsAmt = gDebts.filter(d => d.balance).reduce((s, d) => s + (parseFloat(d.minPayment) || 0), 0);
+                  return (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 4, alignItems: 'center' }}>
+                      <span style={{ fontSize: 14, color: t.textSecondary }}>
+                        Debt Payments
+                        <span style={{ fontSize: 11, color: t.textGhost, marginLeft: 4 }}>(auto)</span>
+                      </span>
+                      <div style={{ ...inp, color: dsAmt > 0 ? t.textSecondary : t.textGhost, background: t.void, display: 'flex', alignItems: 'center', cursor: 'default', userSelect: 'none' }}>
+                        {dsAmt > 0 ? `$${dsAmt.toFixed(0)}` : '$ 0'}
+                      </div>
+                    </div>
+                  );
+                })()}
+                {(() => {
+                  const dsAmt = gDebts.filter(d => d.balance).reduce((s, d) => s + (parseFloat(d.minPayment) || 0), 0);
+                  const totalBudgeted = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0) + dsAmt;
                   if (totalBudgeted === 0) return null;
                   return (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 14 }}>
@@ -3741,10 +3763,11 @@ useEffect(() => {
                 const nw = totalAssets - dTotal;
                 const di = dList.reduce((s, d) => s + (d.bal * d.apr / 100) / 365, 0);
                 const ef = parseFloat(gEF) || 0;
-                const mo = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0);
+                const debtServiceAmt = gDebts.filter(d => d.balance).reduce((s, d) => s + (parseFloat(d.minPayment) || 0), 0);
+                const mo = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0) + debtServiceAmt;
                 const inc = parseFloat(gIncome) || 0;
                 const runway = mo > 0 ? Math.floor(ef / (mo / 30)) : 0;
-                const totalBudgeted = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0);
+                const totalBudgeted = mo;
                 const totalSpent = gBudget.reduce((s, b) => s + (parseFloat(b.actual) || 0), 0);
                 const benefit = parseFloat(gBenefit) || 0;
                 const netToFamily = benefit > 0 ? benefit - dTotal : 0;
@@ -4387,7 +4410,7 @@ function PlannerMod({ latest, visible, t, payFrequencyOverride }) {
 function EFundMod({ latest, visible, t }) {
   const ef = latest?.eFund || {}; const bal = ef.balance || 0; const monthly = monthlySpendBaseline(latest);
   const targets = efundTargets(monthly); const days = runwayDaysFromLatest(latest);
-  const phase = bal >= targets[3] ? 4 : bal >= targets[2] ? 3 : bal >= targets[1] ? 2 : bal >= targets[0] ? 1 : 0;
+  const phase = (monthly > 0 && bal >= targets[3]) ? 4 : (monthly > 0 && bal >= targets[2]) ? 3 : (monthly > 0 && bal >= targets[1]) ? 2 : bal >= targets[0] ? 1 : 0;
   const labels = ['$1K Starter', '1 Month', '3 Months', '6 Months'];
   return (<Card title="Emergency Fund" visible={visible} delay={160} t={t}>
     <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>{targets.map((tgt, i) => { const filled = bal >= tgt; const pf = (!filled && i === phase) ? Math.min((bal / tgt) * 100, 100) : filled ? 100 : 0; return (<div key={i} style={{ flex: 1 }}><div style={{ height: 8, background: t.elevated, overflow: 'hidden' }}><div style={{ height: '100%', width: `${pf}%`, background: t.accent, transition: 'width 1s ease-out' }} /></div><div style={{ fontSize: 15, color: filled ? t.accentDim : t.textDim, marginTop: 3, textTransform: 'uppercase' }}>{labels[i]} {filled && '✓'}</div></div>); })}</div>
@@ -5192,13 +5215,13 @@ function DailyLawHero({ t }) {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${t.accent}, ${t.accent}00)` }} />
 
       {/* Meta row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.14em', background: `${t.accent}18`, padding: '2px 7px', border: `1px solid ${t.accent}40` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14, flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.14em', background: `${t.accent}18`, padding: '2px 7px', border: `1px solid ${t.accent}40`, alignSelf: 'flex-start' }}>
             {directive.pillar}
           </div>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            {theme.month} · {theme.theme}
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            {theme.theme}
           </div>
         </div>
         <div style={{ fontSize: 15, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -5239,8 +5262,14 @@ function DailyLawHero({ t }) {
   );
 }
 
-function InfoTip({ text, t }) {
+function InfoTip({ text, t, align = 'center', direction = 'up' }) {
   const [show, setShow] = useState(false);
+  const tooltipPos = align === 'right'
+    ? { right: 0 }
+    : align === 'left'
+      ? { left: 0 }
+      : { left: '50%', transform: 'translateX(-50%)' };
+  const tooltipDir = direction === 'down' ? { top: '130%' } : { bottom: '130%' };
   return (
     <span style={{ position: 'relative', display: 'inline-block', marginLeft: 4, verticalAlign: 'middle' }}>
       <span
@@ -5256,7 +5285,7 @@ function InfoTip({ text, t }) {
       >?</span>
       {show && (
         <div style={{
-          position: 'absolute', bottom: '130%', left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute', ...tooltipDir, ...tooltipPos,
           background: t.surface, border: `1px solid ${t.borderMid}`,
           padding: '8px 10px', width: 210, zIndex: 9999,
           fontSize: 13, color: t.textSecondary, lineHeight: 1.45,
@@ -5313,56 +5342,51 @@ function DirectiveMod({ visible, latest, t }) {
 
       {/* Wealth Building (formerly Velocity) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Wealth Building<InfoTip t={t} text="% of income actively working toward financial progress — extra debt payments, savings contributions, and investing. Formula: (savings + extra debt payments) ÷ income. Target: 25%+" /></div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Wealth Building<InfoTip t={t} direction="down" text="How much of your income is actively working toward financial progress — debt paydown, savings, and investing. Target: 25%+" /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: velColor }}>{(velocity * 100).toFixed(0)}<span style={{ fontSize: 14, fontWeight: 400 }}>%</span></div>
-        <div style={{ fontSize: 15, color: velColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{velocity >= 0.25 ? '✓ On Track' : velocity >= 0.10 ? '⚠ Low' : '✕ Critical'}</div>
-        <div style={{ fontSize: 14, color: t.textGhost }}>of income building wealth · goal 25%</div>
+        <div style={{ fontSize: 15, color: velColor, fontWeight: 700, textTransform: 'uppercase' }}>{velocity >= 0.25 ? '✓ On Track' : velocity >= 0.10 ? '⚠ Low' : '✕ Critical'}</div>
       </div>
 
       {/* Daily Spending (formerly Daily Burn) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Daily Spending<InfoTip t={t} text="Average daily spend based on your tracked monthly expenses. Calculated as: total monthly spend ÷ 30. Sync a bank statement to populate this with real data." /></div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Daily Spending<InfoTip t={t} align="right" direction="down" text="Your average spend per day based on monthly expenses. Sync a bank statement to populate with real data." /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.textDim }}>${dailyBurn.toFixed(2)}</div>
-        <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.textGhost, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : '— No Data'}</div>
-        <div style={{ fontSize: 14, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'sync a statement'}</div>
+        <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.textGhost, fontWeight: 700, textTransform: 'uppercase' }}>{dailyBurn > 0 ? 'Spending' : '— No Data'}</div>
       </div>
 
       {/* Money Saved (formerly Savings Rate) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Money Saved<InfoTip t={t} text="Savings rate = savings ÷ gross income. Includes emergency fund contributions, investment deposits, and any money not spent. Target: 20%+ of income saved." /></div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Money Saved<InfoTip t={t} direction="down" text="How much of every dollar earned you're keeping — includes e-fund contributions, investments, and unspent income. Target: 20%+" /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: srColor }}>{savingsRate.toFixed(0)}<span style={{ fontSize: 14, fontWeight: 400 }}>%</span></div>
-        <div style={{ fontSize: 15, color: srColor, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{savingsRate >= 20 ? '✓ Healthy' : savingsRate > 0 ? '⚠ Low' : '— No Data'}</div>
-        <div style={{ fontSize: 14, color: t.textGhost }}>of every dollar earned · goal 20%</div>
+        <div style={{ fontSize: 15, color: srColor, fontWeight: 700, textTransform: 'uppercase' }}>{savingsRate >= 20 ? '✓ Healthy' : savingsRate > 0 ? '⚠ Low' : '— No Data'}</div>
       </div>
 
-      {/* Emergency Cover (formerly Runway) */}
+      {/* Emergency Fund (formerly Runway) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Emergency Cover<InfoTip t={t} text="Days your emergency fund would sustain you if income stopped today. Formula: e-fund balance ÷ (monthly expenses ÷ 30). Update your e-fund balance in Settings. Target: 90 days." /></div>
+        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Emergency Fund<InfoTip t={t} align="right" direction="down" text="How many days your emergency fund would cover you if income stopped today. Target: 90 days." /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days}<span style={{ fontSize: 14, fontWeight: 400 }}> days</span></div>
-        <div style={{ fontSize: 15, color: runwayColor(days, t), fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{days === 0 ? '✕ None' : days < 30 ? '⚠ Fragile' : days < 90 ? '↑ Building' : '✓ Secure'}</div>
-        <div style={{ fontSize: 14, color: t.textGhost }}>if income stopped today · goal 90d</div>
+        <div style={{ fontSize: 15, color: runwayColor(days, t), fontWeight: 700, textTransform: 'uppercase' }}>{days === 0 ? '✕ None' : days < 30 ? '⚠ Fragile' : days < 90 ? '↑ Building' : '✓ Secure'}</div>
       </div>
 
     </div>
 
     {/* ═══ STAGE RAIL ═══ */}
     <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${stageColor}`, display: 'flex', flexDirection: 'column', marginBottom: 12 }}>
-      {/* Row 1: stage number + name + dots */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <span style={{ fontSize: 18, fontWeight: 700, color: stageColor, flexShrink: 0 }}>{stage}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
-          <div style={{ fontSize: 14, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
-        </div>
-        <div style={{ display: 'flex', gap: 2, alignItems: 'center', flexShrink: 0 }}>
+      {/* Name row — full width, always truly centered regardless of stage name length */}
+      <div style={{ textAlign: 'center', padding: '8px 16px 4px', fontSize: 15, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
+      {/* Stage number + mode + dots row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px', borderBottom: `1px solid ${t.borderDim}` }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: stageColor }}>{stage}</span>
+        <div style={{ fontSize: 12, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
+        <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           {[0,1,2,3,4,5,6,7].map(i => (
             <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.borderDim, opacity: i <= stage ? 1 : 0.3 }} />
           ))}
         </div>
       </div>
-      {/* Row 2: next action — full width so text never gets squeezed */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 16px' }}>
-        <Zap size={12} style={{ color: t[action.color] || t.accent, flexShrink: 0 }} />
+      {/* Row 2: next action — centered, full width */}
+      <div style={{ textAlign: 'center', padding: '8px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+        <Zap size={12} style={{ color: t[action.color] || t.accent }} />
         <span style={{ fontSize: 14, color: t.textSecondary, lineHeight: 1.35 }}>{action.text}</span>
       </div>
     </div>
@@ -5388,28 +5412,56 @@ function DirectiveMod({ visible, latest, t }) {
 
     {/* ═══ WEALTH JOURNEY ═══ */}
     {(() => {
-      const steps     = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
-      const stepsShort = ['Stable','Safe','Debt\nFree','Invest.','Protect.','Indep.','Legacy'];
+      const steps = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
+      const [guideOpen, setGuideOpen] = useState(false);
       return (
         <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Your Wealth Journey</div>
-          <div style={{ display: 'flex', gap: 3 }}>
-            {stepsShort.map((label, i) => {
+
+          {/* Title */}
+          <div style={{ textAlign: 'center', fontSize: 13, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Your Wealth Journey</div>
+
+          {/* Numbered bar segments */}
+          <div style={{ display: 'flex', gap: 3, marginBottom: 10 }}>
+            {steps.map((_, i) => {
               const active = i === stage;
               const done   = i < stage;
+              const color  = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.textDim;
               const bg     = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.borderDim;
               return (
-                <div key={i} title={steps[i]} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                  <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.6 : active ? 1 : 0.2, transition: 'background 0.3s' }} />
-                  <div style={{ fontSize: 11, color: active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim, fontWeight: active ? 700 : 400, textAlign: 'center', lineHeight: 1.25, whiteSpace: 'pre-line' }}>{label}</div>
+                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                  <div style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color, opacity: done ? 0.7 : active ? 1 : 0.35, fontWeight: active ? 700 : 400 }}>{i + 1}</div>
+                  <div style={{ width: '100%', height: 4, background: bg, opacity: done ? 0.7 : active ? 1 : 0.15, borderRadius: 2, transition: 'background 0.3s' }} />
                 </div>
               );
             })}
           </div>
-          <div style={{ fontSize: 15, color: stageColor, marginTop: 4, fontWeight: 600 }}>
-            You're here: <span style={{ color: t.textPrimary }}>{steps[stage] || meta.name}</span>
-            <span style={{ color: t.textGhost, fontWeight: 400 }}> · next: {steps[Math.min(stage + 1, 6)] || 'Legacy'}</span>
-          </div>
+
+          {/* Stage guide toggle — full width */}
+          <button
+            onClick={() => setGuideOpen(v => !v)}
+            style={{ width: '100%', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '6px 0', cursor: 'pointer', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: guideOpen ? 8 : 0 }}
+          >{guideOpen ? '▲ Hide Guide' : '▼ Stage Guide'}</button>
+
+          {/* Collapsible stage guide card */}
+          {guideOpen && (
+            <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {steps.map((label, i) => {
+                const active = i === stage;
+                const done   = i < stage;
+                const color  = active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim;
+                return (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: done ? 0.6 : 1 }}>
+                    <span style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: t.textGhost, flexShrink: 0, width: 14, textAlign: 'right' }}>{i + 1}</span>
+                    <div style={{ flex: 1, height: 1, background: done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.borderDim, opacity: done ? 0.5 : active ? 1 : 0.2 }} />
+                    <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color, fontWeight: active ? 700 : 400, flexShrink: 0 }}>
+                      {done ? '✓ ' : active ? '▶ ' : ''}{label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
         </div>
       );
     })()}
