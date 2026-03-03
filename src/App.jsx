@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import IntelFreshness from './components/IntelFreshness.jsx';
+import BitcoinMastery from './pages/BitcoinMastery.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, BarChart, Bar, CartesianGrid, Legend
@@ -15,7 +16,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 /* ═══════════════════════════════════════════════════════════════
-   fortifyOS — UNIFIED v2.3
+   FortifyOS — UNIFIED v2.3
    Landing · Universal Sync Engine · Live Dashboard
    Enforcement Layer · Liberation Countdown · Never List
    "Protect first, grow second. Every dollar has a job."
@@ -60,7 +61,7 @@ class AppErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error) {
-    console.error('fortifyOS runtime error:', error);
+    console.error('FortifyOS runtime error:', error);
   }
 
   render() {
@@ -88,7 +89,7 @@ class AppErrorBoundary extends React.Component {
     return (
       <div style={panel}>
         <div style={shell}>
-          <div style={{ color: '#00FF41', fontSize: 15, marginBottom: 12 }}>fortifyOS SAFE RECOVERY MODE</div>
+          <div style={{ color: '#00FF41', fontSize: 15, marginBottom: 12 }}>FortifyOS SAFE RECOVERY MODE</div>
           <div style={{ fontSize: 14, color: '#BFBFBF', lineHeight: 1.5, marginBottom: 12 }}>
             The app hit a runtime error and switched to recovery mode to prevent a blank screen.
           </div>
@@ -1530,11 +1531,11 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   ];
 
   const faqs = [
-    { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. fortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
+    { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
     { q: 'Is my financial data safe?', a: 'Your data is stored locally in this browser profile. The 20 instruction files in the cloud contain zero financial data. Your actual numbers live in 4 local CSV files and local snapshots—disable browser sync if you want single-device isolation. Sensitive fields (SSNs, account/card numbers, emails, phones) are auto-redacted before any processing or display.' },
-    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. fortifyOS auto-parses your bank exports (CSV/PDF) and screenshots, tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
+    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FortifyOS auto-parses your bank exports (CSV/PDF) and screenshots, tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
     { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and at least one statement export (CSV, PDF, or screenshot). Setup is ~30–45 minutes on desktop. After that, daily use is 2–5 minutes — upload new statements when needed and run your morning snapshot.' },
-    { q: 'Can I use it on my phone?', a: 'Yes. You can run fortifyOS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
+    { q: 'Can I use it on my phone?', a: 'Yes. You can run FortifyOS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
   ];
 
   return (
@@ -1543,7 +1544,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <nav style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}` }}>
         <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
           <Shield size={18} style={{ color: accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>fortifyOS</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FortifyOS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
@@ -1579,7 +1580,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 
           {/* Sub */}
           <p style={{ color: t.textSecondary, maxWidth: 520, margin: '0 auto 36px', lineHeight: 1.7 }} className="hero-sub">
-            You know what you should do with your money. You can't execute it. fortifyOS is the financial operating system that enforces discipline — calculates your debt order, blocks premature investments, and tells you exactly what to do every morning.
+            You know what you should do with your money. You can't execute it. FortifyOS is the financial operating system that enforces discipline — calculates your debt order, blocks premature investments, and tells you exactly what to do every morning.
           </p>
 
           {/* CTAs */}
@@ -1823,7 +1824,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
       { id: 'commands', num: '12', label: 'Command Reference' },
       { id: 'claude-code', num: '13', label: 'Desktop Parsing (Claude Code)' },
     ]},
-    { key: 'why', label: 'Why fortifyOS', items: [
+    { key: 'why', label: 'Why FortifyOS', items: [
       { id: 'comparison', num: '15', label: 'Competitive Comparison' },
     ]},
   ];
@@ -1864,7 +1865,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <span style={{ color: t.borderMid }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
             <Shield size={14} style={{ color: accent }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: accent }}>fortifyOS</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: accent }}>FortifyOS</span>
             <span style={{ fontSize: 14, color: t.textDim }}>DOCS</span>
           </div>
         </div>
@@ -1889,10 +1890,10 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
         {/* Hero */}
         <div style={{ padding: '32px 0 24px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 32 }}>
           <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 28, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: 8 }}>
-            fortifyOS <span style={{ color: accent }}>// Docs</span>
+            FortifyOS <span style={{ color: accent }}>// Docs</span>
           </h1>
           <p style={{ color: t.textSecondary, fontSize: 15, maxWidth: 560, lineHeight: 1.7 }}>System field manual. From first sync to financial independence — the architecture, enforcement logic, and methodology behind every calculation.</p>
-          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — fortifyOS v2.2</span>
+          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — FortifyOS v2.2</span>
         </div>
 
         {/* Tiered TOC */}
@@ -1919,7 +1920,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
 
         {/* 01 THE 7 STAGES */}
         <h2 id="doc-stages" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>01</span> The 7 Stages</h2>
-        <p style={sty.p}>fortifyOS maps your entire financial life onto a <strong style={{ color: t.textPrimary }}>7-stage journey</strong> — from chaos to generational wealth. Your current stage is calculated from live data, not a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
+        <p style={sty.p}>FortifyOS maps your entire financial life onto a <strong style={{ color: t.textPrimary }}>7-stage journey</strong> — from chaos to generational wealth. Your current stage is calculated from live data, not a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
 
         {/* Stage progress visualization */}
         <div style={{ display: 'flex', gap: 2, margin: '18px 0 6px' }}>
@@ -1958,16 +1959,16 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <strong style={{ color: t.textPrimary }}>Defense Mode:</strong> Most users enter at Stage 0 or 1. The system enforces Defense Mode (Stages 0–3) — all investment logic is locked until Stage 3 is mathematically verified from your live data. This is a feature, not a limitation.
         </div>
         <div style={sty.note(t.warn)}>
-          <strong style={{ color: t.textPrimary }}>BNPL Alert:</strong> Buy Now Pay Later platforms fragment debt across apps, making it invisible to your budget. fortifyOS tracks BNPL installments remaining — not just balances — and categorizes untracked outflow as Lifestyle by default. Nothing hides.
+          <strong style={{ color: t.textPrimary }}>BNPL Alert:</strong> Buy Now Pay Later platforms fragment debt across apps, making it invisible to your budget. FortifyOS tracks BNPL installments remaining — not just balances — and categorizes untracked outflow as Lifestyle by default. Nothing hides.
         </div>
 
         {/* 02 HOW IT WORKS */}
         <h2 id="doc-how-it-works" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>02</span> How It Works</h2>
-        <p style={sty.p}>fortifyOS runs inside Claude AI through a skill package called <strong style={{ color: t.textPrimary }}>KNOX</strong> (Knowledge Nexus Operations eXecution) — 24 files that give Claude a persistent financial identity, enforcement logic, and data processing capability. Three layers keep your data safe and the system operational.</p>
+        <p style={sty.p}>FortifyOS runs inside Claude AI through a skill package called <strong style={{ color: t.textPrimary }}>KNOX</strong> (Knowledge Nexus Operations eXecution) — 24 files that give Claude a persistent financial identity, enforcement logic, and data processing capability. Three layers keep your data safe and the system operational.</p>
 
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
-            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV or upload a text-based statement PDF. fortifyOS extracts transactions locally, runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
+            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV or upload a text-based statement PDF. FortifyOS extracts transactions locally, runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
             { num: '2', title: 'SYSTEM CALCULATES', desc: 'KNOX determines your stage, ranks debts by APR, calculates daily interest burn, projects cash flow, and checks every action against safety rails — in real time.' },
             { num: '3', title: 'EXECUTE WITH CONFIDENCE', desc: 'Get a Morning Pulse with exactly what to do today. Weekly HUD tracks direction. Monthly reports show the math. The system enforces — you decide.' },
           ].map((c, i) => (
@@ -2033,7 +2034,7 @@ cd %USERPROFILE%\\FORTIFY && claude
 # 8. Submit first statement → system operational`}</pre>
 
         <h3 style={sty.h3}>Mobile (Daily Interface) — 5 min</h3>
-        <p style={sty.p}>Download the Claude app (iOS or Android), sign in with the same Anthropic account, and open the fortifyOS Project. KNOX loads automatically. You get full daily briefings, payment checks, market updates, and emergency commands. Desktop is required for CSV data processing — mobile is your daily command line.</p>
+        <p style={sty.p}>Download the Claude app (iOS or Android), sign in with the same Anthropic account, and open the FortifyOS Project. KNOX loads automatically. You get full daily briefings, payment checks, market updates, and emergency commands. Desktop is required for CSV data processing — mobile is your daily command line.</p>
 
         <div style={sty.note()}>
           <strong style={{ color: t.textPrimary }}>Daily time investment:</strong> 2–5 minutes. Say "Good morning" and the system tells you exactly what to do today.
@@ -2134,7 +2135,7 @@ cd %USERPROFILE%\\FORTIFY && claude
 
         {/* 04 THE ENFORCEMENT ENGINE */}
         <h2 id="doc-enforcement" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>04</span> The Enforcement Engine</h2>
-        <p style={sty.p}>This is the core differentiator. Other tools track what happened. fortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
+        <p style={sty.p}>This is the core differentiator. Other tools track what happened. FortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
 
         <h3 style={sty.h3}>Layer 1: Validation Loop (Pre-Execution)</h3>
         <p style={sty.p}>Before any action, KNOX runs three checks. If any fails, the system halts and explains why before proceeding.</p>
@@ -2471,16 +2472,16 @@ cat snapshot.json | pbcopy`}</pre>
         </div>
 
         {/* ══════════════════════════════════════════════════════════
-           TIER 5: WHY fortifyOS
+           TIER 5: WHY FortifyOS
            ══════════════════════════════════════════════════════════ */}
 
         {/* 15 COMPETITIVE COMPARISON */}
         <h2 id="doc-comparison" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>15</span> Competitive Comparison</h2>
-        <p style={sty.p}>fortifyOS is not a budgeting app, a chatbot, or a dashboard. Here's how it compares to the alternatives.</p>
+        <p style={sty.p}>FortifyOS is not a budgeting app, a chatbot, or a dashboard. Here's how it compares to the alternatives.</p>
 
         <h3 style={sty.h3}>vs. Budgeting Apps (Mint, YNAB, Copilot, Monarch)</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Budgeting Apps</th><th style={{ ...sty.th, color: accent }}>fortifyOS</th></tr></thead>
+          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Budgeting Apps</th><th style={{ ...sty.th, color: accent }}>FortifyOS</th></tr></thead>
           <tbody>
             {[
               ['Approach', 'Track what happened', 'Enforce what should happen'],
@@ -2497,7 +2498,7 @@ cat snapshot.json | pbcopy`}</pre>
 
         <h3 style={sty.h3}>vs. Financial Advisors</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Advisors</th><th style={{ ...sty.th, color: accent }}>fortifyOS</th></tr></thead>
+          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Advisors</th><th style={{ ...sty.th, color: accent }}>FortifyOS</th></tr></thead>
           <tbody>
             {[
               ['Approach', 'Give advice', 'Run calculations and show the math'],
@@ -2512,7 +2513,7 @@ cat snapshot.json | pbcopy`}</pre>
 
         <h3 style={sty.h3}>vs. Generic AI (ChatGPT, Gemini, Generic Claude)</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Generic AI</th><th style={{ ...sty.th, color: accent }}>fortifyOS</th></tr></thead>
+          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Generic AI</th><th style={{ ...sty.th, color: accent }}>FortifyOS</th></tr></thead>
           <tbody>
             {[
               ['Approach', 'Answer questions', 'Enforce a system'],
@@ -2527,14 +2528,14 @@ cat snapshot.json | pbcopy`}</pre>
         </table>
 
         <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Important:</strong> fortifyOS does not replace a licensed financial advisor for legal or tax advice. It is a system that enforces financial discipline through math, not a source of regulated financial guidance.
+          <strong style={{ color: t.textPrimary }}>Important:</strong> FortifyOS does not replace a licensed financial advisor for legal or tax advice. It is a system that enforces financial discipline through math, not a source of regulated financial guidance.
         </div>
 
         {/* Footer */}
         <div style={{ textAlign: 'center', color: t.textDim, marginTop: 60, paddingTop: 16, borderTop: `1px solid ${t.borderDim}`, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
           <p>No data is sent to external servers.</p>
           <p style={{ marginTop: 6 }}>Protect first, grow second. Every dollar has a job.</p>
-          <p style={{ marginTop: 12, color: t.textGhost }}>KNOX v2.1 — fortifyOS v2.2</p>
+          <p style={{ marginTop: 12, color: t.textGhost }}>KNOX v2.1 — FortifyOS v2.2</p>
         </div>
       </div>
     </div>
@@ -5910,7 +5911,7 @@ function TransactionsMod({ latest, visible, t }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onBitcoin, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -5960,7 +5961,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
-        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>fortifyOS</span>
+        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
       </div>
       <span className="phase-label" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
       <div ref={quickMenuRef} className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
@@ -5980,6 +5981,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         {quickMenuOpen && (
           <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
             <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Eye size={9} /> Radar</button>
+            <button onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: '#f7931a', fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}>₿ Bitcoin</button>
             <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Upload size={9} /> Import</button>
             <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Download size={9} /> Export</button>
             <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Settings size={9} /> Settings</button>
@@ -5989,35 +5991,36 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 12px 52px' }}>
-      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-        {/* Left — greeting */}
-        <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
-          <div style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-          </div>
-        </div>
-        {/* Right — Net Worth + equity ownership bar */}
-        {(_nwTotal !== 0 || _tA > 0) && (
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end', marginBottom: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
-              {snapshots.length > 1 && <span style={{ fontSize: 14, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
+      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 16px' }}>
+        {/* Row 1 — greeting (left) + net worth number (right) */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: (_nwTotal !== 0 || _tA > 0) ? 10 : 0 }}>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
+            <div style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
             </div>
-            {/* Equity ownership bar — only when asset breakdown exists */}
-            {_tA > 0 && (
-              <div style={{ width: 260, marginLeft: 'auto' }}>
-                <div style={{ display: 'flex', height: 7, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
-                  <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
-                  <div style={{ flex: 1, background: `${t.danger}50` }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, letterSpacing: '0.04em' }}>
-                  <span style={{ color: t.accent }}>{_equityPct}% EQUITY OWNED</span>
-                  <span style={{ color: t.textGhost }}>A {fmt(_tA)} · D {fmt(_tL)}</span>
-                </div>
+          </div>
+          {(_nwTotal !== 0 || _tA > 0) && (
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: 12, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end' }}>
+                <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
+                {snapshots.length > 1 && <span style={{ fontSize: 13, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
               </div>
-            )}
+            </div>
+          )}
+        </div>
+        {/* Row 2 — full-width equity bar + labels */}
+        {_tA > 0 && (
+          <div>
+            <div style={{ display: 'flex', height: 6, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
+              <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
+              <div style={{ flex: 1, background: `${t.danger}50` }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, letterSpacing: '0.04em' }}>
+              <span style={{ color: t.accent }}>{_equityPct}% Equity Owned</span>
+              <span style={{ color: t.textGhost }}>Assets {fmt(_tA)} · Debt {fmt(_tL)}</span>
+            </div>
           </div>
         )}
       </div>
@@ -6072,21 +6075,31 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 
       </div>
     </main>
-    <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 15, zIndex: 50 }}>
+    <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 12, zIndex: 50 }}>
+      {/* Left — sync status */}
       <button
         onClick={() => setSyncOpen(true)}
         title="Import new statement to update"
-        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: "'JetBrains Mono', monospace", fontSize: 14 }}
+        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}
       >
-        <span style={{ color: t.textDim }}>LAST SYNC: {latest.date || 'never'}</span>
-        <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.textGhost }}>
-          ({daysSince(latest.date) === 0 ? 'today' : daysSince(latest.date) === 1 ? 'yesterday' : daysSince(latest.date) >= 999 ? 'no data' : `${daysSince(latest.date)}d ago`})
+        <span style={{ color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Synced</span>
+        <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.accent, fontWeight: 700 }}>
+          {daysSince(latest.date) === 0 ? 'Today' : daysSince(latest.date) === 1 ? 'Yesterday' : daysSince(latest.date) >= 999 ? 'Never' : `${daysSince(latest.date)}d ago`}
         </span>
-        {daysSince(latest.date) >= 7 && <span style={{ color: t.danger }}>↑ import</span>}
+        {daysSince(latest.date) >= 7 && <span style={{ color: t.danger }}>· Update</span>}
       </button>
-      {dailyInterest(latest?.debts) > 0 && <span style={{ color: t.danger, fontWeight: 700 }}>${dailyInterest(latest?.debts).toFixed(2)}/DAY LEAKING</span>}
-      <div style={{ display: 'flex', gap: 6 }}><span style={{ color: t.danger }}>{ac.red}●</span><span style={{ color: t.warn }}>{ac.amber}●</span><span style={{ color: t.accent }}>{ac.green}●</span></div>
-      <span className="footer-label" style={{ color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>fortifyOS</span>
+      {/* Center — daily interest burn */}
+      {dailyInterest(latest?.debts) > 0 && (
+        <span style={{ color: t.danger, fontWeight: 700, letterSpacing: '0.04em' }}>
+          ${dailyInterest(latest?.debts).toFixed(2)}/day
+        </span>
+      )}
+      {/* Right — alert dots */}
+      <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+        {ac.red > 0 && <span style={{ color: t.danger, fontSize: 11 }}>{ac.red}●</span>}
+        {ac.amber > 0 && <span style={{ color: t.warn, fontSize: 11 }}>{ac.amber}●</span>}
+        {ac.green > 0 && <span style={{ color: t.accent, fontSize: 11 }}>{ac.green}●</span>}
+      </div>
     </footer>
     <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={onSync} t={t} />
   </div>);
@@ -6492,7 +6505,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Shield size={14} style={{ color: t.accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>fortifyOS</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
@@ -6834,7 +6847,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
       <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <Shield size={14} style={{ color: t.accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>fortifyOS</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FortifyOS</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
         <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
@@ -7266,17 +7279,18 @@ function FortifyOSApp() {
         }
       `}</style>
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
-      {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>fortifyOS initializing...</div></div>}
+      {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FortifyOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onUpdateDebt={handleUpdateDebt} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} />}
     </div>
   );
 }
 
-export default function fortifyOS() {
+export default function FortifyOS() {
   return (
     <AppErrorBoundary>
       <FortifyOSApp />
