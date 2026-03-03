@@ -3750,31 +3750,6 @@ useEffect(() => {
               </div>
 
               {/* Portfolio — Options */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.purple, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Options Exposure</span>
-                  <button onClick={addOption} style={{ background: 'none', border: `1px solid ${t.purple}40`, color: t.purple, fontSize: 15, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
-                </div>
-                {gOptions.map((o, i) => (
-                  <div key={i} style={{ marginBottom: 10 }}>
-                    <div className="sync-row-3" style={{ display: 'grid', gap: 6, marginBottom: 4 }}>
-                      <div><label style={lbl}>Ticker</label><input style={inp} placeholder="SPY" value={o.ticker} onChange={ev => upOption(i, 'ticker', ev.target.value)} /></div>
-                      <div><label style={lbl}>Type</label>
-                        <select style={{ ...inp, appearance: 'none' }} value={o.type} onChange={ev => upOption(i, 'type', ev.target.value)}>
-                          <option value="CALL">CALL</option><option value="PUT">PUT</option>
-                        </select>
-                      </div>
-                      <div><label style={lbl}>Contracts</label><input style={inp} placeholder="1" value={o.contracts} onChange={ev => upOption(i, 'contracts', ev.target.value)} inputMode="numeric" /></div>
-                    </div>
-                    <div className="sync-row-3" style={{ display: 'grid', gap: 6 }}>
-                      <div><label style={lbl}>Strike</label><CurrencyInput t={t} value={o.strikePrice} onChange={ev => upOption(i, 'strikePrice', ev.target.value)} placeholder="0" /></div>
-                      <div><label style={lbl}>Exp Date</label><input style={inp} type="date" value={o.expDate} onChange={ev => upOption(i, 'expDate', ev.target.value)} /></div>
-                      <div><label style={lbl}>Last Price</label><CurrencyInput t={t} value={o.lastPrice} onChange={ev => upOption(i, 'lastPrice', ev.target.value)} placeholder="0" /></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
               {/* Portfolio — Crypto */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
