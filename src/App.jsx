@@ -2615,7 +2615,6 @@ const btn = {
   const [gDebts, setGDebts] = useState([{ name: '', apr: '', balance: '', minPayment: '', type: 'REVOLVING', totalTerms: '', paymentsMade: '', monthlyPayment: '', dueDate: '' }]);
   const [gBills, setGBills] = useState([{ name: '', amount: '', dueDay: '', autopay: true }]);
   const [gPaydayWeekday, setGPaydayWeekday] = useState('2');
-  const [gMonthly, setGMonthly] = useState('');
   const [gBudget, setGBudget] = useState([
     { name: 'Essential', budgeted: '', actual: '' },
     { name: 'Discretionary', budgeted: '', actual: '' },
@@ -3201,9 +3200,10 @@ useEffect(() => {
         } : {}),
       };
     });
-    const tL = debts.reduce((s, d) => s + d.balance, 0); const monthly = parseFloat(gMonthly) || 3000;
-    const phase = efund >= monthly * 6 ? 4 : efund >= monthly * 3 ? 3 : efund >= monthly ? 2 : efund >= 1000 ? 1 : 0;
+    const tL = debts.reduce((s, d) => s + d.balance, 0);
     const budgetCats = gBudget.map(b => ({ name: b.name, budgeted: parseFloat(b.budgeted) || 0, actual: parseFloat(b.actual) || 0 }));
+    const monthly = budgetCats.reduce((s, b) => s + b.budgeted, 0) || 0;
+    const phase = efund >= monthly * 6 ? 4 : efund >= monthly * 3 ? 3 : efund >= monthly ? 2 : efund >= 1000 ? 1 : 0;
     const income = parseFloat(gIncome) || 0;
     const protection = {
       lifeInsurance: { provider: gProvider, type: gPolicyType, deathBenefit: parseFloat(gBenefit) || 0, monthlyPremium: parseFloat(gPremium) || 0, expirationDate: gPolicyExp, conversionDeadline: gConvDeadline, alertLeadTimeYears: parseInt(gLeadYears) || 5 },
@@ -3662,7 +3662,6 @@ useEffect(() => {
                 <div style={{ color: t.accent, fontSize: 14, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Income & Expenses</div>
                 <div className="sync-row-3" style={{ display: 'grid', gap: 8 }}>
                   <div><label style={lbl}>Monthly Income</label><CurrencyInput t={t} value={gIncome} onChange={e => setGIncome(e.target.value)} placeholder="3500" /></div>
-                  <div><label style={lbl}>Monthly Expenses</label><CurrencyInput t={t} value={gMonthly} onChange={e => setGMonthly(e.target.value)} placeholder="3000" /></div>
                   <div><label style={lbl}>Payday (Weekly)</label>
                     <select style={{ ...inp, appearance: 'none' }} value={gPaydayWeekday} onChange={e => setGPaydayWeekday(e.target.value)}>
                       <option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option>
@@ -3742,7 +3741,7 @@ useEffect(() => {
                 const nw = totalAssets - dTotal;
                 const di = dList.reduce((s, d) => s + (d.bal * d.apr / 100) / 365, 0);
                 const ef = parseFloat(gEF) || 0;
-                const mo = parseFloat(gMonthly) || 3000;
+                const mo = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0);
                 const inc = parseFloat(gIncome) || 0;
                 const runway = mo > 0 ? Math.floor(ef / (mo / 30)) : 0;
                 const totalBudgeted = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0);
