@@ -3784,8 +3784,6 @@ useEffect(() => {
                       {ef > 0 && <div style={{ gridColumn: '1 / -1' }}><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>E-FUND RUNWAY</span><span style={{ color: runway >= 60 ? t.accent : runway >= 30 ? t.warn : t.danger }}>{runway} days</span><span style={{ color: t.textGhost, fontSize: 15, marginLeft: 6 }}>at {fmt(mo)}/mo burn</span></div>}
                       {totalBudgeted > 0 && <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>BUDGET USED</span><span style={{ color: totalSpent > totalBudgeted ? t.danger : t.accent }}>{Math.round((totalSpent / totalBudgeted) * 100)}%</span></div>}
                       {inc > 0 && totalSpent > 0 && <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>SAVINGS RATE</span><span style={{ color: (inc - totalSpent) > 0 ? t.accent : t.danger }}>{Math.round(((inc - totalSpent) / inc) * 100)}%</span></div>}
-                      {optVal > 0 && <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>OPTIONS EXPOSURE</span><span style={{ color: t.purple }}>{fmt(optVal)}</span></div>}
-                      {cryptoVal > 0 && <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>CRYPTO VALUE</span><span style={{ color: t.crypto }}>{fmt(cryptoVal)}</span></div>}
                       {netToFamily > 0 && <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>NET TO FAMILY</span><span style={{ color: netToFamily < mo * 12 ? t.warn : t.accent }}>{fmt(netToFamily)}</span></div>}
                     </div>
                   </div>
