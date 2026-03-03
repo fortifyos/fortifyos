@@ -3687,28 +3687,24 @@ useEffect(() => {
               {/* Budget categories */}
               <div>
                 <div style={{ color: t.accent, fontSize: 14, textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.08em' }}>Budget Allocation</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginBottom: 6 }}>
+                <div style={{ fontSize: 13, color: t.textGhost, marginBottom: 8 }}>Set monthly targets — actual spending is tracked automatically from synced statements.</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 6 }}>
                   <span style={{ ...lbl, marginBottom: 0 }}>Category</span>
-                  <span style={{ ...lbl, marginBottom: 0 }}>Budget</span>
-                  <span style={{ ...lbl, marginBottom: 0 }}>Spent</span>
+                  <span style={{ ...lbl, marginBottom: 0 }}>Monthly Budget</span>
                 </div>
                 {gBudget.map((b, i) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginBottom: 4, alignItems: 'center' }}>
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 4, alignItems: 'center' }}>
                     <span style={{ fontSize: 14, color: t.textSecondary }}>{b.name}</span>
                     <CurrencyInput t={t} value={b.budgeted} onChange={e => upBudget(i, 'budgeted', e.target.value)} placeholder="0" />
-                    <CurrencyInput t={t} value={b.actual} onChange={e => upBudget(i, 'actual', e.target.value)} placeholder="0" />
                   </div>
                 ))}
                 {(() => {
                   const totalBudgeted = gBudget.reduce((s, b) => s + (parseFloat(b.budgeted) || 0), 0);
-                  const totalSpent = gBudget.reduce((s, b) => s + (parseFloat(b.actual) || 0), 0);
-                  if (totalBudgeted === 0 && totalSpent === 0) return null;
-                  const remaining = totalBudgeted - totalSpent;
+                  if (totalBudgeted === 0) return null;
                   return (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 14 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 14 }}>
                       <span style={{ color: t.textDim }}>TOTAL</span>
-                      <span style={{ color: t.textSecondary }}>{fmt(totalBudgeted)}</span>
-                      <span style={{ color: totalSpent > totalBudgeted && totalBudgeted > 0 ? t.danger : t.textSecondary }}>{fmt(totalSpent)} <span style={{ color: remaining >= 0 ? t.accent : t.danger, fontSize: 14 }}>{remaining >= 0 ? `${fmt(remaining)} left` : `${fmt(Math.abs(remaining))} over`}</span></span>
+                      <span style={{ color: t.textSecondary }}>{fmt(totalBudgeted)} / mo</span>
                     </div>
                   );
                 })()}
