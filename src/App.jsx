@@ -1126,7 +1126,7 @@ const monthlySpendBaseline = (latest) => {
   const metaExpense = latest?._meta?.totalExpense || 0;
   if (metaExpense > 0) return metaExpense;
   const efMonthly = latest?.eFund?.monthlyExpenses || 0;
-  return efMonthly > 0 ? efMonthly : 3000;
+  return efMonthly > 0 ? efMonthly : 0;
 };
 const runwayDaysFromLatest = (latest) => {
   const bal = latest?.eFund?.balance || 0;
@@ -5368,9 +5368,9 @@ function DirectiveMod({ visible, latest, t }) {
       {/* Daily Spending (formerly Daily Burn) */}
       <div style={{ background: t.elevated, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Spending</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
-        <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : 'No Spend'}</div>
-        <div style={{ fontSize: 14, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'zero spending tracked'}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.textDim }}>${dailyBurn.toFixed(2)}</div>
+        <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.textGhost, fontWeight: 700, textTransform: 'uppercase', marginBottom: 1 }}>{dailyBurn > 0 ? 'Spending' : '— No Data'}</div>
+        <div style={{ fontSize: 14, color: t.textGhost }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))} per month` : 'sync a statement'}</div>
       </div>
 
       {/* Money Saved (formerly Savings Rate) */}
@@ -5672,8 +5672,8 @@ function StatusStrip({ latest, t }) {
         {/* Daily Burn */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Daily Burn</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.accent }}>${dailyBurn.toFixed(2)}</div>
-          <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.accent, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : 'ZERO BURN'}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.textDim }}>${dailyBurn.toFixed(2)}</div>
+          <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.textGhost, textTransform: 'uppercase' }}>{dailyBurn > 0 ? `${fmt(Math.round(monthlyBurn))}/mo spend` : '— NO DATA'}</div>
         </div>
         {/* Savings Rate */}
         <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '10px 14px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
