@@ -3733,60 +3733,12 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Portfolio — Equities */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.accent, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Equity Positions</span>
-                  <button onClick={addEquity} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 15, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
-                </div>
-                {gEquities.map((e, i) => (
-                  <div key={i} className="sync-row-debt" style={{ display: 'grid', gap: 6, marginBottom: 8 }}>
-                    <div><label style={lbl}>Ticker</label><input style={inp} placeholder="AAPL" value={e.ticker} onChange={ev => upEquity(i, 'ticker', ev.target.value)} /></div>
-                    <div><label style={lbl}>Shares</label><input style={inp} placeholder="10" value={e.shares} onChange={ev => upEquity(i, 'shares', ev.target.value)} inputMode="decimal" /></div>
-                    <div><label style={lbl}>Avg Cost</label><CurrencyInput t={t} value={e.avgCost} onChange={ev => upEquity(i, 'avgCost', ev.target.value)} placeholder="0" /></div>
-                    <div><label style={lbl}>Last Price</label><CurrencyInput t={t} value={e.lastPrice} onChange={ev => upEquity(i, 'lastPrice', ev.target.value)} placeholder="0" /></div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Portfolio — Options */}
-              {/* Portfolio — Crypto */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: t.crypto, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Crypto Holdings</span>
-                  <button onClick={addCrypto} style={{ background: 'none', border: `1px solid ${t.crypto}40`, color: t.crypto, fontSize: 15, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace" }}>+ Add</button>
-                </div>
-                {gCrypto.map((c, i) => (
-                  <div key={i} className="sync-row-debt" style={{ display: 'grid', gap: 6, marginBottom: 8 }}>
-                    <div><label style={lbl}>Coin</label><input style={inp} placeholder="BTC" value={c.coin} onChange={ev => upCrypto(i, 'coin', ev.target.value)} /></div>
-                    <div><label style={lbl}>Amount</label><input style={inp} placeholder="0.25" value={c.amount} onChange={ev => upCrypto(i, 'amount', ev.target.value)} inputMode="decimal" /></div>
-                    <div><label style={lbl}>Avg Cost</label><CurrencyInput t={t} value={c.avgCost} onChange={ev => upCrypto(i, 'avgCost', ev.target.value)} placeholder="0" /></div>
-                    <div><label style={lbl}>Current Price</label><CurrencyInput t={t} value={c.lastPrice} onChange={ev => upCrypto(i, 'lastPrice', ev.target.value)} placeholder="0" /></div>
-                  </div>
-                ))}
-                <div style={{ fontSize: 15, color: t.textDim, marginTop: 2 }}>BTC accumulation window: Oct 2026. Track holdings now — system will alert when DCA activates.</div>
-              </div>
-
-              {/* Benner Cycle Phase — strategic setting only */}
-              <div>
-                <label style={lbl}>Benner Cycle Phase</label>
-                <select style={{ ...inp, appearance: 'none' }} value={gBenner} onChange={e => setGBenner(e.target.value)}>
-                  <option value="A-Year (Buy)">A-Year (Buy)</option>
-                  <option value="B-Year (Sell)">B-Year (Sell)</option>
-                  <option value="C-Year (Hold)">C-Year (Hold)</option>
-                </select>
-                <div style={{ fontSize: 15, color: t.textDim, marginTop: 3 }}>Strategic cycle position — 2026 = B-Year (Sell). Macro intel delivered via morning brief.</div>
-              </div>
-
               {/* Live calculations */}
               {(() => {
                 const a = (parseFloat(gCheck) || 0) + (parseFloat(gSavings) || 0) + (parseFloat(gEF) || 0) + (parseFloat(gOther) || 0);
                 const dList = gDebts.filter(d => d.balance).map(d => ({ bal: parseFloat(d.balance) || 0, apr: parseFloat(d.apr) || 0 }));
                 const dTotal = dList.reduce((s, d) => s + d.bal, 0);
-                const eqVal = gEquities.filter(e => e.ticker).reduce((s, e) => s + (parseFloat(e.shares) || 0) * (parseFloat(e.lastPrice) || 0), 0);
-                const optVal = gOptions.filter(o => o.ticker).reduce((s, o) => s + (parseInt(o.contracts) || 0) * 100 * (parseFloat(o.lastPrice) || 0), 0);
-                const cryptoVal = gCrypto.filter(c => c.coin).reduce((s, c) => s + (parseFloat(c.amount) || 0) * (parseFloat(c.lastPrice) || 0), 0);
-                const totalAssets = a + eqVal + optVal + cryptoVal;
+                const totalAssets = a;
                 const nw = totalAssets - dTotal;
                 const di = dList.reduce((s, d) => s + (d.bal * d.apr / 100) / 365, 0);
                 const ef = parseFloat(gEF) || 0;
@@ -3797,13 +3749,13 @@ useEffect(() => {
                 const totalSpent = gBudget.reduce((s, b) => s + (parseFloat(b.actual) || 0), 0);
                 const benefit = parseFloat(gBenefit) || 0;
                 const netToFamily = benefit > 0 ? benefit - dTotal : 0;
-                const hasData = a > 0 || dTotal > 0 || totalBudgeted > 0 || eqVal > 0 || optVal > 0 || cryptoVal > 0 || benefit > 0 || inc > 0;
+                const hasData = a > 0 || dTotal > 0 || totalBudgeted > 0 || benefit > 0 || inc > 0;
                 if (!hasData) return null;
                 return (
                   <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: 12, borderRadius: 4 }}>
                     <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Live Calculation</div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 14 }}>
-                      <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>TOTAL ASSETS</span><span style={{ color: t.accent }}>{fmt(totalAssets)}</span>{eqVal > 0 && <span style={{ fontSize: 15, color: t.textGhost, marginLeft: 4 }}>(+{fmt(eqVal)} equity)</span>}{cryptoVal > 0 && <span style={{ fontSize: 15, color: t.crypto, marginLeft: 4 }}>(+{fmt(cryptoVal)} crypto)</span>}</div>
+                      <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>TOTAL ASSETS</span><span style={{ color: t.accent }}>{fmt(totalAssets)}</span></div>
                       <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>TOTAL DEBT</span><span style={{ color: dTotal > 0 ? t.danger : t.textPrimary }}>{fmt(dTotal)}</span></div>
                       <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>NET WORTH</span><span style={{ color: nw >= 0 ? t.accent : t.danger, fontWeight: 700, fontSize: 16 }}>{nw < 0 ? '-' : ''}{fmt(Math.abs(nw))}</span></div>
                       <div><span style={{ color: t.textDim, fontSize: 15, display: 'block' }}>DAILY INTEREST BURN</span><span style={{ color: di > 0 ? t.danger : t.textPrimary }}>{fmt(di)}/day</span></div>
