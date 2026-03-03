@@ -5993,7 +5993,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
           <div style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · fortifyOS operational
+            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </div>
         </div>
         {/* Right — Net Worth + equity ownership bar */}
