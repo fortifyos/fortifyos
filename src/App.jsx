@@ -27,12 +27,12 @@ import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 // ═══════════════════════════════════════════════════
 const THEMES = {
   dark: {
-    void: '#000000', surface: '#0A0A0A', elevated: '#111111', input: '#0D0D0D',
-    panel: '#0D0D0D', panel2: '#111111',
-    borderDim: '#1A1A1A', borderMid: '#2A2A2A', borderBright: '#333333',
-    textPrimary: '#E8E8E8', textSecondary: '#AAAAAA', textDim: '#888888', textGhost: '#555555',
+    void: '#0B0C0E', surface: '#111315', elevated: '#181C1F', input: '#13161A',
+    panel: '#13161A', panel2: '#181C1F',
+    borderDim: '#1E2327', borderMid: '#2C3137', borderBright: '#3A4149',
+    textPrimary: '#E4E6EB', textSecondary: '#A8AEBB', textDim: '#828A96', textGhost: '#4E5662',
     accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
-    danger: '#FF3333', warn: '#FFB800',
+    danger: '#FF3B3B', warn: '#FFB800',
     purple: '#BF40BF', purpleDim: '#8A2D8A', purpleMuted: '#2D0A2D',
     crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
@@ -1555,9 +1555,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
               {menuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
             {menuOpen && (
-              <div style={{ position: 'absolute', right: 0, top: 42, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Eye size={9} /> Radar</button>
-                <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><FileText size={9} /> Docs</button>
+              <div style={{ position: 'absolute', right: 0, top: 44, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, display: 'flex', flexDirection: 'column', gap: 5, minWidth: 160, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
+                <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Eye size={11} /> Radar</button>
+                <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><FileText size={11} /> Docs</button>
               </div>
             )}
           </div>
@@ -1878,8 +1878,8 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
               {menuOpen ? <X size={14} /> : <Menu size={14} />}
             </button>
             {menuOpen && (
-              <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
-                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Home</button>
+              <div style={{ position: 'absolute', right: 0, top: 40, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, minWidth: 160, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
+                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', width: '100%' }}><ChevronRight size={11} style={{ transform: 'rotate(180deg)' }} /> Home</button>
               </div>
             )}
           </div>
@@ -4445,7 +4445,11 @@ function EFundMod({ latest, visible, t }) {
   const labels = ['$1K Starter', '1 Month', '3 Months', '6 Months'];
   const maxTarget = targets[3] || 6000;
   const wallBlocks = 12;
-  const filledBlocks = Math.min(wallBlocks, Math.floor((bal / maxTarget) * wallBlocks));
+  // Wall scales to current phase goal: Phase 0 → $1K starter, otherwise full 6-month target
+  const wallTarget = phase === 0 ? (targets[0] || 1000) : maxTarget;
+  const perBlock = wallTarget / wallBlocks;
+  const filledBlocks = Math.min(wallBlocks, Math.floor((bal / wallTarget) * wallBlocks));
+  const stageClear = filledBlocks === wallBlocks;
   const rColor = runwayColor(days, t);
 
   // ── Projected runway gain from next paycheck ──
@@ -4482,10 +4486,16 @@ function EFundMod({ latest, visible, t }) {
 
     {/* ── Fortress Wall ── */}
     <div style={{ marginBottom: 14 }}>
-      <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
-        FORTRESS WALL — {filledBlocks}/{wallBlocks} LAYERS {filledBlocks === wallBlocks ? '🏰' : ''}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+        <span style={{ fontSize: 11, color: stageClear ? t.accent : t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: stageClear ? 700 : 400, textShadow: stageClear ? `0 0 10px ${t.accent}` : 'none' }}>
+          FORTRESS WALL — {filledBlocks}/{wallBlocks} LAYERS
+        </span>
+        {stageClear
+          ? <span style={{ fontSize: 10, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, animation: 'radarFadeUp 0.4s ease-out', letterSpacing: '0.1em' }}>⬤ STAGE CLEAR</span>
+          : <span style={{ fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>{fmt(perBlock)}/block · {fmt(wallTarget)} target</span>
+        }
       </div>
-      <div style={{ display: 'flex', gap: 2 }}>
+      <div style={{ display: 'flex', gap: 2, boxShadow: stageClear ? `0 0 12px ${t.accent}40` : 'none', transition: 'box-shadow 0.6s' }}>
         {Array.from({length: wallBlocks}, (_, i) => (
           <div key={i} style={{
             flex: 1, height: 18, borderRadius: 1,
@@ -4500,7 +4510,7 @@ function EFundMod({ latest, visible, t }) {
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
-        <span>$0</span><span>{fmt(maxTarget / 2)}</span><span>{fmt(maxTarget)}</span>
+        <span>$0</span><span>{fmt(wallTarget / 2)}</span><span>{fmt(wallTarget)}</span>
       </div>
     </div>
 
@@ -6235,12 +6245,12 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
-          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4, display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Eye size={9} /> Radar</button>
-            <button onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: '#f7931a', fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}>₿ Bitcoin</button>
-            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Upload size={9} /> Import</button>
-            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Download size={9} /> Export</button>
-            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6 }}><Settings size={9} /> Settings</button>
+          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, display: 'flex', flexDirection: 'column', gap: 5, minWidth: 168, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.55)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
+            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Eye size={11} /> Radar</button>
+            <button onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.crypto, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}>₿ Bitcoin</button>
+            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Upload size={11} /> Import</button>
+            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Download size={11} /> Export</button>
+            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Settings size={11} /> Settings</button>
           </div>
         )}
       </div>
@@ -6615,8 +6625,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             {menuOpen ? <X size={12} /> : <Menu size={12} />}
           </button>
           {menuOpen && (
-            <div style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, whiteSpace: 'nowrap' }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+            <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, minWidth: 168, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.55)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', width: '100%' }}><ChevronRight size={11} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
             </div>
           )}
         </div>
@@ -6971,8 +6981,8 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
             {menuOpen ? <X size={12} /> : <Menu size={12} />}
           </button>
           {menuOpen && (
-            <div style={{ position: 'absolute', right: 0, top: 36, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 4 }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 14px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><ChevronRight size={9} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+            <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, minWidth: 168, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.55)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
+              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}><ChevronRight size={11} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
             </div>
           )}
         </div>
