@@ -6245,12 +6245,35 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
-          <div className="dash-menu-pop" style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, display: 'flex', flexDirection: 'column', gap: 5, minWidth: 168, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.55)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
-            <button onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Eye size={11} /> Radar</button>
-            <button onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.crypto, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}>₿ Bitcoin</button>
-            <button onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Upload size={11} /> Import</button>
-            <button onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Download size={11} /> Export</button>
-            <button onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '9px 14px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Settings size={11} /> Settings</button>
+          <div className="fortify-nav-pop dash-menu-pop" style={{
+            position: 'absolute', right: 0, top: 38, zIndex: 120,
+            minWidth: 188, paddingTop: 6, paddingBottom: 6,
+            background: isDark ? 'rgba(17,19,21,0.92)' : 'rgba(250,252,250,0.95)',
+            backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.09)'}`,
+            boxShadow: isDark
+              ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)'
+              : '0 6px 24px rgba(0,0,0,0.13)',
+          }}>
+            {/* ── Primary navigation ── */}
+            <button className="fortify-nav-item nav-radar" onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}>
+              <Eye size={16} className="nav-icon" /> Radar
+            </button>
+            <button className="fortify-nav-item nav-bitcoin" onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }}>
+              <span className="nav-btc-glyph">₿</span> Bitcoin
+            </button>
+            <button className="fortify-nav-item nav-settings" onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }}>
+              <Settings size={16} className="nav-icon" /> Settings
+            </button>
+            {/* ── Data operations ── */}
+            <div className="fortify-nav-divider" />
+            <div className="fortify-nav-section-label">Data</div>
+            <button className="fortify-nav-item nav-data" onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }}>
+              <Upload size={12} /> Import
+            </button>
+            <button className="fortify-nav-item nav-data" onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }}>
+              <Download size={12} /> Export
+            </button>
           </div>
         )}
       </div>
@@ -7335,6 +7358,40 @@ function FortifyOSApp() {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         ::selection { background: ${t.accentMuted}; color: ${t.accent}; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: ${t.void}; } ::-webkit-scrollbar-thumb { background: ${t.borderMid}; }
+        /* ── FORTIFY NAV POPUP ──────────────────────────────────── */
+        @keyframes navRadarPing {
+          0%   { transform: scale(1);    opacity: 1; }
+          60%  { transform: scale(1.2);  opacity: 0.65; }
+          100% { transform: scale(1);    opacity: 1; }
+        }
+        @keyframes navPopIn {
+          from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+        .fortify-nav-pop { animation: navPopIn 0.14s ease-out both; overflow: hidden; }
+        .fortify-nav-item {
+          background: none; border: none;
+          border-left: 2px solid transparent;
+          color: ${t.textSecondary};
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 13px; padding: 11px 18px 11px 14px;
+          cursor: pointer; text-transform: uppercase;
+          letter-spacing: 0.08em; white-space: nowrap;
+          display: flex; align-items: center; gap: 10px; width: 100%;
+          transition: color 0.15s, border-left-color 0.15s, background 0.15s;
+        }
+        .fortify-nav-item:hover { color: ${t.accent}; border-left-color: ${t.accent}; background: ${t.accent}0D; }
+        .fortify-nav-item.nav-bitcoin { color: ${t.crypto}; }
+        .fortify-nav-item.nav-bitcoin:hover { color: ${t.crypto}; border-left-color: ${t.crypto}; background: ${t.crypto}0D; }
+        .fortify-nav-item.nav-data { font-size: 11px; padding: 7px 18px 7px 14px; opacity: 0.65; }
+        .fortify-nav-item.nav-data:hover { opacity: 1; }
+        .fortify-nav-item.nav-radar .nav-icon { animation: navRadarPing 2.2s ease-in-out infinite; transform-origin: center; }
+        .nav-btc-glyph { font-size: 15px; font-weight: 700; transition: filter 0.2s; }
+        .fortify-nav-item.nav-bitcoin:hover .nav-btc-glyph { filter: drop-shadow(0 0 6px ${t.crypto}); }
+        .fortify-nav-item.nav-settings .nav-icon { transition: transform 0.3s ease; }
+        .fortify-nav-item.nav-settings:hover .nav-icon { transform: rotate(30deg); }
+        .fortify-nav-divider { height: 1px; margin: 5px 0; background: ${t.borderDim}; opacity: 0.5; }
+        .fortify-nav-section-label { padding: 4px 16px 3px; font-size: 9px; color: ${t.textGhost}; letter-spacing: 0.14em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
         .phase-label,.footer-label { display: block; }
         .main-grid { grid-template-columns: repeat(2, 1fr); align-items: start; }
         .sync-row-3 { grid-template-columns: repeat(3, 1fr); }
