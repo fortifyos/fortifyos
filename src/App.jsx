@@ -4447,12 +4447,33 @@ function EFundMod({ latest, visible, t }) {
   const wallBlocks = 12;
   const filledBlocks = Math.min(wallBlocks, Math.floor((bal / maxTarget) * wallBlocks));
   const rColor = runwayColor(days, t);
+
+  // ── Projected runway gain from next paycheck ──
+  const payroll = latest?.payroll || {};
+  const nextDates = nextPayrollDates(payroll, 1);
+  const income = latest?.budget?.income || latest?._meta?.income || 0;
+  const freq = String(payroll?.frequency || 'WEEKLY').toUpperCase();
+  const periodsPerMonth = freq === 'BIWEEKLY' ? 2 : 4;
+  const perPeriod = income > 0 ? income / periodsPerMonth : 0;
+  const runwayGain = (monthly > 0 && perPeriod > 0) ? Math.floor(perPeriod / (monthly / 30)) : 0;
+  const nextPayday = nextDates[0];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const daysToPayday = nextPayday ? Math.ceil((nextPayday - today) / (1000 * 60 * 60 * 24)) : null;
+
   return (<Card title="Emergency Fund" visible={visible} delay={160} t={t}>
 
     {/* ── Runway Counter — centrepiece ── */}
     <div style={{ textAlign: 'center', marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${t.borderDim}` }}>
-      <div style={{ fontSize: 52, fontWeight: 900, color: rColor, fontVariantNumeric: 'tabular-nums', lineHeight: 1, textShadow: days >= 90 ? `0 0 20px ${rColor}` : 'none', transition: 'color 0.5s, text-shadow 0.5s' }}>
-        {days}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 10 }}>
+        <div style={{ fontSize: 52, fontWeight: 900, color: rColor, fontVariantNumeric: 'tabular-nums', lineHeight: 1, textShadow: days >= 90 ? `0 0 20px ${rColor}` : 'none', transition: 'color 0.5s, text-shadow 0.5s' }}>
+          {days}
+        </div>
+        {runwayGain > 0 && daysToPayday !== null && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, paddingTop: 6 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>+{runwayGain}d</span>
+            <span style={{ fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>payday in {daysToPayday}d</span>
+          </div>
+        )}
       </div>
       <div style={{ fontSize: 11, color: rColor, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", marginTop: 4 }}>
         {days === 0 ? '⚠ DAYS OF RUNWAY — BUILD NOW' : days < 30 ? `⚠ DAYS OF RUNWAY — FRAGILE` : days < 90 ? '↑ DAYS OF RUNWAY — BUILDING' : '✓ DAYS OF RUNWAY — SECURE'}
@@ -4466,7 +4487,16 @@ function EFundMod({ latest, visible, t }) {
       </div>
       <div style={{ display: 'flex', gap: 2 }}>
         {Array.from({length: wallBlocks}, (_, i) => (
-          <div key={i} style={{ flex: 1, height: 18, background: i < filledBlocks ? t.accent : t.elevated, border: `1px solid ${i < filledBlocks ? t.accent : t.borderDim}`, borderRadius: 1, transition: `background 0.4s ease ${i * 0.06}s` }} />
+          <div key={i} style={{
+            flex: 1, height: 18, borderRadius: 1,
+            background: i < filledBlocks ? t.accent : 'transparent',
+            border: i < filledBlocks ? `1px solid ${t.accent}` : `1px dashed ${t.borderDim}80`,
+            transition: `background 0.4s ease ${i * 0.06}s, border-color 0.4s ease ${i * 0.06}s`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 8, color: t.void, userSelect: 'none',
+          }}>
+            {i < filledBlocks ? '🛡' : ''}
+          </div>
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
@@ -4506,21 +4536,58 @@ function KnoxTerminalMod({ latest, visible, t }) {
   const blownCats = cats.filter(c => c.budgeted > 0 && c.actual > c.budgeted && c.name !== 'Medical');
   const hasPositions = (latest?.portfolio?.equities?.length || 0) > 0 || (latest?.portfolio?.crypto?.length || 0) > 0;
 
+  // Health Shield — Medical priority status
+  const medCat = cats.find(c => c.name === 'Medical');
+  const medAllocated = (medCat?.budgeted || 0) > 0;
+  const medCovered = medAllocated && (medCat?.actual || 0) <= (medCat?.budgeted || 0);
+
   const alerts = [];
-  if (subPct > 2 && income > 0) alerts.push({ sev: 'WARN', msg: `NL-1: Discretionary at ${subPct.toFixed(1)}% of income — limit 2%` });
+  if (subPct > 2 && income > 0) alerts.push({
+    sev: 'WARN',
+    msg: `NL-1: Discretionary at ${subPct.toFixed(1)}% of income — limit 2%`,
+    rec: `Reduce Discretionary to $0 until E-Fund Phase 1 is locked`,
+  });
   if (highApr.length > 0 && debtService && totalMins > 0 && debtService.actual > 0 && debtService.actual <= totalMins * 1.05) {
-    alerts.push({ sev: 'DANGER', msg: `NL-2: Minimum-only on ${highApr[0].name} at ${highApr[0].apr}% APR — avalanche required` });
+    alerts.push({
+      sev: 'DANGER',
+      msg: `NL-2: Minimum-only on ${highApr[0].name} at ${highApr[0].apr}% APR — avalanche required`,
+      rec: `Add any surplus above minimums directly to ${highApr[0].name} — every dollar counts`,
+    });
   }
   if (hasConsumerDebt && hasPositions && stage <= 2) {
-    alerts.push({ sev: 'DANGER', msg: 'NL-3: Active positions detected in Defense Mode — Stage 3 gate not cleared' });
+    alerts.push({
+      sev: 'DANGER',
+      msg: 'NL-3: Active positions detected in Defense Mode — Stage 3 gate not cleared',
+      rec: `Liquidate non-essential positions and redirect proceeds to debt avalanche`,
+    });
   }
   blownCats.forEach(c => {
-    alerts.push({ sev: 'DANGER', msg: `NL-4: ${c.name} blown — ${fmt(c.actual)} vs ${fmt(c.budgeted)} (${Math.round((c.actual / c.budgeted) * 100)}%)` });
+    alerts.push({
+      sev: 'DANGER',
+      msg: `NL-4: ${c.name} blown — ${fmt(c.actual)} vs ${fmt(c.budgeted)} (${Math.round((c.actual / c.budgeted) * 100)}%)`,
+      rec: `Freeze ${c.name} spend immediately — wait for next pay cycle reset`,
+    });
   });
-  if (days < 30) alerts.push({ sev: days < 7 ? 'DANGER' : 'WARN', msg: `E-FUND: Runway critical — ${days} days remaining` });
-  if (di > 10) alerts.push({ sev: 'WARN', msg: `DEBT: Bleeding ${fmt(di)}/day in interest — attack priority required` });
-  if (velocity < 0.10 && income > 0) alerts.push({ sev: 'DANGER', msg: `VELOCITY: Crisis at ${Math.round(velocity * 100)}% — Budget Slash Protocol active` });
-  else if (velocity < 0.20 && income > 0) alerts.push({ sev: 'WARN', msg: `VELOCITY: Low at ${Math.round(velocity * 100)}% — target 25%` });
+  if (days < 30) alerts.push({
+    sev: days < 7 ? 'DANGER' : 'WARN',
+    msg: `E-FUND: Runway critical — ${days} days remaining`,
+    rec: `Direct next paycheck entirely to E-Fund until $1,000 starter fund is locked`,
+  });
+  if (di > 10) alerts.push({
+    sev: 'WARN',
+    msg: `DEBT: Bleeding ${fmt(di)}/day in interest — attack priority required`,
+    rec: `Allocate ${fmt(Math.round(di * 30))}/mo surplus to highest APR balance — attack mode`,
+  });
+  if (velocity < 0.10 && income > 0) alerts.push({
+    sev: 'DANGER',
+    msg: `VELOCITY: Crisis at ${Math.round(velocity * 100)}% — Budget Slash Protocol active`,
+    rec: `Freeze all discretionary spend — execute Budget Slash Protocol immediately`,
+  });
+  else if (velocity < 0.20 && income > 0) alerts.push({
+    sev: 'WARN',
+    msg: `VELOCITY: Low at ${Math.round(velocity * 100)}% — target 25%`,
+    rec: `Identify and cut ${fmt(Math.round(income * 0.05))}/mo in variable expenses to reach target`,
+  });
 
   const sevColor = (sev) => sev === 'DANGER' ? t.danger : sev === 'WARN' ? t.warn : t.accent;
 
@@ -4534,6 +4601,7 @@ function KnoxTerminalMod({ latest, visible, t }) {
         fontFamily: "'JetBrains Mono', monospace",
         fontSize: 13,
       }}>
+        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, borderBottom: `1px solid ${t.accent}30`, paddingBottom: 8 }}>
           <span style={{ color: t.accent, fontWeight: 700, letterSpacing: '0.08em', fontSize: 13 }}>
             {'>'} AGENT KNOX — SYSTEM ALERTS
@@ -4543,20 +4611,46 @@ function KnoxTerminalMod({ latest, visible, t }) {
             {new Date().toLocaleTimeString('en-US', { hour12: false })}
           </span>
         </div>
+
+        {/* Health Shield — always visible */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, padding: '6px 8px', background: medCovered ? `${t.accent}10` : `${t.danger}10`, border: `1px solid ${medCovered ? t.accent : t.danger}30`, borderLeft: `3px solid ${medCovered ? t.accent : t.danger}` }}>
+          <Shield size={11} style={{ color: medCovered ? t.accent : t.danger, flexShrink: 0 }} />
+          <span style={{ color: medCovered ? t.accent : t.danger, fontWeight: 700, fontSize: 11 }}>HEALTH SHIELD</span>
+          <span style={{ color: t.textSecondary, fontSize: 11, marginLeft: 2 }}>
+            {medCovered
+              ? `Medical Priority 1 LOCKED — ${fmt(medCat?.actual || 0)} / ${fmt(medCat?.budgeted || 0)} covered ✓`
+              : medAllocated
+                ? `Medical over budget — ${fmt(medCat?.actual || 0)} vs ${fmt(medCat?.budgeted || 0)} — review coverage`
+                : `No Medical budget allocated — add to protect Priority 1`
+            }
+          </span>
+        </div>
+
+        {/* Alerts + Recommendations */}
         {alerts.length === 0 ? (
           <div style={{ color: t.accent, opacity: 0.8 }}>{'>'} ALL CLEAR — no policy violations detected</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {alerts.map((a, i) => (
-              <div key={i} style={{ display: 'flex', gap: 8, animation: `radarFadeUp 0.3s ease-out ${i * 0.06}s both` }}>
-                <span style={{ color: sevColor(a.sev), fontWeight: 700, flexShrink: 0 }}>{'>'} [{a.sev}]</span>
-                <span style={{ color: a.sev === 'DANGER' ? t.danger : a.sev === 'WARN' ? t.warn : t.textSecondary, lineHeight: 1.4 }}>{a.msg}</span>
+              <div key={i} style={{ animation: `radarFadeUp 0.3s ease-out ${i * 0.06}s both` }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <span style={{ color: sevColor(a.sev), fontWeight: 700, flexShrink: 0 }}>{'>'} [{a.sev}]</span>
+                  <span style={{ color: a.sev === 'DANGER' ? t.danger : a.sev === 'WARN' ? t.warn : t.textSecondary, lineHeight: 1.4 }}>{a.msg}</span>
+                </div>
+                {a.rec && (
+                  <div style={{ display: 'flex', gap: 8, marginTop: 2, paddingLeft: 4 }}>
+                    <span style={{ color: t.accent, flexShrink: 0, fontSize: 11 }}>{'>'} [REC]</span>
+                    <span style={{ color: t.accent, fontSize: 11, opacity: 0.85, lineHeight: 1.4 }}>{a.rec}</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
+
+        {/* Footer */}
         <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${t.accent}20`, fontSize: 11, color: t.textGhost, display: 'flex', justifyContent: 'space-between' }}>
-          <span>KNOX v1.0 | {alerts.length} alert{alerts.length !== 1 ? 's' : ''} | Stage {stage} / 7</span>
+          <span>KNOX v1.1 | {alerts.length} alert{alerts.length !== 1 ? 's' : ''} | Stage {stage} / 7</span>
           <span style={{ color: alerts.some(a => a.sev === 'DANGER') ? t.danger : alerts.length > 0 ? t.warn : t.accent }}>
             {alerts.some(a => a.sev === 'DANGER') ? '⬤ CRITICAL' : alerts.length > 0 ? '⬤ WARNING' : '⬤ NOMINAL'}
           </span>
@@ -4717,8 +4811,8 @@ function BudgetMod({ latest, visible, t }) {
           ⚠ Income detected ({fmt(income)}) but $0 across all categories. Re-sync via Guided tab with actual spend, or your bank CSV may need sign correction.
         </div>
       )}
-      {cats.map((c, i) => { const pct = c.budgeted > 0 ? (c.actual / c.budgeted) * 100 : (c.actual > 0 ? 100 : 0); return (<div key={i} style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 14, marginBottom: 3 }}><span style={{ color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.name}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 15 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 15, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
+      {cats.map((c, i) => { const pct = c.budgeted > 0 ? (c.actual / c.budgeted) * 100 : (c.actual > 0 ? 100 : 0); const isFixed = c.name === 'Essential' || c.name === 'Medical'; return (<div key={i} style={{ marginBottom: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 14, marginBottom: 3 }}><span style={{ color: isFixed ? t.textPrimary : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-flex', alignItems: 'center', gap: 5 }}>{isFixed && <Lock size={9} style={{ color: c.name === 'Medical' ? t.danger : t.accent, flexShrink: 0, marginBottom: 1 }} />}{c.name}{isFixed && <span style={{ fontSize: 9, color: c.name === 'Medical' ? t.danger : t.accent, fontWeight: 700, letterSpacing: '0.06em' }}>FIXED</span>}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 15 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 15, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
       {c.budgeted > 0 && <ProgressBar percent={pct} t={t} />}
       {c.budgeted === 0 && c.actual > 0 && <div style={{ height: 6, background: t.accent, marginBottom: 4, opacity: 0.5 }} />}
     </div>); })}
