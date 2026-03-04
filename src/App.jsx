@@ -4546,10 +4546,10 @@ function KnoxTerminalMod({ latest, visible, t }) {
   const medAllocated = (medCat?.budgeted || 0) > 0;
   const medCovered = medAllocated && (medCat?.actual || 0) <= (medCat?.budgeted || 0);
   const medStatus = medCovered
-    ? `${fmt(medCat?.actual || 0)} / ${fmt(medCat?.budgeted || 0)} COVERED`
+    ? `DEFENSE ACTIVE — ${fmt(medCat?.actual || 0)} / ${fmt(medCat?.budgeted || 0)}`
     : medAllocated
-      ? `OVER — ${fmt(medCat?.actual || 0)} vs ${fmt(medCat?.budgeted || 0)}`
-      : 'NOT ALLOCATED';
+      ? `BREACH — ${fmt(medCat?.actual || 0)} vs ${fmt(medCat?.budgeted || 0)}`
+      : 'VITAL DEFENSE OFFLINE';
 
   // ── Tier 1: Essentials ─────────────────────────────────────────
   const essCat = cats.find(c => c.name === 'Essentials');
@@ -4564,8 +4564,8 @@ function KnoxTerminalMod({ latest, visible, t }) {
   const efPhase1Target = 1000;
   const efPhase1Done = efBal >= efPhase1Target;
   const efStatus = efPhase1Done
-    ? `SECURED — ${fmt(efBal)} ≥ ${fmt(efPhase1Target)}`
-    : `${fmt(efBal)} / ${fmt(efPhase1Target)} (${Math.round((efBal / efPhase1Target) * 100)}%)`;
+    ? `PERIMETER SECURED — ${fmt(efBal)} deployed`
+    : `${fmt(efBal)} / ${fmt(efPhase1Target)} (${Math.round((efBal / efPhase1Target) * 100)}% complete)`;
 
   // ── Tier 2: NL violations ─────────────────────────────────────
   const discCat = cats.find(c => c.name === 'Discretionary');
@@ -4596,38 +4596,38 @@ function KnoxTerminalMod({ latest, visible, t }) {
   lines.push({ sep: 'TIER 1 ◈ VITAL INTEGRITY' });
   lines.push({
     tag: !medAllocated ? 'DANGER' : !medCovered ? 'WARNING' : 'VERIFIED',
-    label: 'Priority 01: Health Shield',
+    label: !medAllocated ? 'Vital Defense Offline' : !medCovered ? 'Vital Defense Breached' : 'Vital Defense Active',
     status: medStatus,
     ok: medCovered && medAllocated,
     rec: !medAllocated
-      ? 'Allocate Medical budget immediately — Priority 1 is non-negotiable'
-      : !medCovered ? 'Medical over budget — freeze non-Medical spend until covered' : null,
+      ? 'Allocate Medical budget immediately. System vulnerability: CRITICAL.'
+      : !medCovered ? 'Medical perimeter breached — freeze all non-Medical outflow until defense is restored.' : null,
   });
   lines.push({
     tag: !essCat ? 'WARNING' : !essCovered ? 'WARNING' : 'VERIFIED',
-    label: 'Priority 02: Essential Coverage',
+    label: !essCovered ? 'Supply Lines Compromised' : 'Supply Lines Secured',
     status: essStatus,
     ok: essCovered,
     rec: !essCovered && essCat
-      ? `Essentials over by ${fmt((essCat.actual || 0) - (essCat.budgeted || 0))} — review fixed costs`
+      ? `Supply lines over capacity by ${fmt((essCat.actual || 0) - (essCat.budgeted || 0))}. Cut fixed costs — the perimeter must hold.`
       : null,
   });
 
   lines.push({ sep: 'TIER 2 ◈ STRUCTURAL INTEGRITY' });
   lines.push({
     tag: efPhase1Done ? 'VERIFIED' : efBal > 0 ? 'WARNING' : 'DANGER',
-    label: 'Priority 03: Fortress Wall Phase 1',
+    label: efPhase1Done ? 'Perimeter Secured — Fortress Wall Phase 1' : 'Secure the Perimeter — Fortress Wall Phase 1',
     status: efStatus,
     ok: efPhase1Done,
-    rec: !efPhase1Done ? 'Direct all surplus + Discretionary to E-Fund until $1,000 locked' : null,
+    rec: !efPhase1Done ? 'First $1,000 is the minimum viable barrier. Deploy all surplus to Fortress Wall.' : null,
   });
   if (subPct > 2 && income > 0) {
     lines.push({
       tag: 'WARNING',
-      label: `NL-1: Discretionary at ${subPct.toFixed(1)}% of income`,
-      status: `${fmt(discCat?.actual || 0)} — limit is 2%`,
+      label: `Resource Seepage — ${subPct.toFixed(1)}% income bleed detected`,
+      status: `${fmt(discCat?.actual || 0)} outflow — threshold 2%`,
       ok: false,
-      rec: 'Reduce Discretionary to $0 until E-Fund Phase 1 is locked',
+      rec: 'Tighten the valve. Terminate discretionary outflow until Fortress Wall Phase 1 is sealed.',
     });
     if (redirectAmt > 0) {
       lines.push({
@@ -4641,28 +4641,30 @@ function KnoxTerminalMod({ latest, visible, t }) {
   blownCats.forEach(c => {
     lines.push({
       tag: 'DANGER',
-      label: `NL-4: ${c.name} over budget`,
+      label: `Budget Breach — ${c.name} perimeter exceeded`,
       status: `${fmt(c.actual)} vs ${fmt(c.budgeted)} (+${Math.round((c.actual / c.budgeted - 1) * 100)}%)`,
       ok: false,
-      rec: `Freeze ${c.name} spend — wait for next pay cycle reset`,
+      rec: `Freeze ${c.name} operations immediately. Hold all outflow until next cycle reset.`,
     });
   });
   if (di > 10) {
     lines.push({
       tag: di > 25 ? 'DANGER' : 'WARNING',
-      label: 'Interest Burn Rate',
-      status: `${fmt(di)}/day — ${fmt(Math.round(di * 30))}/mo bleeding`,
+      label: 'Counterparty Siege — Capital Erosion Active',
+      status: `${fmt(di)}/day — ${fmt(Math.round(di * 30))}/mo surrendered`,
       ok: false,
-      rec: 'Attack highest APR balance — avalanche mode required',
+      rec: `Engage avalanche protocol. Attack highest APR counterparty — every day of delay costs ${fmt(di)}.`,
     });
   }
   if (days < 30) {
     lines.push({
       tag: days < 7 ? 'DANGER' : 'WARNING',
-      label: 'E-Fund Runway',
-      status: `${days} days remaining — CRITICAL`,
+      label: days < 7 ? 'Engine Stall Imminent' : 'Fuel Reserves Critical',
+      status: `${days}-day reserve — all non-essential outflow must stop`,
       ok: false,
-      rec: 'Direct next paycheck entirely to E-Fund starter fund',
+      rec: days < 7
+        ? 'All non-essential outflow terminated. Every dollar to E-Fund — survival protocol active.'
+        : 'Direct next paycheck entirely to E-Fund. Restore fuel reserves before any other objective.',
     });
   }
 
@@ -4670,40 +4672,48 @@ function KnoxTerminalMod({ latest, visible, t }) {
   if (minOnlyOnHighApr) {
     lines.push({
       tag: 'DANGER',
-      label: `NL-2: ${highApr[0].name} at ${highApr[0].apr}% APR`,
-      status: 'Minimum-only — avalanche required',
+      label: `Counterparty Siege — ${highApr[0].name} at ${highApr[0].apr}% APR`,
+      status: 'Minimum-only — avalanche protocol offline',
       ok: false,
-      rec: `Add all surplus above minimums to ${highApr[0].name}`,
+      rec: `Deploy all surplus above minimums to ${highApr[0].name}. Minimum-only payments are slow surrender.`,
     });
   }
   if (isFinancialChaos) {
     lines.push({
       tag: 'DANGER',
-      label: 'NL-3: Active positions in Defense Mode',
+      label: 'Tactical Conflict — Positions Active in Defense Mode',
       status: `Stage ${stage} — Stage 3 gate not cleared`,
       ok: false,
-      rec: 'Liquidate non-essential positions → redirect to debt avalanche',
+      rec: 'Liquidate non-essential positions. Redirect all proceeds to the avalanche — liberation requires all resources.',
+    });
+  }
+  if (stage >= 3) {
+    lines.push({
+      tag: 'VERIFIED',
+      label: `Stage ${stage} Active — Investment Gates Unlocked`,
+      status: 'PROMOTED: Defense → Wealth Building',
+      ok: true,
     });
   }
   if (!minOnlyOnHighApr && !isFinancialChaos) {
     lines.push({
       tag: totalDebt === 0 ? 'VERIFIED' : 'SCANNING',
-      label: 'Priority 04: Debt Liberation',
+      label: totalDebt === 0 ? 'Debt Liberated — All Counterparties Eliminated' : 'Debt Liberation Campaign',
       status: totalDebt === 0
-        ? 'ALL DEBTS ELIMINATED'
-        : `${fmt(totalDebt)} outstanding — avalanche active`,
+        ? 'LIBERATION COMPLETE'
+        : `${fmt(totalDebt)} outstanding — avalanche engaged`,
       ok: totalDebt === 0,
     });
   }
   lines.push({
     tag: velCritical ? 'DANGER' : !velOk ? 'WARNING' : 'SCANNING',
-    label: 'Financial Velocity',
-    status: `${velPct}% — ${velCritical ? 'CRISIS' : !velOk ? 'LOW: target 25%' : 'ON TARGET'}`,
+    label: velCritical ? 'Velocity Crisis — Budget Slash Protocol Active' : !velOk ? 'Velocity Sub-Optimal' : 'Velocity Nominal',
+    status: `${velPct}% — ${velCritical ? 'CRISIS: engine failure' : !velOk ? 'INSUFFICIENT THRUST' : 'NOMINAL THRUST'}`,
     ok: velOk,
     rec: velCritical
-      ? 'Freeze all discretionary — execute Budget Slash Protocol'
+      ? 'Execute Budget Slash Protocol immediately. Terminate all non-essential outflow.'
       : !velOk && income > 0
-        ? `Cut ${fmt(Math.round(income * 0.05))}/mo in variable expenses to reach target`
+        ? `Re-route ${fmt(Math.round(income * 0.05))}/mo in Discretionary to restore momentum. Target: 25% velocity.`
         : null,
   });
 
@@ -4738,13 +4748,28 @@ function KnoxTerminalMod({ latest, visible, t }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, borderBottom: `1px solid ${t.accent}30`, paddingBottom: 8 }}>
           <span style={{ color: t.accent, fontWeight: 700, letterSpacing: '0.08em', fontSize: 13 }}>
-            {'>'} AGENT KNOX — KERNEL SCAN
+            {'>'} AGENT KNOX — MISSION BRIEFING
           </span>
           <span style={{ color: t.accent, animation: 'pulse 1s step-end infinite', fontSize: 14, lineHeight: 1 }}>▋</span>
           <span style={{ marginLeft: 'auto', color: t.textGhost, fontSize: 11 }}>
             {new Date().toLocaleTimeString('en-US', { hour12: false })}
           </span>
         </div>
+
+        {/* Knox Pulse — Primary Directive */}
+        {(() => {
+          const directive = lines.find(l => !l.sep && l.tag === 'DANGER') || lines.find(l => !l.sep && l.tag === 'WARNING');
+          const dirColor = directive?.tag === 'DANGER' ? t.danger : directive?.tag === 'WARNING' ? t.warn : t.accent;
+          const dirText = directive
+            ? `${directive.label}${directive.rec ? ' — ' + directive.rec : ''}`
+            : 'All systems nominal. Sovereign Blueprint on track.';
+          return (
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10, padding: '6px 8px', background: directive ? `${dirColor}10` : `${t.accent}08`, borderLeft: `3px solid ${dirColor}`, border: `1px solid ${dirColor}28`, borderLeftWidth: 3 }}>
+              <span style={{ color: dirColor, fontWeight: 700, fontSize: 10, flexShrink: 0, letterSpacing: '0.1em', paddingTop: 1 }}>DIRECTIVE</span>
+              <span style={{ color: dirColor, fontSize: 11, lineHeight: 1.4, opacity: 0.9 }}>{dirText}</span>
+            </div>
+          );
+        })()}
 
         {/* Tiered scan lines */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
