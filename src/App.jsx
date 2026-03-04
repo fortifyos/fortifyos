@@ -6222,6 +6222,32 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const netLiq  = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
   const netLiqColor = netLiq == null ? t.textDim : netLiq > 5000 ? t.accent : netLiq > 3000 ? t.warn : t.danger;
 
+  // ── Signal Confluence Engine ───────────────────────────────────────────────
+  const confNetLiq       = walcl != null && tga != null ? walcl - tga : null;
+  const halvingDate      = new Date('2024-04-20');
+  const daysPostHalving  = Math.floor((Date.now() - halvingDate.getTime()) / 86400000);
+  let liqPts = 0, cyclePts = 0, tgaPts = 0;
+  if (confNetLiq != null) {
+    if (confNetLiq > 5500)      liqPts = 40;
+    else if (confNetLiq > 5000) liqPts = 20;
+  }
+  if (daysPostHalving <= 500)      cyclePts = 40;
+  else if (daysPostHalving < 800)  cyclePts = 10;
+  if (tga != null && tga < 800)    tgaPts   = 20;
+  const confScore  = liqPts + cyclePts + tgaPts;
+  const confColor  = confScore >= 75 ? t.accent : confScore >= 40 ? t.warn : t.danger;
+  const confStatus = confScore >= 75 ? 'TARGET ACQUIRED // CONFLUENCE HIGH'
+    : confScore >= 40 ? 'SCANNING // SEARCHING FOR SIGNAL'
+    : 'SIGNAL JAMMED // DEFENSIVE POSITION';
+  const confComponents = [
+    { label: 'NET LIQUIDITY (WALCL − TGA)', score: liqPts, max: 40,
+      note: confNetLiq != null ? `$${(confNetLiq/1000).toFixed(2)}T` : 'no data' },
+    { label: 'HALVING CYCLE MATURITY',      score: cyclePts, max: 40,
+      note: `${daysPostHalving}d post-halving` },
+    { label: 'TREASURY PRESSURE (TGA)',     score: tgaPts, max: 20,
+      note: tga != null ? `$${(tga/1000).toFixed(2)}T TGA` : 'no data' },
+  ];
+
   const classifySentiment = (title = '') => {
     const lo = title.toLowerCase();
     if (/surge|rally|soar|gains?|rises?|bullish|breaks?|record|ath|approval|adoption|jumps?|pump|up \d|grew|higher|outperform/.test(lo)) return 'Bullish';
@@ -6275,6 +6301,58 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
         <div style={{ marginTop: 12 }}>
           <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
+        </div>
+
+        {/* ── SIGNAL CONFLUENCE ENGINE ─────────────────────────────────────── */}
+        <div style={{ marginTop: 12, border: `2px solid ${confColor}`, background: t.panel, padding: '16px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
+
+            {/* Score + status */}
+            <div>
+              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>SIGNAL CONFLUENCE ENGINE</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                <span style={{ fontSize: 52, fontWeight: 900, color: confColor, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{confScore}</span>
+                <span style={{ fontSize: 13, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>/100</span>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: confColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 6, fontFamily: "'JetBrains Mono', monospace" }}>
+                STATUS: {confStatus}
+              </div>
+            </div>
+
+            {/* Crosshair targeting reticle */}
+            <svg viewBox="0 0 80 80" width="80" height="80" style={{ flexShrink: 0, opacity: confScore >= 75 ? 1 : 0.6 }}>
+              <circle cx="40" cy="40" r="34" fill="none" stroke={confColor} strokeWidth="1" opacity="0.25"
+                style={{ animation: confScore >= 40 ? 'reactorRing1 3s ease-in-out infinite' : 'none' }} />
+              <circle cx="40" cy="40" r="20" fill="none" stroke={confColor} strokeWidth="1" opacity="0.45" />
+              <line x1="40" y1="4"  x2="40" y2="18" stroke={confColor} strokeWidth="1.5" />
+              <line x1="40" y1="62" x2="40" y2="76" stroke={confColor} strokeWidth="1.5" />
+              <line x1="4"  y1="40" x2="18" y2="40" stroke={confColor} strokeWidth="1.5" />
+              <line x1="62" y1="40" x2="76" y2="40" stroke={confColor} strokeWidth="1.5" />
+              <circle cx="40" cy="40" r={confScore >= 75 ? 5 : 2.5} fill={confColor}
+                style={{ animation: confScore >= 75 ? 'reactorPulse 2s ease-in-out infinite' : 'none' }} />
+              {confScore >= 75 && <>
+                <polyline points="4,14 4,4 14,4"   fill="none" stroke={confColor} strokeWidth="1.5" />
+                <polyline points="66,4 76,4 76,14"  fill="none" stroke={confColor} strokeWidth="1.5" />
+                <polyline points="4,66 4,76 14,76"  fill="none" stroke={confColor} strokeWidth="1.5" />
+                <polyline points="66,76 76,76 76,66" fill="none" stroke={confColor} strokeWidth="1.5" />
+              </>}
+            </svg>
+          </div>
+
+          {/* Component score bars */}
+          <div style={{ display: 'grid', gap: 10 }}>
+            {confComponents.map(({ label, score, max, note }) => (
+              <div key={label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span>{label}</span>
+                  <span style={{ color: score > 0 ? confColor : t.textGhost }}>{score}/{max} pts · {note}</span>
+                </div>
+                <div style={{ height: 3, background: t.borderDim, borderRadius: 2 }}>
+                  <div style={{ height: '100%', width: `${(score / max) * 100}%`, background: score > 0 ? confColor : t.borderDim, borderRadius: 2, transition: 'width 1.2s ease' }} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ── LORDS OF EASY MONEY — DAILY QUOTE ──────────────────────────── */}
