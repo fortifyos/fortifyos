@@ -1115,7 +1115,7 @@ const DEFAULT_SNAPSHOT = {
   bills: [],
   payroll: { frequency: 'WEEKLY', weekday: 2 },
 };
-const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'transactions', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], payFrequency: 'WEEKLY', _v: 9 };
+const DEFAULT_SETTINGS = { visibleModules: ['directive', 'netWorth', 'debt', 'planner', 'eFund', 'budget', 'knox', 'transactions', 'protection', 'portfolio', 'macro', 'market', 'macroBanner'], payFrequency: 'WEEKLY', _v: 10 };
 const fmt = (n) => { if (n == null || isNaN(n)) return '$0'; return '$' + Math.abs(Math.round(Number(n))).toLocaleString('en-US'); };
 const dailyInterest = (d) => d ? d.reduce((s, x) => s + ((x.balance || 0) * ((x.apr || 0) / 100)) / 365, 0) : 0;
 const totalDebt = (d) => d ? d.reduce((s, x) => s + (x.balance || 0), 0) : 0;
@@ -4015,6 +4015,24 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
   const total = totalDebt(debts); const di = dailyInterest(debts);
   const maxB = debts.length ? Math.max(...debts.map(d => d.balance || 0)) : 1;
   const revolving = debts.filter(d => !(d.totalTerms > 0));
+  // ── Projected Freedom Date (avalanche target debt) ──────────────────────
+  const _income = latest?.budget?.income || latest?._meta?.income || 0;
+  const _spent  = totalBudgetSpent(latest);
+  const _surplus = Math.max(0, _income - _spent);
+  const calcFreedomDate = (debt) => {
+    if (!debt || (debt.balance || 0) <= 0) return null;
+    const r = (debt.apr || 0) / 100 / 12;
+    const totalMins = debts.reduce((s, d) => s + (d.minPayment || 0), 0);
+    const extra = Math.max(0, _surplus - 0);
+    const pmt = (debt.minPayment || 0) + extra;
+    if (pmt <= 0) return null;
+    const months = r > 0 && pmt > r * debt.balance
+      ? Math.ceil(-Math.log(1 - (r * debt.balance) / pmt) / Math.log(1 + r))
+      : Math.ceil(debt.balance / pmt);
+    if (!isFinite(months) || months > 600) return null;
+    const d = new Date(); d.setMonth(d.getMonth() + months);
+    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
   return (<Card title="Debt Destruction" visible={visible} delay={80} alert={debts.some(d => d.balance > 2000)} t={t}>
     <div style={{ marginBottom: 14 }}><div style={{ fontSize: 28, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}><AnimNum value={total} /></div>
       {di > 0 && <div style={{ color: t.danger, fontSize: 14, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}><AnimNum value={di} decimals={2} style={{ color: t.danger }} />/day interest burn</div>}</div>
@@ -4046,6 +4064,11 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
               {isFixed && <span style={{ fontSize: 15, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
               {!isFixed && <span style={{ color: t.textDim }}> ({d.apr}%)</span>}
             </span>
+            {isTarget && (
+              <span style={{ fontSize: 11, background: `${t.danger}22`, color: t.danger, border: `1px solid ${t.danger}`, padding: '1px 7px', fontWeight: 700, letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", animation: 'radarFadeUp 0.3s ease-out', textTransform: 'uppercase' }}>
+                ⚡ ATTACK TARGET
+              </span>
+            )}
             {paidThisCycle && (
               <span style={{ fontSize: 15, background: t.accentMuted, color: t.accent, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.04em', fontFamily: "'JetBrains Mono', monospace" }}>
                 ✓ PAID {d._lastPayAmt ? fmt(d._lastPayAmt) : ''}
@@ -4065,6 +4088,12 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
             </>}
           </div>
         </div>
+        {/* ── Projected Freedom Date (attack target only) ── */}
+        {isTarget && (() => { const fd = calcFreedomDate(d); return fd ? (
+          <div style={{ fontSize: 12, color: t.accent, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.07em', marginBottom: 4, textTransform: 'uppercase' }}>
+            PROJECTED FREE: {fd}{_surplus > 0 && <span style={{ color: t.textGhost, marginLeft: 6 }}>({fmt(_surplus)}/mo surplus applied)</span>}
+          </div>
+        ) : null; })()}
 
         {/* ── Inline action panel ── */}
         {panelOpen && (
@@ -4301,14 +4330,17 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
             const events = byDay[day] || [];
             const isPay = paydayDays.has(day);
             const isPast = isCurrentMonth && day < todayDay;
+            const dayTotal = events.reduce((s, e) => s + (e.amount || 0), 0);
+            const heatAlpha = dayTotal >= 1000 ? '80' : dayTotal >= 500 ? '55' : dayTotal >= 100 ? '35' : dayTotal >= 1 ? '18' : '00';
+            const heatBg = heatAlpha !== '00' ? `${t.danger}${heatAlpha}` : 'transparent';
 
             return (
               <div key={di} style={{
                 minHeight: 36,
                 padding: '3px 2px 2px',
                 textAlign: 'center',
-                background: isToday ? `${t.accent}22` : 'transparent',
-                border: `1px solid ${isToday ? t.accent + '55' : t.borderDim + '44'}`,
+                background: isToday ? `${t.accent}22` : heatBg,
+                border: `1px solid ${isToday ? t.accent + '55' : dayTotal >= 500 ? t.danger + '55' : t.borderDim + '44'}`,
                 overflow: 'hidden',
                 opacity: isPast ? 0.45 : 1,
               }}>
@@ -4411,15 +4443,127 @@ function EFundMod({ latest, visible, t }) {
   const targets = efundTargets(monthly); const days = runwayDaysFromLatest(latest);
   const phase = (monthly > 0 && bal >= targets[3]) ? 4 : (monthly > 0 && bal >= targets[2]) ? 3 : (monthly > 0 && bal >= targets[1]) ? 2 : bal >= targets[0] ? 1 : 0;
   const labels = ['$1K Starter', '1 Month', '3 Months', '6 Months'];
+  const maxTarget = targets[3] || 6000;
+  const wallBlocks = 12;
+  const filledBlocks = Math.min(wallBlocks, Math.floor((bal / maxTarget) * wallBlocks));
+  const rColor = runwayColor(days, t);
   return (<Card title="Emergency Fund" visible={visible} delay={160} t={t}>
-    <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>{targets.map((tgt, i) => { const filled = bal >= tgt; const pf = (!filled && i === phase) ? Math.min((bal / tgt) * 100, 100) : filled ? 100 : 0; return (<div key={i} style={{ flex: 1 }}><div style={{ height: 8, background: t.elevated, overflow: 'hidden' }}><div style={{ height: '100%', width: `${pf}%`, background: t.accent, transition: 'width 1s ease-out' }} /></div><div style={{ fontSize: 15, color: filled ? t.accentDim : t.textDim, marginTop: 3, textTransform: 'uppercase' }}>{labels[i]} {filled && '✓'}</div></div>); })}</div>
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-      <div><div style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Balance</div><div style={{ fontSize: 18, fontWeight: 700 }}><AnimNum value={bal} /></div></div>
-      <div><div style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Runway</div><div style={{ fontSize: 18, fontWeight: 700, color: runwayColor(days, t) }}>{days} Days</div></div>
-      <div><div style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Monthly Exp</div><div style={{ color: t.textSecondary }}>{fmt(monthly)}</div></div>
-      <div><div style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Phase</div><div style={{ color: t.textSecondary }}>{phase}/4 — {labels[Math.min(phase, 3)]}</div></div>
+
+    {/* ── Runway Counter — centrepiece ── */}
+    <div style={{ textAlign: 'center', marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${t.borderDim}` }}>
+      <div style={{ fontSize: 52, fontWeight: 900, color: rColor, fontVariantNumeric: 'tabular-nums', lineHeight: 1, textShadow: days >= 90 ? `0 0 20px ${rColor}` : 'none', transition: 'color 0.5s, text-shadow 0.5s' }}>
+        {days}
+      </div>
+      <div style={{ fontSize: 11, color: rColor, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", marginTop: 4 }}>
+        {days === 0 ? '⚠ DAYS OF RUNWAY — BUILD NOW' : days < 30 ? `⚠ DAYS OF RUNWAY — FRAGILE` : days < 90 ? '↑ DAYS OF RUNWAY — BUILDING' : '✓ DAYS OF RUNWAY — SECURE'}
+      </div>
+    </div>
+
+    {/* ── Fortress Wall ── */}
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
+        FORTRESS WALL — {filledBlocks}/{wallBlocks} LAYERS {filledBlocks === wallBlocks ? '🏰' : ''}
+      </div>
+      <div style={{ display: 'flex', gap: 2 }}>
+        {Array.from({length: wallBlocks}, (_, i) => (
+          <div key={i} style={{ flex: 1, height: 18, background: i < filledBlocks ? t.accent : t.elevated, border: `1px solid ${i < filledBlocks ? t.accent : t.borderDim}`, borderRadius: 1, transition: `background 0.4s ease ${i * 0.06}s` }} />
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+        <span>$0</span><span>{fmt(maxTarget / 2)}</span><span>{fmt(maxTarget)}</span>
+      </div>
+    </div>
+
+    {/* ── Compact data row ── */}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Balance</div><div style={{ fontSize: 15, fontWeight: 700 }}><AnimNum value={bal} /></div></div>
+      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Monthly</div><div style={{ fontSize: 15, color: t.textSecondary }}>{fmt(monthly)}</div></div>
+      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Phase</div><div style={{ fontSize: 15, color: t.textSecondary }}>{phase}/4</div></div>
+      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next</div><div style={{ fontSize: 11, color: t.accentDim }}>{labels[Math.min(phase, 3)]}</div></div>
     </div>
   </Card>);
+}
+
+function KnoxTerminalMod({ latest, visible, t }) {
+  const isDarkKnox = (t.void || '').toLowerCase().includes('05') || (t.void || '').toLowerCase().includes('08');
+  const cats = buildProtectionFirstBudget(
+    latest?.budget?.income || latest?._meta?.income || 0,
+    latest?.budget?.categories || [],
+    latest
+  );
+  const income = latest?.budget?.income || latest?._meta?.income || 0;
+  const velocity = calcVelocity(latest || {});
+  const stage = calcStage(latest || {});
+  const debts = latest?.debts || [];
+  const days = runwayDaysFromLatest(latest);
+  const di = dailyInterest(debts);
+  const hasConsumerDebt = debts.some(d => (d.balance || 0) > 0 && !(d.totalTerms > 0));
+  const discCat = cats.find(c => c.name === 'Discretionary');
+  const subPct = income > 0 && discCat ? ((discCat.actual || 0) / income) * 100 : 0;
+  const highApr = debts.filter(d => (d.apr || 0) >= 20 && (d.balance || 0) > 0 && !(d.totalTerms > 0));
+  const totalMins = debts.reduce((s, d) => s + (d.minPayment || 0), 0);
+  const debtService = cats.find(c => c.name === 'Debt Service');
+  const blownCats = cats.filter(c => c.budgeted > 0 && c.actual > c.budgeted && c.name !== 'Medical');
+  const hasPositions = (latest?.portfolio?.equities?.length || 0) > 0 || (latest?.portfolio?.crypto?.length || 0) > 0;
+
+  const alerts = [];
+  if (subPct > 2 && income > 0) alerts.push({ sev: 'WARN', msg: `NL-1: Discretionary at ${subPct.toFixed(1)}% of income — limit 2%` });
+  if (highApr.length > 0 && debtService && totalMins > 0 && debtService.actual > 0 && debtService.actual <= totalMins * 1.05) {
+    alerts.push({ sev: 'DANGER', msg: `NL-2: Minimum-only on ${highApr[0].name} at ${highApr[0].apr}% APR — avalanche required` });
+  }
+  if (hasConsumerDebt && hasPositions && stage <= 2) {
+    alerts.push({ sev: 'DANGER', msg: 'NL-3: Active positions detected in Defense Mode — Stage 3 gate not cleared' });
+  }
+  blownCats.forEach(c => {
+    alerts.push({ sev: 'DANGER', msg: `NL-4: ${c.name} blown — ${fmt(c.actual)} vs ${fmt(c.budgeted)} (${Math.round((c.actual / c.budgeted) * 100)}%)` });
+  });
+  if (days < 30) alerts.push({ sev: days < 7 ? 'DANGER' : 'WARN', msg: `E-FUND: Runway critical — ${days} days remaining` });
+  if (di > 10) alerts.push({ sev: 'WARN', msg: `DEBT: Bleeding ${fmt(di)}/day in interest — attack priority required` });
+  if (velocity < 0.10 && income > 0) alerts.push({ sev: 'DANGER', msg: `VELOCITY: Crisis at ${Math.round(velocity * 100)}% — Budget Slash Protocol active` });
+  else if (velocity < 0.20 && income > 0) alerts.push({ sev: 'WARN', msg: `VELOCITY: Low at ${Math.round(velocity * 100)}% — target 25%` });
+
+  const sevColor = (sev) => sev === 'DANGER' ? t.danger : sev === 'WARN' ? t.warn : t.accent;
+
+  return (
+    <Card title="Agent KNOX" visible={visible} delay={280} alert={alerts.some(a => a.sev === 'DANGER')} t={t}>
+      <div style={{
+        background: isDarkKnox ? '#020804' : '#f0f7f0',
+        border: `1px solid ${t.accent}40`,
+        boxShadow: `0 0 8px ${t.accent}20, inset 0 0 20px ${t.accent}05`,
+        padding: '12px 14px',
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 13,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, borderBottom: `1px solid ${t.accent}30`, paddingBottom: 8 }}>
+          <span style={{ color: t.accent, fontWeight: 700, letterSpacing: '0.08em', fontSize: 13 }}>
+            {'>'} AGENT KNOX — SYSTEM ALERTS
+          </span>
+          <span style={{ color: t.accent, animation: 'pulse 1s step-end infinite', fontSize: 14, lineHeight: 1 }}>▋</span>
+          <span style={{ marginLeft: 'auto', color: t.textGhost, fontSize: 11 }}>
+            {new Date().toLocaleTimeString('en-US', { hour12: false })}
+          </span>
+        </div>
+        {alerts.length === 0 ? (
+          <div style={{ color: t.accent, opacity: 0.8 }}>{'>'} ALL CLEAR — no policy violations detected</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {alerts.map((a, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, animation: `radarFadeUp 0.3s ease-out ${i * 0.06}s both` }}>
+                <span style={{ color: sevColor(a.sev), fontWeight: 700, flexShrink: 0 }}>{'>'} [{a.sev}]</span>
+                <span style={{ color: a.sev === 'DANGER' ? t.danger : a.sev === 'WARN' ? t.warn : t.textSecondary, lineHeight: 1.4 }}>{a.msg}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${t.accent}20`, fontSize: 11, color: t.textGhost, display: 'flex', justifyContent: 'space-between' }}>
+          <span>KNOX v1.0 | {alerts.length} alert{alerts.length !== 1 ? 's' : ''} | Stage {stage} / 7</span>
+          <span style={{ color: alerts.some(a => a.sev === 'DANGER') ? t.danger : alerts.length > 0 ? t.warn : t.accent }}>
+            {alerts.some(a => a.sev === 'DANGER') ? '⬤ CRITICAL' : alerts.length > 0 ? '⬤ WARNING' : '⬤ NOMINAL'}
+          </span>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 function BudgetMod({ latest, visible, t }) {
@@ -5351,6 +5495,23 @@ function DirectiveMod({ visible, latest, t }) {
         <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Daily Spending<InfoTip t={t} align="right" direction="down" text="Your average spend per day based on monthly expenses. Sync a bank statement to populate with real data." /></div>
         <div style={{ fontSize: 18, fontWeight: 700, color: dailyBurn > 0 ? t.warn : t.textDim }}>${dailyBurn.toFixed(2)}</div>
         <div style={{ fontSize: 15, color: dailyBurn > 0 ? t.warn : t.textGhost, fontWeight: 700, textTransform: 'uppercase' }}>{dailyBurn > 0 ? 'Spending' : '— No Data'}</div>
+        {(() => {
+          const txns = latest?._recentTxns || [];
+          if (!txns.length) return null;
+          const today = new Date(); today.setHours(0,0,0,0);
+          const days7 = Array.from({length:7}, (_,i) => { const d = new Date(today); d.setDate(d.getDate()-6+i); return d.toISOString().slice(0,10); });
+          const byDay7 = {};
+          txns.forEach(tx => { if (tx.amount < 0 && days7.includes(tx.date)) byDay7[tx.date] = (byDay7[tx.date]||0) + Math.abs(tx.amount); });
+          const vals = days7.map(d => byDay7[d] || 0);
+          const maxV = Math.max(...vals, 1);
+          const W=60, H=20, pts = vals.map((v,i) => `${(i/(vals.length-1))*W},${H - (v/maxV)*(H-2)-1}`).join(' ');
+          return (
+            <svg width={W} height={H} style={{marginTop:3,overflow:'visible'}}>
+              <polyline points={pts} fill="none" stroke={t.warn} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" opacity="0.8" />
+              {vals.map((v,i) => v > 0 && <circle key={i} cx={(i/(vals.length-1))*W} cy={H-(v/maxV)*(H-2)-1} r="1.5" fill={t.warn} />)}
+            </svg>
+          );
+        })()}
       </div>
 
       {/* Money Saved (formerly Savings Rate) */}
@@ -5377,10 +5538,11 @@ function DirectiveMod({ visible, latest, t }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px', borderBottom: `1px solid ${t.borderDim}` }}>
         <span style={{ fontSize: 16, fontWeight: 700, color: stageColor }}>{stage}</span>
         <div style={{ fontSize: 12, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
-        <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          {[0,1,2,3,4,5,6,7].map(i => (
-            <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.borderDim, opacity: i <= stage ? 1 : 0.3 }} />
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+          <span style={{ fontSize: 11, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>{stage} / 7</span>
+          <div style={{ width: 80, height: 6, background: t.borderDim, borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${(stage / 7) * 100}%`, background: `linear-gradient(90deg, ${t.warn} 0%, ${t.accent} 100%)`, borderRadius: 3, transition: 'width 0.8s ease-out' }} />
+          </div>
         </div>
       </div>
       {/* Row 2: next action — centered, full width */}
@@ -6053,6 +6215,13 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           </div>
         )}
 
+        {/* Row 3b — KNOX Terminal: policy enforcement AI */}
+        {vis.includes('knox') && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <KnoxTerminalMod latest={latest} visible t={t} />
+          </div>
+        )}
+
         {/* Row 4 — Calendar · Bills · E-Fund: time-sensitive triple */}
         {(vis.includes('planner') || vis.includes('eFund')) && (
           <div className="bill-cal-row" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
@@ -6678,6 +6847,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
     { key: 'planner',      label: 'Bills & Payday Planner', desc: 'Upcoming bills and pay schedule' },
     { key: 'eFund',        label: 'Emergency Fund',         desc: '4-phase e-fund build tracker' },
     { key: 'budget',       label: 'Budget Status',          desc: 'Spending by category with enforcement' },
+    { key: 'knox',         label: 'Agent KNOX Terminal',    desc: 'AI policy enforcement — NL violation alerts' },
     { key: 'transactions', label: 'Transactions',           desc: 'Parsed statement transaction history' },
     { key: 'protection',   label: 'Protection Layer',       desc: 'Life insurance and funeral buffer' },
   ];
