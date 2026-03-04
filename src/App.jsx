@@ -6313,7 +6313,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       </header>
       <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
 
-      <div className="ms2-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 16px 28px' }}>
+      <div className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`} style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 16px 28px', '--primary': confColor }}>
 
         {/* ── TACTICAL HUD BAR ─────────────────────────────────────────────── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: isDark ? '#060c06' : '#f0f7f0', border: `1px solid ${confColor}44`, marginBottom: 8, flexWrap: 'wrap', gap: 8, fontFamily: "'JetBrains Mono', monospace" }}>
@@ -6321,16 +6321,12 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>FUEL</span>
-              <div style={{ width: 72, height: 5, background: t.borderDim, borderRadius: 1, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, ((confNetLiq || 0) / 6000) * 100)}%`, background: confColor, transition: 'width 1.2s ease' }} />
-              </div>
+              <progress className="hud-bar" value={Math.min(100, ((confNetLiq || 0) / 6000) * 100)} max="100" />
               {confNetLiq != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(confNetLiq / 1000).toFixed(1)}T</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>HEAT</span>
-              <div style={{ width: 72, height: 5, background: t.borderDim, borderRadius: 1, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, ((tga || 0) / 1000) * 100)}%`, background: tga != null && tga < 800 ? t.accent : t.warn, transition: 'width 1.2s ease' }} />
-              </div>
+              <progress className="hud-bar hud-heat" value={Math.min(100, ((tga || 0) / 1000) * 100)} max="100" />
               {tga != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(tga / 1000).toFixed(2)}T</span>}
             </div>
             <span style={{ fontSize: 11, fontWeight: 900, color: confColor, border: `1px solid ${confColor}`, padding: '1px 7px', letterSpacing: '0.06em' }}>{confScore}/100</span>
@@ -6369,21 +6365,21 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
             {/* Crosshair targeting reticle */}
             <svg viewBox="0 0 80 80" width="80" height="80" style={{ flexShrink: 0, opacity: confScore >= 75 ? 1 : 0.6 }}>
-              <circle cx="40" cy="40" r="34" fill="none" stroke={confColor} strokeWidth="1" opacity="0.25"
+              <circle cx="40" cy="40" r="34" fill="none" stroke={confColor} strokeWidth="1" opacity="0.25" className="bracket"
                 style={{ animation: confScore >= 40 ? 'reactorRing1 3s ease-in-out infinite' : 'none' }} />
               <circle cx="40" cy="40" r="20" fill="none" stroke={confColor} strokeWidth="1" opacity="0.45" />
               <line x1="40" y1="4"  x2="40" y2="18" stroke={confColor} strokeWidth="1.5" />
               <line x1="40" y1="62" x2="40" y2="76" stroke={confColor} strokeWidth="1.5" />
               <line x1="4"  y1="40" x2="18" y2="40" stroke={confColor} strokeWidth="1.5" />
               <line x1="62" y1="40" x2="76" y2="40" stroke={confColor} strokeWidth="1.5" />
+              {/* Radar sweep line — rotated by CSS in state-locked */}
+              <line x1="40" y1="40" x2="40" y2="7" stroke={confColor} strokeWidth="1" opacity="0.7" className="radar-sweep" />
               <circle cx="40" cy="40" r={confScore >= 75 ? 5 : 2.5} fill={confColor}
                 style={{ animation: confScore >= 75 ? 'reactorPulse 2s ease-in-out infinite' : 'none' }} />
-              {confScore >= 75 && <>
-                <polyline points="4,14 4,4 14,4"   fill="none" stroke={confColor} strokeWidth="1.5" />
-                <polyline points="66,4 76,4 76,14"  fill="none" stroke={confColor} strokeWidth="1.5" />
-                <polyline points="4,66 4,76 14,76"  fill="none" stroke={confColor} strokeWidth="1.5" />
-                <polyline points="66,76 76,76 76,66" fill="none" stroke={confColor} strokeWidth="1.5" />
-              </>}
+              <polyline points="4,14 4,4 14,4"    fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
+              <polyline points="66,4 76,4 76,14"  fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
+              <polyline points="4,66 4,76 14,76"  fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
+              <polyline points="66,76 76,76 76,66" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
             </svg>
           </div>
 
@@ -6573,10 +6569,31 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           @keyframes radarFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           @keyframes radarBarIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
           @keyframes spin { to { transform: rotate(360deg); } }
+          @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes reactorPulse { 0%, 100% { transform: scale(0.88); opacity: 0.55; } 50% { transform: scale(1.12); opacity: 1; } }
           @keyframes reactorRing1 { 0%, 100% { opacity: 0.12; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.06); } }
           @keyframes reactorRing2 { 0%, 100% { opacity: 0.18; transform: scale(1); } 50% { opacity: 0.65; transform: scale(1.04); } }
           @keyframes moneyFlow { from { left: -40px; } to { left: calc(100% + 40px); } }
+          @keyframes jitter { 0% { transform: translate(0,0); } 50% { transform: translate(1px,-1px); } 100% { transform: translate(-1px,1px); } }
+          @keyframes bracket-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+          /* ── STATE CLASSES ─────────────────────────────────────────────── */
+          .ms2-wrap { position: relative; }
+          .ms2-wrap.state-jammed { animation: jitter 0.18s infinite; }
+          .ms2-wrap .radar-sweep { transform-box: view-box; transform-origin: 50% 50%; animation: rotate 3s linear infinite; }
+          .ms2-wrap.state-locked .radar-sweep { animation: rotate 0.8s linear infinite; }
+          .ms2-wrap.state-locked .bracket { animation: bracket-pulse 0.4s ease-in-out infinite; }
+
+          /* ── HUD PROGRESS BARS ─────────────────────────────────────────── */
+          .ms2-wrap progress.hud-bar { appearance: none; -webkit-appearance: none; width: 72px; height: 5px; border: none; background: transparent; vertical-align: middle; }
+          .ms2-wrap progress.hud-bar::-webkit-progress-bar { background: #1a1a1a; border-radius: 1px; }
+          .ms2-wrap progress.hud-bar::-webkit-progress-value { background: var(--primary); box-shadow: 0 0 8px var(--primary), 0 0 3px var(--primary); border-radius: 1px; transition: width 1.2s ease; }
+          .ms2-wrap progress.hud-bar::-moz-progress-bar { background: var(--primary); box-shadow: 0 0 8px var(--primary); border-radius: 1px; }
+          .ms2-wrap progress.hud-heat::-webkit-progress-value { background: #f0b429; box-shadow: 0 0 8px #f0b429aa, 0 0 3px #f0b429; }
+          .ms2-wrap progress.hud-heat::-moz-progress-bar { background: #f0b429; box-shadow: 0 0 8px #f0b429; }
+
+          /* ── CRT SCANLINE OVERLAY (scoped to Radar page) ───────────────── */
+          .ms2-wrap::after { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04)); background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 9999; }
           @media (max-width: 980px) {
             .ms2-wrap { padding: 64px 10px 22px !important; }
             .ms2-top { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
