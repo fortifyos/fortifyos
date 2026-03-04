@@ -6106,19 +6106,31 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 }
 
 // ═══════════════════════════════════════════════════
+// Lords of Easy Money — 365-Day Rotating Quotes
+const LORDS_QUOTES = [
+  { quote: "The Fed is the only institution on earth that can create US dollars at will.", theme: "Power" },
+  { quote: "Monetary policy operates with long and variable lags.", theme: "Timing" },
+  { quote: "When you keep rates very low... you are inviting bubbles.", theme: "Risk" },
+  { quote: "The FOMC debates were technical... but at their core they were about choosing winners and losers.", theme: "Inequality" },
+  { quote: "Life at the zero bound was going to last for a while.", theme: "The Trap" },
+  { quote: "The long crash of 2008 had evolved into the long crash of 2020. The bills had yet to be paid.", theme: "Fragility" },
+  { quote: "In a 0% world... a risky bet beats nothing.", theme: "Search for Yield" },
+  { quote: "The Fed kept rates at zero for seven years after the financial crisis.", theme: "Duration" },
+  { quote: "QE doesn't put money in people's pockets — it inflates asset prices.", theme: "Inequality" },
+  { quote: "The Fed's balance sheet became the largest in history.", theme: "Scale" },
+  { quote: "Money printing is a tax on savings, hidden in plain sight.", theme: "Debasement" },
+  { quote: "Every dollar of QE that flowed into assets widened the gap between owners and workers.", theme: "Divide" },
+];
+
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
 function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings }) {
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
-  const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
-  const [searchResult, setSearchResult] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [tickerNews, setTickerNews] = useState([]);
-  const [chartData, setChartData] = useState([]);
+  const [rateLevel, setRateLevel] = useState(0); // 0 = easy money, 100 = tight
   const menuRef = useRef(null);
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
@@ -6193,254 +6205,29 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
   useEffect(() => { load(); loadNews(); }, [load, loadNews]);
 
-  // Debounced live ticker lookup — fires 600ms after query stops changing
-  useEffect(() => {
-    const sym = query.trim().toUpperCase();
-    if (!sym) { setSearchResult(null); setTickerNews([]); setChartData([]); return; }
+  // ── Derived values ────────────────────────────────────────────────────────
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const lordsQuote = LORDS_QUOTES[dayOfYear % LORDS_QUOTES.length];
 
-    // CoinGecko slug map for native-CORS crypto lookups
-    const CG_IDS = {
-      BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', ADA: 'cardano',
-      DOGE: 'dogecoin', XRP: 'ripple', BNB: 'binancecoin', AVAX: 'avalanche-2',
-      LINK: 'chainlink', DOT: 'polkadot', MATIC: 'matic-network', LTC: 'litecoin',
-      ARB: 'arbitrum', OP: 'optimism', ATOM: 'cosmos', UNI: 'uniswap',
-    };
+  const reactorColor  = rateLevel < 30 ? '#00d4ff' : rateLevel < 65 ? '#f0b429' : '#f85149';
+  const reactorStatus = rateLevel < 30 ? 'ACCOMMODATIVE' : rateLevel < 65 ? 'NEUTRAL' : 'TIGHTENING';
+  const reactorDesc   = rateLevel < 30 ? 'Easy money mode — Asset bubble risk rising'
+    : rateLevel < 65 ? 'Monitoring conditions — Balanced stance'
+    : 'Market volatility alert — Liquidity contracting';
 
-    const PROXY_LIST = [
-      (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
-      (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-      (u) => `https://thingproxy.freeboard.io/fetch/${u}`,
-      (u) => `https://proxy.cors.sh/${u}`,
-      (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-    ];
+  const _fm     = macro || fredMacro;
+  const walcl   = _fm?.walcl?.value ?? null;
+  const tga     = _fm?.tga?.value   ?? null;
+  const rrp     = _fm?.rrp?.value   ?? null;
+  const netLiq  = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
+  const netLiqColor = netLiq == null ? t.textDim : netLiq > 5000 ? t.accent : netLiq > 3000 ? t.warn : t.danger;
 
-    // Fire all proxies + two direct attempts in parallel — fastest non-null response wins
-    const fetchViaProxy = async (url) => {
-      const tryOne = async (fetchUrl) => {
-        try {
-          const r = await fetch(fetchUrl, {
-            headers: { 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(8000),
-          });
-          if (!r.ok) return null;
-          const j = await r.json();
-          return j ?? null;
-        } catch { return null; }
-      };
-      const q2 = url.replace('query1.finance.yahoo.com', 'query2.finance.yahoo.com');
-      const attempts = [
-        tryOne(url),    // direct query1 (works in some environments)
-        tryOne(q2),     // direct query2 (sometimes more permissive CORS)
-        ...PROXY_LIST.map(p => tryOne(p(url))),
-      ];
-      try {
-        return await Promise.any(
-          attempts.map(p => p.then(v => {
-            if (v !== null && v !== undefined) return v;
-            return Promise.reject(new Error('null'));
-          }))
-        );
-      } catch { return null; }
-    };
-
-    const timer = setTimeout(async () => {
-      setSearchLoading(true);
-      let result = null;
-      let parsedChart = [];
-
-      const cgId = CG_IDS[sym];
-
-      // ── Path 0: macro.json static cache (instant, no network required) ───────
-      const cached = macro?.tickers?.[sym];
-      if (cached && cached.value != null) {
-        const chg = cached.change ?? 0;
-        result = {
-          ticker: sym,
-          name: sym,
-          price: cached.value,
-          change: chg,
-          risk_level: Math.abs(chg) > 5 ? 'HIGH' : Math.abs(chg) > 2 ? 'MEDIUM' : 'LOW',
-          news_class: chg > 0.5 ? 'Bullish' : chg < -0.5 ? 'Bearish' : 'Neutral',
-          action: chg > 0.5 ? 'Monitor' : chg < -2 ? 'Caution' : 'Watch',
-          _isSearchResult: true,
-          _cached: true,
-          _asOf: cached.asOf || macro?.asOf || null,
-        };
-        setSearchResult(result); // show immediately while live lookup continues
-      }
-
-      // ── Path A: CoinGecko (native CORS, no proxy needed for crypto) ──────────
-      if (cgId) {
-        try {
-          const [priceR, histR] = await Promise.all([
-            fetch(
-              `https://api.coingecko.com/api/v3/simple/price?ids=${cgId}&vs_currencies=usd&include_24hr_change=true`,
-              { headers: { 'Accept': 'application/json' } }
-            ),
-            fetch(
-              `https://api.coingecko.com/api/v3/coins/${cgId}/market_chart?vs_currency=usd&days=30&interval=daily`,
-              { headers: { 'Accept': 'application/json' } }
-            ),
-          ]);
-          if (priceR.ok) {
-            const pj = await priceR.json();
-            const d  = pj[cgId];
-            if (d?.usd != null) {
-              const chg = +(d.usd_24h_change ?? 0);
-              result = {
-                ticker:          sym,
-                name:            cgId.charAt(0).toUpperCase() + cgId.slice(1),
-                price:           d.usd,
-                change:          +chg.toFixed(3),
-                risk_level:      Math.abs(chg) > 5 ? 'HIGH' : Math.abs(chg) > 2 ? 'MEDIUM' : 'LOW',
-                news_class:      chg > 0.5 ? 'Bullish' : chg < -0.5 ? 'Bearish' : 'Neutral',
-                action:          chg > 0.5 ? 'Monitor' : chg < -2 ? 'Caution' : 'Watch',
-                _isSearchResult: true,
-              };
-            }
-          }
-          if (histR.ok) {
-            const hj = await histR.json();
-            parsedChart = (hj?.prices ?? []).map(([ts, p]) => ({
-              date:  new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-              price: +p.toFixed(2),
-            }));
-          }
-        } catch (_) {}
-      }
-
-      // ── Path B: Yahoo Finance via proxy (stocks, ETFs, futures, other crypto) ─
-      if (!result) {
-        const quoteJ = await fetchViaProxy(
-          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1mo&interval=1d`
-        );
-        const res  = quoteJ?.chart?.result?.[0];
-        const meta = res?.meta;
-        if (meta && meta.regularMarketPrice != null) {
-          const price  = meta.regularMarketPrice;
-          const prev   = meta.chartPreviousClose ?? meta.previousClose;
-          const chgPct = (prev && prev !== 0) ? ((price - prev) / prev) * 100 : 0;
-          result = {
-            ticker:          meta.symbol || sym,
-            name:            meta.longName || meta.shortName || sym,
-            price,
-            change:          chgPct,
-            risk_level:      Math.abs(chgPct) > 5 ? 'HIGH' : Math.abs(chgPct) > 2 ? 'MEDIUM' : 'LOW',
-            news_class:      chgPct > 0.5 ? 'Bullish' : chgPct < -0.5 ? 'Bearish' : 'Neutral',
-            action:          chgPct > 0.5 ? 'Monitor' : chgPct < -2 ? 'Caution' : 'Watch',
-            _isSearchResult: true,
-          };
-          // Parse 30-day historical closes for the chart
-          const timestamps = res.timestamp ?? [];
-          const closes     = res.indicators?.quote?.[0]?.close ?? [];
-          parsedChart = timestamps
-            .map((ts, i) => ({ ts, price: closes[i] }))
-            .filter(d => d.price != null && Number.isFinite(d.price))
-            .map(d => ({
-              date:  new Date(d.ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-              price: +d.price.toFixed(2),
-            }));
-        }
-      }
-
-      setSearchResult(result);
-      setChartData(parsedChart);
-
-      // ── Ticker-specific news: Google News RSS + Yahoo Finance in parallel ───────
-      const gnRssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(sym + ' stock')}&hl=en-US&gl=US&ceid=US:en`;
-      const yfNewsUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(sym)}&newsCount=15&quotesCount=0`;
-
-      // Fetch raw text/XML (not JSON) for RSS feeds
-      const fetchTextViaProxy = async (url) => {
-        const tryText = async (fetchUrl) => {
-          try {
-            const r = await fetch(fetchUrl, { signal: AbortSignal.timeout(8000) });
-            if (!r.ok) return null;
-            const text = await r.text();
-            return text.includes('<item>') ? text : null;
-          } catch { return null; }
-        };
-        const attempts = [
-          tryText(url),
-          ...PROXY_LIST.map(p => tryText(p(url))),
-        ];
-        try {
-          return await Promise.any(attempts.map(p => p.then(v => {
-            if (v) return v;
-            return Promise.reject(new Error('null'));
-          })));
-        } catch { return null; }
-      };
-
-      const parseRSS = (xml) => {
-        if (!xml) return [];
-        try {
-          const doc = new DOMParser().parseFromString(xml, 'text/xml');
-          return [...doc.querySelectorAll('item')].map(item => {
-            const rawTitle = item.querySelector('title')?.textContent ?? '';
-            const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/ - [^-]{3,40}$/, '').trim();
-            // RSS <link> text lives as a text node sibling
-            let url = '';
-            for (const n of item.childNodes) {
-              if (n.nodeType === 1 && n.tagName === 'link') {
-                url = (n.nextSibling?.nodeValue || n.textContent || '').trim();
-                break;
-              }
-            }
-            const pubDate = item.querySelector('pubDate')?.textContent;
-            const rawSrc  = item.querySelector('source')?.textContent ?? 'Google News';
-            const source  = rawSrc.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
-            return {
-              title,
-              url,
-              source: { name: source },
-              published_on: pubDate ? Math.floor(new Date(pubDate).getTime() / 1000) : 0,
-            };
-          }).filter(item => item.title && item.url);
-        } catch { return []; }
-      };
-
-      // Fire both news sources simultaneously
-      const [rssText, yfJ] = await Promise.all([
-        fetchTextViaProxy(gnRssUrl),
-        fetchViaProxy(yfNewsUrl),
-      ]);
-
-      const gnNews = parseRSS(rssText);
-      const yfNews = (yfJ?.news ?? []).map(item => ({
-        title:        item.title,
-        url:          item.link,
-        source:       { name: item.publisher || 'Yahoo Finance' },
-        published_on: item.providerPublishTime,
-      }));
-      // For crypto tickers also include matching general news
-      const cryptoFallback = cgId
-        ? news.filter(item => `${item.title} ${item.categories || ''} ${item.tags || ''}`.toUpperCase().includes(sym))
-        : [];
-
-      // Merge + deduplicate by title, newest first
-      const seen = new Set();
-      const combined = [...gnNews, ...yfNews, ...cryptoFallback].filter(item => {
-        if (!item.title || seen.has(item.title)) return false;
-        seen.add(item.title);
-        return true;
-      }).sort((a, b) => (b.published_on || 0) - (a.published_on || 0));
-
-      setTickerNews(combined);
-      setSearchLoading(false);
-    }, 600);
-
-    return () => clearTimeout(timer);
-  }, [query, news]);
-
-  // Classify headline sentiment
   const classifySentiment = (title = '') => {
     const lo = title.toLowerCase();
     if (/surge|rally|soar|gains?|rises?|bullish|breaks?|record|ath|approval|adoption|jumps?|pump|up \d|grew|higher|outperform/.test(lo)) return 'Bullish';
     if (/drops?|falls?|crash|plunges?|bearish|declines?|concern|risk|selloff|fear|ban|rejects?|dumps?|lower|down \d|warning|losses/.test(lo)) return 'Bearish';
     return 'Neutral';
   };
-
   const timeAgo = (unixTs) => {
     const s = Math.floor(Date.now() / 1000) - unixTs;
     if (s < 60) return `${s}s ago`;
@@ -6448,56 +6235,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
     return `${Math.floor(s / 86400)}d ago`;
   };
-
-  // Derive watchlist tickers from news mention frequency + sentiment
-  const derivedTickers = useMemo(() => {
-    if (!news.length) return [];
-    const TICKERS = {
-      BTC: 'Bitcoin', ETH: 'Ethereum', XRP: 'XRP', SOL: 'Solana',
-      ADA: 'Cardano', DOGE: 'Dogecoin', BNB: 'BNB', AVAX: 'Avalanche',
-      LINK: 'Chainlink', DOT: 'Polkadot', MATIC: 'Polygon', LTC: 'Litecoin',
-      ARB: 'Arbitrum', OP: 'Optimism', ATOM: 'Cosmos', UNI: 'Uniswap',
-    };
-    const map = {};
-    for (const item of news) {
-      const upper = `${item.title} ${item.tags || ''} ${item.categories || ''}`.toUpperCase();
-      for (const [sym, name] of Object.entries(TICKERS)) {
-        if (upper.includes(sym)) {
-          if (!map[sym]) map[sym] = { ticker: sym, name, count: 0, bull: 0, bear: 0 };
-          map[sym].count++;
-          const s = classifySentiment(item.title);
-          if (s === 'Bullish') map[sym].bull++;
-          else if (s === 'Bearish') map[sym].bear++;
-        }
-      }
-    }
-    return Object.values(map)
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10)
-      .map(({ ticker, name, count, bull, bear }) => {
-        const news_class = bull > bear ? 'Bullish' : bear > bull ? 'Bearish' : 'Neutral';
-        const risk_level = bear >= 3 ? 'HIGH' : bear >= 1 ? 'MEDIUM' : 'LOW';
-        const action = news_class === 'Bullish' ? 'Monitor' : news_class === 'Bearish' ? 'Caution' : 'Watch';
-        return { ticker, name, risk_level, action, news_class, count };
-      });
-  }, [news]);
-
-  const filteredTickers = useMemo(() => {
-    const base = Array.isArray(intel?.tickers) && intel.tickers.length > 0
-      ? intel.tickers
-      : derivedTickers;
-    const q = query.trim().toLowerCase();
-    const filtered = !q ? base : base.filter((x) =>
-      String(x.ticker || x.symbol || '').toLowerCase().includes(q) ||
-      String(x.name || '').toLowerCase().includes(q)
-    );
-    // Prepend live quote result at top if found
-    if (searchResult) {
-      const already = filtered.some(x => (x.ticker || x.symbol) === searchResult.ticker);
-      return already ? filtered : [searchResult, ...filtered];
-    }
-    return filtered;
-  }, [intel, query, derivedTickers, searchResult]);
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
@@ -6540,261 +6277,155 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
         </div>
 
-        {/* ── Ticker search — sits directly above Watchlist / Ticker Intel ── */}
-        <div style={{ marginTop: 12, border: `1px solid ${query ? t.accent : t.borderMid}`, background: t.input, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, transition: 'border-color 0.2s' }}>
-          {searchLoading
-            ? <div style={{ width: 16, height: 16, border: `2px solid ${t.accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
-            : <Eye size={16} color={query ? t.accent : t.textSecondary} />
-          }
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search any ticker — PLTR, NVDA, BTC, ETH..."
-            style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: t.textPrimary, fontFamily: 'inherit', fontSize: 15 }}
-          />
-          {query && (
-            <button
-              onClick={() => { setQuery(''); setSearchResult(null); setTickerNews([]); setChartData([]); }}
-              style={{ background: 'none', border: 'none', color: t.textDim, cursor: 'pointer', padding: '0 2px', fontSize: 16, lineHeight: 1, flexShrink: 0 }}
-            >×</button>
-          )}
+        {/* ── LORDS OF EASY MONEY — DAILY QUOTE ──────────────────────────── */}
+        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: '14px 16px', animation: 'radarFadeUp 0.3s ease-out 0.3s both' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ flexShrink: 0 }}>
+              <span style={{ fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", border: `1px solid ${t.accent}`, padding: '2px 8px' }}>Lords of Easy Money</span>
+            </div>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, fontStyle: 'italic' }}>"{lordsQuote.quote}"</div>
+              <div style={{ marginTop: 6, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 12, color: t.textGhost }}>— Christopher Leonard</span>
+                <span style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", border: `1px solid ${t.warn}40`, padding: '1px 6px' }}>{lordsQuote.theme}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* ── TICKER INTEL PANEL (full-width, when searching) vs OVERVIEW GRID ── */}
-        {query ? (
+        {/* ── FED REACTOR + MONEY PUMP GRID ────────────────────────────────── */}
+        <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
 
-          /* ══ TICKER INTEL FULL-WIDTH PANEL ══════════════════════════════════ */
-          <div style={{ marginTop: 12, border: `2px solid ${t.accent}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.3s ease-out' }}>
+          {/* FED REACTOR CARD */}
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: '20px 16px', animation: 'radarFadeUp 0.4s ease-out 0.4s both', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, marginBottom: 16 }}>FED REACTOR — SYSTEM STATUS</div>
 
-            {/* Header row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <button
-                  onClick={() => { setQuery(''); setSearchResult(null); setTickerNews([]); setChartData([]); }}
-                  style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontSize: 15, padding: '4px 10px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}
-                >← OVERVIEW</button>
-                <span style={{ fontSize: 15, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.12em', fontWeight: 700 }}>TICKER INTEL</span>
+            {/* Reactor core with concentric rings */}
+            <div style={{ position: 'relative', width: 140, height: 140, margin: '0 auto 16px', flexShrink: 0 }}>
+              <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, border: `2px solid ${reactorColor}`, borderRadius: '50%', animation: 'reactorRing1 3s ease-in-out infinite' }} />
+              <div style={{ position: 'absolute', top: 18, right: 18, bottom: 18, left: 18, border: `1px solid ${reactorColor}`, borderRadius: '50%', animation: 'reactorRing2 3s ease-in-out 0.5s infinite' }} />
+              <div style={{ position: 'absolute', top: 32, right: 32, bottom: 32, left: 32, background: `radial-gradient(circle, ${reactorColor} 0%, transparent 70%)`, borderRadius: '50%', animation: 'reactorPulse 3s ease-in-out infinite' }} />
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 14, height: 14, background: reactorColor, borderRadius: '50%', boxShadow: `0 0 20px ${reactorColor}, 0 0 40px ${reactorColor}44` }} />
+            </div>
+
+            {/* Status label */}
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: reactorColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>{reactorStatus}</div>
+              <div style={{ fontSize: 12, color: t.textGhost, marginTop: 4 }}>{reactorDesc}</div>
+            </div>
+
+            {/* Rate lever */}
+            <div style={{ width: '100%', paddingTop: 10, borderTop: `1px solid ${t.borderDim}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>
+                <span>0% Easy</span>
+                <span>Rate Lever</span>
+                <span>5%+ Tight</span>
               </div>
-              {searchLoading && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 10, height: 10, border: `2px solid ${t.accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                  <span style={{ fontSize: 15, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>FETCHING LIVE DATA…</span>
+              <input type="range" min={0} max={100} value={rateLevel} onChange={e => setRateLevel(Number(e.target.value))} style={{ width: '100%', accentColor: reactorColor, cursor: 'pointer' }} />
+            </div>
+          </div>
+
+          {/* MONEY PUMP CARD */}
+          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: '20px 16px', animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
+            <div style={{ fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, marginBottom: 16 }}>QUANTITATIVE EASING — MONEY FLOW</div>
+
+            {/* SVG Money Pump animation */}
+            <svg viewBox="0 0 340 100" style={{ width: '100%', maxHeight: 100, overflow: 'visible', marginBottom: 14 }}>
+              <circle cx="44" cy="50" r="30" fill={isDark ? '#0d2a2a' : '#e8f5e9'} stroke={t.accent} strokeWidth="1.5" />
+              <text x="44" y="46" fill={t.accent} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">FED</text>
+              <text x="44" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Reserve</text>
+              <path d="M76 50 L264 50" stroke={`${t.accent}40`} strokeWidth="2" strokeDasharray="4 4" />
+              <circle r="5" fill={t.accent} opacity="0.9"><animateMotion dur="2.5s" repeatCount="indefinite" path="M76 50 L264 50" /></circle>
+              <circle r="3" fill={t.accent} opacity="0.5"><animateMotion dur="2.5s" begin="1.25s" repeatCount="indefinite" path="M76 50 L264 50" /></circle>
+              <circle cx="296" cy="50" r="30" fill={isDark ? '#2a1a0d' : '#fff8e1'} stroke={t.warn} strokeWidth="1.5" />
+              <text x="296" y="46" fill={t.warn} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">BANKS</text>
+              <text x="296" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Primary</text>
+            </svg>
+
+            {/* Liquidity pulse bar */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                <span>LIQUIDITY FLOW</span>
+                {walcl != null && <span style={{ color: t.accent }}>${(walcl / 1000).toFixed(2)}T WALCL</span>}
+              </div>
+              <div style={{ height: 4, background: t.borderDim, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: 40, background: t.accent, borderRadius: 2, animation: 'moneyFlow 2.5s linear infinite' }} />
+              </div>
+            </div>
+
+            {/* Key data grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {walcl != null && (
+                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${t.accent}` }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Balance Sheet</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace" }}>${(walcl / 1000).toFixed(2)}T</div>
+                </div>
+              )}
+              {netLiq != null && (
+                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${netLiqColor}` }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: netLiqColor, fontFamily: "'JetBrains Mono', monospace" }}>{netLiq >= 0 ? '+' : ''}${Math.abs(netLiq / 1000).toFixed(2)}T</div>
+                </div>
+              )}
+              {latest?.macro?.fedWatchCut != null && (
+                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${t.textDim}` }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: latest.macro.fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.fedWatchCut}%</div>
+                </div>
+              )}
+              {latest?.macro?.nextFomc && (
+                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${t.textDim}` }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.nextFomc}</div>
                 </div>
               )}
             </div>
+          </div>
+        </div>
 
-            {/* Price card */}
-            {searchResult ? (() => {
-              const isUp      = searchResult.change >= 0;
-              const chgColor  = isUp ? t.accent : t.danger;
-              const riskColor = searchResult.risk_level === 'HIGH' ? t.danger : searchResult.risk_level === 'MEDIUM' ? t.warn : t.accent;
-              const ncColor   = searchResult.news_class === 'Bullish' ? t.accent : searchResult.news_class === 'Bearish' ? t.danger : t.textDim;
-              return (
-                <div style={{ border: `1px solid ${t.accent}`, background: isDark ? '#081408' : '#f0fff4', padding: '14px 16px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, animation: 'radarFadeUp 0.3s ease-out' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
-                      <span style={{ fontSize: 28, fontWeight: 900, color: t.accent, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.01em' }}>{searchResult.ticker}</span>
-                      {searchResult.name !== searchResult.ticker && (
-                        <span style={{ fontSize: 15, color: t.textSecondary }}>{searchResult.name}</span>
-                      )}
-                      {searchResult._cached
-                        ? <span style={{ fontSize: 15, background: '#444', color: '#aaa', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>CACHED{searchResult._asOf ? ` · ${searchResult._asOf}` : ''}</span>
-                        : <span style={{ fontSize: 15, background: t.accent, color: isDark ? '#000' : '#fff', padding: '2px 7px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>LIVE</span>
-                      }
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                      <span style={{ fontSize: 26, fontWeight: 700, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>
-                        ${searchResult.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: chgColor }}>
-                        {isUp ? '▲' : '▼'} {isUp ? '+' : ''}{searchResult.change.toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
-                    <span style={{ fontSize: 14, border: `1px solid ${riskColor}`, color: riskColor, padding: '3px 10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>{searchResult.risk_level} RISK</span>
-                    <span style={{ fontSize: 14, color: ncColor, fontFamily: "'JetBrains Mono', monospace" }}>{searchResult.news_class} · {searchResult.action}</span>
-                  </div>
-                </div>
-              );
-            })() : (
-              <div style={{ color: searchLoading ? t.textDim : t.danger, fontSize: 14, padding: '10px 0 14px', marginBottom: 14, borderBottom: `1px solid ${t.borderDim}` }}>
-                {searchLoading
-                  ? <>Looking up <strong style={{ color: t.accent }}>{query.toUpperCase()}</strong>…</>
-                  : <>No data found for <strong>{query.toUpperCase()}</strong> — check symbol and retry.</>}
-              </div>
-            )}
-
-            {/* 30D price chart */}
-            {searchResult && chartData.length > 0 && (() => {
-              const isUp      = searchResult.change >= 0;
-              const lineColor = isUp ? t.accent : t.danger;
-              const gradId    = `ti_${searchResult.ticker}`;
-              const minP      = Math.min(...chartData.map(d => d.price));
-              const maxP      = Math.max(...chartData.map(d => d.price));
-              const pad       = (maxP - minP) * 0.1 || 1;
-              return (
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.08em' }}>
-                    30D PRICE CHART · {searchResult.ticker}
-                  </div>
-                  <ResponsiveContainer width="100%" height={130}>
-                    <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-                      <defs>
-                        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%"  stopColor={lineColor} stopOpacity={0.3} />
-                          <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis dataKey="date" tick={{ fontSize: 14, fill: t.textGhost }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-                      <YAxis hide domain={[minP - pad, maxP + pad]} />
-                      <Tooltip
-                        contentStyle={{ background: t.surface, border: `1px solid ${t.borderMid}`, fontSize: 15, padding: '4px 8px', fontFamily: "'JetBrains Mono', monospace" }}
-                        formatter={(v) => [`$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
-                        labelStyle={{ color: t.textSecondary, fontSize: 15 }}
-                      />
-                      <Area type="monotone" dataKey="price" stroke={lineColor} fill={`url(#${gradId})`} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: lineColor }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              );
-            })()}
-
-            {/* Ticker news section */}
-            <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: 15, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
-                  {query.toUpperCase()} NEWS
-                </span>
-                {searchLoading && <span style={{ fontSize: 15, color: t.textDim, fontFamily: "'JetBrains Mono', monospace" }}>scanning…</span>}
-              </div>
-              <div style={{ display: 'grid', gap: 6, maxHeight: 400, overflowY: 'auto' }}>
-                {tickerNews.length > 0 ? tickerNews.slice(0, 15).map((item, i) => {
-                  const sent      = classifySentiment(item.title);
-                  const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
-                  const sentBg    = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
-                  const srcName   = item.source?.name || 'News';
-                  const ago       = item.published_on ? timeAgo(item.published_on) : '';
-                  return (
-                    <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
-                      style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.2s ease-out ${0.025 * i}s both` }}>
-                      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
-                        <span style={{ background: sentBg, color: sentColor, fontSize: 14, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
-                        <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <span style={{ fontSize: 15, color: t.textDim }}>{srcName}</span>
-                        {ago && <span style={{ fontSize: 15, color: t.textGhost }}>· {ago}</span>}
-                      </div>
-                    </a>
-                  );
-                }) : (
-                  <div style={{ color: t.textDim, fontSize: 15, padding: '8px 0' }}>
-                    {searchLoading
-                      ? `Fetching ${query.toUpperCase()} headlines…`
-                      : `No headlines found for ${query.toUpperCase()}.`}
-                  </div>
-                )}
-              </div>
+        {/* ── LIVE NEWS FEED (full width) ───────────────────────────────────── */}
+        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.6s both' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Live News Feed</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {newsLoading && <span style={{ fontSize: 12, color: t.textDim }}>loading…</span>}
+              {!newsLoading && <button onClick={loadNews} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontSize: 12, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>REFRESH</button>}
             </div>
           </div>
-
-        ) : (
-
-          /* ══ DEFAULT OVERVIEW GRID: Watchlist + Live News ═══════════════════ */
-          <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 12 }}>
-
-            {/* WATCHLIST */}
-            <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.4s both' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <div style={{ fontSize: 15, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
-                  Watchlist
-                  {!newsLoading && filteredTickers.length > 0 && (
-                    <span style={{ marginLeft: 8, color: t.textGhost, fontWeight: 400 }}>· from live intel</span>
-                  )}
-                </div>
-                {newsLoading && <span style={{ fontSize: 15, color: t.textDim }}>scanning…</span>}
-              </div>
-              <div style={{ display: 'grid', gap: 5, maxHeight: 420, overflowY: 'auto' }}>
-                {filteredTickers.slice(0, 10).map((x, i) => {
-                  const risk      = String(x.risk_level || x.riskLevel || '').toUpperCase();
-                  const nc        = x.news_class || x.newsClass || 'Neutral';
-                  const riskColor = risk === 'HIGH' ? t.danger : risk === 'MEDIUM' ? t.warn : risk === 'LOW' ? t.accent : t.borderMid;
-                  const ncColor   = nc === 'Bullish' ? t.accent : nc === 'Bearish' ? t.danger : t.textDim;
-                  return (
-                    <div key={i} style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${riskColor}`, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, animation: `radarFadeUp 0.25s ease-out ${0.04 * i}s both` }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                          <span style={{ fontSize: 15, fontWeight: 800, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>{x.ticker || x.symbol}</span>
-                          {x.name && <span style={{ fontSize: 15, color: t.textSecondary }}>{x.name}</span>}
-                        </div>
-                        <div style={{ fontSize: 15, color: t.textDim, marginTop: 2 }}>
-                          {x.action || 'Watch'} · <span style={{ color: ncColor }}>{nc}</span>
-                        </div>
-                      </div>
-                      <div style={{ flexShrink: 0 }}>
-                        {risk && <span style={{ fontSize: 15, border: `1px solid ${riskColor}`, color: riskColor, padding: '2px 5px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{risk}</span>}
-                      </div>
-                    </div>
-                  );
-                })}
-                {newsLoading && filteredTickers.length === 0 && (
-                  <div style={{ color: t.textDim, fontSize: 15, padding: '8px 0' }}>Scanning live markets…</div>
-                )}
-                {!newsLoading && filteredTickers.length === 0 && (
-                  <div style={{ color: t.textDim, fontSize: 15, padding: '8px 0' }}>No ticker intel loaded.</div>
-                )}
-              </div>
-            </div>
-
-            {/* LIVE NEWS FEED */}
-            <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontSize: 15, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Live News Feed</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {newsLoading && <span style={{ fontSize: 15, color: t.textDim }}>loading…</span>}
-                  {!newsLoading && (
-                    <button onClick={loadNews} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontSize: 15, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>REFRESH</button>
-                  )}
-                </div>
-              </div>
-              <div style={{ display: 'grid', gap: 6, maxHeight: 420, overflowY: 'auto' }}>
-                {news.length === 0 ? (
-                  <div style={{ color: t.textDim, fontSize: 15, padding: '12px 0' }}>
-                    {newsLoading ? 'Fetching live headlines…' : 'Unable to load news. Refresh to retry.'}
+          <div style={{ display: 'grid', gap: 6, maxHeight: 420, overflowY: 'auto' }}>
+            {news.length === 0 ? (
+              <div style={{ color: t.textDim, fontSize: 14, padding: '12px 0' }}>{newsLoading ? 'Fetching live headlines…' : 'Unable to load news. Refresh to retry.'}</div>
+            ) : news.slice(0, 12).map((item, i) => {
+              const sent      = classifySentiment(item.title);
+              const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
+              const sentBg    = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
+              const srcName   = item.source?.name || 'CryptoCompare';
+              const ago       = item.published_on ? timeAgo(item.published_on) : '';
+              return (
+                <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.25s ease-out ${0.03 * i}s both` }}>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
+                    <span style={{ background: sentBg, color: sentColor, fontSize: 11, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
+                    <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
                   </div>
-                ) : news.slice(0, 12).map((item, i) => {
-                  const sent      = classifySentiment(item.title);
-                  const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
-                  const sentBg    = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
-                  const srcName   = item.source?.name || item.sourceInfo?.name || 'CryptoCompare';
-                  const ago       = item.published_on ? timeAgo(item.published_on) : '';
-                  return (
-                    <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
-                      style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.25s ease-out ${0.03 * i}s both`, cursor: 'pointer' }}>
-                      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 5 }}>
-                        <span style={{ background: sentBg, color: sentColor, fontSize: 14, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
-                        <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <span style={{ fontSize: 15, color: t.textDim }}>{srcName}</span>
-                        {ago && <span style={{ fontSize: 15, color: t.textGhost }}>· {ago}</span>}
-                        {item.categories && (
-                          <span style={{ fontSize: 15, color: t.textGhost, marginLeft: 'auto' }}>{item.categories.split('|').slice(0, 3).join(' · ')}</span>
-                        )}
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, color: t.textDim }}>{srcName}</span>
+                    {ago && <span style={{ fontSize: 12, color: t.textGhost }}>· {ago}</span>}
+                    {item.categories && <span style={{ fontSize: 12, color: t.textGhost, marginLeft: 'auto' }}>{item.categories.split('|').slice(0, 3).join(' · ')}</span>}
+                  </div>
+                </a>
+              );
+            })}
           </div>
-        )}
+        </div>
 
         <style>{`
           @keyframes radarFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           @keyframes radarBarIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
           @keyframes spin { to { transform: rotate(360deg); } }
+          @keyframes reactorPulse { 0%, 100% { transform: scale(0.88); opacity: 0.55; } 50% { transform: scale(1.12); opacity: 1; } }
+          @keyframes reactorRing1 { 0%, 100% { opacity: 0.12; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.06); } }
+          @keyframes reactorRing2 { 0%, 100% { opacity: 0.18; transform: scale(1); } 50% { opacity: 0.65; transform: scale(1.04); } }
+          @keyframes moneyFlow { from { left: -40px; } to { left: calc(100% + 40px); } }
           @media (max-width: 980px) {
             .ms2-wrap { padding: 64px 10px 22px !important; }
             .ms2-top { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
