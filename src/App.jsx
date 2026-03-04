@@ -6107,19 +6107,65 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 
 // ═══════════════════════════════════════════════════
 // Lords of Easy Money — 365-Day Rotating Quotes
-const LORDS_QUOTES = [
-  { quote: "The Fed is the only institution on earth that can create US dollars at will.", theme: "Power" },
-  { quote: "Monetary policy operates with long and variable lags.", theme: "Timing" },
-  { quote: "When you keep rates very low... you are inviting bubbles.", theme: "Risk" },
-  { quote: "The FOMC debates were technical... but at their core they were about choosing winners and losers.", theme: "Inequality" },
-  { quote: "Life at the zero bound was going to last for a while.", theme: "The Trap" },
-  { quote: "The long crash of 2008 had evolved into the long crash of 2020. The bills had yet to be paid.", theme: "Fragility" },
-  { quote: "In a 0% world... a risky bet beats nothing.", theme: "Search for Yield" },
-  { quote: "The Fed kept rates at zero for seven years after the financial crisis.", theme: "Duration" },
-  { quote: "QE doesn't put money in people's pockets — it inflates asset prices.", theme: "Inequality" },
-  { quote: "The Fed's balance sheet became the largest in history.", theme: "Scale" },
-  { quote: "Money printing is a tax on savings, hidden in plain sight.", theme: "Debasement" },
-  { quote: "Every dollar of QE that flowed into assets widened the gap between owners and workers.", theme: "Divide" },
+// ── THE DISTORTION HUB — Daily Insight Engine ─────────────────────────────
+// Source: "Lords of Easy Money" by Christopher Leonard
+// getDailyInsight: rotate by day-of-year so the quote changes each day.
+// Extend to 365 entries for full annual coverage.
+const DISTORTION_QUOTES = [
+  // ── Monetary Sovereignty ───────────────────────────────────────────────
+  { quote: "The Fed is the only institution on earth that can create US dollars at will.", concept: "Monetary Sovereignty" },
+  { quote: "The Federal Reserve's power is the power to reshape the economy without a single vote from Congress.", concept: "Monetary Sovereignty" },
+  { quote: "No private institution and no foreign government can do what the Fed does with a committee vote.", concept: "Monetary Sovereignty" },
+
+  // ── The Delay Effect ───────────────────────────────────────────────────
+  { quote: "Monetary policy operates with long and variable lags.", concept: "The Delay Effect" },
+  { quote: "The Fed fires its cannon today and waits 18 months to see where the shell lands.", concept: "The Delay Effect" },
+  { quote: "By the time the effects of QE were felt in the real economy, the next crisis was already forming.", concept: "The Delay Effect" },
+
+  // ── The Yield Trap ─────────────────────────────────────────────────────
+  { quote: "In a 0% world... a risky bet beats nothing.", concept: "The Yield Trap" },
+  { quote: "When safe assets yield nothing, the hunt for return forces capital into progressively riskier territory.", concept: "The Yield Trap" },
+  { quote: "Zero rates don't stimulate the economy — they force every saver to become a speculator.", concept: "The Yield Trap" },
+
+  // ── Financial Stratification ───────────────────────────────────────────
+  { quote: "The FOMC debates were technical... but at their core they were about choosing winners and losers.", concept: "Financial Stratification" },
+  { quote: "QE doesn't put money in people's pockets — it inflates asset prices.", concept: "Financial Stratification" },
+  { quote: "Every dollar of QE that flowed into assets widened the gap between owners and workers.", concept: "Financial Stratification" },
+  { quote: "The wealth effect is real — but only for those who already have wealth.", concept: "Financial Stratification" },
+
+  // ── The Zero Trap ──────────────────────────────────────────────────────
+  { quote: "Life at the zero bound was going to last for a while.", concept: "The Zero Trap" },
+  { quote: "The Fed kept rates at zero for seven years after the financial crisis.", concept: "The Zero Trap" },
+  { quote: "Once you reach zero, the only tools left are ones you have never tested.", concept: "The Zero Trap" },
+
+  // ── Fragility & Scale ──────────────────────────────────────────────────
+  { quote: "The long crash of 2008 had evolved into the long crash of 2020. The bills had yet to be paid.", concept: "Fragility" },
+  { quote: "The Fed's balance sheet became the largest in history.", concept: "Scale" },
+  { quote: "A balance sheet that takes years to build can unwind in ways no model can predict.", concept: "Scale" },
+
+  // ── Debasement & Savings ───────────────────────────────────────────────
+  { quote: "Money printing is a tax on savings, hidden in plain sight.", concept: "Debasement" },
+  { quote: "When you suppress the price of money, you suppress the signal that allocates all other resources.", concept: "Debasement" },
+  { quote: "The saver is the unrepresented constituency of every FOMC meeting.", concept: "Debasement" },
+
+  // ── Moral Hazard ───────────────────────────────────────────────────────
+  { quote: "When you keep rates very low... you are inviting bubbles.", concept: "Moral Hazard" },
+  { quote: "Each rescue teaches the market that risk has a backstop — and so more risk is taken.", concept: "Moral Hazard" },
+  { quote: "The institutions that created the crisis were made whole. The workers who lost jobs were not.", concept: "Moral Hazard" },
+
+  // ── Price Discovery ────────────────────────────────────────────────────
+  { quote: "Interest rates are the price of money. When the Fed sets that price, markets stop discovering it.", concept: "Price Discovery" },
+  { quote: "Asset prices untethered from yield are no longer prices — they are policy projections.", concept: "Price Discovery" },
+
+  // ── The Exit Problem ───────────────────────────────────────────────────
+  { quote: "Getting into QE was easy. Getting out proved to be an entirely different operation.", concept: "The Exit Problem" },
+  { quote: "The taper tantrum of 2013 showed that markets had become addicted to the Fed's purchases.", concept: "The Exit Problem" },
+  { quote: "When the central bank owns the bond market, the bond market can no longer warn you.", concept: "The Exit Problem" },
+
+  // ── Reflexivity ────────────────────────────────────────────────────────
+  { quote: "The Fed watches the markets. The markets watch the Fed. Neither has a clear view of reality.", concept: "Reflexivity" },
+  { quote: "Forward guidance made Fed policy a self-fulfilling prophecy, for better and for worse.", concept: "Reflexivity" },
+  // Developer: extend to 365 entries for full annual rotation
 ];
 
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
@@ -6233,13 +6279,14 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
   // ── Derived values ────────────────────────────────────────────────────────
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-  const lordsQuote = LORDS_QUOTES[dayOfYear % LORDS_QUOTES.length];
+  const lordsQuote = DISTORTION_QUOTES[dayOfYear % DISTORTION_QUOTES.length];
 
-  const reactorColor  = rateLevel < 30 ? '#00d4ff' : rateLevel < 65 ? '#f0b429' : '#f85149';
-  const reactorStatus = rateLevel < 30 ? 'ACCOMMODATIVE' : rateLevel < 65 ? 'NEUTRAL' : 'TIGHTENING';
-  const reactorDesc   = rateLevel < 30 ? 'Easy money mode — Asset bubble risk rising'
-    : rateLevel < 65 ? 'Monitoring conditions — Balanced stance'
-    : 'Market volatility alert — Liquidity contracting';
+  const reactorIntensity = 0.2 + (1 - rateLevel / 5) * 0.8;
+  const reactorColor  = rateLevel < 1.5 ? '#00fbff' : rateLevel < 3.5 ? '#f0b429' : '#f85149';
+  const reactorStatus = rateLevel < 1.5 ? 'ACCOMMODATIVE' : rateLevel < 3.5 ? 'NEUTRAL' : 'TIGHTENING';
+  const reactorDesc   = rateLevel < 1.5 ? 'Zero bound — Asset bubble risk rising'
+    : rateLevel < 3.5 ? 'Neutral territory — Balanced stance'
+    : 'Tightening cycle — Liquidity contracting';
 
   const _fm     = macro || fredMacro;
   const walcl   = _fm?.walcl?.value ?? null;
@@ -6399,60 +6446,36 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           </div>
         </div>
 
-        {/* ── LORDS OF EASY MONEY — DAILY QUOTE ──────────────────────────── */}
-        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: '14px 16px', animation: 'radarFadeUp 0.3s ease-out 0.3s both' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
-            <div style={{ flexShrink: 0 }}>
-              <span style={{ fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", border: `1px solid ${t.accent}`, padding: '2px 8px' }}>Lords of Easy Money</span>
-            </div>
-            <div style={{ flex: 1, minWidth: 220 }}>
-              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, fontStyle: 'italic' }}>"{lordsQuote.quote}"</div>
-              <div style={{ marginTop: 6, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 12, color: t.textGhost }}>— Christopher Leonard</span>
-                <span style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", border: `1px solid ${t.warn}40`, padding: '1px 6px' }}>{lordsQuote.theme}</span>
+        {/* ── THE DISTORTION HUB — MACRO INTELLIGENCE GRID ─────────────────── */}
+        <div className="distortion-hub-grid" style={{ marginTop: 12, animation: 'radarFadeUp 0.3s ease-out 0.3s both' }}>
+
+          {/* REACTOR SECTION */}
+          <div className="hub-card reactor-section" style={{ animation: 'radarFadeUp 0.4s ease-out 0.4s both' }}>
+            <div className="hub-card-title">SYSTEM HEAT: THE ZERO BOUND</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="reactor-core" style={{
+                opacity: reactorIntensity,
+                filter: `hue-rotate(${rateLevel * 20}deg)`,
+                boxShadow: `0 0 ${20 + reactorIntensity * 40}px rgba(0,251,255,${(reactorIntensity * 0.6).toFixed(2)})`
+              }} />
+              <div style={{ textAlign: 'center', marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: reactorColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>{reactorStatus}</div>
+                <div style={{ fontSize: 11, color: t.textGhost, marginTop: 4 }}>{reactorDesc}</div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* ── FED REACTOR + MONEY PUMP GRID ────────────────────────────────── */}
-        <div className="ms2-grid" style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-
-          {/* FED REACTOR CARD */}
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: '20px 16px', animation: 'radarFadeUp 0.4s ease-out 0.4s both', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, marginBottom: 16 }}>FED REACTOR — SYSTEM STATUS</div>
-
-            {/* Reactor core with concentric rings */}
-            <div style={{ position: 'relative', width: 140, height: 140, margin: '0 auto 16px', flexShrink: 0 }}>
-              <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, border: `2px solid ${reactorColor}`, borderRadius: '50%', animation: 'reactorRing1 3s ease-in-out infinite' }} />
-              <div style={{ position: 'absolute', top: 18, right: 18, bottom: 18, left: 18, border: `1px solid ${reactorColor}`, borderRadius: '50%', animation: 'reactorRing2 3s ease-in-out 0.5s infinite' }} />
-              <div style={{ position: 'absolute', top: 32, right: 32, bottom: 32, left: 32, background: `radial-gradient(circle, ${reactorColor} 0%, transparent 70%)`, borderRadius: '50%', animation: 'reactorPulse 3s ease-in-out infinite' }} />
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 14, height: 14, background: reactorColor, borderRadius: '50%', boxShadow: `0 0 20px ${reactorColor}, 0 0 40px ${reactorColor}44` }} />
-            </div>
-
-            {/* Status label */}
-            <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: reactorColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>{reactorStatus}</div>
-              <div style={{ fontSize: 12, color: t.textGhost, marginTop: 4 }}>{reactorDesc}</div>
-            </div>
-
-            {/* Rate lever */}
-            <div style={{ width: '100%', paddingTop: 10, borderTop: `1px solid ${t.borderDim}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>
-                <span>0% Easy</span>
-                <span>Rate Lever</span>
-                <span>5%+ Tight</span>
+            <div className="control-panel" style={{ borderTop: `1px solid #2d333b`, paddingTop: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>
+                <span>0% Easy</span><span>Rate Lever</span><span>5%+ Tight</span>
               </div>
-              <input type="range" min={0} max={100} value={rateLevel} onChange={e => setRateLevel(Number(e.target.value))} style={{ width: '100%', accentColor: reactorColor, cursor: 'pointer' }} />
+              <input type="range" min={0} max={5} step={0.25} value={rateLevel} onChange={e => setRateLevel(Number(e.target.value))} style={{ width: '100%', accentColor: reactorColor, cursor: 'pointer' }} />
+              <p style={{ textAlign: 'center', fontSize: 11, color: reactorColor, fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>Fed Funds Rate: {rateLevel.toFixed(2)}%</p>
             </div>
           </div>
 
-          {/* MONEY PUMP CARD */}
-          <div style={{ border: `1px solid ${t.borderMid}`, background: t.panel, padding: '20px 16px', animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
-            <div style={{ fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, marginBottom: 16 }}>QUANTITATIVE EASING — MONEY FLOW</div>
-
-            {/* SVG Money Pump animation */}
-            <svg viewBox="0 0 340 100" style={{ width: '100%', maxHeight: 100, overflow: 'visible', marginBottom: 14 }}>
+          {/* FLOW SECTION */}
+          <div className="hub-card flow-section" style={{ animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
+            <div className="hub-card-title">DIGITAL LIQUIDITY PUMP</div>
+            <svg viewBox="0 0 340 100" style={{ width: '100%', maxHeight: 90, overflow: 'visible', marginBottom: 8 }}>
               <circle cx="44" cy="50" r="30" fill={isDark ? '#0d2a2a' : '#e8f5e9'} stroke={t.accent} strokeWidth="1.5" />
               <text x="44" y="46" fill={t.accent} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">FED</text>
               <text x="44" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Reserve</text>
@@ -6463,46 +6486,46 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               <text x="296" y="46" fill={t.warn} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">BANKS</text>
               <text x="296" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Primary</text>
             </svg>
-
-            {/* Liquidity pulse bar */}
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>
-                <span>LIQUIDITY FLOW</span>
-                {walcl != null && <span style={{ color: t.accent }}>${(walcl / 1000).toFixed(2)}T WALCL</span>}
-              </div>
-              <div style={{ height: 4, background: t.borderDim, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: 40, background: t.accent, borderRadius: 2, animation: 'moneyFlow 2.5s linear infinite' }} />
-              </div>
+            <div className="metric-overlay">
+              <small>EST. QE INJECTION</small>
+              <div className="ticker-value">{walcl != null ? `$${walcl.toLocaleString(undefined,{maximumFractionDigits:0})}B` : '—'}</div>
             </div>
-
-            {/* Key data grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
               {walcl != null && (
-                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${t.accent}` }}>
-                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Balance Sheet</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace" }}>${(walcl / 1000).toFixed(2)}T</div>
+                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid ${t.accent}` }}>
+                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Balance Sheet</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace" }}>${(walcl / 1000).toFixed(2)}T</div>
                 </div>
               )}
               {netLiq != null && (
-                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${netLiqColor}` }}>
-                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: netLiqColor, fontFamily: "'JetBrains Mono', monospace" }}>{netLiq >= 0 ? '+' : ''}${Math.abs(netLiq / 1000).toFixed(2)}T</div>
+                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid ${netLiqColor}` }}>
+                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: netLiqColor, fontFamily: "'JetBrains Mono', monospace" }}>{netLiq >= 0 ? '+' : ''}${Math.abs(netLiq / 1000).toFixed(2)}T</div>
                 </div>
               )}
               {latest?.macro?.fedWatchCut != null && (
-                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${t.textDim}` }}>
-                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: latest.macro.fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.fedWatchCut}%</div>
+                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid #2d333b` }}>
+                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: latest.macro.fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.fedWatchCut}%</div>
                 </div>
               )}
               {latest?.macro?.nextFomc && (
-                <div style={{ padding: '8px 10px', border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${t.textDim}` }}>
-                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.nextFomc}</div>
+                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid #2d333b` }}>
+                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.nextFomc}</div>
                 </div>
               )}
             </div>
           </div>
+
+          {/* QUOTE SECTION — spans full width */}
+          <div className="hub-card quote-section" style={{ animation: 'radarFadeUp 0.4s ease-out 0.55s both' }}>
+            <div className="tag">DAILY MACRO ANALYSIS — THE DISTORTION HUB</div>
+            <h2>"{lordsQuote.quote}"</h2>
+            <p className="concept">Concept: {lordsQuote.concept}</p>
+            <p style={{ fontSize: 11, color: '#8b949e', fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>— Christopher Leonard · Lords of Easy Money</p>
+          </div>
+
         </div>
 
         {/* ── LIVE NEWS FEED (full width) ───────────────────────────────────── */}
@@ -6575,6 +6598,21 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           @keyframes moneyFlow { from { left: -40px; } to { left: calc(100% + 40px); } }
           @keyframes jitter { 0% { transform: translate(0,0); } 50% { transform: translate(1px,-1px); } 100% { transform: translate(-1px,1px); } }
           @keyframes bracket-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+          /* ── DISTORTION HUB GRID ──────────────────────────────────────── */
+          @keyframes glow-pulse { from { transform: scale(0.9); box-shadow: 0 0 30px rgba(0,251,255,0.3); } to { transform: scale(1.1); box-shadow: 0 0 60px rgba(0,251,255,0.6); } }
+          .ms2-wrap .distortion-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+          .ms2-wrap .hub-card { background: #080a0c; border: 1px solid #2d333b; padding: 20px; position: relative; overflow: hidden; }
+          .ms2-wrap .hub-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid #2d333b; padding-bottom: 8px; }
+          .ms2-wrap .reactor-core { width: 100px; height: 100px; margin: 16px auto; border-radius: 50%; background: radial-gradient(circle, #00fbff 0%, transparent 70%); box-shadow: 0 0 30px rgba(0,251,255,0.3); animation: glow-pulse 4s ease-in-out infinite alternate; }
+          .ms2-wrap .quote-section { grid-column: 1 / -1; }
+          .ms2-wrap .quote-section .tag { font-size: 10px; letter-spacing: 2px; color: #8b949e; border-bottom: 1px solid #2d333b; padding-bottom: 10px; margin-bottom: 14px; text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; display: block; }
+          .ms2-wrap .quote-section h2 { font-style: italic; color: var(--primary); line-height: 1.55; font-size: 1.05rem; margin: 0 0 8px 0; font-weight: 400; }
+          .ms2-wrap .quote-section .concept { font-size: 11px; color: var(--primary); opacity: 0.65; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono','Courier New',monospace; margin: 0; }
+          .ms2-wrap .metric-overlay { text-align: center; margin-top: 8px; }
+          .ms2-wrap .metric-overlay small { font-size: 10px; letter-spacing: 2px; color: #8b949e; display: block; margin-bottom: 4px; font-family: 'JetBrains Mono','Courier New',monospace; text-transform: uppercase; }
+          .ms2-wrap .ticker-value { font-size: 1.05rem; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono','Courier New',monospace; }
+          @media (max-width: 640px) { .ms2-wrap .distortion-hub-grid { grid-template-columns: 1fr; } }
 
           /* ── STATE CLASSES ─────────────────────────────────────────────── */
           .ms2-wrap { position: relative; }
