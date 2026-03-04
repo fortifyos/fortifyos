@@ -6542,26 +6542,25 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
         {/* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────────── */}
         {blackBoxLog.length > 0 && (
-          <div style={{ marginTop: 12, border: `1px solid ${confColor}33`, background: isDark ? '#020804' : '#f0f7f0', padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.7s both', fontFamily: "'JetBrains Mono', monospace" }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, color: confColor, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>[ FLIGHT RECORDER / SIGNAL HISTORY ]</span>
-              <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch {} }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>CLEAR LOG</button>
+          <div className="black-box" style={{ animation: 'radarFadeUp 0.4s ease-out 0.7s both' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3>[ FLIGHT RECORDER / SIGNAL HISTORY ]</h3>
+              <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch {} }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR LOG</button>
             </div>
-            <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {[...blackBoxLog].reverse().map((entry, i) => {
-                const eColor = entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger;
-                return (
-                  <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '4px 8px', background: isDark ? '#0a120a' : '#e8f5e8', borderLeft: `2px solid ${eColor}`, fontSize: 11, flexWrap: 'wrap' }}>
-                    <span style={{ color: t.textGhost, flexShrink: 0 }}>{entry.ts}</span>
-                    <span style={{ color: eColor, fontWeight: 700 }}>{entry.score}/100</span>
-                    <span style={{ color: eColor, letterSpacing: '0.08em' }}>{entry.status}</span>
-                    <span style={{ color: t.textDim }}>LIQ ${(entry.netLiq / 1000).toFixed(2)}T</span>
-                    <span style={{ color: t.textDim }}>TGA ${(entry.tga / 1000).toFixed(2)}T</span>
-                    <span style={{ color: t.textGhost }}>{entry.dph}d post-halving</span>
+            {[...blackBoxLog].reverse().map((entry, i) => {
+              const tag = entry.status === 'LOCKED' ? 'LOCK' : entry.status === 'SCANNING' ? 'SCAN' : 'JAM';
+              return (
+                <div key={entry.ts + i} className="black-box-entry">
+                  <div className="entry-header">
+                    <span className="timestamp">[ {entry.ts} ]</span>
+                    <span className="signal-tag">{tag}: {entry.score}%</span>
                   </div>
-                );
-              })}
-            </div>
+                  <div className="entry-data">
+                    LIQUIDITY_SIG: ${(entry.netLiq / 1000).toFixed(2)}T | TGA: ${(entry.tga / 1000).toFixed(2)}T | CYCLE: {entry.dph}d | STATUS: {entry.status}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -6591,6 +6590,19 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           .ms2-wrap progress.hud-bar::-moz-progress-bar { background: var(--primary); box-shadow: 0 0 8px var(--primary); border-radius: 1px; }
           .ms2-wrap progress.hud-heat::-webkit-progress-value { background: #f0b429; box-shadow: 0 0 8px #f0b429aa, 0 0 3px #f0b429; }
           .ms2-wrap progress.hud-heat::-moz-progress-bar { background: #f0b429; box-shadow: 0 0 8px #f0b429; }
+
+          /* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────── */
+          @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+          .ms2-wrap .black-box { margin-top: 20px; padding: 15px; border-top: 2px solid var(--primary); background: rgba(0,0,0,0.4); max-height: 300px; overflow-y: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+          .ms2-wrap .black-box h3 { font-size: 0.75rem; letter-spacing: 2px; margin: 0 0 15px 0; color: var(--primary); opacity: 0.8; font-weight: 700; }
+          .ms2-wrap .black-box-entry { border-left: 2px solid var(--primary); margin-bottom: 10px; padding-left: 10px; font-size: 0.82rem; animation: slideIn 0.3s ease-out; }
+          .ms2-wrap .black-box-entry .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+          .ms2-wrap .black-box-entry .timestamp { color: var(--primary); opacity: 0.6; font-size: 0.75rem; }
+          .ms2-wrap .black-box-entry .signal-tag { color: var(--primary); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.1em; }
+          .ms2-wrap .black-box-entry .entry-data { color: var(--primary); opacity: 0.5; font-size: 0.75rem; letter-spacing: 0.03em; }
+          .ms2-wrap .black-box::-webkit-scrollbar { width: 5px; }
+          .ms2-wrap .black-box::-webkit-scrollbar-track { background: transparent; }
+          .ms2-wrap .black-box::-webkit-scrollbar-thumb { background: var(--primary); opacity: 0.6; }
 
           /* ── CRT SCANLINE OVERLAY (scoped to Radar page) ───────────────── */
           .ms2-wrap::after { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04)); background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 9999; }
