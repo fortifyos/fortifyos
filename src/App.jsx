@@ -6131,6 +6131,9 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
   const [rateLevel, setRateLevel] = useState(0); // 0 = easy money, 100 = tight
+  const [blackBoxLog, setBlackBoxLog] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('fortify_blackbox') || '[]'); } catch { return []; }
+  });
   const menuRef = useRef(null);
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
@@ -6204,6 +6207,29 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   }, []);
 
   useEffect(() => { load(); loadNews(); }, [load, loadNews]);
+
+  // ── Black Box recorder — fires when FRED data loads ───────────────────────
+  useEffect(() => {
+    const w = (macro || fredMacro)?.walcl?.value ?? null;
+    const tg = (macro || fredMacro)?.tga?.value  ?? null;
+    if (w == null || tg == null) return;
+    const nl  = w - tg;
+    const dph = Math.floor((Date.now() - new Date('2024-04-20').getTime()) / 86400000);
+    let s = 0;
+    if (nl > 5500) s += 40; else if (nl > 5000) s += 20;
+    if (dph <= 500) s += 40; else if (dph < 800) s += 10;
+    if (tg < 800)  s += 20;
+    const now = new Date();
+    const ts  = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+              + ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const stat = s >= 75 ? 'LOCKED' : s >= 40 ? 'SCANNING' : 'JAMMED';
+    setBlackBoxLog(prev => {
+      if (prev.length > 0 && prev[prev.length - 1].ts === ts) return prev;
+      const updated = [...prev, { ts, score: s, status: stat, netLiq: nl, tga: tg, dph }].slice(-20);
+      try { localStorage.setItem('fortify_blackbox', JSON.stringify(updated)); } catch {}
+      return updated;
+    });
+  }, [macro, fredMacro]);
 
   // ── Derived values ────────────────────────────────────────────────────────
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
@@ -6288,6 +6314,28 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
 
       <div className="ms2-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 16px 28px' }}>
+
+        {/* ── TACTICAL HUD BAR ─────────────────────────────────────────────── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: isDark ? '#060c06' : '#f0f7f0', border: `1px solid ${confColor}44`, marginBottom: 8, flexWrap: 'wrap', gap: 8, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: 11, color: confColor, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>STATUS: {confStatus}</span>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>FUEL</span>
+              <div style={{ width: 72, height: 5, background: t.borderDim, borderRadius: 1, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.min(100, ((confNetLiq || 0) / 6000) * 100)}%`, background: confColor, transition: 'width 1.2s ease' }} />
+              </div>
+              {confNetLiq != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(confNetLiq / 1000).toFixed(1)}T</span>}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>HEAT</span>
+              <div style={{ width: 72, height: 5, background: t.borderDim, borderRadius: 1, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.min(100, ((tga || 0) / 1000) * 100)}%`, background: tga != null && tga < 800 ? t.accent : t.warn, transition: 'width 1.2s ease' }} />
+              </div>
+              {tga != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(tga / 1000).toFixed(2)}T</span>}
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 900, color: confColor, border: `1px solid ${confColor}`, padding: '1px 7px', letterSpacing: '0.06em' }}>{confScore}/100</span>
+          </div>
+        </div>
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
@@ -6495,6 +6543,31 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             })}
           </div>
         </div>
+
+        {/* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────────── */}
+        {blackBoxLog.length > 0 && (
+          <div style={{ marginTop: 12, border: `1px solid ${confColor}33`, background: isDark ? '#020804' : '#f0f7f0', padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.7s both', fontFamily: "'JetBrains Mono', monospace" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, color: confColor, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>[ FLIGHT RECORDER / SIGNAL HISTORY ]</span>
+              <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch {} }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>CLEAR LOG</button>
+            </div>
+            <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {[...blackBoxLog].reverse().map((entry, i) => {
+                const eColor = entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger;
+                return (
+                  <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '4px 8px', background: isDark ? '#0a120a' : '#e8f5e8', borderLeft: `2px solid ${eColor}`, fontSize: 11, flexWrap: 'wrap' }}>
+                    <span style={{ color: t.textGhost, flexShrink: 0 }}>{entry.ts}</span>
+                    <span style={{ color: eColor, fontWeight: 700 }}>{entry.score}/100</span>
+                    <span style={{ color: eColor, letterSpacing: '0.08em' }}>{entry.status}</span>
+                    <span style={{ color: t.textDim }}>LIQ ${(entry.netLiq / 1000).toFixed(2)}T</span>
+                    <span style={{ color: t.textDim }}>TGA ${(entry.tga / 1000).toFixed(2)}T</span>
+                    <span style={{ color: t.textGhost }}>{entry.dph}d post-halving</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <style>{`
           @keyframes radarFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
