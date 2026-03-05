@@ -1,4 +1,455 @@
 {
   "asOf": "2026-03-05",
-  "items": []
+  "items": [
+    {
+      "title": "How to Put Your Crypto to Work and Earn Interest in 2026",
+      "url": "https://bitzo.com/2026/03/how-to-put-your-crypto-to-work-and-earn-interest-in-2026",
+      "source": "Bitzo",
+      "published": 1772730645,
+      "categories": "BLOCKCHAIN|BTC|ETH|TRADING|CRYPTOCURRENCY",
+      "tags": "More News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Anthropic Pentagon Deal: Dario Amodei’s Shocking Return to Negotiations After Public Collapse",
+      "url": "https://bitcoinworld.co.in/anthropic-pentagon-deal-amodei-negotiations/",
+      "source": "Bitcoin World",
+      "published": 1772730612,
+      "categories": "BUSINESS|MARKET|REGULATION|TECHNOLOGY|TRADING",
+      "tags": "AI News|Artificial Intelligence|BUSINESS|defense|Ethics|Technology",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitrue Ambassador: XRP Holders Will Have the Best Year Ever",
+      "url": "https://timestabloid.com/bitrue-ambassador-xrp-holders-will-have-the-best-year-ever/",
+      "source": "TimesTabloid",
+      "published": 1772730353,
+      "categories": "BUSINESS|MARKET|TRADING|XRP|CRYPTOCURRENCY",
+      "tags": "Cryptocurrency|News|XRP|XRP Holders",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bank of Canada’s Critical Crossroads: Navigating Growth, Energy Volatility, and Rate Cut Risks",
+      "url": "https://bitcoinworld.co.in/bank-canada-growth-energy-rate-risks/",
+      "source": "Bitcoin World",
+      "published": 1772730311,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Bank of Canada|Canadian economy|Energy markets|interest rates|monetary policy",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "Cointelegraph’s 80% Traffic Drop Shows How Fragile Search Authority Can Be",
+      "url": "https://bitzo.com/2026/03/cointelegraphs-80-traffic-drop-shows-how-fragile-search-authority-can-be",
+      "source": "Bitzo",
+      "published": 1772730179,
+      "categories": "MARKET|REGULATION|TRADING|CRYPTOCURRENCY",
+      "tags": "More News",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "Can ASTER’s $1.4M whale rotation spark a $0.80 breakout?",
+      "url": "https://ambcrypto.com/can-asters-1-4m-whale-rotation-spark-a-0-80-breakout/",
+      "source": "AMB Crypto",
+      "published": 1772730042,
+      "categories": "ALTCOIN|TRADING",
+      "tags": "Altcoin|News|News 1|Social|Trading View",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "XRP ETF Race: Bitwise Says It’s Now America’s Largest",
+      "url": "https://bitcoinist.com/xrp-etf-race-bitwise-now-americas-largest/",
+      "source": "Bitcoinist",
+      "published": 1772730031,
+      "categories": "BUSINESS|MARKET|TRADING|XRP|CRYPTOCURRENCY",
+      "tags": "XRP|Bitwise|Spot XRP ETF|XRP ETFs|XRP news|XRP price",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "AUD/USD Plummets as Resilient US Dollar Gains on Strong Economic Data and Safe Haven Surge",
+      "url": "https://bitcoinworld.co.in/aud-usd-drops-dollar-strength/",
+      "source": "Bitcoin World",
+      "published": 1772730012,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|#Markets|AUD|Currency|Forex|USD",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Bitcoin Spot Demand Surges as War Tensions Shake Global Markets",
+      "url": "https://cryptopotato.com/bitcoin-spot-demand-surges-as-war-tensions-shake-global-markets/",
+      "source": "Crypto Potato",
+      "published": 1772729966,
+      "categories": "BTC|EXCHANGE|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto News|social|Top News|Bitcoin (BTC) Price|Bitcoin ETF",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Ethereum price prediction 2026-2032: Will ETH reach $5,000 soon?",
+      "url": "https://www.cryptopolitan.com/ethereum-price-prediction/",
+      "source": "Cryptopolitan",
+      "published": 1772729905,
+      "categories": "BLOCKCHAIN|BUSINESS|ETH|MARKET|TECHNOLOGY|TRADING|FORKS|CRYPTOCURRENCY",
+      "tags": "Crypto Price Predictions|Ethereum",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Stellar Prints Golden Cross as Altcoins Attempt Recovery — XLM Ready to Move?",
+      "url": "https://bitzo.com/2026/03/stellar-prints-golden-cross-as-altcoins-attempt-recovery-xlm-ready-to-move",
+      "source": "Bitzo",
+      "published": 1772729816,
+      "categories": "ALTCOIN|MARKET|REGULATION|XLM|CRYPTOCURRENCY",
+      "tags": "More News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "SOL Strategies Shares Jump 21% as Validator Revenue Climbs 120% YoY",
+      "url": "https://coinpaper.com/15203/sol-strategies-shares-jump-21-as-validator-revenue-climbs-120-yo-y",
+      "source": "Coinpaper",
+      "published": 1772729740,
+      "categories": "BUSINESS|MARKET|SOL|TRADING|CRYPTOCURRENCY",
+      "tags": "News|Crypto",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "FBI Nabs Suspect in $46 Million US Marshals Crypto Theft",
+      "url": "https://u.today/fbi-nabs-suspect-in-46-million-us-marshals-crypto-theft",
+      "source": "U.Today",
+      "published": 1772729725,
+      "categories": "CRYPTOCURRENCY",
+      "tags": "Cryptocurrency Crime",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "XRP Derivatives Market Sends Contrarian Signal As Analysts Monitor Key Price Level",
+      "url": "https://en.coin-turk.com/xrp-derivatives-market-sends-contrarian-signal-as-analysts-monitor-key-price-level/",
+      "source": "CoinTurk News",
+      "published": 1772729724,
+      "categories": "MARKET|TRADING|XRP|BNB|CRYPTOCURRENCY",
+      "tags": "Ripple (XRP)",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Massive 430 Million USDT Whale Transfer from HTX to Aave Sparks Market Speculation",
+      "url": "https://bitcoinworld.co.in/usdt-whale-transfer-htx-aave-13/",
+      "source": "Bitcoin World",
+      "published": 1772729711,
+      "categories": "BLOCKCHAIN|EXCHANGE|MARKET|USDT|CRYPTOCURRENCY",
+      "tags": "Crypto News|BLOCKCHAIN|CRYPTOCURRENCY|DeFi.|Finance|Stablecoins",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin Nears $73K as Extreme Fear Persists — Relief Rally or Setup for $76K Break?",
+      "url": "https://bitzo.com/2026/03/bitcoin-nears-73k-as-extreme-fear-persists-relief-rally-or-setup-for-76k-break",
+      "source": "Bitzo",
+      "published": 1772729563,
+      "categories": "BTC|MARKET|REGULATION|TRADING|CRYPTOCURRENCY",
+      "tags": "More News",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Sanctions evasions using crypto increased by 700% in 2025: Chainalysis",
+      "url": "https://www.coindesk.com/business/2026/03/05/sanctions-evasions-using-crypto-increased-by-700-in-2025-chainalysis",
+      "source": "CoinDesk",
+      "published": 1772729529,
+      "categories": "ASIA|MACROECONOMICS|CRYPTOCURRENCY|SECURITY INCIDENTS",
+      "tags": "Finance|Iran|Russia|North Korea|Sanctions|Chainalysis|News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Netflix’s Strategic Acquisition: How Ben Affleck’s AI Company InterPositive Will Revolutionize Hollywood Filmmaking",
+      "url": "https://bitcoinworld.co.in/netflix-ben-affleck-ai-interpositive-acquisition/",
+      "source": "Bitcoin World",
+      "published": 1772729411,
+      "categories": "MARKET|TECHNOLOGY|TRADING|RESEARCH",
+      "tags": "AI News|Artificial Intelligence|Ben Affleck|Film Technology|Media|Netflix",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "CleanSpark sold 97% of February bitcoin production to fund AI pivot",
+      "url": "https://www.coindesk.com/markets/2026/03/05/cleanspark-sold-97-of-february-bitcoin-production-to-fund-ai-pivot",
+      "source": "CoinDesk",
+      "published": 1772729264,
+      "categories": "BTC|MARKET|CRYPTOCURRENCY",
+      "tags": "Markets|CleanSpark|Bitcoin News|AI|News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Cardano's ADA Token Now Accepted at Spar Supermarkets in Switzerland",
+      "url": "https://decrypt.co/360122/cardano-ada-token-accepted-spar-supermarkets-switzerland",
+      "source": "Decrypt",
+      "published": 1772729140,
+      "categories": "ADA|BLOCKCHAIN|BUSINESS|CRYPTOCURRENCY",
+      "tags": "|Business",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Trump’s Explosive Demand: US Must Directly Choose Iran’s Next Leader, Says Axios Interview",
+      "url": "https://bitcoinworld.co.in/trump-us-choose-iran-leader/",
+      "source": "Bitcoin World",
+      "published": 1772729112,
+      "categories": "ASIA|COMMODITY|MARKET|REGULATION|MACROECONOMICS",
+      "tags": "Crypto News|#Iran|Diplomacy|Middle East|Trump|US foreign policy",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bybit Releases Its 31st Proof-of-Reserves Report",
+      "url": "https://www.investing.com/news/cryptocurrency-news/bybit-releases-its-31st-proofofreserves-report-4544424",
+      "source": "Investing.com Crypto News",
+      "published": 1772728965,
+      "categories": "EXCHANGE|CRYPTOCURRENCY",
+      "tags": "",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "SoFi taps BitGo to provide infrastructure for bank-issued stablecoin",
+      "url": "https://cointelegraph.com/news/sofi-bitgo-bank-issued-stablecoin-sofiusd?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "source": "Cointelegraph",
+      "published": 1772728944,
+      "categories": "REGULATION",
+      "tags": "Latest News",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "Russian Stablecoin Bill: Finance Ministry Eyes Separate Legislation for Digital Assets with Astronomical Potential",
+      "url": "https://bitcoinworld.co.in/russian-stablecoin-bill-finance-ministry/",
+      "source": "Bitcoin World",
+      "published": 1772728812,
+      "categories": "FIAT|MARKET|REGULATION|MACROECONOMICS|CRYPTOCURRENCY",
+      "tags": "Crypto News|CRYPTOCURRENCY|Finance|REGULATION|Russia|Stablecoin",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "YY Group Holdings adopts bitcoin as treasury reserve asset",
+      "url": "https://www.investing.com/news/cryptocurrency-news/yy-group-holdings-adopts-bitcoin-as-treasury-reserve-asset-432SI-4544092",
+      "source": "Investing.com Crypto News",
+      "published": 1772728799,
+      "categories": "BTC|FIAT|DIGITAL ASSET TREASURY|MACROECONOMICS|CRYPTOCURRENCY",
+      "tags": "",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Byreal Launches First AI Copy Farming Skillset, Becoming Most Agent-Native on Solana DEX",
+      "url": "https://www.investing.com/news/cryptocurrency-news/byreal-launches-first-ai-copy-farming-skillset-becoming-most-agentnative-on-solana-dex-4540605",
+      "source": "Investing.com Crypto News",
+      "published": 1772728728,
+      "categories": "SOL|CRYPTOCURRENCY",
+      "tags": "",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Prediction markets face backlash over war and nuclear wagers",
+      "url": "https://www.cryptopolitan.com/polymarket-pulls-nuclear-detonation-bet/",
+      "source": "Cryptopolitan",
+      "published": 1772728638,
+      "categories": "BLOCKCHAIN|BUSINESS|COMMODITY|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "News|CFTC|Kalshi|Polymarket",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "BTCC TradFi Hits $200M Volume and Celebrates with Zero-Fee Campaign on Gold and Silver",
+      "url": "https://www.investing.com/news/cryptocurrency-news/btcc-tradfi-hits-200m-volume-and-celebrates-with-zerofee-campaign-on-gold-and-silver-4544808",
+      "source": "Investing.com Crypto News",
+      "published": 1772728564,
+      "categories": "FIAT",
+      "tags": "",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin Price Predictions Flip Bullish, But Ethereum Is Still Stuck",
+      "url": "https://decrypt.co/360131/bitcoin-price-predictions-flip-bullish-but-ethereum-stuck",
+      "source": "Decrypt",
+      "published": 1772728562,
+      "categories": "BTC|ETH|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "||Markets",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Doppler’s Strategic Expansion: Token Launch Platform Conquers Solana Network",
+      "url": "https://bitcoinworld.co.in/doppler-token-launch-solana-expansion/",
+      "source": "Bitcoin World",
+      "published": 1772728511,
+      "categories": "BLOCKCHAIN|ETH|SOL|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto News|BASE|BLOCKCHAIN|CRYPTOCURRENCY|Solana|Token launch",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Pundit Says XRP Price At $100 Is Not Insane If You Understand This",
+      "url": "https://www.newsbtc.com/xrp-news/xrp-price-at-100-is-not-insane/",
+      "source": "NewsBTC",
+      "published": 1772728239,
+      "categories": "BTC|TRADING|WALLET|XRP|CRYPTOCURRENCY",
+      "tags": "XRP News|Bird|CoinMarketCap|Descending Channel|Egrag Crypto|EMA|Ripple|RWA.xyz|RWAs|xrp|XRP Ledger|xrp news|XRP Price|XRPL|XRPUSD|xrpusdt",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Warlike Operations Area: Seafarers’ Unions Issue Critical Gulf Declaration Amid Rising Tensions",
+      "url": "https://bitcoinworld.co.in/gulf-warlike-operations-area-declaration/",
+      "source": "Bitcoin World",
+      "published": 1772728211,
+      "categories": "ASIA|COMMODITY|FIAT|MARKET|REGULATION",
+      "tags": "Crypto News|maritime|Middle East|Security|Shipping|trade",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "FBI arrests custody company CEO‘s son over alleged $46M crypto theft",
+      "url": "https://cointelegraph.com/news/fbi-arrest-bitcoin-theft-crypto-custody-company?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "source": "Cointelegraph",
+      "published": 1772728131,
+      "categories": "CRYPTOCURRENCY",
+      "tags": "Latest News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Western Union Unveils USDPT Stablecoin With Global Cash Access Via Solana",
+      "url": "https://en.coin-turk.com/western-union-unveils-usdpt-stablecoin-with-global-cash-access-via-solana/",
+      "source": "CoinTurk News",
+      "published": 1772727924,
+      "categories": "SOL|TRADING|CRYPTOCURRENCY",
+      "tags": "Solana (SOL)|Stablecoin",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin Price Plummets Below $71,000 as Market Volatility Intensifies",
+      "url": "https://bitcoinworld.co.in/bitcoin-price-falls-below-71000-3/",
+      "source": "Bitcoin World",
+      "published": 1772727912,
+      "categories": "BTC|BUSINESS|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto News|BITCOIN|CRYPTOCURRENCY|Finance|Market News|trading.",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Kraken Achieving Fed Master Access Has Several Implications For Crypto",
+      "url": "https://www.forbes.com/sites/digital-assets/2026/03/05/kraken-achieving-fed-master-access-has-several-implications-for-crypto/",
+      "source": "Forbes Digital Assets",
+      "published": 1772727805,
+      "categories": "EXCHANGE|CRYPTOCURRENCY",
+      "tags": "Forbes Digital Assets|/digital-assets|Forbes Digital Assets|/digital-assets|standard",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "IRS Crypto Tax Forms: Revolutionary Proposal to Mandate Electronic Issuance for Exchanges",
+      "url": "https://bitcoinworld.co.in/irs-crypto-tax-forms-electronic/",
+      "source": "Bitcoin World",
+      "published": 1772727612,
+      "categories": "BUSINESS|EXCHANGE|MARKET|REGULATION|CRYPTOCURRENCY",
+      "tags": "Crypto News|#IRS|CRYPTOCURRENCY|FinTech|REGULATION|TAXATION",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Tether’s Latest Move With Axiym Hints At Global Shift In USDT Payments",
+      "url": "https://en.coin-turk.com/tethers-latest-move-with-axiym-hints-at-global-shift-in-usdt-payments/",
+      "source": "CoinTurk News",
+      "published": 1772727330,
+      "categories": "USDT|CRYPTOCURRENCY",
+      "tags": "Stablecoin",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "ECB Interest Rates Face Critical Uncertainty as Geopolitical Conflict Risks Escalate",
+      "url": "https://bitcoinworld.co.in/ecb-interest-rates-conflict-risks-nordea/",
+      "source": "Bitcoin World",
+      "published": 1772727312,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|ECB|Geopolitical Risk|interest rates|monetary policy|Nordea",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "NYSE Parent ICE Invests in OKX at $25 Billion Valuation",
+      "url": "https://news.bitcoin.com/nyse-parent-ice-invests-in-okx-at-25-billion-valuation/",
+      "source": "Bitcoin.com",
+      "published": 1772727264,
+      "categories": "BUSINESS|EXCHANGE|CRYPTOCURRENCY",
+      "tags": "Crypto News|NYSE|Okx",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "FBI arrests suspect in $46M U.S. Marshals crypto theft case",
+      "url": "https://ambcrypto.com/fbi-arrests-suspect-in-46m-u-s-marshals-crypto-theft-case/",
+      "source": "AMB Crypto",
+      "published": 1772727214,
+      "categories": "CRYPTOCURRENCY",
+      "tags": "News|News 1|Social|Trading View|United States",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin Holds Firm as Bulls Defy Market Worries",
+      "url": "https://en.coin-turk.com/bitcoin-holds-firm-as-bulls-defy-market-worries/",
+      "source": "CoinTurk News",
+      "published": 1772727061,
+      "categories": "BTC|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Bitcoin (BTC)|Cryptocurrency News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "GBP/USD Slumps Dramatically as Robust US Jobs Data Fuels US Dollar Surge",
+      "url": "https://bitcoinworld.co.in/gbp-usd-slumps-us-jobs-data/",
+      "source": "Bitcoin World",
+      "published": 1772727011,
+      "categories": "EXCHANGE|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Currency Markets|Economic data|Forex|GBP|US Dollar",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Federal Contractor’s Son Arrested, Charged With Stealing $46 Million From US Crypto Stockpile",
+      "url": "https://decrypt.co/360120/federal-contractors-son-arrested-charged-with-stealing-46-million-from-us-crypto-stockpile",
+      "source": "Decrypt",
+      "published": 1772726922,
+      "categories": "BLOCKCHAIN",
+      "tags": "||Law and Order",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Rapid Bitcoin Surge Disrupts Market, Miners Shift Strategy",
+      "url": "https://en.coin-turk.com/rapid-bitcoin-surge-disrupts-market-miners-shift-strategy/",
+      "source": "CoinTurk News",
+      "published": 1772726720,
+      "categories": "ALTCOIN|BTC|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Bitcoin (BTC)",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Developer: Here’s the Amount of XRP That Can Change Your Life Forever",
+      "url": "https://timestabloid.com/developer-heres-the-amount-of-xrp-that-can-change-your-life-forever/",
+      "source": "TimesTabloid",
+      "published": 1772726718,
+      "categories": "BUSINESS|MARKET|TRADING|XRP|CRYPTOCURRENCY",
+      "tags": "Cryptocurrency|News|XRP",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "USD/INR Plummets Dramatically as RBI Launches Aggressive Intervention to Shield Indian Rupee",
+      "url": "https://bitcoinworld.co.in/usd-inr-plummets-rbi-intervention-rupee/",
+      "source": "Bitcoin World",
+      "published": 1772726712,
+      "categories": "EXCHANGE|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|#RBI|Currency|financial markets|Forex|Indian Economy",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Western union launches USDPT stablecoin with crossmint on solana",
+      "url": "https://www.cryptopolitan.com/western-union-takes-stablecoin-to-360000-locations/",
+      "source": "Cryptopolitan",
+      "published": 1772726480,
+      "categories": "ASIA|BLOCKCHAIN|REGULATION|SOL|TRADING|CRYPTOCURRENCY",
+      "tags": "News|USDPT|Western Union",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin: Analysts are back to predicting $100K for BTC – THIS is why",
+      "url": "https://ambcrypto.com/bitcoin-analysts-are-back-to-predicting-100k-for-btc-this-is-why/",
+      "source": "AMB Crypto",
+      "published": 1772726459,
+      "categories": "BTC|CRYPTOCURRENCY",
+      "tags": "Bitcoin|BTC Trading View|News|News 1|Social|Trading View|ambcrypto",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Trump Moves To Install Pro-Bitcoin Leader At The Federal Reserve",
+      "url": "https://bitcoinist.com/trump-moves-to-install-pro-bitcoin-leader-at-the-federal-reserve/",
+      "source": "Bitcoinist",
+      "published": 1772726430,
+      "categories": "BTC|FIAT|REGULATION|MACROECONOMICS|CRYPTOCURRENCY",
+      "tags": "Bitcoin|bitcoin|crypto|Fed|Federal Reserve|Kevin Warsh|Trump|US Senate",
+      "sentiment": "Neutral"
+    }
+  ]
 }
