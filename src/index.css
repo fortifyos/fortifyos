@@ -177,3 +177,10 @@
   .twoCol{grid-template-columns:1fr}
   .assistant .chat{height:320px}
 }
+
+/* Fix for iOS input zoom */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
