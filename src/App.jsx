@@ -27,14 +27,14 @@ import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 // ═══════════════════════════════════════════════════
 const THEMES = {
   dark: {
-    void: '#0B0C0E', surface: '#111315', elevated: '#181C1F', input: '#13161A',
+    void: '#0B0B0C', surface: '#111315', elevated: '#181C1F', input: '#13161A',
     panel: '#13161A', panel2: '#181C1F',
-    borderDim: '#1E2327', borderMid: '#2C3137', borderBright: '#3A4149',
-    textPrimary: '#E4E6EB', textSecondary: '#A8AEBB', textDim: '#828A96', textGhost: '#4E5662',
+    borderDim: '#1F1F22', borderMid: '#1F1F22', borderBright: '#3A4149',
+    textPrimary: '#E4E4E7', textSecondary: '#A8AEBB', textDim: '#828A96', textGhost: '#4E5662',
     accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
     danger: '#FF3B3B', warn: '#FFB800',
     purple: '#BF40BF', purpleDim: '#8A2D8A', purpleMuted: '#2D0A2D',
-    crypto: '#F7931A', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
+    crypto: '#FFA733', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
   light: {
     void: '#FFFFFF', surface: '#FFFFFF', elevated: '#FFFFFF', input: '#F7F7F7',
@@ -6441,34 +6441,31 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
           {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
         </button>
         {quickMenuOpen && (
-          <div className="fortify-nav-pop dash-menu-pop" style={{
+          <div className="dash-menu-pop glass-panel" style={{
             position: 'absolute', right: 0, top: 38, zIndex: 120,
-            minWidth: 188, paddingTop: 6, paddingBottom: 6,
-            background: isDark ? 'rgba(17,19,21,0.92)' : 'rgba(250,252,250,0.95)',
-            backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-            border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.09)'}`,
+            minWidth: 200, paddingTop: 8, paddingBottom: 8,
             boxShadow: isDark
               ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)'
               : '0 6px 24px rgba(0,0,0,0.13)',
           }}>
             {/* ── Primary navigation ── */}
             <button className="fortify-nav-item nav-radar" onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}>
-              <Eye size={16} className="nav-icon" /> Radar
+              <Eye size={18} className="nav-icon radar-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Radar</span>
             </button>
             <button className="fortify-nav-item nav-bitcoin" onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }}>
-              <span className="nav-btc-glyph">₿</span> Bitcoin
+              <span className="nav-btc-glyph">₿</span> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Bitcoin</span>
             </button>
             <button className="fortify-nav-item nav-settings" onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }}>
-              <Settings size={16} className="nav-icon" /> Settings
+              <Settings size={18} className="nav-icon gear-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Settings</span>
             </button>
             {/* ── Data operations ── */}
             <div className="fortify-nav-divider" />
             <div className="fortify-nav-section-label">Data</div>
             <button className="fortify-nav-item nav-data" onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }}>
-              <Upload size={12} /> Import
+              <Upload size={14} className="nav-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Import</span>
             </button>
             <button className="fortify-nav-item nav-data" onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }}>
-              <Download size={12} /> Export
+              <Download size={14} className="nav-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Export</span>
             </button>
           </div>
         )}

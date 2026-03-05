@@ -184,3 +184,127 @@
     font-size: 16px !important;
   }
 }
+
+/* Navigation Overhaul Styles */
+.glass-panel {
+  background: rgba(18, 18, 18, 0.8) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  margin: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.0));
+}
+
+.gear-icon { transition: transform 0.3s ease; }
+.gear-icon:hover { transform: rotate(30deg); }
+
+.radar-icon {
+  animation: pulseRadar 2s infinite;
+}
+@keyframes pulseRadar {
+  0% { transform: scale(0.95); opacity: 1; }
+  70% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(0.95); opacity: 1; }
+}
+
+/* Quick Menu Styles (Dashboard Nav) */
+.dash-menu-pop {
+  font-family: 'Inter', sans-serif !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.fortify-nav-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100%;
+  padding: 14px 16px !important;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase;
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+.fortify-nav-item:hover {
+  background: rgba(255,255,255,0.05) !important;
+}
+
+/* Left Accent Line */
+.fortify-nav-item:hover::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+}
+
+.nav-bitcoin:hover::before {
+  background: #FFA733 !important;
+}
+
+.nav-btc-glyph {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFA733;
+  text-shadow: 0 0 10px rgba(255,167,51,0.5);
+  font-family: system-ui;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+}
+
+.nav-settings .nav-icon {
+  color: var(--text-dim);
+}
+.nav-settings:hover .nav-icon {
+  transform: rotate(30deg);
+}
+
+.nav-radar .nav-icon {
+  color: var(--accent);
+  animation: pulseRadar 2s infinite;
+}
+
+.fortify-nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 6px 12px;
+}
+
+.fortify-nav-section-label {
+  padding: 4px 16px;
+  font-size: 11px;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.nav-data {
+  padding: 10px 16px !important;
+  color: var(--text-dim) !important;
+  font-size: 13px !important;
+}
+
+.dash-menu-toggle {
+  border-radius: 8px !important;
+}
+
