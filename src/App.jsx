@@ -4928,10 +4928,6 @@ function BudgetMod({ latest, visible, t }) {
   else if (slashActive) slashDiagnosis = 'Low velocity — audit all non-Essential recurring charges';
 
   return (<Card title="Budget Allocation" visible={visible} delay={240} alert={violations.some(v => v.severity === 'danger')} t={t}>
-    <div style={{ marginBottom: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-      Policy: Essential + Medical + Debt Service + E-Fund Savings first; Discretionary last.
-    </div>
-
     {/* ═══ ENFORCEMENT ALERTS ═══ */}
     {(violations.length > 0 || slashActive) && (
       <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${t.borderDim}` }}>
