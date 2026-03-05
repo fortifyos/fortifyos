@@ -4629,15 +4629,17 @@ function KnoxTerminalMod({ latest, visible, t }) {
   const lines = [];
 
   lines.push({ sep: 'TIER 1 ◈ VITAL INTEGRITY' });
-  lines.push({
-    tag: !medAllocated ? 'DANGER' : !medCovered ? 'WARNING' : 'VERIFIED',
-    label: !medAllocated ? 'Vital Defense Offline' : !medCovered ? 'Vital Defense Breached' : 'Vital Defense Active',
-    status: medStatus,
-    ok: medCovered && medAllocated,
-    rec: !medAllocated
-      ? 'Allocate Medical budget immediately. System vulnerability: CRITICAL.'
-      : !medCovered ? 'Medical perimeter breached — freeze all non-Medical outflow until defense is restored.' : null,
-  });
+  if (medAllocated || (medCat?.actual || 0) > 0) {
+    lines.push({
+      tag: !medAllocated ? 'WARNING' : !medCovered ? 'WARNING' : 'VERIFIED',
+      label: !medAllocated ? 'Vital Defense Unallocated' : !medCovered ? 'Vital Defense Breached' : 'Vital Defense Active',
+      status: medStatus,
+      ok: medCovered && medAllocated,
+      rec: !medAllocated
+        ? 'Allocate Medical budget. System vulnerability: ELEVATED.'
+        : !medCovered ? 'Medical perimeter breached — freeze all non-Medical outflow until defense is restored.' : null,
+    });
+  }
   lines.push({
     tag: !essCat ? 'WARNING' : !essCovered ? 'WARNING' : 'VERIFIED',
     label: !essCovered ? 'Supply Lines Compromised' : 'Supply Lines Secured',
@@ -4783,7 +4785,7 @@ function KnoxTerminalMod({ latest, visible, t }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, borderBottom: `1px solid ${t.accent}30`, paddingBottom: 8 }}>
           <span style={{ color: t.accent, fontWeight: 700, letterSpacing: '0.08em', fontSize: 13 }}>
-            {'>'} AGENT KNOX — MISSION BRIEFING
+            {'>'} MISSION BRIEFING
           </span>
           <span style={{ color: t.accent, animation: 'pulse 1s step-end infinite', fontSize: 14, lineHeight: 1 }}>▋</span>
           <span style={{ marginLeft: 'auto', color: t.textGhost, fontSize: 11 }}>
