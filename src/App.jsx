@@ -121,7 +121,7 @@ class AppErrorBoundary extends React.Component {
                     const keys = await caches.keys();
                     await Promise.all(keys.map(k => caches.delete(k)));
                   }
-                } catch (_) {}
+                } catch (_) { }
                 window.location.reload();
               }}
             >
@@ -347,8 +347,8 @@ function normalizeDateLike(s) {
     const mmN = Number(m[1]);
     const ddN = Number(m[2]);
     if (!validMD(mmN, ddN)) return '';
-    let mm = String(mmN).padStart(2,'0');
-    let dd = String(ddN).padStart(2,'0');
+    let mm = String(mmN).padStart(2, '0');
+    let dd = String(ddN).padStart(2, '0');
     let yy = m[3] ? String(m[3]) : '';
     if (yy.length === 2) yy = '20' + yy;
     if (!yy) return `${mm}/${dd}`;
@@ -367,11 +367,11 @@ function normalizeDateLike(s) {
   // Month name (Jan 5 2025)
   m = str.match(/^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\s*(\d{1,2})(?:,?\s*(\d{4}))?$/i);
   if (m) {
-    const map = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',sept:'09',oct:'10',nov:'11',dec:'12'};
+    const map = { jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06', jul: '07', aug: '08', sep: '09', sept: '09', oct: '10', nov: '11', dec: '12' };
     const mm = map[m[1].toLowerCase()];
     const ddN = Number(m[2]);
     if (!validMD(Number(mm), ddN)) return '';
-    const dd = String(ddN).padStart(2,'0');
+    const dd = String(ddN).padStart(2, '0');
     const yy = m[3] ? String(m[3]) : '';
     return yy ? `${yy}-${mm}-${dd}` : `${mm}/${dd}`;
   }
@@ -387,12 +387,12 @@ function parseAmountLike(s) {
   // parentheses = negative
   let neg = false;
   if (str.startsWith('(') && str.endsWith(')')) { neg = true; str = str.slice(1, -1); }
-  str = str.replace(/\$/g, '').replace(/\$/,'').replace(/,/g,'').replace(/\s+/g,'');
+  str = str.replace(/\$/g, '').replace(/\$/, '').replace(/,/g, '').replace(/\s+/g, '');
   if (str.startsWith('+')) str = str.slice(1);
   if (str.endsWith('-')) { str = str.slice(0, -1); neg = true; }
   // sometimes trailing CR/DR
-  if (/cr$/i.test(str)) { str = str.replace(/cr$/i,''); }
-  if (/dr$/i.test(str)) { str = str.replace(/dr$/i,''); neg = true; }
+  if (/cr$/i.test(str)) { str = str.replace(/cr$/i, ''); }
+  if (/dr$/i.test(str)) { str = str.replace(/dr$/i, ''); neg = true; }
   // Suppress OCR noise like account IDs unless explicitly money-like.
   if (!/\./.test(str) && !hadDollar && !hadSignedMarker) return null;
   const m = str.match(/^-?\d+(?:\.\d{1,2})?$/);
@@ -508,11 +508,11 @@ function parseStatementTextToTransactions(text, options = {}) {
   // Year is inferred from page headers: "January 2026"
   if (bankKey === 'cashapp') {
     const txns = [];
-    const CA_MONTHS = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 };
+    const CA_MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
     // Line-start date: "Jan 1", "Feb 23", etc. (no year — inferred from page header)
     const CA_LINE_RX = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)\.?\s+(\d{1,2})\b/i;
     // Dollar token (with optional leading + or -)
-    const CA_AMT_RX  = /([+\-]\s*)?\$(\d[\d,]*\.\d{2})/g;
+    const CA_AMT_RX = /([+\-]\s*)?\$(\d[\d,]*\.\d{2})/g;
 
     const isCANoise = (l) => (
       /^\d+\s*\/\s*\d+$/.test(l) ||                              // "1 / 12"
@@ -543,16 +543,16 @@ function parseStatementTextToTransactions(text, options = {}) {
       const month = CA_MONTHS[dm[1].toLowerCase().slice(0, 4)] || CA_MONTHS[dm[1].toLowerCase().slice(0, 3)];
       if (!month) continue;
       const day = parseInt(dm[2]);
-      const date = `${currentYear}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const date = `${currentYear}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
       // Collect all dollar-amount matches on this line
       const dollarHits = Array.from(line.matchAll(CA_AMT_RX));
       if (!dollarHits.length) continue;
 
       // Last hit = transaction amount; sign before it tells direction
-      const lastHit  = dollarHits[dollarHits.length - 1];
-      const signStr  = (lastHit[1] || '').replace(/\s/g, '');
-      const amtVal   = parseFloat(lastHit[2].replace(/,/g, ''));
+      const lastHit = dollarHits[dollarHits.length - 1];
+      const signStr = (lastHit[1] || '').replace(/\s/g, '');
+      const amtVal = parseFloat(lastHit[2].replace(/,/g, ''));
       if (isNaN(amtVal) || amtVal < 0.01) continue;
 
       // Credit = explicit '+'; debit = no sign or '-'
@@ -928,12 +928,12 @@ function reconcileParsedTransactions(txns, rawText = '', bankKey = 'generic') {
   // Same-line balance patterns — allow spaces AND dashes between label and amount
   // (USAA format: "Ending Balance - - - - $539.26")
   const startBalMatch = raw.match(/(?:beginning|previous|starting)\s+balance[\s\-]*(-?\$?\d[\d,]*\.\d{2})/i);
-  const endBalMatch   = raw.match(/(?:ending|new|available|statement|closing)\s+balance[\s\-]*(-?\$?\d[\d,]*\.\d{2})/i);
+  const endBalMatch = raw.match(/(?:ending|new|available|statement|closing)\s+balance[\s\-]*(-?\$?\d[\d,]*\.\d{2})/i);
   // Multi-line balance patterns: label on one line, amount on the very next line (column-layout PDFs)
   const startBalMatchML = !startBalMatch ? raw.match(/(?:beginning|previous|starting)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
-  const endBalMatchML   = !endBalMatch   ? raw.match(/(?:ending|new|available|statement|closing)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
+  const endBalMatchML = !endBalMatch ? raw.match(/(?:ending|new|available|statement|closing)\s+balance[^\n]*\n[^\S\n]*(-?\$?\d[\d,]*\.\d{2})/i) : null;
   const resolvedStartBal = startBalMatch || startBalMatchML;
-  const resolvedEndBal   = endBalMatch   || endBalMatchML;
+  const resolvedEndBal = endBalMatch || endBalMatchML;
   let balanceDiff = null;
   let endBal = null;
   if (resolvedStartBal && resolvedEndBal) {
@@ -989,17 +989,17 @@ function detectAccountType(rawText = '', bankKey = '') {
 }
 
 function txnsToPaymentLogCSV(txns) {
-  const header = ['DATE','PAYEE','CATEGORY','AMOUNT','METHOD','NOTES'];
+  const header = ['DATE', 'PAYEE', 'CATEGORY', 'AMOUNT', 'METHOD', 'NOTES'];
   const rows = (txns || []).map(t => {
-    const payee = (t.description || '').replace(/\s+/g,' ').trim();
+    const payee = (t.description || '').replace(/\s+/g, ' ').trim();
     const category = (t.category && String(t.category).trim()) ? String(t.category).trim() : categorize(payee);
     const amount = (typeof t.amount === 'number' ? t.amount : parseFloat(t.amount)) || 0;
     // Escape CSV
     const esc = (v) => {
       const s = (v === null || v === undefined) ? '' : String(v);
-      return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    return [esc(t.date||''), esc(payee), esc(category), esc(amount.toFixed(2)), '', ''].join(',');
+    return [esc(t.date || ''), esc(payee), esc(category), esc(amount.toFixed(2)), '', ''].join(',');
   });
   return header.join(',') + '\n' + rows.join('\n');
 }
@@ -1101,11 +1101,13 @@ const DEFAULT_SNAPSHOT = {
   date: new Date().toISOString().slice(0, 10),
   netWorth: { assets: { checking: 0, savings: 0, eFund: 0, other: 0 }, liabilities: {}, total: 0 },
   debts: [], eFund: { balance: 0, monthlyExpenses: 0, phase: 1 },
-  budget: { categories: [
-    { name: 'Essential', budgeted: 2000, actual: 0 }, { name: 'Discretionary', budgeted: 300, actual: 0 },
-    { name: 'Medical', budgeted: 300, actual: 0 }, { name: 'Debt Service', budgeted: 0, actual: 0 },
-    { name: 'Savings', budgeted: 300, actual: 0 },
-  ]},
+  budget: {
+    categories: [
+      { name: 'Essential', budgeted: 2000, actual: 0 }, { name: 'Discretionary', budgeted: 300, actual: 0 },
+      { name: 'Medical', budgeted: 300, actual: 0 }, { name: 'Debt Service', budgeted: 0, actual: 0 },
+      { name: 'Savings', budgeted: 300, actual: 0 },
+    ]
+  },
   macro: { netLiquidity: 0, liquidityTrend: 'NEUTRAL', btcPrice: 0, wyckoffPhase: 'Accumulation', fedWatchCut: 0, nextFomc: '2026-03-19', yieldCurve10Y2Y: 0, yieldTrend: 'flat', triggersActive: 0, activeTriggers: [], bennerPhase: '' },
   protection: {
     lifeInsurance: { provider: '', type: 'TERM', deathBenefit: 0, monthlyPremium: 0, expirationDate: '', conversionDeadline: '', alertLeadTimeYears: 5 },
@@ -1397,7 +1399,7 @@ const store = {
         return;
       }
       localStorage.setItem(__lsKey(k), s);
-    } catch {}
+    } catch { }
   },
   async del(k) {
     try {
@@ -1407,7 +1409,7 @@ const store = {
         return;
       }
       localStorage.removeItem(__lsKey(k));
-    } catch {}
+    } catch { }
   },
 };
 
@@ -1803,30 +1805,40 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
 
   // Tiered TOC structure
   const TOC_TIERS = [
-    { key: 'start', label: 'Getting Started', items: [
-      { id: 'stages', num: '01', label: 'The 7 Stages' },
-      { id: 'how-it-works', num: '02', label: 'How It Works' },
-      { id: 'installation', num: '03', label: 'Installation' },
-    ]},
-    { key: 'core', label: 'Core System', items: [
-      { id: 'enforcement', num: '04', label: 'The Enforcement Engine' },
-      { id: 'budget', num: '05', label: 'Budget Allocation' },
-      { id: 'efund', num: '06', label: 'Emergency Fund Phases' },
-      { id: 'safety', num: '07', label: 'Safety Rails' },
-    ]},
-    { key: 'data', label: 'Data & Privacy', items: [
-      { id: 'ingestion', num: '08', label: 'Data Ingestion' },
-      { id: 'schema', num: '09', label: 'Snapshot Schema' },
-      { id: 'sentinel', num: '10', label: 'Sentinel Redaction' },
-    ]},
-    { key: 'advanced', label: 'Advanced', items: [
-      { id: 'calculations', num: '11', label: 'Core Calculations' },
-      { id: 'commands', num: '12', label: 'Command Reference' },
-      { id: 'claude-code', num: '13', label: 'Desktop Parsing (Claude Code)' },
-    ]},
-    { key: 'why', label: 'Why FortifyOS', items: [
-      { id: 'comparison', num: '15', label: 'Competitive Comparison' },
-    ]},
+    {
+      key: 'start', label: 'Getting Started', items: [
+        { id: 'stages', num: '01', label: 'The 7 Stages' },
+        { id: 'how-it-works', num: '02', label: 'How It Works' },
+        { id: 'installation', num: '03', label: 'Installation' },
+      ]
+    },
+    {
+      key: 'core', label: 'Core System', items: [
+        { id: 'enforcement', num: '04', label: 'The Enforcement Engine' },
+        { id: 'budget', num: '05', label: 'Budget Allocation' },
+        { id: 'efund', num: '06', label: 'Emergency Fund Phases' },
+        { id: 'safety', num: '07', label: 'Safety Rails' },
+      ]
+    },
+    {
+      key: 'data', label: 'Data & Privacy', items: [
+        { id: 'ingestion', num: '08', label: 'Data Ingestion' },
+        { id: 'schema', num: '09', label: 'Snapshot Schema' },
+        { id: 'sentinel', num: '10', label: 'Sentinel Redaction' },
+      ]
+    },
+    {
+      key: 'advanced', label: 'Advanced', items: [
+        { id: 'calculations', num: '11', label: 'Core Calculations' },
+        { id: 'commands', num: '12', label: 'Command Reference' },
+        { id: 'claude-code', num: '13', label: 'Desktop Parsing (Claude Code)' },
+      ]
+    },
+    {
+      key: 'why', label: 'Why FortifyOS', items: [
+        { id: 'comparison', num: '15', label: 'Competitive Comparison' },
+      ]
+    },
   ];
 
   const scrollTo = (id) => { setActiveSection(id); document.getElementById(`doc-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
@@ -1924,12 +1936,12 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
 
         {/* Stage progress visualization */}
         <div style={{ display: 'flex', gap: 2, margin: '18px 0 6px' }}>
-          {[0,1,2,3,4,5,6,7].map(i => (
+          {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
             <div key={i} style={{ flex: 1, height: 6, background: i <= 1 ? accent : t.elevated, boxShadow: i === 1 ? `0 0 8px ${accent}44` : 'none', transition: 'all 0.3s' }} />
           ))}
         </div>
         <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
-          {['0: Chaos','1: Stable','2: Safe','3: Free','4: Secure','5: Indep.','6: Freedom','7: Legacy'].map((l, i) => (
+          {['0: Chaos', '1: Stable', '2: Safe', '3: Free', '4: Secure', '5: Indep.', '6: Freedom', '7: Legacy'].map((l, i) => (
             <span key={i} style={{ flex: 1, fontSize: 14, color: i <= 1 ? accent : t.textDim, textTransform: 'uppercase', textAlign: 'center' }}>{l}</span>
           ))}
         </div>
@@ -2390,7 +2402,7 @@ cd %USERPROFILE%\\FORTIFY && claude
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
           <thead><tr><th style={sty.th}>#</th><th style={sty.th}>Trigger</th><th style={sty.th}>Threshold</th></tr></thead>
           <tbody>
-            {[['1','FedWatch rate cut probability spike','>15% in 24hrs'],['2','Yield curve un-inversion','10Y-2Y >10bps'],['3','Net Liquidity surge during dip','>$50B in 1 week'],['4','RRP single-day drain','>$30B in one session'],['5','TGA drawdown','>$40B in 1 week']].map(([n,t2,th]) => (
+            {[['1', 'FedWatch rate cut probability spike', '>15% in 24hrs'], ['2', 'Yield curve un-inversion', '10Y-2Y >10bps'], ['3', 'Net Liquidity surge during dip', '>$50B in 1 week'], ['4', 'RRP single-day drain', '>$30B in one session'], ['5', 'TGA drawdown', '>$40B in 1 week']].map(([n, t2, th]) => (
               <tr key={n}><td style={sty.td}>{n}</td><td style={sty.td}>{t2}</td><td style={sty.td}>{th}</td></tr>
             ))}
           </tbody>
@@ -2555,24 +2567,24 @@ function UniversalSync({ open, onClose, onSync, t }) {
   const [parsedPreview, setParsedPreview] = useState(null);
   const fileRef = useRef();
 
-// Statement upload state (PDF / screenshots)
-const [stmtFile, setStmtFile] = useState(null);
-const [stmtRawText, setStmtRawText] = useState('');
-const [stmtText, setStmtText] = useState('');
-const [stmtTxns, setStmtTxns] = useState([]);
-const [showLowConfidence, setShowLowConfidence] = useState(true);
-const [reviewLowConfidence, setReviewLowConfidence] = useState(false);
-const [reviewCursor, setReviewCursor] = useState(0);
-const [reviewedLowIndices, setReviewedLowIndices] = useState([]);
-const [stmtTemplateLabel, setStmtTemplateLabel] = useState('');
-const [stmtReconSummary, setStmtReconSummary] = useState(null);
-const [stmtPickMode, setStmtPickMode] = useState('replace');
-const [merchantRules, setMerchantRules] = useState([]);
-const [stmtBankName, setStmtBankName] = useState('Statement Upload');
-const [csvBlobUrl, setCsvBlobUrl] = useState('');
-const stmtFileRef = useRef();
-const ocrWorkerRef = useRef(null);
-const btn = {
+  // Statement upload state (PDF / screenshots)
+  const [stmtFile, setStmtFile] = useState(null);
+  const [stmtRawText, setStmtRawText] = useState('');
+  const [stmtText, setStmtText] = useState('');
+  const [stmtTxns, setStmtTxns] = useState([]);
+  const [showLowConfidence, setShowLowConfidence] = useState(true);
+  const [reviewLowConfidence, setReviewLowConfidence] = useState(false);
+  const [reviewCursor, setReviewCursor] = useState(0);
+  const [reviewedLowIndices, setReviewedLowIndices] = useState([]);
+  const [stmtTemplateLabel, setStmtTemplateLabel] = useState('');
+  const [stmtReconSummary, setStmtReconSummary] = useState(null);
+  const [stmtPickMode, setStmtPickMode] = useState('replace');
+  const [merchantRules, setMerchantRules] = useState([]);
+  const [stmtBankName, setStmtBankName] = useState('Statement Upload');
+  const [csvBlobUrl, setCsvBlobUrl] = useState('');
+  const stmtFileRef = useRef();
+  const ocrWorkerRef = useRef(null);
+  const btn = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 8,
@@ -2656,7 +2668,7 @@ const btn = {
   useEffect(() => {
     return () => {
       if (ocrWorkerRef.current?.terminate) {
-        ocrWorkerRef.current.terminate().catch(() => {});
+        ocrWorkerRef.current.terminate().catch(() => { });
       }
       ocrWorkerRef.current = null;
     };
@@ -2705,318 +2717,318 @@ const btn = {
   }, [merchantRules, persistMerchantRules]);
 
 
-// ───────────────────────────────────────────────
-// Statement parsing — pdf.js line reconstruction
-// Extracts all pages and rebuilds text rows from x/y glyph positions.
-// ───────────────────────────────────────────────
-const extractTextFromPDF = async (file) => {
-  log('LOADING PDF BUFFER...');
-  const data = new Uint8Array(await file.arrayBuffer());
-  log(`PDF BINARY READ: ${(data.length / 1024).toFixed(1)}KB`);
+  // ───────────────────────────────────────────────
+  // Statement parsing — pdf.js line reconstruction
+  // Extracts all pages and rebuilds text rows from x/y glyph positions.
+  // ───────────────────────────────────────────────
+  const extractTextFromPDF = async (file) => {
+    log('LOADING PDF BUFFER...');
+    const data = new Uint8Array(await file.arrayBuffer());
+    log(`PDF BINARY READ: ${(data.length / 1024).toFixed(1)}KB`);
 
-  log('PDF MODE: RECONSTRUCTING PAGE LINES...');
-  const pdf = await pdfjsLib.getDocument({ data, disableWorker: true }).promise;
-  log(`PDF LOADED: ${pdf.numPages} PAGE(S)`);
+    log('PDF MODE: RECONSTRUCTING PAGE LINES...');
+    const pdf = await pdfjsLib.getDocument({ data, disableWorker: true }).promise;
+    log(`PDF LOADED: ${pdf.numPages} PAGE(S)`);
 
-  const allLines = [];
-  for (let p = 1; p <= pdf.numPages; p++) {
-    const page = await pdf.getPage(p);
-    const text = await page.getTextContent();
-    const buckets = new Map();
+    const allLines = [];
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const text = await page.getTextContent();
+      const buckets = new Map();
 
-    for (const it of text.items || []) {
-      const str = (it && it.str ? it.str : '').trim();
-      if (!str) continue;
-      const tx = Array.isArray(it.transform) ? it.transform[4] : 0;
-      const ty = Array.isArray(it.transform) ? it.transform[5] : 0;
-      const yKey = (Math.round(ty * 2) / 2).toFixed(1);
-      if (!buckets.has(yKey)) buckets.set(yKey, []);
-      buckets.get(yKey).push({ x: tx, str });
+      for (const it of text.items || []) {
+        const str = (it && it.str ? it.str : '').trim();
+        if (!str) continue;
+        const tx = Array.isArray(it.transform) ? it.transform[4] : 0;
+        const ty = Array.isArray(it.transform) ? it.transform[5] : 0;
+        const yKey = (Math.round(ty * 2) / 2).toFixed(1);
+        if (!buckets.has(yKey)) buckets.set(yKey, []);
+        buckets.get(yKey).push({ x: tx, str });
+      }
+
+      const yKeys = Array.from(buckets.keys()).map(Number).sort((a, b) => b - a);
+      for (const y of yKeys) {
+        const row = buckets.get(y.toFixed(1)) || [];
+        row.sort((a, b) => a.x - b.x);
+        const line = row.map(r => r.str).join(' ').replace(/[ \t]{2,}/g, ' ').trim();
+        if (line) allLines.push(line);
+      }
     }
 
-    const yKeys = Array.from(buckets.keys()).map(Number).sort((a, b) => b - a);
-    for (const y of yKeys) {
-      const row = buckets.get(y.toFixed(1)) || [];
-      row.sort((a, b) => a.x - b.x);
-      const line = row.map(r => r.str).join(' ').replace(/[ \t]{2,}/g, ' ').trim();
-      if (line) allLines.push(line);
-    }
-  }
+    const clean = allLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    log(`TEXT EXTRACTED: ${clean.length} CHARS — SAMPLE: "${clean.slice(0, 80).replace(/\n/g, ' ')}"`);
+    return clean;
+  };
 
-  const clean = allLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-  log(`TEXT EXTRACTED: ${clean.length} CHARS — SAMPLE: "${clean.slice(0, 80).replace(/\n/g, ' ')}"`);
-  return clean;
-};
+  const getOCRWorker = async () => {
+    if (ocrWorkerRef.current) return ocrWorkerRef.current;
+    log('OCR INIT: LOADING LOCAL WORKER...');
+    const { createWorker } = await import('tesseract.js');
+    const worker = await createWorker('eng', 1, {
+      logger: (m) => { if (m?.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
+      langPath: `${assetBase}tessdata`,
+      gzip: false,
+      cacheMethod: 'readOnly',
+    });
+    ocrWorkerRef.current = worker;
+    return worker;
+  };
 
-const getOCRWorker = async () => {
-  if (ocrWorkerRef.current) return ocrWorkerRef.current;
-  log('OCR INIT: LOADING LOCAL WORKER...');
-  const { createWorker } = await import('tesseract.js');
-  const worker = await createWorker('eng', 1, {
-    logger: (m) => { if (m?.status) log(`OCR: ${m.status}${m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : ''}`); },
-    langPath: `${assetBase}tessdata`,
-    gzip: false,
-    cacheMethod: 'readOnly',
+  const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error('File read failed'));
+    r.readAsDataURL(file);
   });
-  ocrWorkerRef.current = worker;
-  return worker;
-};
 
-const fileToDataUrl = (file) => new Promise((resolve, reject) => {
-  const r = new FileReader();
-  r.onload = () => resolve(r.result);
-  r.onerror = () => reject(new Error('File read failed'));
-  r.readAsDataURL(file);
-});
-
-const extractTextFromImage = async (file) => {
-  const worker = await getOCRWorker();
-  const dataUrl = await fileToDataUrl(file);
-  const res = await worker.recognize(dataUrl);
-  const txt = (res?.data?.text || '').trim();
-  log(`OCR EXTRACT: ${txt.length} CHARS`);
-  return txt;
-};
-
-const ocrFirstPageOfPDF = async (file) => {
-  log('SCANNED PDF DETECTED — OCR FALLBACK (PAGE RENDER)...');
-  const worker = await getOCRWorker();
-  const data = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data, disableWorker: true }).promise;
-  const maxPages = Math.min(pdf.numPages || 1, 2);
-  let combined = '';
-  for (let p = 1; p <= maxPages; p++) {
-    const page = await pdf.getPage(p);
-    const viewport = page.getViewport({ scale: 2 });
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) continue;
-    canvas.width = Math.ceil(viewport.width);
-    canvas.height = Math.ceil(viewport.height);
-    await page.render({ canvasContext: ctx, viewport }).promise;
-    const dataUrl = canvas.toDataURL('image/png');
+  const extractTextFromImage = async (file) => {
+    const worker = await getOCRWorker();
+    const dataUrl = await fileToDataUrl(file);
     const res = await worker.recognize(dataUrl);
-    const text = (res?.data?.text || '').trim();
-    if (text) combined += `\n${text}`;
-  }
-  const cleaned = (combined || '').trim();
-  log(`OCR FALLBACK EXTRACT: ${cleaned.length} CHARS`);
-  return cleaned;
-};
+    const txt = (res?.data?.text || '').trim();
+    log(`OCR EXTRACT: ${txt.length} CHARS`);
+    return txt;
+  };
 
-const parseStatementInput = async (file) => {
-  const ext = file.name.split('.').pop().toLowerCase();
-  log(`STATEMENT INGEST: ${file.name} (.${ext.toUpperCase()})`);
-  log(`SIZE: ${(file.size / 1024).toFixed(1)}KB`);
-  let rawText = '';
-  if (ext === 'pdf') {
-    log('PDF MODE: EXTRACTING TEXT...');
-    rawText = await extractTextFromPDF(file);
-    log(`RAW EXTRACT: ${(rawText||'').trim().length} CHARS — SAMPLE: ${(rawText||'').trim().slice(0,60).replace(/\n/g,' ')}`);
-    if ((rawText || '').trim().length < 30) {
-      log('PDF TEXT TOO SHORT — FALLBACK: OCR PAGE RENDER');
-      const ocrText = await ocrFirstPageOfPDF(file);
-      rawText = `${rawText || ''}\n${ocrText || ''}`.trim();
+  const ocrFirstPageOfPDF = async (file) => {
+    log('SCANNED PDF DETECTED — OCR FALLBACK (PAGE RENDER)...');
+    const worker = await getOCRWorker();
+    const data = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data, disableWorker: true }).promise;
+    const maxPages = Math.min(pdf.numPages || 1, 2);
+    let combined = '';
+    for (let p = 1; p <= maxPages; p++) {
+      const page = await pdf.getPage(p);
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) continue;
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      const dataUrl = canvas.toDataURL('image/png');
+      const res = await worker.recognize(dataUrl);
+      const text = (res?.data?.text || '').trim();
+      if (text) combined += `\n${text}`;
     }
-  } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
-    log('IMAGE MODE: OCR');
-    rawText = await extractTextFromImage(file);
-  } else {
-    throw new Error('Unsupported statement format');
-  }
-  const template = detectStatementTemplate(rawText || '', file.name || '');
-  log(`TEMPLATE: ${template.label.toUpperCase()}`);
-  const txnsRaw = parseStatementTextToTransactions(rawText || '', { bankKey: template.key });
-  const reconciled = reconcileParsedTransactions(txnsRaw, rawText || '', template.key);
-  if (reconciled.summary.correctedSign > 0) log(`RECON: SIGN FIXES ${reconciled.summary.correctedSign}`);
-  if (reconciled.summary.filledYear > 0) log(`RECON: YEAR FILLS ${reconciled.summary.filledYear}`);
-  if (reconciled.summary.warnings?.length) log(`RECON WARNING: ${reconciled.summary.warnings[0]}`);
-  return { rawText, template, reconciled };
-};
+    const cleaned = (combined || '').trim();
+    log(`OCR FALLBACK EXTRACT: ${cleaned.length} CHARS`);
+    return cleaned;
+  };
 
-const handleStatementFiles = async (files, mode = 'replace') => {
-  const list = Array.from(files || []).filter(Boolean);
-  if (!list.length) return;
-  const append = mode === 'append';
-  setProcessing(true); setError(''); setParsedPreview(null); setSuccess(false);
-  if (!append) {
-    setLogs([]);
-    setStmtFile(list[0]);
-    setStmtRawText('');
-    setStmtText('');
-    setStmtTxns([]);
-    setReviewLowConfidence(false);
-    setReviewCursor(0);
-    setReviewedLowIndices([]);
-    setStmtReconSummary(null);
-    setStmtTemplateLabel('');
-    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} setCsvBlobUrl(''); }
-  }
-  log(`PIPELINE: PDF MODE ${append ? 'APPEND' : 'REPLACE'} (${list.length} FILE${list.length > 1 ? 'S' : ''})`);
-
-  try {
-    let mergedText = append ? (stmtText || '') : '';
-    let mergedRaw = append ? (stmtRawText || '') : '';
-    let mergedTxns = append ? [...stmtTxns] : [];
-    let reconAgg = append && stmtReconSummary
-      ? { ...stmtReconSummary, warnings: [...(stmtReconSummary.warnings || [])] }
-      : { correctedSign: 0, filledYear: 0, balanceDiff: null, warnings: [] };
-    let detectedTemplate = append ? stmtTemplateLabel : '';
-    let detectedBankKey = 'generic';
-
-    for (const file of list) {
-      const { rawText, template, reconciled } = await parseStatementInput(file);
-      detectedTemplate = detectedTemplate && detectedTemplate !== template.label ? 'Mixed Templates' : template.label;
-      detectedBankKey = template.key || 'generic';
-      mergedRaw = `${mergedRaw}${mergedRaw ? '\n\n--- NEXT FILE ---\n\n' : ''}${rawText || ''}`;
-      mergedText = mergedRaw;
-      mergedTxns = [...mergedTxns, ...reconciled.txns];
-      reconAgg.correctedSign += reconciled.summary.correctedSign || 0;
-      reconAgg.filledYear += reconciled.summary.filledYear || 0;
-      if (typeof reconciled.summary.balanceDiff === 'number') reconAgg.balanceDiff = reconciled.summary.balanceDiff;
-      // Carry forward the most recent ending balance found
-      if (typeof reconciled.summary.endBal === 'number' && reconciled.summary.endBal > 0) {
-        reconAgg.endBal = reconciled.summary.endBal;
+  const parseStatementInput = async (file) => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    log(`STATEMENT INGEST: ${file.name} (.${ext.toUpperCase()})`);
+    log(`SIZE: ${(file.size / 1024).toFixed(1)}KB`);
+    let rawText = '';
+    if (ext === 'pdf') {
+      log('PDF MODE: EXTRACTING TEXT...');
+      rawText = await extractTextFromPDF(file);
+      log(`RAW EXTRACT: ${(rawText || '').trim().length} CHARS — SAMPLE: ${(rawText || '').trim().slice(0, 60).replace(/\n/g, ' ')}`);
+      if ((rawText || '').trim().length < 30) {
+        log('PDF TEXT TOO SHORT — FALLBACK: OCR PAGE RENDER');
+        const ocrText = await ocrFirstPageOfPDF(file);
+        rawText = `${rawText || ''}\n${ocrText || ''}`.trim();
       }
-      reconAgg.warnings.push(...(reconciled.summary.warnings || []));
-    }
-
-    // Detect account type — pass bankKey so Capital One/Citi are always credit_card
-    const accountType = detectAccountType(mergedRaw, detectedBankKey);
-
-    const dedup = [];
-    const seen = new Set();
-    for (const t of mergedTxns) {
-      const key = `${t.date}|${t.description}|${t.amount}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      dedup.push(t);
-    }
-    dedup.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
-    const txns = applyMerchantRules(dedup, merchantRules);
-
-    setStmtRawText(mergedRaw || '');
-    setStmtText(mergedText || '');
-    setStmtTxns(txns);
-    setStmtTemplateLabel(detectedTemplate || 'Generic');
-    setStmtReconSummary(reconAgg);
-
-    if (!txns.length) {
-      log('WARNING: NO TRANSACTIONS FOUND (HEURISTIC PARSER)');
-      setError('No transactions detected. Try a text-based PDF export or clearer screenshot. You can review extracted text and retry parse.');
+    } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+      log('IMAGE MODE: OCR');
+      rawText = await extractTextFromImage(file);
     } else {
-      log(`FOUND: ${txns.length} TRANSACTIONS`);
-      if (merchantRules.length) {
-        const learnedHits = txns.filter(tx => tx?.category && tx.category !== 'Uncategorized').length;
-        if (learnedHits > 0) log(`MERCHANT LEARNING APPLIED: ${learnedHits} AUTO-CATEGORIZED`);
+      throw new Error('Unsupported statement format');
+    }
+    const template = detectStatementTemplate(rawText || '', file.name || '');
+    log(`TEMPLATE: ${template.label.toUpperCase()}`);
+    const txnsRaw = parseStatementTextToTransactions(rawText || '', { bankKey: template.key });
+    const reconciled = reconcileParsedTransactions(txnsRaw, rawText || '', template.key);
+    if (reconciled.summary.correctedSign > 0) log(`RECON: SIGN FIXES ${reconciled.summary.correctedSign}`);
+    if (reconciled.summary.filledYear > 0) log(`RECON: YEAR FILLS ${reconciled.summary.filledYear}`);
+    if (reconciled.summary.warnings?.length) log(`RECON WARNING: ${reconciled.summary.warnings[0]}`);
+    return { rawText, template, reconciled };
+  };
+
+  const handleStatementFiles = async (files, mode = 'replace') => {
+    const list = Array.from(files || []).filter(Boolean);
+    if (!list.length) return;
+    const append = mode === 'append';
+    setProcessing(true); setError(''); setParsedPreview(null); setSuccess(false);
+    if (!append) {
+      setLogs([]);
+      setStmtFile(list[0]);
+      setStmtRawText('');
+      setStmtText('');
+      setStmtTxns([]);
+      setReviewLowConfidence(false);
+      setReviewCursor(0);
+      setReviewedLowIndices([]);
+      setStmtReconSummary(null);
+      setStmtTemplateLabel('');
+      if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch (_) { } setCsvBlobUrl(''); }
+    }
+    log(`PIPELINE: PDF MODE ${append ? 'APPEND' : 'REPLACE'} (${list.length} FILE${list.length > 1 ? 'S' : ''})`);
+
+    try {
+      let mergedText = append ? (stmtText || '') : '';
+      let mergedRaw = append ? (stmtRawText || '') : '';
+      let mergedTxns = append ? [...stmtTxns] : [];
+      let reconAgg = append && stmtReconSummary
+        ? { ...stmtReconSummary, warnings: [...(stmtReconSummary.warnings || [])] }
+        : { correctedSign: 0, filledYear: 0, balanceDiff: null, warnings: [] };
+      let detectedTemplate = append ? stmtTemplateLabel : '';
+      let detectedBankKey = 'generic';
+
+      for (const file of list) {
+        const { rawText, template, reconciled } = await parseStatementInput(file);
+        detectedTemplate = detectedTemplate && detectedTemplate !== template.label ? 'Mixed Templates' : template.label;
+        detectedBankKey = template.key || 'generic';
+        mergedRaw = `${mergedRaw}${mergedRaw ? '\n\n--- NEXT FILE ---\n\n' : ''}${rawText || ''}`;
+        mergedText = mergedRaw;
+        mergedTxns = [...mergedTxns, ...reconciled.txns];
+        reconAgg.correctedSign += reconciled.summary.correctedSign || 0;
+        reconAgg.filledYear += reconciled.summary.filledYear || 0;
+        if (typeof reconciled.summary.balanceDiff === 'number') reconAgg.balanceDiff = reconciled.summary.balanceDiff;
+        // Carry forward the most recent ending balance found
+        if (typeof reconciled.summary.endBal === 'number' && reconciled.summary.endBal > 0) {
+          reconAgg.endBal = reconciled.summary.endBal;
+        }
+        reconAgg.warnings.push(...(reconciled.summary.warnings || []));
       }
-      if (list.length > 1) log(`MERGED ${list.length} FILES INTO SINGLE MONTH VIEW`);
-    }
 
-    const endBalance = reconAgg.endBal ?? null;
-    if (endBalance !== null) {
-      log(`BALANCE DETECTED: ${fmt(endBalance)} (${accountType.toUpperCase().replace('_', ' ')})`);
-    } else {
-      log('BALANCE: not detected — NW assets will remain at prior values');
-    }
+      // Detect account type — pass bankKey so Capital One/Citi are always credit_card
+      const accountType = detectAccountType(mergedRaw, detectedBankKey);
 
-    const snap = transactionsToSnapshot(txns, stmtBankName, { endBalance, accountType });
+      const dedup = [];
+      const seen = new Set();
+      for (const t of mergedTxns) {
+        const key = `${t.date}|${t.description}|${t.amount}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        dedup.push(t);
+      }
+      dedup.sort((a, b) => (sanitizeDate(a.date) || '').localeCompare(sanitizeDate(b.date) || ''));
+      const txns = applyMerchantRules(dedup, merchantRules);
+
+      setStmtRawText(mergedRaw || '');
+      setStmtText(mergedText || '');
+      setStmtTxns(txns);
+      setStmtTemplateLabel(detectedTemplate || 'Generic');
+      setStmtReconSummary(reconAgg);
+
+      if (!txns.length) {
+        log('WARNING: NO TRANSACTIONS FOUND (HEURISTIC PARSER)');
+        setError('No transactions detected. Try a text-based PDF export or clearer screenshot. You can review extracted text and retry parse.');
+      } else {
+        log(`FOUND: ${txns.length} TRANSACTIONS`);
+        if (merchantRules.length) {
+          const learnedHits = txns.filter(tx => tx?.category && tx.category !== 'Uncategorized').length;
+          if (learnedHits > 0) log(`MERCHANT LEARNING APPLIED: ${learnedHits} AUTO-CATEGORIZED`);
+        }
+        if (list.length > 1) log(`MERGED ${list.length} FILES INTO SINGLE MONTH VIEW`);
+      }
+
+      const endBalance = reconAgg.endBal ?? null;
+      if (endBalance !== null) {
+        log(`BALANCE DETECTED: ${fmt(endBalance)} (${accountType.toUpperCase().replace('_', ' ')})`);
+      } else {
+        log('BALANCE: not detected — NW assets will remain at prior values');
+      }
+
+      const snap = transactionsToSnapshot(txns, stmtBankName, { endBalance, accountType });
+      setParsedPreview(snap);
+      const csv = txnsToPaymentLogCSV(txns);
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      setCsvBlobUrl(url);
+      log('SYNC READY (EDIT BEFORE COMMIT)');
+    } catch (e) {
+      log('ERROR: STATEMENT PARSE FAILED');
+      setError(e?.message || 'Statement parse failed');
+    } finally { setProcessing(false); }
+  };
+
+  const updateStmtTxn = (i, field, val) => {
+    const arr = [...stmtTxns];
+    const wasLow = (arr[i]?.confidence || 'low') === 'low';
+    const next = { ...arr[i], [field]: field === 'amount' ? (typeof val === 'number' ? val : (parseFloat(String(val).replace(/,/g, '')) || 0)) : val };
+    if (field === 'category') {
+      if (next.category) {
+        learnMerchantRule(next.description, next.category);
+      } else {
+        const auto = learnedCategoryForDescription(next.description, merchantRules);
+        if (auto) next.category = auto;
+      }
+    }
+    arr[i] = withTxnConfidence(next, `${next.date || ''} ${next.description || ''} ${next.amount ?? ''}`);
+    if (wasLow || (arr[i]?.confidence || 'low') === 'low') {
+      setReviewedLowIndices(prev => (prev.includes(i) ? prev : [...prev, i]));
+    }
+    setStmtTxns(arr);
+    // keep preview + export in sync
+    const snap = transactionsToSnapshot(arr, stmtBankName);
     setParsedPreview(snap);
-    const csv = txnsToPaymentLogCSV(txns);
+    const csv = txnsToPaymentLogCSV(arr);
+    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch (_) { } }
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     setCsvBlobUrl(url);
-    log('SYNC READY (EDIT BEFORE COMMIT)');
-  } catch (e) {
-    log('ERROR: STATEMENT PARSE FAILED');
-    setError(e?.message || 'Statement parse failed');
-  } finally { setProcessing(false); }
-};
+  };
 
-const updateStmtTxn = (i, field, val) => {
-  const arr = [...stmtTxns];
-  const wasLow = (arr[i]?.confidence || 'low') === 'low';
-  const next = { ...arr[i], [field]: field === 'amount' ? (typeof val === 'number' ? val : (parseFloat(String(val).replace(/,/g,'')) || 0)) : val };
-  if (field === 'category') {
-    if (next.category) {
-      learnMerchantRule(next.description, next.category);
-    } else {
-      const auto = learnedCategoryForDescription(next.description, merchantRules);
-      if (auto) next.category = auto;
+  const removeStmtTxn = (i) => {
+    const arr = stmtTxns.filter((_, idx) => idx !== i);
+    setReviewedLowIndices(prev => prev.filter(idx => idx !== i).map(idx => (idx > i ? idx - 1 : idx)));
+    setStmtTxns(arr);
+    const snap = transactionsToSnapshot(arr, stmtBankName);
+    setParsedPreview(snap);
+    const csv = txnsToPaymentLogCSV(arr);
+    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch (_) { } }
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    setCsvBlobUrl(url);
+  };
+
+  const stmtRows = (stmtTxns || []).slice(0, 200).map((tx, idx) => {
+    if (tx?.confidence && typeof tx?.confidenceScore === 'number') return { tx, idx };
+    const hydrated = withTxnConfidence(tx || { date: '', description: '', amount: 0 });
+    return { tx: hydrated, idx };
+  });
+  const confidenceCounts = stmtRows.reduce((acc, row) => {
+    const label = row.tx?.confidence || 'low';
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, { high: 0, medium: 0, low: 0 });
+  const lowConfidenceIndices = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low').map(row => row.idx);
+  const reviewedLowSet = new Set(reviewedLowIndices);
+  const reviewedLowCount = lowConfidenceIndices.filter(idx => reviewedLowSet.has(idx)).length;
+  const lowReviewComplete = lowConfidenceIndices.length === 0 || reviewedLowCount >= lowConfidenceIndices.length;
+  const lowConfidenceRows = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low');
+  const reviewedRow = reviewLowConfidence ? (lowConfidenceRows[reviewCursor] ? [lowConfidenceRows[reviewCursor]] : []) : [];
+  const visibleStmtRows = showLowConfidence ? stmtRows : stmtRows.filter(row => (row.tx?.confidence || 'low') !== 'low');
+  const displayedStmtRows = reviewLowConfidence ? reviewedRow : visibleStmtRows;
+
+  useEffect(() => {
+    if (!reviewLowConfidence) return;
+    if (!lowConfidenceRows.length) {
+      setReviewLowConfidence(false);
+      setReviewCursor(0);
+      return;
     }
-  }
-  arr[i] = withTxnConfidence(next, `${next.date || ''} ${next.description || ''} ${next.amount ?? ''}`);
-  if (wasLow || (arr[i]?.confidence || 'low') === 'low') {
-    setReviewedLowIndices(prev => (prev.includes(i) ? prev : [...prev, i]));
-  }
-  setStmtTxns(arr);
-  // keep preview + export in sync
-  const snap = transactionsToSnapshot(arr, stmtBankName);
-  setParsedPreview(snap);
-  const csv = txnsToPaymentLogCSV(arr);
-  if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  setCsvBlobUrl(url);
-};
+    if (reviewCursor >= lowConfidenceRows.length) {
+      setReviewCursor(Math.max(0, lowConfidenceRows.length - 1));
+    }
+  }, [reviewLowConfidence, reviewCursor, lowConfidenceRows.length]);
 
-const removeStmtTxn = (i) => {
-  const arr = stmtTxns.filter((_, idx) => idx !== i);
-  setReviewedLowIndices(prev => prev.filter(idx => idx !== i).map(idx => (idx > i ? idx - 1 : idx)));
-  setStmtTxns(arr);
-  const snap = transactionsToSnapshot(arr, stmtBankName);
-  setParsedPreview(snap);
-  const csv = txnsToPaymentLogCSV(arr);
-  if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  setCsvBlobUrl(url);
-};
+  useEffect(() => {
+    setReviewedLowIndices(prev => prev.filter(idx => lowConfidenceIndices.includes(idx)));
+  }, [lowConfidenceIndices.join('|')]);
 
-const stmtRows = (stmtTxns || []).slice(0, 200).map((tx, idx) => {
-  if (tx?.confidence && typeof tx?.confidenceScore === 'number') return { tx, idx };
-  const hydrated = withTxnConfidence(tx || { date: '', description: '', amount: 0 });
-  return { tx: hydrated, idx };
-});
-const confidenceCounts = stmtRows.reduce((acc, row) => {
-  const label = row.tx?.confidence || 'low';
-  acc[label] = (acc[label] || 0) + 1;
-  return acc;
-}, { high: 0, medium: 0, low: 0 });
-const lowConfidenceIndices = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low').map(row => row.idx);
-const reviewedLowSet = new Set(reviewedLowIndices);
-const reviewedLowCount = lowConfidenceIndices.filter(idx => reviewedLowSet.has(idx)).length;
-const lowReviewComplete = lowConfidenceIndices.length === 0 || reviewedLowCount >= lowConfidenceIndices.length;
-const lowConfidenceRows = stmtRows.filter(row => (row.tx?.confidence || 'low') === 'low');
-const reviewedRow = reviewLowConfidence ? (lowConfidenceRows[reviewCursor] ? [lowConfidenceRows[reviewCursor]] : []) : [];
-const visibleStmtRows = showLowConfidence ? stmtRows : stmtRows.filter(row => (row.tx?.confidence || 'low') !== 'low');
-const displayedStmtRows = reviewLowConfidence ? reviewedRow : visibleStmtRows;
-
-useEffect(() => {
-  if (!reviewLowConfidence) return;
-  if (!lowConfidenceRows.length) {
-    setReviewLowConfidence(false);
-    setReviewCursor(0);
-    return;
-  }
-  if (reviewCursor >= lowConfidenceRows.length) {
-    setReviewCursor(Math.max(0, lowConfidenceRows.length - 1));
-  }
-}, [reviewLowConfidence, reviewCursor, lowConfidenceRows.length]);
-
-useEffect(() => {
-  setReviewedLowIndices(prev => prev.filter(idx => lowConfidenceIndices.includes(idx)));
-}, [lowConfidenceIndices.join('|')]);
-
-useEffect(() => {
-  if (!stmtTxns.length || !merchantRules.length) return;
-  const learnedApplied = applyMerchantRules(stmtTxns, merchantRules);
-  const changed = learnedApplied.some((tx, i) => (tx?.category || '') !== (stmtTxns[i]?.category || ''));
-  if (!changed) return;
-  setStmtTxns(learnedApplied);
-  const snap = transactionsToSnapshot(learnedApplied, stmtBankName);
-  setParsedPreview(snap);
-  const csv = txnsToPaymentLogCSV(learnedApplied);
-  if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch(_) {} }
-  setCsvBlobUrl(URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })));
-}, [merchantRules, stmtTxns, stmtBankName, csvBlobUrl]);
+  useEffect(() => {
+    if (!stmtTxns.length || !merchantRules.length) return;
+    const learnedApplied = applyMerchantRules(stmtTxns, merchantRules);
+    const changed = learnedApplied.some((tx, i) => (tx?.category || '') !== (stmtTxns[i]?.category || ''));
+    if (!changed) return;
+    setStmtTxns(learnedApplied);
+    const snap = transactionsToSnapshot(learnedApplied, stmtBankName);
+    setParsedPreview(snap);
+    const csv = txnsToPaymentLogCSV(learnedApplied);
+    if (csvBlobUrl) { try { URL.revokeObjectURL(csvBlobUrl); } catch (_) { } }
+    setCsvBlobUrl(URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })));
+  }, [merchantRules, stmtTxns, stmtBankName, csvBlobUrl]);
 
   const processCSV = (text, fileName) => {
     log('PARSING CSV STRUCTURE...');
@@ -3279,332 +3291,332 @@ useEffect(() => {
         </div>
 
         <div className="sync-content" style={{ padding: 16, minWidth: 0, overflow: 'hidden' }}>
-{/* ── STATEMENT TAB ── */}
-{tab === 'statement' && (<>
-  <div style={{ display: 'grid', gap: 10 }}>
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', textAlign: 'center' }}>
-        <FileText size={14} style={{ color: t.accent }} />
-        <span style={lbl}>Upload Files (CSV / PDF / Screenshots · Multi-file Merge)</span>
-      </div>
-      <input ref={stmtFileRef} type="file" accept=".csv,.xlsx,.pdf,.png,.jpg,.jpeg" multiple style={{ display: 'none' }}
-             onChange={(e) => { 
-               const fs = Array.from(e.target.files || []); 
-               if (!fs.length) return;
-               const ext = fs[0].name.split('.').pop().toLowerCase();
-               if (ext === 'csv' || ext === 'xlsx') {
-                 handleFile(fs[0]);
-               } else {
-                 handleStatementFiles(fs, stmtPickMode); 
-               }
-               e.target.value = ''; 
-             }} />
-    </div>
-    <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
-      <div style={{ display: 'grid', gap: 6, fontSize: 15, color: t.textDim, lineHeight: 1.35 }}>
-        <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
-        <div>• Best: Download a <b>text-based PDF</b> from your bank portal (not scanned/image-only).</div>
-        <div>• Screenshots supported via local OCR. Keep captures sharp and include full transaction rows.</div>
-        <div>• Sentinel redaction runs before parsing; review the extracted table before sync.</div>
-      </div>
-    </div>
+          {/* ── STATEMENT TAB ── */}
+          {tab === 'statement' && (<>
+            <div style={{ display: 'grid', gap: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', textAlign: 'center' }}>
+                  <FileText size={14} style={{ color: t.accent }} />
+                  <span style={lbl}>Upload Files (CSV / PDF / Screenshots · Multi-file Merge)</span>
+                </div>
+                <input ref={stmtFileRef} type="file" accept=".csv,.xlsx,.pdf,.png,.jpg,.jpeg" multiple style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const fs = Array.from(e.target.files || []);
+                    if (!fs.length) return;
+                    const ext = fs[0].name.split('.').pop().toLowerCase();
+                    if (ext === 'csv' || ext === 'xlsx') {
+                      handleFile(fs[0]);
+                    } else {
+                      handleStatementFiles(fs, stmtPickMode);
+                    }
+                    e.target.value = '';
+                  }} />
+              </div>
+              <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
+                <div style={{ display: 'grid', gap: 6, fontSize: 15, color: t.textDim, lineHeight: 1.35 }}>
+                  <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Quality Tips</div>
+                  <div>• Best: Download a <b>text-based PDF</b> from your bank portal (not scanned/image-only).</div>
+                  <div>• Screenshots supported via local OCR. Keep captures sharp and include full transaction rows.</div>
+                  <div>• Sentinel redaction runs before parsing; review the extracted table before sync.</div>
+                </div>
+              </div>
 
-    {/* Drag/drop area */}
-    <div
-      onDrop={e => { 
-        e.preventDefault(); setDragOver(false); 
-        const fs = Array.from(e.dataTransfer.files || []); 
-        if (!fs.length) return;
-        const ext = fs[0].name.split('.').pop().toLowerCase();
-        if (ext === 'csv' || ext === 'xlsx') {
-          handleFile(fs[0]);
-        } else {
-          handleStatementFiles(fs, stmtTxns.length ? 'append' : 'replace'); 
-        }
-      }}
-      onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-      onDragLeave={() => setDragOver(false)}
-      onClick={() => stmtFileRef.current?.click()}
-      style={{
-        border: `2px dashed ${dragOver ? t.accent : t.borderMid}`,
-        borderRadius: 8,
-        padding: 20,
-        background: dragOver ? t.accentMuted : t.void,
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        gap: 8, cursor: 'pointer', transition: 'all 0.2s', minHeight: 100,
-      }}
-    >
-      {processing
-        ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
-        : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
-      <div style={{ fontSize: 15, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-        {processing ? 'Processing...' : 'Drag & drop one or more files'}
-      </div>
-      <div style={{ fontSize: 15, color: t.textGhost }}>CSV · PDF · PNG · JPG — parsed locally, merged into one timeline</div>
-    </div>
+              {/* Drag/drop area */}
+              <div
+                onDrop={e => {
+                  e.preventDefault(); setDragOver(false);
+                  const fs = Array.from(e.dataTransfer.files || []);
+                  if (!fs.length) return;
+                  const ext = fs[0].name.split('.').pop().toLowerCase();
+                  if (ext === 'csv' || ext === 'xlsx') {
+                    handleFile(fs[0]);
+                  } else {
+                    handleStatementFiles(fs, stmtTxns.length ? 'append' : 'replace');
+                  }
+                }}
+                onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onClick={() => stmtFileRef.current?.click()}
+                style={{
+                  border: `2px dashed ${dragOver ? t.accent : t.borderMid}`,
+                  borderRadius: 8,
+                  padding: 20,
+                  background: dragOver ? t.accentMuted : t.void,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: 8, cursor: 'pointer', transition: 'all 0.2s', minHeight: 100,
+                }}
+              >
+                {processing
+                  ? <Zap size={24} style={{ color: t.accent, animation: 'blink 0.5s infinite' }} />
+                  : <Upload size={22} style={{ color: dragOver ? t.accent : t.textDim }} />}
+                <div style={{ fontSize: 15, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  {processing ? 'Processing...' : 'Drag & drop one or more files'}
+                </div>
+                <div style={{ fontSize: 15, color: t.textGhost }}>CSV · PDF · PNG · JPG — parsed locally, merged into one timeline</div>
+              </div>
 
-    {/* Logs */}
-    <div style={{ display: 'grid', gap: 6 }}>
-      <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Parse Log</div>
-      <div style={{
-        padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.input,
-        fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textDim,
-        overflowX: 'hidden', width: '100%', boxSizing: 'border-box',
-      }}>
-        {logs.length ? logs.map((l, i) => <div key={i} style={{ overflowWrap: 'break-word', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>{l}</div>) : <div>Awaiting file…</div>}
-      </div>
-      {(stmtTemplateLabel || stmtReconSummary) && (
-        <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel, fontSize: 14, color: t.textSecondary }}>
-          <div><span style={{ color: t.textDim }}>Template:</span> <span style={{ color: t.accent }}>{stmtTemplateLabel || 'Generic'}</span></div>
-          {stmtReconSummary && (
-            <div style={{ marginTop: 4 }}>
-              <span>Reconciliation:</span>{' '}
-              <span style={{ color: t.textDim }}>sign fixes {stmtReconSummary.correctedSign || 0}, year fills {stmtReconSummary.filledYear || 0}</span>
-              {typeof stmtReconSummary.balanceDiff === 'number' && (
-                <span style={{ marginLeft: 6, color: Math.abs(stmtReconSummary.balanceDiff) <= 25 ? t.accent : t.warn }}>
-                  Δ {stmtReconSummary.balanceDiff >= 0 ? '+' : ''}{stmtReconSummary.balanceDiff.toFixed(2)}
-                </span>
-              )}
-              {!!stmtReconSummary.warnings?.length && (
-                <div style={{ marginTop: 4, color: t.warn }}>{stmtReconSummary.warnings[0]}</div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-      {error && <div style={{ color: t.warn, fontSize: 15 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
-    {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
-      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10, minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', width: '100%' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-          <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
-          <button onClick={() => { 
-            try { 
-              const tpl = detectStatementTemplate(stmtRawText || stmtText, stmtFile?.name || '');
-              const parsed = parseStatementTextToTransactions(stmtRawText || stmtText, { bankKey: tpl.key });
-              const reconciled = reconcileParsedTransactions(parsed, stmtRawText || stmtText, tpl.key);
-              const tx = applyMerchantRules(reconciled.txns, merchantRules); 
-              setStmtTxns(tx); 
-              setReviewedLowIndices([]);
-              setStmtTemplateLabel(tpl.label || 'Generic');
-              setStmtReconSummary(reconciled.summary);
-              const snap2 = transactionsToSnapshot(tx, stmtBankName); 
-              setParsedPreview(snap2); 
-              if (tx.length) setError(''); 
-              log(`RE-PARSE: ${tx.length} transactions`); 
-            } catch(e){ 
-              setError(e?.message || 'Re-parse failed'); 
-            } 
-          }} style={btn}>
-            <RefreshCw size={14} /> TRY PARSE AGAIN
-          </button>
-        </div>
-        <div style={{ marginTop: 10, maxHeight: 180, overflowY: 'auto', overflowX: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textDim, width: '100%', boxSizing: 'border-box' }}>
-          {stmtText}
-        </div>
-      </div>
-    )}
-    </div>
-
-    {/* Editable transaction table */}
-    {parsedPreview && (
-      <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, minWidth: 0, width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
-        {/* Row 1: title + confidence stats */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
-          <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 14 }}>
-            <span style={{ color: t.textDim }}>Rules {merchantRules.length}</span>
-            <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
-            <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
-            <span style={{ color: t.danger }}>Low {confidenceCounts.low || 0}</span>
-            <span style={{ color: lowReviewComplete ? t.accent : t.warn }}>Review {reviewedLowCount}/{lowConfidenceIndices.length || 0}</span>
-          </div>
-        </div>
-        {/* Row 2: action buttons — wraps freely */}
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginTop: 8 }}>
-          <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '6px 10px', fontSize: 14 }}>
-            {showLowConfidence ? 'Hide Low' : 'Show Low'}
-          </button>
-          <button
-            onClick={() => { if (!lowConfidenceRows.length) return; setReviewLowConfidence(v => !v); setReviewCursor(0); }}
-            disabled={!lowConfidenceRows.length}
-            style={{ ...btnGhost, padding: '6px 10px', fontSize: 14, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
-          >
-            {reviewLowConfidence ? 'Exit Review' : `Review Low (${lowConfidenceRows.length})`}
-          </button>
-          <button
-            onClick={() => {
-              const all = lowConfidenceRows.map(r => r.idx).filter(idx => typeof idx === 'number');
-              setReviewedLowIndices(prev => Array.from(new Set([...prev, ...all])));
-              setError('');
-              log(`LOW-CONFIDENCE QUICK REVIEW: ${all.length} ROWS MARKED`);
-            }}
-            disabled={!lowConfidenceRows.length}
-            style={{ ...btnGhost, padding: '6px 10px', fontSize: 14, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
-          >
-            Mark Reviewed
-          </button>
-          {csvBlobUrl && (
-            <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14 }}>
-              <Download size={12} /> CSV
-            </a>
-          )}
-          <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, padding: '6px 14px', fontSize: 14, opacity: (!parsedPreview) ? 0.6 : 1 }}>
-            <Shield size={12} /> Commit Sync
-          </button>
-        </div>
-        {reviewLowConfidence && lowConfidenceRows.length > 0 && (
-          <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 14, color: t.textDim }}>
-            <span>Reviewing low-confidence row {reviewCursor + 1} / {lowConfidenceRows.length}</span>
-            <button onClick={() => setReviewCursor(c => Math.max(0, c - 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 14 }} disabled={reviewCursor === 0}>
-              PREV
-            </button>
-            <button onClick={() => setReviewCursor(c => Math.min(lowConfidenceRows.length - 1, c + 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 14 }} disabled={reviewCursor >= lowConfidenceRows.length - 1}>
-              NEXT
-            </button>
-            <button
-              onClick={() => {
-                const idx = lowConfidenceRows[reviewCursor]?.idx;
-                if (typeof idx === 'number') setReviewedLowIndices(prev => (prev.includes(idx) ? prev : [...prev, idx]));
-              }}
-              style={{ ...btn, padding: '6px 8px', fontSize: 14 }}
-            >
-              MARK REVIEWED
-            </button>
-          </div>
-        )}
-
-        <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch', width: '100%' }}>
-          <table style={{ width: '100%', minWidth: 580, borderCollapse: 'collapse', fontSize: 15 }}>
-            <thead>
-              <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 14 }}>
-                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
-                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Payee</th>
-                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Confidence</th>
-                <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Category</th>
-                <th style={{ textAlign: 'right', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Amount</th>
-                <th style={{ width: 40, padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {(displayedStmtRows.length ? displayedStmtRows : [{ tx: null, idx: -1 }]).map((row, i) => {
-                const tx = row?.tx;
-                if (!tx) {
-                  const emptyMsg = reviewLowConfidence
-                    ? 'No low-confidence rows left to review.'
-                    : stmtRows.length
-                    ? 'No rows visible with current confidence filter. Toggle "SHOW LOW-CONFIDENCE" to review hidden rows.'
-                    : 'No transactions detected yet. If this is a scanned/image file, try a sharper image or text-based PDF export. You can still COMMIT SYNC to save a baseline snapshot.';
-                  return (
-                    <tr key="empty">
-                      <td colSpan={6} style={{ padding: '10px 6px', color: t.textDim }}>
-                        {emptyMsg}
-                      </td>
-                    </tr>
-                  );
-                }
-                const idx = row.idx;
-                const inferredCat = inferCategory(tx.description || '', merchantRules);
-                const confidenceColor = tx.confidence === 'high' ? t.accent : tx.confidence === 'medium' ? t.warn : t.danger;
-                return (
-                  <tr key={`${idx}-${i}`} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
-                    <td style={{ padding: '8px 6px' }}>
-                      <input value={tx.date || ''} onChange={e => updateStmtTxn(idx, 'date', e.target.value)} style={{
-                        width: 'clamp(88px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
-                      }} />
-                    </td>
-                    <td style={{ padding: '8px 6px' }}>
-                      <input value={tx.description || ''} onChange={e => updateStmtTxn(idx, 'description', e.target.value)} style={{
-                        width: 'clamp(160px, 36vw, 420px)', maxWidth: '52vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
-                      }} />
-                    </td>
-                    <td style={{ padding: '8px 6px' }}>
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        minWidth: 74, padding: '6px 8px', borderRadius: 999, border: `1px solid ${confidenceColor}`,
-                        color: confidenceColor, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em',
-                        fontFamily: "'JetBrains Mono', monospace",
-                      }}>
-                        {(tx.confidence || 'low').toUpperCase()}
-                      </span>
-                    </td>
-                    <td style={{ padding: '8px 6px' }}>
-  <select value={(tx.category ?? '')} onChange={e => updateStmtTxn(idx, 'category', e.target.value)} style={{
-    width: 'clamp(130px, 24vw, 220px)', maxWidth: '36vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-    background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
-  }}>
-    <option value="">{`AUTO · ${inferredCat}`}</option>
-    {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-  </select>
-</td>
-                    <td style={{ padding: '8px 6px', textAlign: 'right' }}>
-                      <input value={typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0)}
-                             onChange={e => updateStmtTxn(idx, 'amount', e.target.value)} style={{
-                        width: 'clamp(92px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
-                        background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, textAlign: 'right',
-                      }} />
-                    </td>
-                    <td style={{ padding: '8px 6px', textAlign: 'right' }}>
-                      <button onClick={() => removeStmtTxn(idx)} style={{ ...btnGhost, padding: '6px 8px' }} aria-label="Remove row">
-                        <Trash2 size={14} />
+              {/* Logs */}
+              <div style={{ display: 'grid', gap: 6 }}>
+                <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Parse Log</div>
+                <div style={{
+                  padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.input,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textDim,
+                  overflowX: 'hidden', width: '100%', boxSizing: 'border-box',
+                }}>
+                  {logs.length ? logs.map((l, i) => <div key={i} style={{ overflowWrap: 'break-word', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>{l}</div>) : <div>Awaiting file…</div>}
+                </div>
+                {(stmtTemplateLabel || stmtReconSummary) && (
+                  <div style={{ padding: 10, borderRadius: 12, border: `1px solid ${t.borderDim}`, background: t.panel, fontSize: 14, color: t.textSecondary }}>
+                    <div><span style={{ color: t.textDim }}>Template:</span> <span style={{ color: t.accent }}>{stmtTemplateLabel || 'Generic'}</span></div>
+                    {stmtReconSummary && (
+                      <div style={{ marginTop: 4 }}>
+                        <span>Reconciliation:</span>{' '}
+                        <span style={{ color: t.textDim }}>sign fixes {stmtReconSummary.correctedSign || 0}, year fills {stmtReconSummary.filledYear || 0}</span>
+                        {typeof stmtReconSummary.balanceDiff === 'number' && (
+                          <span style={{ marginLeft: 6, color: Math.abs(stmtReconSummary.balanceDiff) <= 25 ? t.accent : t.warn }}>
+                            Δ {stmtReconSummary.balanceDiff >= 0 ? '+' : ''}{stmtReconSummary.balanceDiff.toFixed(2)}
+                          </span>
+                        )}
+                        {!!stmtReconSummary.warnings?.length && (
+                          <div style={{ marginTop: 4, color: t.warn }}>{stmtReconSummary.warnings[0]}</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {error && <div style={{ color: t.warn, fontSize: 15 }}><AlertCircle size={12} style={{ verticalAlign: 'middle' }} /> {error}</div>}
+                {stmtText && (!stmtTxns || stmtTxns.length === 0) && (
+                  <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, marginTop: 10, minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Extracted Text</div>
+                      <button onClick={() => {
+                        try {
+                          const tpl = detectStatementTemplate(stmtRawText || stmtText, stmtFile?.name || '');
+                          const parsed = parseStatementTextToTransactions(stmtRawText || stmtText, { bankKey: tpl.key });
+                          const reconciled = reconcileParsedTransactions(parsed, stmtRawText || stmtText, tpl.key);
+                          const tx = applyMerchantRules(reconciled.txns, merchantRules);
+                          setStmtTxns(tx);
+                          setReviewedLowIndices([]);
+                          setStmtTemplateLabel(tpl.label || 'Generic');
+                          setStmtReconSummary(reconciled.summary);
+                          const snap2 = transactionsToSnapshot(tx, stmtBankName);
+                          setParsedPreview(snap2);
+                          if (tx.length) setError('');
+                          log(`RE-PARSE: ${tx.length} transactions`);
+                        } catch (e) {
+                          setError(e?.message || 'Re-parse failed');
+                        }
+                      }} style={btn}>
+                        <RefreshCw size={14} /> TRY PARSE AGAIN
                       </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {!showLowConfidence && confidenceCounts.low > 0 && (
-            <div style={{ marginTop: 8, fontSize: 14, color: t.textDim }}>
-              {confidenceCounts.low} low-confidence rows hidden. Toggle "SHOW LOW-CONFIDENCE" to review/edit.
+                    </div>
+                    <div style={{ marginTop: 10, maxHeight: 180, overflowY: 'auto', overflowX: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textDim, width: '100%', boxSizing: 'border-box' }}>
+                      {stmtText}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Editable transaction table */}
+              {parsedPreview && (
+                <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel, minWidth: 0, width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+                  {/* Row 1: title + confidence stats */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+                    <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.accent }}>Transactions Preview (Editable)</div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 14 }}>
+                      <span style={{ color: t.textDim }}>Rules {merchantRules.length}</span>
+                      <span style={{ color: t.accent }}>High {confidenceCounts.high || 0}</span>
+                      <span style={{ color: t.warn }}>Med {confidenceCounts.medium || 0}</span>
+                      <span style={{ color: t.danger }}>Low {confidenceCounts.low || 0}</span>
+                      <span style={{ color: lowReviewComplete ? t.accent : t.warn }}>Review {reviewedLowCount}/{lowConfidenceIndices.length || 0}</span>
+                    </div>
+                  </div>
+                  {/* Row 2: action buttons — wraps freely */}
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginTop: 8 }}>
+                    <button onClick={() => setShowLowConfidence(v => !v)} style={{ ...btnGhost, padding: '6px 10px', fontSize: 14 }}>
+                      {showLowConfidence ? 'Hide Low' : 'Show Low'}
+                    </button>
+                    <button
+                      onClick={() => { if (!lowConfidenceRows.length) return; setReviewLowConfidence(v => !v); setReviewCursor(0); }}
+                      disabled={!lowConfidenceRows.length}
+                      style={{ ...btnGhost, padding: '6px 10px', fontSize: 14, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+                    >
+                      {reviewLowConfidence ? 'Exit Review' : `Review Low (${lowConfidenceRows.length})`}
+                    </button>
+                    <button
+                      onClick={() => {
+                        const all = lowConfidenceRows.map(r => r.idx).filter(idx => typeof idx === 'number');
+                        setReviewedLowIndices(prev => Array.from(new Set([...prev, ...all])));
+                        setError('');
+                        log(`LOW-CONFIDENCE QUICK REVIEW: ${all.length} ROWS MARKED`);
+                      }}
+                      disabled={!lowConfidenceRows.length}
+                      style={{ ...btnGhost, padding: '6px 10px', fontSize: 14, opacity: lowConfidenceRows.length ? 1 : 0.5 }}
+                    >
+                      Mark Reviewed
+                    </button>
+                    {csvBlobUrl && (
+                      <a href={csvBlobUrl} download="payment-log.csv" style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 14 }}>
+                        <Download size={12} /> CSV
+                      </a>
+                    )}
+                    <button onClick={confirmSync} disabled={!parsedPreview} style={{ ...btn, padding: '6px 14px', fontSize: 14, opacity: (!parsedPreview) ? 0.6 : 1 }}>
+                      <Shield size={12} /> Commit Sync
+                    </button>
+                  </div>
+                  {reviewLowConfidence && lowConfidenceRows.length > 0 && (
+                    <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', fontSize: 14, color: t.textDim }}>
+                      <span>Reviewing low-confidence row {reviewCursor + 1} / {lowConfidenceRows.length}</span>
+                      <button onClick={() => setReviewCursor(c => Math.max(0, c - 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 14 }} disabled={reviewCursor === 0}>
+                        PREV
+                      </button>
+                      <button onClick={() => setReviewCursor(c => Math.min(lowConfidenceRows.length - 1, c + 1))} style={{ ...btnGhost, padding: '6px 8px', fontSize: 14 }} disabled={reviewCursor >= lowConfidenceRows.length - 1}>
+                        NEXT
+                      </button>
+                      <button
+                        onClick={() => {
+                          const idx = lowConfidenceRows[reviewCursor]?.idx;
+                          if (typeof idx === 'number') setReviewedLowIndices(prev => (prev.includes(idx) ? prev : [...prev, idx]));
+                        }}
+                        style={{ ...btn, padding: '6px 8px', fontSize: 14 }}
+                      >
+                        MARK REVIEWED
+                      </button>
+                    </div>
+                  )}
+
+                  <div style={{ overflowX: 'auto', marginTop: 10, WebkitOverflowScrolling: 'touch', width: '100%' }}>
+                    <table style={{ width: '100%', minWidth: 580, borderCollapse: 'collapse', fontSize: 15 }}>
+                      <thead>
+                        <tr style={{ color: t.textDim, textTransform: 'uppercase', fontSize: 14 }}>
+                          <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Date</th>
+                          <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Payee</th>
+                          <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Confidence</th>
+                          <th style={{ textAlign: 'left', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Category</th>
+                          <th style={{ textAlign: 'right', padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}>Amount</th>
+                          <th style={{ width: 40, padding: '8px 6px', borderBottom: `1px solid ${t.borderDim}` }}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(displayedStmtRows.length ? displayedStmtRows : [{ tx: null, idx: -1 }]).map((row, i) => {
+                          const tx = row?.tx;
+                          if (!tx) {
+                            const emptyMsg = reviewLowConfidence
+                              ? 'No low-confidence rows left to review.'
+                              : stmtRows.length
+                                ? 'No rows visible with current confidence filter. Toggle "SHOW LOW-CONFIDENCE" to review hidden rows.'
+                                : 'No transactions detected yet. If this is a scanned/image file, try a sharper image or text-based PDF export. You can still COMMIT SYNC to save a baseline snapshot.';
+                            return (
+                              <tr key="empty">
+                                <td colSpan={6} style={{ padding: '10px 6px', color: t.textDim }}>
+                                  {emptyMsg}
+                                </td>
+                              </tr>
+                            );
+                          }
+                          const idx = row.idx;
+                          const inferredCat = inferCategory(tx.description || '', merchantRules);
+                          const confidenceColor = tx.confidence === 'high' ? t.accent : tx.confidence === 'medium' ? t.warn : t.danger;
+                          return (
+                            <tr key={`${idx}-${i}`} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
+                              <td style={{ padding: '8px 6px' }}>
+                                <input value={tx.date || ''} onChange={e => updateStmtTxn(idx, 'date', e.target.value)} style={{
+                                  width: 'clamp(88px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                                  background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
+                                }} />
+                              </td>
+                              <td style={{ padding: '8px 6px' }}>
+                                <input value={tx.description || ''} onChange={e => updateStmtTxn(idx, 'description', e.target.value)} style={{
+                                  width: 'clamp(160px, 36vw, 420px)', maxWidth: '52vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                                  background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
+                                }} />
+                              </td>
+                              <td style={{ padding: '8px 6px' }}>
+                                <span style={{
+                                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                  minWidth: 74, padding: '6px 8px', borderRadius: 999, border: `1px solid ${confidenceColor}`,
+                                  color: confidenceColor, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em',
+                                  fontFamily: "'JetBrains Mono', monospace",
+                                }}>
+                                  {(tx.confidence || 'low').toUpperCase()}
+                                </span>
+                              </td>
+                              <td style={{ padding: '8px 6px' }}>
+                                <select value={(tx.category ?? '')} onChange={e => updateStmtTxn(idx, 'category', e.target.value)} style={{
+                                  width: 'clamp(130px, 24vw, 220px)', maxWidth: '36vw', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                                  background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
+                                }}>
+                                  <option value="">{`AUTO · ${inferredCat}`}</option>
+                                  {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                              </td>
+                              <td style={{ padding: '8px 6px', textAlign: 'right' }}>
+                                <input value={typeof tx.amount === 'number' ? tx.amount : (parseFloat(tx.amount) || 0)}
+                                  onChange={e => updateStmtTxn(idx, 'amount', e.target.value)} style={{
+                                    width: 'clamp(92px, 16vw, 120px)', padding: '6px 8px', borderRadius: 10, border: `1px solid ${t.borderDim}`,
+                                    background: t.input, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, textAlign: 'right',
+                                  }} />
+                              </td>
+                              <td style={{ padding: '8px 6px', textAlign: 'right' }}>
+                                <button onClick={() => removeStmtTxn(idx)} style={{ ...btnGhost, padding: '6px 8px' }} aria-label="Remove row">
+                                  <Trash2 size={14} />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    {!showLowConfidence && confidenceCounts.low > 0 && (
+                      <div style={{ marginTop: 8, fontSize: 14, color: t.textDim }}>
+                        {confidenceCounts.low} low-confidence rows hidden. Toggle "SHOW LOW-CONFIDENCE" to review/edit.
+                      </div>
+                    )}
+                    {stmtTxns.length > 200 && <div style={{ marginTop: 8, fontSize: 14, color: t.textDim }}>Showing first 200 rows. Export includes all rows.</div>}
+                  </div>
+                </div>
+              )}
+
+              {/* Optional raw extracted text */}
+              {stmtText && (
+                <details style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
+                  <summary style={{ cursor: 'pointer', color: t.textDim, fontSize: 15 }}>View extracted text</summary>
+                  <pre style={{ whiteSpace: 'pre-wrap', fontSize: 14, color: t.textDim, marginTop: 10, fontFamily: "'JetBrains Mono', monospace" }}>
+                    {stmtText.slice(0, 20000)}{stmtText.length > 20000 ? '\\n…(truncated)…' : ''}
+                  </pre>
+                </details>
+              )}
+
+              {/* Privacy */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 15, color: t.warn }}>
+                <ShieldAlert size={11} />
+                <span>Stored locally in this browser profile. Disable browser sync for single-device isolation.</span>
+              </div>
+
+              {/* Prominent Sync button — always visible once data is ready */}
+              {parsedPreview ? (
+                <button onClick={confirmSync} style={{
+                  width: '100%', marginTop: 12, padding: '14px 0',
+                  background: t.accent, color: '#000',
+                  border: 'none', fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                }}>
+                  <Shield size={16} /> CONFIRM & SYNC TO DASHBOARD
+                </button>
+              ) : (
+                <div style={{
+                  width: '100%', marginTop: 12, padding: '14px 0',
+                  background: t.elevated, border: `1px solid ${t.borderDim}`,
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
+                  color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
+                }}>
+                  SYNC DISABLED — UPLOAD &amp; PARSE A STATEMENT FIRST
+                </div>
+              )}
             </div>
-          )}
-          {stmtTxns.length > 200 && <div style={{ marginTop: 8, fontSize: 14, color: t.textDim }}>Showing first 200 rows. Export includes all rows.</div>}
-        </div>
-      </div>
-    )}
-
-    {/* Optional raw extracted text */}
-    {stmtText && (
-      <details style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
-            <summary style={{ cursor: 'pointer', color: t.textDim, fontSize: 15 }}>View extracted text</summary>
-        <pre style={{ whiteSpace: 'pre-wrap', fontSize: 14, color: t.textDim, marginTop: 10, fontFamily: "'JetBrains Mono', monospace" }}>
-          {stmtText.slice(0, 20000)}{stmtText.length > 20000 ? '\\n…(truncated)…' : ''}
-        </pre>
-      </details>
-    )}
-
-    {/* Privacy */}
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 15, color: t.warn }}>
-      <ShieldAlert size={11} />
-      <span>Stored locally in this browser profile. Disable browser sync for single-device isolation.</span>
-    </div>
-
-    {/* Prominent Sync button — always visible once data is ready */}
-    {parsedPreview ? (
-      <button onClick={confirmSync} style={{
-        width: '100%', marginTop: 12, padding: '14px 0',
-        background: t.accent, color: '#000',
-        border: 'none', fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 14, fontWeight: 700, cursor: 'pointer',
-        textTransform: 'uppercase', letterSpacing: '0.08em',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-      }}>
-        <Shield size={16} /> CONFIRM & SYNC TO DASHBOARD
-      </button>
-    ) : (
-      <div style={{
-        width: '100%', marginTop: 12, padding: '14px 0',
-        background: t.elevated, border: `1px solid ${t.borderDim}`,
-        fontFamily: "'JetBrains Mono', monospace", fontSize: 15,
-        color: t.textGhost, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em',
-      }}>
-        SYNC DISABLED — UPLOAD &amp; PARSE A STATEMENT FIRST
-      </div>
-    )}
-  </div>
-</>)}
+          </>)}
 
           {/* ── JSON TAB ── */}
           {tab === 'json' && (<>
@@ -3845,11 +3857,12 @@ function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, 
           {isDark ? <Moon size={14} style={{ color: t.accent }} /> : <Sun size={14} style={{ color: t.accent }} />}
         </div>
         <div style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Modules</div>
-        {mods.map(m => { const on = settings.visibleModules.includes(m.key); return (
-          <div key={m.key} onClick={() => onToggle(m.key)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', cursor: 'pointer', borderBottom: `1px solid ${t.borderDim}` }}>
-            <span style={{ fontSize: 15, color: on ? t.textPrimary : t.textDim }}>{m.label}</span>
-            <div style={{ width: 28, height: 14, borderRadius: 7, background: on ? t.accentMuted : t.elevated, position: 'relative', transition: 'background 0.2s' }}><div style={{ width: 10, height: 10, borderRadius: '50%', position: 'absolute', top: 2, left: on ? 16 : 2, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} /></div>
-          </div>);
+        {mods.map(m => {
+          const on = settings.visibleModules.includes(m.key); return (
+            <div key={m.key} onClick={() => onToggle(m.key)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', cursor: 'pointer', borderBottom: `1px solid ${t.borderDim}` }}>
+              <span style={{ fontSize: 15, color: on ? t.textPrimary : t.textDim }}>{m.label}</span>
+              <div style={{ width: 28, height: 14, borderRadius: 7, background: on ? t.accentMuted : t.elevated, position: 'relative', transition: 'background 0.2s' }}><div style={{ width: 10, height: 10, borderRadius: '50%', position: 'absolute', top: 2, left: on ? 16 : 2, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} /></div>
+            </div>);
         })}
         <div style={{ marginTop: 20, color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Pay Schedule</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
@@ -3894,18 +3907,18 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
   const nw = latest?.netWorth || {};
   const assets = nw.assets || {};
   const cryptoVal = (latest?.portfolio?.crypto || []).reduce((s, c) => s + (Number(c.amount) || 0) * (Number(c.lastPrice) || 0), 0);
-  const eqVal    = (latest?.portfolio?.equities || []).reduce((s, e) => s + (Number(e.shares) || 0) * (Number(e.lastPrice) || 0), 0);
-  const tCash = (assets.checking||0)+(assets.savings||0)+(assets.eFund||0)+(assets.other||0);
+  const eqVal = (latest?.portfolio?.equities || []).reduce((s, e) => s + (Number(e.shares) || 0) * (Number(e.lastPrice) || 0), 0);
+  const tCash = (assets.checking || 0) + (assets.savings || 0) + (assets.eFund || 0) + (assets.other || 0);
   const tA = tCash + eqVal + cryptoVal;
   const tL = Object.values(nw.liabilities || {}).reduce((s, v) => s + (v || 0), 0);
 
   const breakdown = [
     { label: 'Checking', value: assets.checking || 0, color: t.textPrimary },
-    { label: 'Savings',  value: assets.savings  || 0, color: t.accent },
-    { label: 'E-Fund',   value: assets.eFund    || 0, color: t.accent },
-    { label: 'Equity',   value: eqVal,                color: t.accent },
-    { label: 'Crypto',   value: cryptoVal,            color: t.crypto },
-    { label: 'Other',    value: assets.other    || 0, color: t.textSecondary },
+    { label: 'Savings', value: assets.savings || 0, color: t.accent },
+    { label: 'E-Fund', value: assets.eFund || 0, color: t.accent },
+    { label: 'Equity', value: eqVal, color: t.accent },
+    { label: 'Crypto', value: cryptoVal, color: t.crypto },
+    { label: 'Other', value: assets.other || 0, color: t.textSecondary },
   ].filter(b => b.value > 0);
 
   const liabilitiesList = Object.entries(nw.liabilities || {})
@@ -3914,8 +3927,8 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
     .sort((a, b) => b.value - a.value);
 
   const mapAssets = breakdown.map(b => ({ label: b.label, value: b.value, color: b.color }));
-  const mapLiabs  = liabilitiesList.map(l => ({ label: l.name, value: l.value }));
-  const mapTotal  = [...mapAssets, ...mapLiabs].reduce((s, x) => s + (x.value || 0), 0) || 1;
+  const mapLiabs = liabilitiesList.map(l => ({ label: l.name, value: l.value }));
+  const mapTotal = [...mapAssets, ...mapLiabs].reduce((s, x) => s + (x.value || 0), 0) || 1;
 
   if (mapAssets.length === 0 && mapLiabs.length === 0) return null;
 
@@ -4037,7 +4050,7 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
   const revolving = debts.filter(d => !(d.totalTerms > 0));
   // ── Projected Freedom Date (avalanche target debt) ──────────────────────
   const _income = latest?.budget?.income || latest?._meta?.income || 0;
-  const _spent  = totalBudgetSpent(latest);
+  const _spent = totalBudgetSpent(latest);
   const _surplus = Math.max(0, _income - _spent);
   const calcFreedomDate = (debt) => {
     if (!debt || (debt.balance || 0) <= 0) return null;
@@ -4074,124 +4087,126 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
       });
 
       return (
-      <div key={i} style={{ marginBottom: 12, borderLeft: isTarget ? `2px solid ${t.accent}` : 'none', paddingLeft: isTarget ? 8 : isFixed ? 0 : 10 }}>
+        <div key={i} style={{ marginBottom: 12, borderLeft: isTarget ? `2px solid ${t.accent}` : 'none', paddingLeft: isTarget ? 8 : isFixed ? 0 : 10 }}>
 
-        {/* ── Row header ── */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 15, marginBottom: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ color: t.textSecondary }}>
-              {d.name}
-              {isFixed && <span style={{ fontSize: 15, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
-              {!isFixed && <span style={{ color: t.textDim }}> ({d.apr}%)</span>}
-            </span>
-            {isTarget && (
-              <span style={{ fontSize: 11, background: `${t.danger}22`, color: t.danger, border: `1px solid ${t.danger}`, padding: '1px 7px', fontWeight: 700, letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", animation: 'radarFadeUp 0.3s ease-out', textTransform: 'uppercase' }}>
-                ⚡ ATTACK TARGET
+          {/* ── Row header ── */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 15, marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <span style={{ color: t.textSecondary }}>
+                {d.name}
+                {isFixed && <span style={{ fontSize: 15, color: t.textDim, marginLeft: 6, textTransform: 'uppercase', letterSpacing: '0.04em', border: `1px solid ${t.borderDim}`, padding: '1px 4px' }}>{d.type === 'BNPL' ? 'BNPL' : 'TERM'}</span>}
+                {!isFixed && <span style={{ color: t.textDim }}> ({d.apr}%)</span>}
               </span>
-            )}
-            {paidThisCycle && (
-              <span style={{ fontSize: 15, background: t.accentMuted, color: t.accent, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.04em', fontFamily: "'JetBrains Mono', monospace" }}>
-                ✓ PAID {d._lastPayAmt ? fmt(d._lastPayAmt) : ''}
-              </span>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>
-              {isFixed
-                ? <span style={{ color: isLast ? t.accent : t.textSecondary }}>{pmtsMade} of {d.totalTerms} PMTS</span>
-                : <span>{fmt(d.balance)} <span style={{ color: t.textDim, fontSize: 14 }}>min {fmt(d.minPayment)}/mo</span></span>
-              }
-            </span>
-            {onUpdateDebt && <>
-              <button style={btnStyle(panelOpen && panel.mode === 'pay')} onClick={() => panelOpen && panel.mode === 'pay' ? setPanel(null) : openPanel(d, 'pay')}>⚡ Pay</button>
-              <button style={btnStyle(panelOpen && panel.mode === 'balance')} onClick={() => panelOpen && panel.mode === 'balance' ? setPanel(null) : openPanel(d, 'balance')}>✏ Bal</button>
-            </>}
-          </div>
-        </div>
-        {/* ── Projected Freedom Date (attack target only) ── */}
-        {isTarget && (() => { const fd = calcFreedomDate(d); return fd ? (
-          <div style={{ fontSize: 12, color: t.accent, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.07em', marginBottom: 4, textTransform: 'uppercase' }}>
-            PROJECTED FREE: {fd}{_surplus > 0 && <span style={{ color: t.textGhost, marginLeft: 6 }}>({fmt(_surplus)}/mo surplus applied)</span>}
-          </div>
-        ) : null; })()}
-
-        {/* ── Inline action panel ── */}
-        {panelOpen && (
-          <div style={{ margin: '6px 0 8px', padding: '10px 12px', background: t.elevated, border: `1px solid ${panel.mode === 'pay' ? t.accent : t.borderMid}`, animation: 'radarFadeUp 0.15s ease-out' }}>
-            {panel.mode === 'pay' ? (<>
-              <div style={{ fontSize: 15, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Mark Payment — {d.name}
-              </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ fontSize: 14, color: t.textDim }}>$</span>
-                <input
-                  autoFocus
-                  value={panel.value}
-                  onChange={e => setPanel(p => ({ ...p, value: e.target.value }))}
-                  onKeyDown={e => { if (e.key === 'Enter') confirmPay(d); if (e.key === 'Escape') setPanel(null); }}
-                  inputMode="decimal"
-                  style={{ flex: 1, background: t.input, border: `1px solid ${t.accent}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 8px' }}
-                />
-                <button onClick={() => confirmPay(d)} style={{ background: t.accent, border: 'none', color: t.void, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>CONFIRM</button>
-                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
-              </div>
-              {!isFixed && parseFloat(panel.value) > 0 && (
-                <div style={{ fontSize: 15, color: t.textDim }}>
-                  Interest: <span style={{ color: t.danger }}>{fmt(monthlyInterestAmt)}</span> · Principal: <span style={{ color: t.accent }}>{fmt(Math.max(0, parseFloat(panel.value) - monthlyInterestAmt))}</span> · New balance: <span style={{ color: t.textPrimary }}>{fmt(Math.max(0, (d.balance || 0) - Math.max(0, parseFloat(panel.value) - monthlyInterestAmt)))}</span>
-                </div>
+              {isTarget && (
+                <span style={{ fontSize: 11, background: `${t.danger}22`, color: t.danger, border: `1px solid ${t.danger}`, padding: '1px 7px', fontWeight: 700, letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", animation: 'radarFadeUp 0.3s ease-out', textTransform: 'uppercase' }}>
+                  ⚡ ATTACK TARGET
+                </span>
               )}
-            </>) : (<>
-              <div style={{ fontSize: 15, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Update Balance — {d.name}
+              {paidThisCycle && (
+                <span style={{ fontSize: 15, background: t.accentMuted, color: t.accent, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.04em', fontFamily: "'JetBrains Mono', monospace" }}>
+                  ✓ PAID {d._lastPayAmt ? fmt(d._lastPayAmt) : ''}
+                </span>
+              )}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>
+                {isFixed
+                  ? <span style={{ color: isLast ? t.accent : t.textSecondary }}>{pmtsMade} of {d.totalTerms} PMTS</span>
+                  : <span>{fmt(d.balance)} <span style={{ color: t.textDim, fontSize: 14 }}>min {fmt(d.minPayment)}/mo</span></span>
+                }
+              </span>
+              {onUpdateDebt && <>
+                <button style={btnStyle(panelOpen && panel.mode === 'pay')} onClick={() => panelOpen && panel.mode === 'pay' ? setPanel(null) : openPanel(d, 'pay')}>⚡ Pay</button>
+                <button style={btnStyle(panelOpen && panel.mode === 'balance')} onClick={() => panelOpen && panel.mode === 'balance' ? setPanel(null) : openPanel(d, 'balance')}>✏ Bal</button>
+              </>}
+            </div>
+          </div>
+          {/* ── Projected Freedom Date (attack target only) ── */}
+          {isTarget && (() => {
+            const fd = calcFreedomDate(d); return fd ? (
+              <div style={{ fontSize: 12, color: t.accent, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.07em', marginBottom: 4, textTransform: 'uppercase' }}>
+                PROJECTED FREE: {fd}{_surplus > 0 && <span style={{ color: t.textGhost, marginLeft: 6 }}>({fmt(_surplus)}/mo surplus applied)</span>}
               </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span style={{ fontSize: 14, color: t.textDim }}>$</span>
-                <input
-                  autoFocus
-                  value={panel.value}
-                  onChange={e => setPanel(p => ({ ...p, value: e.target.value }))}
-                  onKeyDown={e => { if (e.key === 'Enter') confirmBalance(d); if (e.key === 'Escape') setPanel(null); }}
-                  inputMode="decimal"
-                  style={{ flex: 1, background: t.input, border: `1px solid ${t.borderMid}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 8px' }}
-                />
-                <button onClick={() => confirmBalance(d)} style={{ background: t.elevated, border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>UPDATE</button>
-                <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
-              </div>
-              <div style={{ fontSize: 15, color: t.textDim, marginTop: 6 }}>Type the actual balance from your bank app or statement.</div>
-            </>)}
-          </div>
-        )}
+            ) : null;
+          })()}
 
-        {/* ── Progress bars ── */}
-        {isFixed ? (
-          <div style={{ display: 'flex', gap: 2, height: 6, marginBottom: 4 }}>
-            {Array.from({ length: d.totalTerms }).map((_, idx) => {
-              const filled = idx < pmtsMade;
-              const isNext = idx === pmtsMade;
-              const isFinal = isLast && idx === d.totalTerms - 1;
-              return (<div key={idx} style={{
-                flex: 1, background: filled ? t.accent : t.elevated,
-                border: isNext ? `1px solid ${t.accent}` : `1px solid ${t.borderMid}`,
-                animation: isFinal ? 'lastSeg 1.5s ease-in-out infinite' : 'none',
-                transition: 'background 0.3s',
-              }} />);
-            })}
-          </div>
-        ) : (
-          <ProgressBar percent={maxB > 0 ? (d.balance / maxB) * 100 : 0} color={isTarget ? t.danger : t.accent} t={t} />
-        )}
+          {/* ── Inline action panel ── */}
+          {panelOpen && (
+            <div style={{ margin: '6px 0 8px', padding: '10px 12px', background: t.elevated, border: `1px solid ${panel.mode === 'pay' ? t.accent : t.borderMid}`, animation: 'radarFadeUp 0.15s ease-out' }}>
+              {panel.mode === 'pay' ? (<>
+                <div style={{ fontSize: 15, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  Mark Payment — {d.name}
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 14, color: t.textDim }}>$</span>
+                  <input
+                    autoFocus
+                    value={panel.value}
+                    onChange={e => setPanel(p => ({ ...p, value: e.target.value }))}
+                    onKeyDown={e => { if (e.key === 'Enter') confirmPay(d); if (e.key === 'Escape') setPanel(null); }}
+                    inputMode="decimal"
+                    style={{ flex: 1, background: t.input, border: `1px solid ${t.accent}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 8px' }}
+                  />
+                  <button onClick={() => confirmPay(d)} style={{ background: t.accent, border: 'none', color: t.void, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>CONFIRM</button>
+                  <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+                </div>
+                {!isFixed && parseFloat(panel.value) > 0 && (
+                  <div style={{ fontSize: 15, color: t.textDim }}>
+                    Interest: <span style={{ color: t.danger }}>{fmt(monthlyInterestAmt)}</span> · Principal: <span style={{ color: t.accent }}>{fmt(Math.max(0, parseFloat(panel.value) - monthlyInterestAmt))}</span> · New balance: <span style={{ color: t.textPrimary }}>{fmt(Math.max(0, (d.balance || 0) - Math.max(0, parseFloat(panel.value) - monthlyInterestAmt)))}</span>
+                  </div>
+                )}
+              </>) : (<>
+                <div style={{ fontSize: 15, color: t.textDim, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  Update Balance — {d.name}
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: 14, color: t.textDim }}>$</span>
+                  <input
+                    autoFocus
+                    value={panel.value}
+                    onChange={e => setPanel(p => ({ ...p, value: e.target.value }))}
+                    onKeyDown={e => { if (e.key === 'Enter') confirmBalance(d); if (e.key === 'Escape') setPanel(null); }}
+                    inputMode="decimal"
+                    style={{ flex: 1, background: t.input, border: `1px solid ${t.borderMid}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '5px 8px' }}
+                  />
+                  <button onClick={() => confirmBalance(d)} style={{ background: t.elevated, border: `1px solid ${t.accent}`, color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>UPDATE</button>
+                  <button onClick={() => setPanel(null)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 10px', cursor: 'pointer' }}>✕</button>
+                </div>
+                <div style={{ fontSize: 15, color: t.textDim, marginTop: 6 }}>Type the actual balance from your bank app or statement.</div>
+              </>)}
+            </div>
+          )}
 
-        {/* ── Subline ── */}
-        {isFixed && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: t.textDim }}>
-            <span>{fmt(d.balance)} remaining{d.monthlyPayment > 0 ? ` • ${fmt(d.monthlyPayment)}/mo` : ''}</span>
-            <span style={{ color: isLast ? t.accent : t.textDim }}>
-              {remaining > 0 ? `${remaining} left` : '✓ COMPLETE'}
-              {isLast && ' → REALLOCATE'}
-            </span>
-          </div>
-        )}
-      </div>);
+          {/* ── Progress bars ── */}
+          {isFixed ? (
+            <div style={{ display: 'flex', gap: 2, height: 6, marginBottom: 4 }}>
+              {Array.from({ length: d.totalTerms }).map((_, idx) => {
+                const filled = idx < pmtsMade;
+                const isNext = idx === pmtsMade;
+                const isFinal = isLast && idx === d.totalTerms - 1;
+                return (<div key={idx} style={{
+                  flex: 1, background: filled ? t.accent : t.elevated,
+                  border: isNext ? `1px solid ${t.accent}` : `1px solid ${t.borderMid}`,
+                  animation: isFinal ? 'lastSeg 1.5s ease-in-out infinite' : 'none',
+                  transition: 'background 0.3s',
+                }} />);
+              })}
+            </div>
+          ) : (
+            <ProgressBar percent={maxB > 0 ? (d.balance / maxB) * 100 : 0} color={isTarget ? t.danger : t.accent} t={t} />
+          )}
+
+          {/* ── Subline ── */}
+          {isFixed && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: t.textDim }}>
+              <span>{fmt(d.balance)} remaining{d.monthlyPayment > 0 ? ` • ${fmt(d.monthlyPayment)}/mo` : ''}</span>
+              <span style={{ color: isLast ? t.accent : t.textDim }}>
+                {remaining > 0 ? `${remaining} left` : '✓ COMPLETE'}
+                {isLast && ' → REALLOCATE'}
+              </span>
+            </div>
+          )}
+        </div>);
     })}
     {revolving.length > 0 && <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginTop: 4, fontSize: 14, color: t.textSecondary }}>Avalanche target: <span style={{ color: t.accent }}>{revolving[0]?.name}</span> ({revolving[0]?.apr}% APR)</div>}
     {debts.length > 0 && di > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 15, color: t.textDim }}>
@@ -4336,7 +4351,7 @@ function BillCalendarMod({ latest, visible, t, payFrequencyOverride }) {
 
       {/* Day-of-week labels */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 3 }}>
-        {['S','M','T','W','T','F','S'].map((d, i) => (
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
           <div key={i} style={{ fontSize: 14, color: t.textGhost, textAlign: 'center', fontWeight: 700, letterSpacing: '0.06em', paddingBottom: 2 }}>{d}</div>
         ))}
       </div>
@@ -4516,7 +4531,7 @@ function EFundMod({ latest, visible, t }) {
         }
       </div>
       <div style={{ display: 'flex', gap: 2, boxShadow: stageClear ? `0 0 12px ${t.accent}40` : 'none', transition: 'box-shadow 0.6s' }}>
-        {Array.from({length: wallBlocks}, (_, i) => (
+        {Array.from({ length: wallBlocks }, (_, i) => (
           <div key={i} style={{
             flex: 1, height: 18, borderRadius: 1,
             background: i < filledBlocks ? t.accent : 'transparent',
@@ -4741,17 +4756,17 @@ function KnoxTerminalMod({ latest, visible, t }) {
   const warnCount = lines.filter(l => l.tag === 'WARNING').length;
 
   const tagColor = tag => {
-    if (tag === 'DANGER')   return t.danger;
-    if (tag === 'WARNING')  return t.warn;
+    if (tag === 'DANGER') return t.danger;
+    if (tag === 'WARNING') return t.warn;
     if (tag === 'VERIFIED') return t.accent;
-    if (tag === 'ACTION')   return t.accent;
+    if (tag === 'ACTION') return t.accent;
     return t.textSecondary;
   };
   const tagBg = tag => {
-    if (tag === 'DANGER')   return `${t.danger}18`;
-    if (tag === 'WARNING')  return `${t.warn}14`;
+    if (tag === 'DANGER') return `${t.danger}18`;
+    if (tag === 'WARNING') return `${t.warn}14`;
     if (tag === 'VERIFIED') return `${t.accent}10`;
-    if (tag === 'ACTION')   return `${t.accent}08`;
+    if (tag === 'ACTION') return `${t.accent}08`;
     return 'transparent';
   };
 
@@ -5000,11 +5015,13 @@ function BudgetMod({ latest, visible, t }) {
           ⚠ Income detected ({fmt(income)}) but $0 across all categories. Re-sync via Guided tab with actual spend, or your bank CSV may need sign correction.
         </div>
       )}
-      {cats.map((c, i) => { const pct = c.budgeted > 0 ? (c.actual / c.budgeted) * 100 : (c.actual > 0 ? 100 : 0); const isFixed = c.name === 'Essential' || c.name === 'Medical'; return (<div key={i} style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 14, marginBottom: 3 }}><span style={{ color: isFixed ? t.textPrimary : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-flex', alignItems: 'center', gap: 5 }}>{isFixed && <Lock size={9} style={{ color: c.name === 'Medical' ? t.danger : t.accent, flexShrink: 0, marginBottom: 1 }} />}{c.name}{isFixed && <span style={{ fontSize: 9, color: c.name === 'Medical' ? t.danger : t.accent, fontWeight: 700, letterSpacing: '0.06em' }}>FIXED</span>}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 15 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 15, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
-      {c.budgeted > 0 && <ProgressBar percent={pct} t={t} />}
-      {c.budgeted === 0 && c.actual > 0 && <div style={{ height: 6, background: t.accent, marginBottom: 4, opacity: 0.5 }} />}
-    </div>); })}
+      {cats.map((c, i) => {
+        const pct = c.budgeted > 0 ? (c.actual / c.budgeted) * 100 : (c.actual > 0 ? 100 : 0); const isFixed = c.name === 'Essential' || c.name === 'Medical'; return (<div key={i} style={{ marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: 14, marginBottom: 3 }}><span style={{ color: isFixed ? t.textPrimary : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'inline-flex', alignItems: 'center', gap: 5 }}>{isFixed && <Lock size={9} style={{ color: c.name === 'Medical' ? t.danger : t.accent, flexShrink: 0, marginBottom: 1 }} />}{c.name}{isFixed && <span style={{ fontSize: 9, color: c.name === 'Medical' ? t.danger : t.accent, fontWeight: 700, letterSpacing: '0.06em' }}>FIXED</span>}</span><span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}><span style={{ color: t.textPrimary, fontSize: 15 }}>{fmt(c.actual)}</span>{c.budgeted > 0 && <span style={{ color: t.textDim }}>/ {fmt(c.budgeted)}</span>}<span style={{ color: pctColor(pct, t), fontSize: 15, minWidth: 32, textAlign: 'right' }}>{c.budgeted > 0 ? Math.round(pct) + '%' : ''}</span></span></div>
+          {c.budgeted > 0 && <ProgressBar percent={pct} t={t} />}
+          {c.budgeted === 0 && c.actual > 0 && <div style={{ height: 6, background: t.accent, marginBottom: 4, opacity: 0.5 }} />}
+        </div>);
+      })}
     </>}
   </Card>);
 }
@@ -5223,9 +5240,9 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
 
   // ── Halving anchors ──────────────────────────────────────────────
   // Last halving: block 840,000 — April 20, 2024
-  const lastHalvingUTC  = Date.UTC(2024, 3, 20);
+  const lastHalvingUTC = Date.UTC(2024, 3, 20);
   // Next halving: block 1,050,000 — estimated ~April 18, 2028
-  const nextHalvingUTC  = Date.UTC(2028, 3, 18);
+  const nextHalvingUTC = Date.UTC(2028, 3, 18);
 
   // ── Position in current cycle ─────────────────────────────────
   const daysPost = Math.floor((todayUTC - lastHalvingUTC) / msDay);   // days since last halving
@@ -5233,18 +5250,18 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
   const window500EndUTC = lastHalvingUTC + 500 * msDay;
 
   // ── Next cycle signals ─────────────────────────────────────────
-  const nextBuyUTC         = nextHalvingUTC - 500 * msDay;            // 500 days pre-halving = buy zone
-  const daysToNextBuy      = Math.floor((nextBuyUTC - todayUTC) / msDay);
-  const daysToNextHalving  = Math.floor((nextHalvingUTC - todayUTC) / msDay);
-  const buyZoneOpen        = daysToNextBuy <= 0;
+  const nextBuyUTC = nextHalvingUTC - 500 * msDay;            // 500 days pre-halving = buy zone
+  const daysToNextBuy = Math.floor((nextBuyUTC - todayUTC) / msDay);
+  const daysToNextHalving = Math.floor((nextHalvingUTC - todayUTC) / msDay);
+  const buyZoneOpen = daysToNextBuy <= 0;
 
   // ── Phase (relative to last halving) ──────────────────────────
   let phase, phaseColor, phaseDesc;
-  if (daysPost < 0)        { phase = 'Pre-Halving';      phaseColor = t.textSecondary; phaseDesc = 'Before the April 2024 halving.'; }
-  else if (daysPost <= 200){ phase = 'Early Expansion';  phaseColor = t.accent;        phaseDesc = 'Post-halving. Supply shock narrative building, demand rising.'; }
-  else if (daysPost <= 350){ phase = 'Mid Expansion';    phaseColor = t.accent;        phaseDesc = 'Historically the strongest upside zone of the cycle.'; }
-  else if (daysPost <= 500){ phase = 'Distribution';     phaseColor = t.warn;          phaseDesc = 'Late expansion — near historical cycle top zone. Exercise caution.'; }
-  else                     { phase = 'Past Peak / Wait'; phaseColor = t.danger;        phaseDesc = '500-day window closed Aug 2025. Accumulation watch for next cycle.'; }
+  if (daysPost < 0) { phase = 'Pre-Halving'; phaseColor = t.textSecondary; phaseDesc = 'Before the April 2024 halving.'; }
+  else if (daysPost <= 200) { phase = 'Early Expansion'; phaseColor = t.accent; phaseDesc = 'Post-halving. Supply shock narrative building, demand rising.'; }
+  else if (daysPost <= 350) { phase = 'Mid Expansion'; phaseColor = t.accent; phaseDesc = 'Historically the strongest upside zone of the cycle.'; }
+  else if (daysPost <= 500) { phase = 'Distribution'; phaseColor = t.warn; phaseDesc = 'Late expansion — near historical cycle top zone. Exercise caution.'; }
+  else { phase = 'Past Peak / Wait'; phaseColor = t.danger; phaseDesc = '500-day window closed Aug 2025. Accumulation watch for next cycle.'; }
 
   // ── Timeline bar: position marker within −500 → +500 window ──
   // Full bar = 1000 days. Left edge = −500d (pre-halving buy zone). Centre = halving. Right = +500d.
@@ -5353,11 +5370,11 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
   if (!visible) return null;
 
   // ── Derived macro signals from FRED data ─────────────────────────
-  const walcl  = fredMacro?.walcl?.value ?? null;
-  const tga    = fredMacro?.tga?.value   ?? null;
-  const rrp    = fredMacro?.rrp?.value   ?? null;
+  const walcl = fredMacro?.walcl?.value ?? null;
+  const tga = fredMacro?.tga?.value ?? null;
+  const rrp = fredMacro?.rrp?.value ?? null;
   const netLiq = (walcl != null && tga != null && rrp != null) ? walcl - tga - rrp : null;
-  const qtqe   = walcl == null ? null : walcl > 6600000 ? 'QE' : walcl > 6200000 ? 'NEUTRAL' : 'QT';
+  const qtqe = walcl == null ? null : walcl > 6600000 ? 'QE' : walcl > 6200000 ? 'NEUTRAL' : 'QT';
 
   // ── Auto Narrative Engine ─────────────────────────────────────────
   const debtList = Array.isArray(latest?.debts) ? latest.debts : [];
@@ -5366,12 +5383,12 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
     const parts = [];
     // Liquidity signal
     if (netLiq != null) {
-      if (netLiq > 5500000)      parts.push(`Fed net liquidity is elevated at $${(netLiq/1000).toFixed(2)}T — historically supportive of risk assets.`);
-      else if (netLiq > 4500000) parts.push(`Fed net liquidity at $${(netLiq/1000).toFixed(2)}T is neutral — watch for directional shift.`);
-      else                        parts.push(`Fed net liquidity is compressed at $${(netLiq/1000).toFixed(2)}T — risk-off environment, defense posture justified.`);
+      if (netLiq > 5500000) parts.push(`Fed net liquidity is elevated at $${(netLiq / 1000).toFixed(2)}T — historically supportive of risk assets.`);
+      else if (netLiq > 4500000) parts.push(`Fed net liquidity at $${(netLiq / 1000).toFixed(2)}T is neutral — watch for directional shift.`);
+      else parts.push(`Fed net liquidity is compressed at $${(netLiq / 1000).toFixed(2)}T — risk-off environment, defense posture justified.`);
     }
     // QT/QE
-    if (qtqe === 'QT')      parts.push('Balance sheet is in QT. Liquidity is draining — elevated caution on risk exposure.');
+    if (qtqe === 'QT') parts.push('Balance sheet is in QT. Liquidity is draining — elevated caution on risk exposure.');
     else if (qtqe === 'QE') parts.push('Balance sheet expansion (QE) supports asset prices — monitor for reversal signals.');
     // RRP near zero = bullish signal
     if (rrp != null && rrp < 1000) parts.push('RRP near zero means excess cash has left the overnight facility — historically a bullish liquidity signal.');
@@ -5381,8 +5398,8 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
   };
 
   // ── Styles ────────────────────────────────────────────────────────
-  const card  = { background: t.surface, border: `1px solid ${t.borderDim}`, borderRadius: 4, padding: 14, marginBottom: 0 };
-  const lbl   = { fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 };
+  const card = { background: t.surface, border: `1px solid ${t.borderDim}`, borderRadius: 4, padding: 14, marginBottom: 0 };
+  const lbl = { fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 };
   const metricBox = (borderColor) => ({
     padding: '10px 12px',
     borderRadius: 4,
@@ -5414,16 +5431,16 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
         <div style={metricBox()}>
           <div style={lbl}>Fed Cycle</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: qtqe === 'QT' ? t.danger : qtqe === 'QE' ? t.accent : t.warn }}>{qtqe ?? '—'}</div>
-          <div style={{ fontSize: 15, color: t.textDim }}>{walcl ? `WALCL $${(walcl/1000).toFixed(2)}T` : 'no FRED data'}</div>
+          <div style={{ fontSize: 15, color: t.textDim }}>{walcl ? `WALCL $${(walcl / 1000).toFixed(2)}T` : 'no FRED data'}</div>
         </div>
         <div style={metricBox()}>
           <div style={{ ...lbl, color: t.accent }}>Net Liquidity</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: netLiq != null && netLiq > 5000000 ? t.accent : netLiq != null ? t.warn : t.textDim }}>{netLiq != null ? `$${(netLiq/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: netLiq != null && netLiq > 5000000 ? t.accent : netLiq != null ? t.warn : t.textDim }}>{netLiq != null ? `$${(netLiq / 1000).toFixed(2)}T` : '—'}</div>
           <div style={{ fontSize: 15, color: t.textDim }}>WALCL − TGA − RRP</div>
         </div>
         <div style={metricBox()}>
           <div style={lbl}>RRP</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{rrp != null ? `$${(rrp/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{rrp != null ? `$${(rrp / 1000).toFixed(2)}T` : '—'}</div>
           <div style={{ fontSize: 15, color: t.textDim }}>overnight reverse repo</div>
         </div>
       </div>
@@ -5432,12 +5449,12 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, marginBottom: 10 }}>
         <div style={metricBox()}>
           <div style={lbl}>WALCL</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: t.textPrimary }}>{walcl != null ? `$${(walcl/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: t.textPrimary }}>{walcl != null ? `$${(walcl / 1000).toFixed(2)}T` : '—'}</div>
           <div style={{ fontSize: 15, color: t.textDim }}>Fed balance sheet</div>
         </div>
         <div style={metricBox()}>
           <div style={lbl}>TGA</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{tga != null ? `$${(tga/1000).toFixed(2)}T` : '—'}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: t.warn }}>{tga != null ? `$${(tga / 1000).toFixed(2)}T` : '—'}</div>
           <div style={{ fontSize: 15, color: t.textDim }}>Treasury General Account</div>
         </div>
         <div style={metricBox()}>
@@ -5474,18 +5491,18 @@ function MarketIntelligenceMod({ latest, visible, t, isDark, fredMacro }) {
 // each. Rotates by day of month.
 // ═══════════════════════════════════════════════════
 const MONTHLY_THEMES = [
-  { month: 'JAN', theme: 'Zero-Based Sovereignty',     objective: 'Assign every dollar a job before the month begins' },
-  { month: 'FEB', theme: 'The Avalanche Protocol',     objective: 'Eliminate debt systematically — highest rate first' },
-  { month: 'MAR', theme: 'Fortress of Cash',           objective: 'Build liquidity architecture that buys optionality' },
-  { month: 'APR', theme: 'The Defensive Moat',         objective: 'Protect what you have built — insurance is infrastructure' },
-  { month: 'MAY', theme: 'Asset Architecture',         objective: 'Core 80%, satellite 20% — discipline before speculation' },
-  { month: 'JUN', theme: 'Real Estate: Cash Flow Lens',objective: 'Cash flow is the metric of sovereignty, not appreciation' },
-  { month: 'JUL', theme: 'Tax: The Hidden Returns',    objective: 'A dollar saved from tax compounds identically to a dollar earned' },
-  { month: 'AUG', theme: 'Income Velocity',            objective: 'Savings rate is the throttle — maximize it without mercy' },
-  { month: 'SEP', theme: 'Retirement Architecture',    objective: 'Define your Freedom Number and engineer the path to it' },
-  { month: 'OCT', theme: 'Dynasty Design',             objective: 'Wealth not transferred is wealth not built' },
-  { month: 'NOV', theme: 'The Discipline of Wealth',   objective: 'Wealth is not a destination. It is a discipline.' },
-  { month: 'DEC', theme: 'The Annual Audit',           objective: 'What you measure in December determines what you achieve in January' },
+  { month: 'JAN', theme: 'Zero-Based Sovereignty', objective: 'Assign every dollar a job before the month begins' },
+  { month: 'FEB', theme: 'The Avalanche Protocol', objective: 'Eliminate debt systematically — highest rate first' },
+  { month: 'MAR', theme: 'Fortress of Cash', objective: 'Build liquidity architecture that buys optionality' },
+  { month: 'APR', theme: 'The Defensive Moat', objective: 'Protect what you have built — insurance is infrastructure' },
+  { month: 'MAY', theme: 'Asset Architecture', objective: 'Core 80%, satellite 20% — discipline before speculation' },
+  { month: 'JUN', theme: 'Real Estate: Cash Flow Lens', objective: 'Cash flow is the metric of sovereignty, not appreciation' },
+  { month: 'JUL', theme: 'Tax: The Hidden Returns', objective: 'A dollar saved from tax compounds identically to a dollar earned' },
+  { month: 'AUG', theme: 'Income Velocity', objective: 'Savings rate is the throttle — maximize it without mercy' },
+  { month: 'SEP', theme: 'Retirement Architecture', objective: 'Define your Freedom Number and engineer the path to it' },
+  { month: 'OCT', theme: 'Dynasty Design', objective: 'Wealth not transferred is wealth not built' },
+  { month: 'NOV', theme: 'The Discipline of Wealth', objective: 'Wealth is not a destination. It is a discipline.' },
+  { month: 'DEC', theme: 'The Annual Audit', objective: 'What you measure in December determines what you achieve in January' },
 ];
 
 const PILLARS = ['Foundation', 'The Moat', 'The Engine', 'The Summit'];
@@ -5749,7 +5766,7 @@ function DirectiveMod({ visible, latest, t }) {
   const cats = latest?.budget?.categories || [];
   const income = latest?.budget?.income || latest?._meta?.income || 0;
   const blownCats = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 1);
-  const warnCats  = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 0.75 && (c.actual / c.budgeted) < 1);
+  const warnCats = cats.filter(c => c.budgeted > 0 && (c.actual / c.budgeted) >= 0.75 && (c.actual / c.budgeted) < 1);
   const action = nextAction(latest);
 
   // Bills due within 48 hrs
@@ -5781,17 +5798,17 @@ function DirectiveMod({ visible, latest, t }) {
         {(() => {
           const txns = latest?._recentTxns || [];
           if (!txns.length) return null;
-          const today = new Date(); today.setHours(0,0,0,0);
-          const days7 = Array.from({length:7}, (_,i) => { const d = new Date(today); d.setDate(d.getDate()-6+i); return d.toISOString().slice(0,10); });
+          const today = new Date(); today.setHours(0, 0, 0, 0);
+          const days7 = Array.from({ length: 7 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - 6 + i); return d.toISOString().slice(0, 10); });
           const byDay7 = {};
-          txns.forEach(tx => { if (tx.amount < 0 && days7.includes(tx.date)) byDay7[tx.date] = (byDay7[tx.date]||0) + Math.abs(tx.amount); });
+          txns.forEach(tx => { if (tx.amount < 0 && days7.includes(tx.date)) byDay7[tx.date] = (byDay7[tx.date] || 0) + Math.abs(tx.amount); });
           const vals = days7.map(d => byDay7[d] || 0);
           const maxV = Math.max(...vals, 1);
-          const W=60, H=20, pts = vals.map((v,i) => `${(i/(vals.length-1))*W},${H - (v/maxV)*(H-2)-1}`).join(' ');
+          const W = 60, H = 20, pts = vals.map((v, i) => `${(i / (vals.length - 1)) * W},${H - (v / maxV) * (H - 2) - 1}`).join(' ');
           return (
-            <svg width={W} height={H} style={{marginTop:3,overflow:'visible'}}>
+            <svg width={W} height={H} style={{ marginTop: 3, overflow: 'visible' }}>
               <polyline points={pts} fill="none" stroke={t.warn} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" opacity="0.8" />
-              {vals.map((v,i) => v > 0 && <circle key={i} cx={(i/(vals.length-1))*W} cy={H-(v/maxV)*(H-2)-1} r="1.5" fill={t.warn} />)}
+              {vals.map((v, i) => v > 0 && <circle key={i} cx={(i / (vals.length - 1)) * W} cy={H - (v / maxV) * (H - 2) - 1} r="1.5" fill={t.warn} />)}
             </svg>
           );
         })()}
@@ -5856,7 +5873,7 @@ function DirectiveMod({ visible, latest, t }) {
 
     {/* ═══ WEALTH JOURNEY ═══ */}
     {(() => {
-      const steps = ['Stable','Safe','Debt Free','Invested','Protected','Independent','Legacy'];
+      const steps = ['Stable', 'Safe', 'Debt Free', 'Invested', 'Protected', 'Independent', 'Legacy'];
       const [guideOpen, setGuideOpen] = useState(false);
       return (
         <div style={{ marginBottom: (blownCats.length > 0 || warnCats.length > 0) ? 12 : 0 }}>
@@ -5868,9 +5885,9 @@ function DirectiveMod({ visible, latest, t }) {
           <div style={{ display: 'flex', gap: 3, marginBottom: 10 }}>
             {steps.map((_, i) => {
               const active = i === stage;
-              const done   = i < stage;
-              const color  = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.textDim;
-              const bg     = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.borderDim;
+              const done = i < stage;
+              const color = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.textDim;
+              const bg = done ? t.accent : active ? t[STAGE_META[i]?.color] || t.accent : t.borderDim;
               return (
                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                   <div style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color, opacity: done ? 0.7 : active ? 1 : 0.35, fontWeight: active ? 700 : 400 }}>{i + 1}</div>
@@ -5891,8 +5908,8 @@ function DirectiveMod({ visible, latest, t }) {
             <div style={{ background: t.void, border: `1px solid ${t.borderDim}`, padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
               {steps.map((label, i) => {
                 const active = i === stage;
-                const done   = i < stage;
-                const color  = active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim;
+                const done = i < stage;
+                const color = active ? t[STAGE_META[i]?.color] || t.accent : done ? t.textSecondary : t.textDim;
                 return (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: done ? 0.6 : 1 }}>
                     <span style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: t.textGhost, flexShrink: 0, width: 14, textAlign: 'right' }}>{i + 1}</span>
@@ -5982,7 +5999,7 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
         if (!result) return null;
         const meta = result.meta || {};
         let price = Number(meta.regularMarketPrice);
-        let prev  = Number(meta.chartPreviousClose ?? meta.previousClose);
+        let prev = Number(meta.chartPreviousClose ?? meta.previousClose);
         if (!Number.isFinite(price)) {
           const vals = (result.indicators?.quote?.[0]?.close ?? []).filter(v => Number.isFinite(v));
           if (vals.length) price = vals[vals.length - 1];
@@ -6007,13 +6024,13 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
       const ok = (r) => r.status === 'fulfilled' ? r.value : null;
       const cg = ok(cgResult) || {};
       const next = {
-        btc:    cg.btc    ?? null,
-        eth:    cg.eth    ?? null,
-        oil:    ok(oilY),
-        vix:    ok(vixY),
-        sp500:  ok(spxY),
+        btc: cg.btc ?? null,
+        eth: cg.eth ?? null,
+        oil: ok(oilY),
+        vix: ok(vixY),
+        sp500: ok(spxY),
         nasdaq: ok(nasY),
-        gold:   ok(goldY),
+        gold: ok(goldY),
         silver: ok(silverY),
       };
       next.spy = next.sp500 ? { ...next.sp500 } : null;
@@ -6025,22 +6042,22 @@ function MacroBanner({ fredMacro, visible, t, refreshNonce = 0, rotating = false
 
   if (!visible) return null;
 
-  const rrp       = fredMacro?.rrp?.value ?? null;
+  const rrp = fredMacro?.rrp?.value ?? null;
   // Live feeds preferred for all; fall back to FRED macro.json
-  const gold      = marketLive?.gold?.price   ?? fredMacro?.gold?.value   ?? null;
-  const goldChg   = marketLive?.gold?.chgPct  ?? fredMacro?.gold?.change  ?? null;
-  const silver    = marketLive?.silver?.price ?? fredMacro?.silver?.value ?? null;
+  const gold = marketLive?.gold?.price ?? fredMacro?.gold?.value ?? null;
+  const goldChg = marketLive?.gold?.chgPct ?? fredMacro?.gold?.change ?? null;
+  const silver = marketLive?.silver?.price ?? fredMacro?.silver?.value ?? null;
   const silverChg = marketLive?.silver?.chgPct ?? fredMacro?.silver?.change ?? null;
   // Live feeds preferred; fall back to FRED macro.json
-  const oil   = marketLive?.oil   ? { price: marketLive.oil.price,    chgPct: marketLive.oil.chgPct    } : (fredMacro?.oil   ? { price: fredMacro.oil.value,    chgPct: fredMacro.oil.change    } : null);
-  const spy   = marketLive?.spy   ? { price: marketLive.spy.price,    chgPct: marketLive.spy.chgPct    } : (fredMacro?.spy   ? { price: fredMacro.spy.value,    chgPct: fredMacro.spy.change    } : null);
-  const vix   = marketLive?.vix   ? { price: marketLive.vix.price,    chgPct: marketLive.vix.chgPct    } : (fredMacro?.vix   ? { price: fredMacro.vix.value,    chgPct: fredMacro.vix.change    } : null);
-  const sp500 = marketLive?.sp500 ? { price: marketLive.sp500.price,  chgPct: marketLive.sp500.chgPct  } : (fredMacro?.sp500 ? { price: fredMacro.sp500.value,  chgPct: fredMacro.sp500.change  } : null);
-  const nasdaq= marketLive?.nasdaq? { price: marketLive.nasdaq.price, chgPct: marketLive.nasdaq.chgPct } : (fredMacro?.nasdaq? { price: fredMacro.nasdaq.value, chgPct: fredMacro.nasdaq.change } : null);
-  const asOf  = marketLive ? null : (fredMacro?.asOf ?? null); // hide stale label when live data is shown
+  const oil = marketLive?.oil ? { price: marketLive.oil.price, chgPct: marketLive.oil.chgPct } : (fredMacro?.oil ? { price: fredMacro.oil.value, chgPct: fredMacro.oil.change } : null);
+  const spy = marketLive?.spy ? { price: marketLive.spy.price, chgPct: marketLive.spy.chgPct } : (fredMacro?.spy ? { price: fredMacro.spy.value, chgPct: fredMacro.spy.change } : null);
+  const vix = marketLive?.vix ? { price: marketLive.vix.price, chgPct: marketLive.vix.chgPct } : (fredMacro?.vix ? { price: fredMacro.vix.value, chgPct: fredMacro.vix.change } : null);
+  const sp500 = marketLive?.sp500 ? { price: marketLive.sp500.price, chgPct: marketLive.sp500.chgPct } : (fredMacro?.sp500 ? { price: fredMacro.sp500.value, chgPct: fredMacro.sp500.change } : null);
+  const nasdaq = marketLive?.nasdaq ? { price: marketLive.nasdaq.price, chgPct: marketLive.nasdaq.chgPct } : (fredMacro?.nasdaq ? { price: fredMacro.nasdaq.value, chgPct: fredMacro.nasdaq.change } : null);
+  const asOf = marketLive ? null : (fredMacro?.asOf ?? null); // hide stale label when live data is shown
 
-  const fmtP  = (n, dec = 0) => n == null ? '—' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`;
-  const lbl   = { fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 };
+  const fmtP = (n, dec = 0) => n == null ? '—' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`;
+  const lbl = { fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 };
 
   const cell = { flex: '1 1 0', minWidth: 90, padding: '6px 10px', borderRight: `1px solid ${t.borderDim}`, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' };
   const lastCell = { flex: '1 1 0', minWidth: 90, padding: '6px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' };
@@ -6153,7 +6170,7 @@ function StatusStrip({ latest, t }) {
           </div>
           {/* Progress bar */}
           <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginLeft: 8 }}>
-            {[0,1,2,3,4,5,6,7].map(i => (
+            {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
               <div key={i} style={{ width: i === stage ? 14 : 6, height: 5, background: i <= stage ? stageColor : t.elevated, opacity: i <= stage ? 1 : 0.3 }} />
             ))}
           </div>
@@ -6394,12 +6411,12 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   // ── Net Worth banner computations ──
   const _nw = latest?.netWorth || {};
   const _nwAssets = _nw.assets || {};
-  const _cryptoV = (latest?.portfolio?.crypto || []).reduce((s,c) => s+(Number(c.amount)||0)*(Number(c.lastPrice)||0), 0);
-  const _eqV = (latest?.portfolio?.equities || []).reduce((s,e) => s+(Number(e.shares)||0)*(Number(e.lastPrice)||0), 0);
-  const _tA = (_nwAssets.checking||0)+(_nwAssets.savings||0)+(_nwAssets.eFund||0)+(_nwAssets.other||0)+_eqV+_cryptoV;
-  const _tL = Object.values(_nw.liabilities||{}).reduce((s,v)=>s+(v||0), 0);
+  const _cryptoV = (latest?.portfolio?.crypto || []).reduce((s, c) => s + (Number(c.amount) || 0) * (Number(c.lastPrice) || 0), 0);
+  const _eqV = (latest?.portfolio?.equities || []).reduce((s, e) => s + (Number(e.shares) || 0) * (Number(e.lastPrice) || 0), 0);
+  const _tA = (_nwAssets.checking || 0) + (_nwAssets.savings || 0) + (_nwAssets.eFund || 0) + (_nwAssets.other || 0) + _eqV + _cryptoV;
+  const _tL = Object.values(_nw.liabilities || {}).reduce((s, v) => s + (v || 0), 0);
   const _nwTotal = _nw.total || (_tA - _tL);
-  const _prevNW = snapshots.length > 1 ? (snapshots[snapshots.length-2]?.netWorth?.total || 0) : 0;
+  const _prevNW = snapshots.length > 1 ? (snapshots[snapshots.length - 2]?.netWorth?.total || 0) : 0;
   const _nwDelta = _nwTotal - _prevNW;
   const _equityPct = _tA > 0 ? Math.round((_nwTotal / _tA) * 100) : 0;
 
@@ -6690,17 +6707,17 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         const items = Array.isArray(j?.Data) ? j.Data : [];
         if (items.length) {
           setNews(items.map(item => ({
-            title:      item.title,
-            url:        item.url,
-            source:     { name: item.source_info?.name || item.source || 'CryptoCompare' },
+            title: item.title,
+            url: item.url,
+            source: { name: item.source_info?.name || item.source || 'CryptoCompare' },
             published_on: item.published_on,
             categories: item.categories || '',
-            tags:       item.tags || '',
+            tags: item.tags || '',
           })));
           loaded = true;
         }
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // 2. Fall back to static macro-news.json (written by `pnpm update-prices`)
     if (!loaded) {
@@ -6712,16 +6729,16 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           const items = Array.isArray(j?.items) ? j.items : [];
           if (items.length) {
             setNews(items.map(item => ({
-              title:        item.title,
-              url:          item.url,
-              source:       { name: item.source || 'CryptoCompare' },
+              title: item.title,
+              url: item.url,
+              source: { name: item.source || 'CryptoCompare' },
               published_on: item.published,
-              categories:   item.categories || '',
-              tags:         item.tags || '',
+              categories: item.categories || '',
+              tags: item.tags || '',
             })));
           }
         }
-      } catch (_) {}
+      } catch (_) { }
     }
 
     setNewsLoading(false);
@@ -6732,22 +6749,22 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   // ── Black Box recorder — fires when FRED data loads ───────────────────────
   useEffect(() => {
     const w = (macro || fredMacro)?.walcl?.value ?? null;
-    const tg = (macro || fredMacro)?.tga?.value  ?? null;
+    const tg = (macro || fredMacro)?.tga?.value ?? null;
     if (w == null || tg == null) return;
-    const nl  = w - tg;
+    const nl = w - tg;
     const dph = Math.floor((Date.now() - new Date('2024-04-20').getTime()) / 86400000);
     let s = 0;
     if (nl > 5500) s += 40; else if (nl > 5000) s += 20;
     if (dph <= 500) s += 40; else if (dph < 800) s += 10;
-    if (tg < 800)  s += 20;
+    if (tg < 800) s += 20;
     const now = new Date();
-    const ts  = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-              + ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const ts = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      + ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     const stat = s >= 75 ? 'LOCKED' : s >= 40 ? 'SCANNING' : 'JAMMED';
     setBlackBoxLog(prev => {
       if (prev.length > 0 && prev[prev.length - 1].ts === ts) return prev;
       const updated = [...prev, { ts, score: s, status: stat, netLiq: nl, tga: tg, dph }].slice(-20);
-      try { localStorage.setItem('fortify_blackbox', JSON.stringify(updated)); } catch {}
+      try { localStorage.setItem('fortify_blackbox', JSON.stringify(updated)); } catch { }
       return updated;
     });
   }, [macro, fredMacro]);
@@ -6757,43 +6774,49 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const lordsQuote = DISTORTION_QUOTES[dayOfYear % DISTORTION_QUOTES.length];
 
   const reactorIntensity = 0.2 + (1 - rateLevel / 5) * 0.8;
-  const reactorColor  = rateLevel < 1.5 ? '#00fbff' : rateLevel < 3.5 ? '#f0b429' : '#f85149';
+  const reactorColor = rateLevel < 1.5 ? '#00fbff' : rateLevel < 3.5 ? '#f0b429' : '#f85149';
   const reactorStatus = rateLevel < 1.5 ? 'ACCOMMODATIVE' : rateLevel < 3.5 ? 'NEUTRAL' : 'TIGHTENING';
-  const reactorDesc   = rateLevel < 1.5 ? 'Zero bound — Asset bubble risk rising'
+  const reactorDesc = rateLevel < 1.5 ? 'Zero bound — Asset bubble risk rising'
     : rateLevel < 3.5 ? 'Neutral territory — Balanced stance'
-    : 'Tightening cycle — Liquidity contracting';
+      : 'Tightening cycle — Liquidity contracting';
 
-  const _fm     = macro || fredMacro;
-  const walcl   = _fm?.walcl?.value ?? null;
-  const tga     = _fm?.tga?.value   ?? null;
-  const rrp     = _fm?.rrp?.value   ?? null;
-  const netLiq  = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
+  const _fm = macro || fredMacro;
+  const walcl = _fm?.walcl?.value ?? null;
+  const tga = _fm?.tga?.value ?? null;
+  const rrp = _fm?.rrp?.value ?? null;
+  const netLiq = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
   const netLiqColor = netLiq == null ? t.textDim : netLiq > 5000 ? t.accent : netLiq > 3000 ? t.warn : t.danger;
 
   // ── Signal Confluence Engine ───────────────────────────────────────────────
-  const confNetLiq       = walcl != null && tga != null ? walcl - tga : null;
-  const halvingDate      = new Date('2024-04-20');
-  const daysPostHalving  = Math.floor((Date.now() - halvingDate.getTime()) / 86400000);
+  const confNetLiq = walcl != null && tga != null ? walcl - tga : null;
+  const halvingDate = new Date('2024-04-20');
+  const daysPostHalving = Math.floor((Date.now() - halvingDate.getTime()) / 86400000);
   let liqPts = 0, cyclePts = 0, tgaPts = 0;
   if (confNetLiq != null) {
-    if (confNetLiq > 5500)      liqPts = 40;
+    if (confNetLiq > 5500) liqPts = 40;
     else if (confNetLiq > 5000) liqPts = 20;
   }
-  if (daysPostHalving <= 500)      cyclePts = 40;
-  else if (daysPostHalving < 800)  cyclePts = 10;
-  if (tga != null && tga < 800)    tgaPts   = 20;
-  const confScore  = liqPts + cyclePts + tgaPts;
-  const confColor  = confScore >= 75 ? t.accent : confScore >= 40 ? t.warn : t.danger;
+  if (daysPostHalving <= 500) cyclePts = 40;
+  else if (daysPostHalving < 800) cyclePts = 10;
+  if (tga != null && tga < 800) tgaPts = 20;
+  const confScore = liqPts + cyclePts + tgaPts;
+  const confColor = confScore >= 75 ? t.accent : confScore >= 40 ? t.warn : t.danger;
   const confStatus = confScore >= 75 ? 'TARGET ACQUIRED // CONFLUENCE HIGH'
     : confScore >= 40 ? 'SCANNING // SEARCHING FOR SIGNAL'
-    : 'SIGNAL JAMMED // DEFENSIVE POSITION';
+      : 'SIGNAL JAMMED // DEFENSIVE POSITION';
   const confComponents = [
-    { label: 'NET LIQUIDITY (WALCL − TGA)', score: liqPts, max: 40,
-      note: confNetLiq != null ? `$${(confNetLiq/1000).toFixed(2)}T` : 'no data' },
-    { label: 'HALVING CYCLE MATURITY',      score: cyclePts, max: 40,
-      note: `${daysPostHalving}d post-halving` },
-    { label: 'TREASURY PRESSURE (TGA)',     score: tgaPts, max: 20,
-      note: tga != null ? `$${(tga/1000).toFixed(2)}T TGA` : 'no data' },
+    {
+      label: 'NET LIQUIDITY (WALCL − TGA)', score: liqPts, max: 40,
+      note: confNetLiq != null ? `$${(confNetLiq / 1000).toFixed(2)}T` : 'no data'
+    },
+    {
+      label: 'HALVING CYCLE MATURITY', score: cyclePts, max: 40,
+      note: `${daysPostHalving}d post-halving`
+    },
+    {
+      label: 'TREASURY PRESSURE (TGA)', score: tgaPts, max: 20,
+      note: tga != null ? `$${(tga / 1000).toFixed(2)}T TGA` : 'no data'
+    },
   ];
 
   const classifySentiment = (title = '') => {
@@ -6890,17 +6913,17 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               <circle cx="40" cy="40" r="34" fill="none" stroke={confColor} strokeWidth="1" opacity="0.25" className="bracket"
                 style={{ animation: confScore >= 40 ? 'reactorRing1 3s ease-in-out infinite' : 'none' }} />
               <circle cx="40" cy="40" r="20" fill="none" stroke={confColor} strokeWidth="1" opacity="0.45" />
-              <line x1="40" y1="4"  x2="40" y2="18" stroke={confColor} strokeWidth="1.5" />
+              <line x1="40" y1="4" x2="40" y2="18" stroke={confColor} strokeWidth="1.5" />
               <line x1="40" y1="62" x2="40" y2="76" stroke={confColor} strokeWidth="1.5" />
-              <line x1="4"  y1="40" x2="18" y2="40" stroke={confColor} strokeWidth="1.5" />
+              <line x1="4" y1="40" x2="18" y2="40" stroke={confColor} strokeWidth="1.5" />
               <line x1="62" y1="40" x2="76" y2="40" stroke={confColor} strokeWidth="1.5" />
               {/* Radar sweep line — rotated by CSS in state-locked */}
               <line x1="40" y1="40" x2="40" y2="7" stroke={confColor} strokeWidth="1" opacity="0.7" className="radar-sweep" />
               <circle cx="40" cy="40" r={confScore >= 75 ? 5 : 2.5} fill={confColor}
                 style={{ animation: confScore >= 75 ? 'reactorPulse 2s ease-in-out infinite' : 'none' }} />
-              <polyline points="4,14 4,4 14,4"    fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
-              <polyline points="66,4 76,4 76,14"  fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
-              <polyline points="4,66 4,76 14,76"  fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
+              <polyline points="4,14 4,4 14,4" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
+              <polyline points="66,4 76,4 76,14" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
+              <polyline points="4,66 4,76 14,76" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
               <polyline points="66,76 76,76 76,66" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
             </svg>
           </div>
@@ -6963,7 +6986,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             </svg>
             <div className="metric-overlay">
               <small>EST. QE INJECTION</small>
-              <div className="ticker-value">{walcl != null ? `$${walcl.toLocaleString(undefined,{maximumFractionDigits:0})}B` : '—'}</div>
+              <div className="ticker-value">{walcl != null ? `$${walcl.toLocaleString(undefined, { maximumFractionDigits: 0 })}B` : '—'}</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
               {walcl != null && (
@@ -7016,11 +7039,11 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             {news.length === 0 ? (
               <div style={{ color: t.textDim, fontSize: 14, padding: '12px 0' }}>{newsLoading ? 'Fetching live headlines…' : 'Unable to load news. Refresh to retry.'}</div>
             ) : news.slice(0, 12).map((item, i) => {
-              const sent      = classifySentiment(item.title);
+              const sent = classifySentiment(item.title);
               const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
-              const sentBg    = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
-              const srcName   = item.source?.name || 'CryptoCompare';
-              const ago       = item.published_on ? timeAgo(item.published_on) : '';
+              const sentBg = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
+              const srcName = item.source?.name || 'CryptoCompare';
+              const ago = item.published_on ? timeAgo(item.published_on) : '';
               return (
                 <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.25s ease-out ${0.03 * i}s both` }}>
                   <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
@@ -7043,7 +7066,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           <div className="black-box" style={{ animation: 'radarFadeUp 0.4s ease-out 0.7s both' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3>[ FLIGHT RECORDER / SIGNAL HISTORY ]</h3>
-              <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch {} }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR LOG</button>
+              <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR LOG</button>
             </div>
             {[...blackBoxLog].reverse().map((entry, i) => {
               const tag = entry.status === 'LOCKED' ? 'LOCK' : entry.status === 'SCANNING' ? 'SCAN' : 'JAM';
@@ -7147,21 +7170,21 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   const dashMods = [
-    { key: 'directive',    label: 'Daily Directive',        desc: 'Top-priority action each session' },
-    { key: 'netWorth',     label: 'Net Worth',              desc: 'Balance sheet + history chart' },
-    { key: 'debt',         label: 'Debt Destruction',       desc: 'APR-ranked avalanche payoff plan' },
-    { key: 'planner',      label: 'Bills & Payday Planner', desc: 'Upcoming bills and pay schedule' },
-    { key: 'eFund',        label: 'Emergency Fund',         desc: '4-phase e-fund build tracker' },
-    { key: 'budget',       label: 'Budget Status',          desc: 'Spending by category with enforcement' },
-    { key: 'knox',         label: 'Agent KNOX Terminal',    desc: 'AI policy enforcement — NL violation alerts' },
-    { key: 'transactions', label: 'Transactions',           desc: 'Parsed statement transaction history' },
-    { key: 'protection',   label: 'Protection Layer',       desc: 'Life insurance and funeral buffer' },
+    { key: 'directive', label: 'Daily Directive', desc: 'Top-priority action each session' },
+    { key: 'netWorth', label: 'Net Worth', desc: 'Balance sheet + history chart' },
+    { key: 'debt', label: 'Debt Destruction', desc: 'APR-ranked avalanche payoff plan' },
+    { key: 'planner', label: 'Bills & Payday Planner', desc: 'Upcoming bills and pay schedule' },
+    { key: 'eFund', label: 'Emergency Fund', desc: '4-phase e-fund build tracker' },
+    { key: 'budget', label: 'Budget Status', desc: 'Spending by category with enforcement' },
+    { key: 'knox', label: 'Agent KNOX Terminal', desc: 'AI policy enforcement — NL violation alerts' },
+    { key: 'transactions', label: 'Transactions', desc: 'Parsed statement transaction history' },
+    { key: 'protection', label: 'Protection Layer', desc: 'Life insurance and funeral buffer' },
   ];
   const radarMods = [
-    { key: 'macroBanner',  label: 'Price Banner',           desc: 'Scrolling live prices strip' },
-    { key: 'macro',        label: 'Macro Signals',          desc: 'BTC halving cycle and market signals' },
-    { key: 'market',       label: 'Market Intelligence',    desc: 'FRED data: WALCL, TGA, RRP' },
-    { key: 'portfolio',    label: 'Portfolio',              desc: 'Your positions shown on Radar page' },
+    { key: 'macroBanner', label: 'Price Banner', desc: 'Scrolling live prices strip' },
+    { key: 'macro', label: 'Macro Signals', desc: 'BTC halving cycle and market signals' },
+    { key: 'market', label: 'Market Intelligence', desc: 'FRED data: WALCL, TGA, RRP' },
+    { key: 'portfolio', label: 'Portfolio', desc: 'Your positions shown on Radar page' },
   ];
 
   const payFrequency = String(settings?.payFrequency || 'WEEKLY').toUpperCase();
@@ -7297,6 +7320,10 @@ function FortifyOSApp() {
   const [intelRefreshNonce, setIntelRefreshNonce] = useState(0);
   const t = isDark ? THEMES.dark : THEMES.light;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
   const refreshIntel = useCallback(async () => {
     setIntelRefreshing(true);
     try {
@@ -7429,7 +7456,7 @@ function FortifyOSApp() {
       };
 
       // Merge _recentTxns across all synced accounts — combine, dedup, sort newest-first, keep 100
-      const baseTxns  = Array.isArray(base._recentTxns)  ? base._recentTxns  : [];
+      const baseTxns = Array.isArray(base._recentTxns) ? base._recentTxns : [];
       const incomingTxns = Array.isArray(data._recentTxns) ? data._recentTxns : [];
       const seen = new Set();
       const allTxns = [];
@@ -7458,7 +7485,7 @@ function FortifyOSApp() {
     try {
       await store.set('fortify-snapshots', nextSnapshots || [merged]);
       await store.set('fortify-latest', merged);
-    } catch(_) {}
+    } catch (_) { }
     setSyncFlash(true); setTimeout(() => setSyncFlash(false), 600);
     setView('dashboard'); setSyncOpen(false);
   }, [latest, settings?.payFrequency]);
