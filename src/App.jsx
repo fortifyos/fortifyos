@@ -3285,10 +3285,20 @@ useEffect(() => {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', textAlign: 'center' }}>
         <FileText size={14} style={{ color: t.accent }} />
-        <span style={lbl}>Upload Statements (PDF / Screenshots · Multi-file Merge)</span>
+        <span style={lbl}>Upload Files (CSV / PDF / Screenshots · Multi-file Merge)</span>
       </div>
-      <input ref={stmtFileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" multiple style={{ display: 'none' }}
-             onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) handleStatementFiles(fs, stmtPickMode); e.target.value = ''; }} />
+      <input ref={stmtFileRef} type="file" accept=".csv,.xlsx,.pdf,.png,.jpg,.jpeg" multiple style={{ display: 'none' }}
+             onChange={(e) => { 
+               const fs = Array.from(e.target.files || []); 
+               if (!fs.length) return;
+               const ext = fs[0].name.split('.').pop().toLowerCase();
+               if (ext === 'csv' || ext === 'xlsx') {
+                 handleFile(fs[0]);
+               } else {
+                 handleStatementFiles(fs, stmtPickMode); 
+               }
+               e.target.value = ''; 
+             }} />
     </div>
     <div style={{ padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.panel }}>
       <div style={{ display: 'grid', gap: 6, fontSize: 15, color: t.textDim, lineHeight: 1.35 }}>
@@ -3301,7 +3311,17 @@ useEffect(() => {
 
     {/* Drag/drop area */}
     <div
-      onDrop={e => { e.preventDefault(); setDragOver(false); const fs = Array.from(e.dataTransfer.files || []); if (fs.length) handleStatementFiles(fs, stmtTxns.length ? 'append' : 'replace'); }}
+      onDrop={e => { 
+        e.preventDefault(); setDragOver(false); 
+        const fs = Array.from(e.dataTransfer.files || []); 
+        if (!fs.length) return;
+        const ext = fs[0].name.split('.').pop().toLowerCase();
+        if (ext === 'csv' || ext === 'xlsx') {
+          handleFile(fs[0]);
+        } else {
+          handleStatementFiles(fs, stmtTxns.length ? 'append' : 'replace'); 
+        }
+      }}
       onDragOver={e => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onClick={() => stmtFileRef.current?.click()}
@@ -3320,7 +3340,7 @@ useEffect(() => {
       <div style={{ fontSize: 15, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         {processing ? 'Processing...' : 'Drag & drop one or more files'}
       </div>
-      <div style={{ fontSize: 15, color: t.textGhost }}>PDF · PNG · JPG — parsed locally, merged into one timeline</div>
+      <div style={{ fontSize: 15, color: t.textGhost }}>CSV · PDF · PNG · JPG — parsed locally, merged into one timeline</div>
     </div>
 
     {/* Logs */}
