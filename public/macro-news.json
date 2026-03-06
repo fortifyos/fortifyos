@@ -2,454 +2,454 @@
   "asOf": "2026-03-06",
   "items": [
     {
-      "title": "Binance Defiantly Denies Iran Sanctions Violation Allegations Amid Senate Scrutiny",
-      "url": "https://bitcoinworld.co.in/binance-denies-iran-sanctions-violations/",
+      "title": "Japan GDP Revision: Crucial Economic Shift Expected from Stronger Wage Growth – ING Analysis",
+      "url": "https://bitcoinworld.co.in/japan-gdp-revision-wage-growth-ing/",
       "source": "Bitcoin World",
-      "published": 1772814254,
+      "published": 1772826312,
+      "categories": "ASIA|BUSINESS|FIAT|MARKET|MACROECONOMICS",
+      "tags": "Forex News|Economic Analysis|GDP Data|Japan Economy|monetary policy|wage growth",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "BlockFills preparing for restructuring amid crypto downturn - report",
+      "url": "https://seekingalpha.com/news/4562015-blockfills-preparing-for-restructuring-amid-crypto-downturn---report?utm_source=cryptocompare.com&utm_medium=referral&feed_item_type=news",
+      "source": "Seeking Alpha",
+      "published": 1772826144,
+      "categories": "BTC|BUSINESS|ETH|TRADING|CRYPTOCURRENCY",
+      "tags": "BTC-USD|ETH-USD|BMNR|HOOD|FIGR",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Microsoft Anthropic Claude Remains Available: Critical Assurance for Enterprise AI Customers Amid Defense Department Ban",
+      "url": "https://bitcoinworld.co.in/microsoft-anthropic-claude-enterprise-availability/",
+      "source": "Bitcoin World",
+      "published": 1772826012,
+      "categories": "BUSINESS|MARKET|REGULATION|TECHNOLOGY|RESEARCH",
+      "tags": "AI News|#Microsoft|Anthropic|Artificial Intelligence|Defense Department|Enterprise Technology",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Binance Denies $1.7 Billion in Iran Sanctions Violations Amid US Senate Probe",
+      "url": "https://decrypt.co/360273/binance-denies-1-7-billion-iran-sanctions-violations-senate-probe",
+      "source": "Decrypt",
+      "published": 1772825930,
       "categories": "EXCHANGE|REGULATION|BNB|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "Crypto News|BINANCE|Compliance|CRYPTOCURRENCY|REGULATION|Sanctions",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Crypto Biz: Kraken plugs into the Fed",
-      "url": "https://cointelegraph.com/news/kraken-fed-access-mara-bitcoin-nyse-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "source": "Cointelegraph",
-      "published": 1772814212,
-      "categories": "BTC|EXCHANGE|DIGITAL ASSET TREASURY|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "Latest News",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Federal Reserve Policy: Critical Wait-and-See Stance Emerges After Weak Jobs Data – Commerzbank Analysis",
-      "url": "https://bitcoinworld.co.in/federal-reserve-policy-wait-see-jobs/",
-      "source": "Bitcoin World",
-      "published": 1772814205,
-      "categories": "BUSINESS|FIAT|MARKET|RESEARCH|MACROECONOMICS",
-      "tags": "Forex News|Commerzbank|Economic Analysis|Federal Reserve|jobs report|monetary policy",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "Crypto market holds $2T after U.S. jobs unexpectedly fall by 92K",
-      "url": "https://ambcrypto.com/crypto-market-holds-2t-after-u-s-jobs-unexpectedly-fall-by-92k/",
-      "source": "AMB Crypto",
-      "published": 1772814198,
-      "categories": "MARKET|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "News|News 1|Social|Trading View|United States",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "Critical Warning: Fed’s Daly Signals Dual Mandate Risks in Latest Economic Assessment",
-      "url": "https://bitcoinworld.co.in/fed-daly-dual-mandate-risks/",
-      "source": "Bitcoin World",
-      "published": 1772814160,
-      "categories": "FIAT|MARKET|REGULATION|TRADING|MACROECONOMICS",
-      "tags": "Forex News|Economy|employment|Federal Reserve|Inflation|monetary policy",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "XRP Lending Protocol Nears Milestone, 62.86% Potential Remains",
-      "url": "https://u.today/xrp-lending-protocol-nears-milestone-6286-potential-remains",
-      "source": "U.Today",
-      "published": 1772814120,
-      "categories": "BLOCKCHAIN|WALLET|XRP|CRYPTOCURRENCY",
-      "tags": "XRP News",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Gold Price Defies Logic: Struggles Despite Weak NFP and Soaring Middle East Tensions",
-      "url": "https://bitcoinworld.co.in/gold-price-struggles-nfp-tensions/",
-      "source": "Bitcoin World",
-      "published": 1772814076,
-      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
-      "tags": "Forex News|#Markets|Economy|Geopolitics|Gold|investing",
-      "sentiment": "Bullish"
-    },
-    {
-      "title": "Polkadot ETF Launch: 21Shares Pioneers First US Spot DOT Fund with $11M Backing",
-      "url": "https://bitcoinworld.co.in/21shares-polkadot-etf-launch/",
-      "source": "Bitcoin World",
-      "published": 1772813979,
-      "categories": "BTC|DOT|ETH|MARKET|CRYPTOCURRENCY",
-      "tags": "Crypto News|CRYPTOCURRENCY|ETF|Finance|Investment|Polkadot",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "MRVL Stock Forecast as Marvell Jumps 18% on AI Data Center Boom",
-      "url": "https://coinpaper.com/15226/mrvl-stock-forecast-as-marvell-jumps-18-on-ai-data-center-boom",
-      "source": "Coinpaper",
-      "published": 1772813963,
-      "categories": "BUSINESS|MARKET|TECHNOLOGY|TRADING",
-      "tags": "News|Business",
-      "sentiment": "Bullish"
-    },
-    {
-      "title": "Cryptocurrency Futures Liquidated: $108 Million Wiped Out in One Hour as Market Panic Intensifies",
-      "url": "https://bitcoinworld.co.in/cryptocurrency-futures-liquidated-108-million/",
-      "source": "Bitcoin World",
-      "published": 1772813945,
-      "categories": "BTC|MARKET|TRADING|ZRX|CRYPTOCURRENCY",
-      "tags": "Crypto News|#Derivatives|CRYPTOCURRENCY|futures|Liquidation.|Volatility",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Price Plummets: BTC Falls Below $69,000 Amid Market Volatility",
-      "url": "https://bitcoinworld.co.in/bitcoin-price-falls-below-69000-8/",
-      "source": "Bitcoin World",
-      "published": 1772813714,
-      "categories": "BTC|EXCHANGE|MARKET|TRADING|CRYPTOCURRENCY",
-      "tags": "Crypto News|BITCOIN|CRYPTOCURRENCY|Finance|Market Analysis|trading.",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "733 Billion SHIB Outflow: Binance's Shiba Inu Stockpile Dips 1.38% While Holding a Massive 52.5T in Total Reserves",
-      "url": "https://u.today/733-billion-shib-outflow-binances-shiba-inu-stockpile-dips-138-while-holding-massive-525-trillion",
-      "source": "U.Today",
-      "published": 1772813640,
-      "categories": "EXCHANGE|SHIB|BNB|CRYPTOCURRENCY",
-      "tags": "Shiba Inu",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Why Bitcoin and Stablecoins on Lightning Will Power the Next Phase of AI Agent Payments",
-      "url": "https://blog.bitfinex.com/education/why-bitcoin-and-stablecoins-on-lightning-will-power-the-next-phase-of-ai-agent-payments/",
-      "source": "Bitfinex blog",
-      "published": 1772813608,
-      "categories": "BTC|BUSINESS|FIAT|TECHNOLOGY|CRYPTOCURRENCY",
-      "tags": "Education|AI|ai agent|bitcoin|instant payments|lightning|lightning network|stablecoin",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Trump’s Unconditional Surrender Demand: Explosive Stance Halts Iran Negotiations",
-      "url": "https://bitcoinworld.co.in/trump-iran-unconditional-surrender-negotiations/",
-      "source": "Bitcoin World",
-      "published": 1772813549,
-      "categories": "ASIA|COMMODITY|MARKET|REGULATION|MACROECONOMICS",
-      "tags": "Crypto News|Geopolitics|international relations|Middle East|Oil Markets|US foreign policy",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "BlackRock Imposes Withdrawal Limits as Ethereum Faces Bearish Outlook",
-      "url": "https://en.coin-turk.com/blackrock-imposes-withdrawal-limits-as-ethereum-faces-bearish-outlook/",
-      "source": "CoinTurk News",
-      "published": 1772813462,
-      "categories": "BTC|ETH|MARKET|TRADING|CRYPTOCURRENCY",
-      "tags": "Ethereum (ETH)",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "XRP Supply Shrinks as Buyers Drop Exchange Reserve to $2.75 Billion",
-      "url": "https://u.today/xrp-supply-shrinks-as-buyers-drop-exchange-reserve-to-275-billion",
-      "source": "U.Today",
-      "published": 1772813400,
-      "categories": "EXCHANGE|FIAT|TRADING|XRP|CRYPTOCURRENCY",
-      "tags": "XRP",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "Russia Drafts Bill to Classify Crypto as Tradeable as BRICS Prepare SWIFT Alternative",
-      "url": "https://coinpaper.com/15225/russia-drafts-bill-to-classify-crypto-as-tradeable-as-brics-prepare-swift-alternative",
-      "source": "Coinpaper",
-      "published": 1772813167,
-      "categories": "BUSINESS|FIAT|REGULATION|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "News|Legal",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "How Gambling Platforms Influence the Daily Liquidity of Popular Tokens",
-      "url": "https://ambcrypto.com/how-gambling-platforms-influence-the-daily-liquidity-of-popular-tokens/",
-      "source": "AMB Crypto",
-      "published": 1772813148,
-      "categories": "MARKET|SPONSORED|CRYPTOCURRENCY",
-      "tags": "Google News|HideCryptopanic|Sponsored",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Nigel Farage Confidant Linked to $550K Loss On Iran Strike Polymarket Bet: Report",
-      "url": "https://decrypt.co/360246/nigel-farage-confidant-linked-to-550k-loss-on-iran-strike-polymarket-bet-report",
-      "source": "Decrypt",
-      "published": 1772813144,
-      "categories": "BUSINESS|MARKET",
-      "tags": "polygon|Business",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Expert Says You Are Not Ready for What’s Coming for XRP. Here’s Why",
-      "url": "https://timestabloid.com/expert-says-you-are-not-ready-for-whats-coming-for-xrp-heres-why/",
-      "source": "TimesTabloid",
-      "published": 1772813111,
-      "categories": "BUSINESS|MARKET|TRADING|XRP|CRYPTOCURRENCY",
-      "tags": "Cryptocurrency|News|XRP|XRP Price",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "'Spend And Print'—Oil Price Shock Fuels Bold Bitcoin Price Prediction",
-      "url": "https://www.forbes.com/sites/boazsobrado/2026/03/06/spend-and-print-oil-price-shock-fuels-bold-bitcoin-price-prediction/",
-      "source": "Forbes Digital Assets",
-      "published": 1772812992,
-      "categories": "BTC|COMMODITY|TRADING|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "Forbes Digital Assets|/digital-assets|Forbes Digital Assets|/digital-assets|standard",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Death Cross Appears on Three Day Chart, What Could Follow?",
-      "url": "https://u.today/bitcoin-death-cross-appears-on-three-day-chart-what-could-follow",
-      "source": "U.Today",
-      "published": 1772812980,
-      "categories": "BTC|CRYPTOCURRENCY",
-      "tags": "Bitcoin|BTC",
-      "sentiment": "Bullish"
-    },
-    {
-      "title": "GBP/JPY Stability: Markets Reassess BoE Rate Cuts and Delay BoJ Hikes Amid Economic Shifts",
-      "url": "https://bitcoinworld.co.in/gbp-jpy-steadies-boe-boj-shifts/",
-      "source": "Bitcoin World",
-      "published": 1772812896,
-      "categories": "ASIA|FIAT|MARKET|TRADING|MACROECONOMICS",
-      "tags": "Forex News|Central banks|Currency|financial markets|Forex|monetary policy",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Slides Below $69,000 as Sellers Test Key Weekend Support",
-      "url": "https://en.coin-turk.com/bitcoin-slides-below-69000-as-sellers-test-key-weekend-support/",
-      "source": "CoinTurk News",
-      "published": 1772812861,
-      "categories": "BTC|TRADING|CRYPTOCURRENCY",
-      "tags": "Cryptocurrency News",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "XRP nears $1.40 as SOPR signals capitulation: Is recovery ahead?",
-      "url": "https://ambcrypto.com/xrp-nears-1-40-as-sopr-signals-capitulation-is-recovery-ahead/",
-      "source": "AMB Crypto",
-      "published": 1772812834,
-      "categories": "ALTCOIN|MARKET|XRP|CRYPTOCURRENCY",
-      "tags": "Altcoin|News|News 1|Ripple|Social|Trading View|ambcrypto",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Holds Institutional Support but $72K Remains the Critical Barrier",
-      "url": "https://www.investing.com/analysis/bitcoin-holds-institutional-support-but-72k-remains-the-critical-barrier-200676124",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772812418,
-      "categories": "BTC|CRYPTOCURRENCY",
-      "tags": "",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Coinbase hit with shareholder lawsuit over alleged insider stock sales",
-      "url": "https://www.cryptopolitan.com/coinbase-execs-sued-armstrong-meets-trump/",
-      "source": "Cryptopolitan",
-      "published": 1772812390,
-      "categories": "ADA|BUSINESS|EXCHANGE|REGULATION|CRYPTOCURRENCY",
-      "tags": "News|Coinbase",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Stabilizes as BlackRock IBIT Drives the Latest ETF Inflow Wave",
-      "url": "https://www.investing.com/analysis/bitcoin-stabilizes-as-blackrock-ibit-drives-the-latest-etf-inflow-wave-200676221",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772812309,
-      "categories": "BTC|CRYPTOCURRENCY",
-      "tags": "",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "BitMEX Activates Bitcoin UTXO Containing 13,280 BTC Worth $930M—What Is Happening?",
-      "url": "https://thecryptobasic.com/2026/03/06/bitmex-activates-bitcoin-utxo-containing-13280-btc-worth-930m-what-is-happening/",
-      "source": "The Crypto Basic",
-      "published": 1772812268,
-      "categories": "BTC|EXCHANGE|MARKET|CRYPTOCURRENCY",
-      "tags": "Market|Latest Bitcoin (BTC) News Today",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Ripple Director Spotlights New Crypto Regulatory Milestone in UK",
-      "url": "https://u.today/ripple-director-spotlights-new-crypto-regulatory-milestone-in-uk",
-      "source": "U.Today",
-      "published": 1772811960,
-      "categories": "CRYPTOCURRENCY",
-      "tags": "ripple",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Analyst Tells XRP Holders to Tune Out War Talk and Watch Key Price Levels",
-      "url": "https://cryptopotato.com/analyst-tells-xrp-holders-to-tune-out-war-talk-and-watch-key-price-levels/",
-      "source": "Crypto Potato",
-      "published": 1772811901,
-      "categories": "MARKET|TRADING|XRP|CRYPTOCURRENCY",
-      "tags": "AA News|Crypto News|social|Ripple (XRP) Price|XRP",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Holds Above $70,000 Amid Strong ETF Inflows – But Whales Are Focused on This Layer 2 Presale",
-      "url": "https://cryptonews.com/news/bitcoin-holds-above-70000-amid-strong-etf-inflows-but-whales-are-focused-on-this-layer-2-presale/",
-      "source": "cryptonews",
-      "published": 1772811839,
-      "categories": "BTC|BUSINESS|SOL|ZRX|CRYPTOCURRENCY",
-      "tags": "News|Bitcoin (BTC)",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bittensor price prediction 2026–2032: Is TAO a good investment?",
-      "url": "https://www.cryptopolitan.com/bittensor-price-prediction/",
-      "source": "Cryptopolitan",
-      "published": 1772811767,
-      "categories": "BLOCKCHAIN|BUSINESS|EXCHANGE|MARKET|TECHNOLOGY|TRADING|TRX|BITTENSOR|CRYPTOCURRENCY",
-      "tags": "Crypto Price Predictions|Bittensor|TAO",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Kazakhstan Central Bank Allocates $350 Million for Digital Asset Investments",
-      "url": "https://en.coin-turk.com/kazakhstan-central-bank-allocates-350-million-for-digital-asset-investments/",
-      "source": "CoinTurk News",
-      "published": 1772811661,
-      "categories": "FIAT|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "Cryptocurrency News",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "$50,000 BTC in 2026: Bloomberg’s Commodities Strategist Names Bitcoin a 'Young Bear'",
-      "url": "https://u.today/50000-btc-in-2026-bloombergs-commodities-strategist-names-bitcoin-young-bear",
-      "source": "U.Today",
-      "published": 1772811660,
-      "categories": "BTC|COMMODITY|TRADING|CRYPTOCURRENCY",
-      "tags": "Bitcoin|BTC",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Dubai Orders Crypto Exchange KuCoin to Stop Offering Services to Residents",
-      "url": "https://decrypt.co/360259/dubai-orders-crypto-exchange-kucoin-stop-offering-services",
-      "source": "Decrypt",
-      "published": 1772811653,
-      "categories": "EXCHANGE|CRYPTOCURRENCY",
       "tags": "Law and Order",
       "sentiment": "Neutral"
     },
     {
-      "title": "Ethereum Tests $2,200 Breakout as ETF Flows Clash With Bear Flag Risk",
-      "url": "https://www.investing.com/analysis/ethereum-tests-2200-breakout-as-etf-flows-clash-with-bear-flag-risk-200676153",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772811608,
-      "categories": "ETH|TRADING|CRYPTOCURRENCY",
-      "tags": "",
+      "title": "Bitcoin Adoption and Offline Storage on the Rise Despite Weak Market Conditions (Santiment)",
+      "url": "https://cryptopotato.com/bitcoin-adoption-and-offline-storage-on-the-rise-despite-weak-market-conditions-santiment/",
+      "source": "Crypto Potato",
+      "published": 1772825743,
+      "categories": "BTC|BUSINESS|EXCHANGE|MARKET|CRYPTOCURRENCY",
+      "tags": "AA News|Crypto News|social|Bitcoin (BTC) Price|Bitcoin Adoption",
       "sentiment": "Bullish"
     },
     {
-      "title": "Bitcoin Tests $74K Resistance as ETF Inflows and Short Squeeze Fuel Recovery",
-      "url": "https://www.investing.com/analysis/bitcoin-tests-74k-resistance-as-etf-inflows-and-short-squeeze-fuel-recovery-200676149",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772811513,
-      "categories": "BTC|CRYPTOCURRENCY",
-      "tags": "",
+      "title": "US XRP ETF Inflows Hit 4-Week High as Australia Taps XRP Ledger for Digital Dollar",
+      "url": "https://zycrypto.com/us-xrp-etf-inflows-hit-4-week-high-as-australia-taps-xrp-ledger-for-digital-dollar/",
+      "source": "ZyCrypto",
+      "published": 1772825728,
+      "categories": "FIAT|MARKET|WALLET|XRP|CRYPTOCURRENCY",
+      "tags": "Cryptocurrency|News|Cryptocurrency News|Ripple|XRP News|XRPUSD|XRPUSDT",
       "sentiment": "Neutral"
     },
     {
-      "title": "Report Suggests ChangeNOW Crypto Swaps May Complete in Under a Minute",
-      "url": "https://coinpaper.com/15224/report-suggests-change-now-crypto-swaps-may-complete-in-under-a-minute",
-      "source": "Coinpaper",
-      "published": 1772811492,
-      "categories": "EXCHANGE|MARKET|TRADING",
-      "tags": "News|Trading",
+      "title": "Federal Reserve Policy is Well Positioned: Collins Signals Steady Course Amid Economic Crosscurrents",
+      "url": "https://bitcoinworld.co.in/federal-reserve-policy-well-positioned-collins/",
+      "source": "Bitcoin World",
+      "published": 1772825711,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Economy|Federal Reserve|Inflation|interest rates|monetary policy",
       "sentiment": "Neutral"
     },
     {
-      "title": "Why Dow Jones (DJIA) Index Down Today?",
-      "url": "https://coinpaper.com/15223/why-dow-jones-djia-index-down-today",
-      "source": "Coinpaper",
-      "published": 1772811467,
-      "categories": "BTC|BUSINESS|COMMODITY|MARKET|MACROECONOMICS",
-      "tags": "News|Business",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin: Failure at Key Technical Levels Signals Risk of Further Pullback",
-      "url": "https://www.investing.com/analysis/bitcoin-failure-at-key-technical-levels-signals-risk-of-further-pullback-200676203",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772811396,
-      "categories": "BTC|TRADING|CRYPTOCURRENCY",
-      "tags": "",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "Bitcoin Pullback Puts This Key Support Back in Focus Ahead of US Jobs Report",
-      "url": "https://www.investing.com/analysis/bitcoin-pullback-puts-this-key-support-back-in-focus-ahead-of-us-jobs-report-200676199",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772811305,
-      "categories": "BTC|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Has Tesla Sold Any Bitcoin in 2026?",
-      "url": "https://u.today/has-tesla-sold-any-bitcoin-in-2026",
-      "source": "U.Today",
-      "published": 1772811300,
-      "categories": "BTC|CRYPTOCURRENCY",
-      "tags": "Bitcoin|BTC",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Bitcoin Eases From $74K — Can the Breakout Last as Oil and Yields Rise?",
-      "url": "https://www.investing.com/analysis/bitcoin-eases-from-74k--can-the-breakout-last-as-oil-and-yields-rise-200676140",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772811187,
-      "categories": "BTC|COMMODITY|CRYPTOCURRENCY",
-      "tags": "",
-      "sentiment": "Bullish"
-    },
-    {
-      "title": "XRP Holds $1.42 as ETF Inflows and Exchange Outflows Point to Accumulation",
-      "url": "https://www.investing.com/analysis/xrp-holds-142-as-etf-inflows-and-exchange-outflows-point-to-accumulation-200676218",
-      "source": "Investing.Com Crypto Opinion and Analysis",
-      "published": 1772811099,
-      "categories": "EXCHANGE|XRP|CRYPTOCURRENCY",
-      "tags": "",
-      "sentiment": "Neutral"
-    },
-    {
-      "title": "Vancouver Staff Say Bitcoin Reserve Plan Violates Law, Urge Council to Drop Proposal",
-      "url": "https://thecryptobasic.com/2026/03/06/vancouver-staff-say-bitcoin-reserve-plan-violates-law-urge-council-to-drop-proposal/",
-      "source": "The Crypto Basic",
-      "published": 1772811075,
-      "categories": "BTC|FIAT|MARKET|REGULATION|CRYPTOCURRENCY",
-      "tags": "Market|Latest Bitcoin (BTC) News Today",
-      "sentiment": "Bearish"
-    },
-    {
-      "title": "Job losses mount as war-driven oil surge hits US economy",
-      "url": "https://www.cryptopolitan.com/u-s-economy-loses-92000-jobs/",
-      "source": "Cryptopolitan",
-      "published": 1772811074,
-      "categories": "COMMODITY|FIAT|MARKET|REGULATION|MACROECONOMICS|CRYPTOCURRENCY",
-      "tags": "Economy|BLS|US",
-      "sentiment": "Bullish"
-    },
-    {
-      "title": "Long-Term Bitcoin Holders Resume Accumulation After Eight-Month Selling Streak",
-      "url": "https://en.coin-turk.com/long-term-bitcoin-holders-resume-accumulation-after-eight-month-selling-streak/",
+      "title": "Institutional Sellers Step Back as Bitcoin Faces Renewed Volatility",
+      "url": "https://en.coin-turk.com/institutional-sellers-step-back-as-bitcoin-faces-renewed-volatility/",
       "source": "CoinTurk News",
-      "published": 1772811064,
-      "categories": "BTC|BUSINESS|TRADING|CRYPTOCURRENCY",
+      "published": 1772825461,
+      "categories": "BTC|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Bitcoin (BTC)",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin ETFs Pull In Nearly $1 Billion, Fueling a Potential Rebound",
+      "url": "https://zycrypto.com/bitcoin-etfs-pull-in-nearly-1-billion-fueling-a-potential-rebound/",
+      "source": "ZyCrypto",
+      "published": 1772825433,
+      "categories": "BTC|BUSINESS|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Bitcoin|News|Bitcoin News|BTCUSD|BTCUSDC|BTCUSDT|Cryptocurrency News|XBTUSD",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Silver Price Forecast: XAG/USD Consolidates as Key Indicators Signal Market Indecision",
+      "url": "https://bitcoinworld.co.in/silver-price-forecast-xag-usd-consolidation-2/",
+      "source": "Bitcoin World",
+      "published": 1772825413,
+      "categories": "ASIA|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|commodities|Forex|investing|Silver|Technical Analysis",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "No More Information Overload: The Smartest Way to Consume Crypto News",
+      "url": "https://en.coin-turk.com/no-more-information-overload-the-smartest-way-to-consume-crypto-news/",
+      "source": "CoinTurk News",
+      "published": 1772825258,
+      "categories": "MARKET",
+      "tags": "Bitcoin News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Revealed: Anthropic’s Claude Uncovers 22 Critical Vulnerabilities in Firefox During Groundbreaking Security Audit",
+      "url": "https://bitcoinworld.co.in/anthropic-claude-firefox-vulnerabilities-audit/",
+      "source": "Bitcoin World",
+      "published": 1772825112,
+      "categories": "MARKET|TECHNOLOGY|TRADING|RESEARCH|SECURITY INCIDENTS",
+      "tags": "AI News|AI Security|Anthropic|Mozilla|Software Vulnerabilities|web browsers",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Oil Price Forecast Soars as Middle East War Escalates, While Stunning NFP Miss Hammers US Dollar",
+      "url": "https://bitcoinworld.co.in/oil-forecast-dollar-nfp-analysis/",
+      "source": "Bitcoin World",
+      "published": 1772824813,
+      "categories": "COMMODITY|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|#Markets|Dollar|economics|Geopolitics|Oil",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Binance says Iran-linked transaction reports are false and misleading",
+      "url": "https://www.cryptopolitan.com/binance-slams-senator-over-iran-allegations/",
+      "source": "Cryptopolitan",
+      "published": 1772824714,
+      "categories": "EXCHANGE|REGULATION|BNB|MACROECONOMICS|CRYPTOCURRENCY",
+      "tags": "Regulation|Binance",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin Repeats Rare 2018 Pattern That Drove 308% Rally – Can BTC Hit $270,000?",
+      "url": "https://zycrypto.com/bitcoin-repeats-rare-2018-pattern-that-drove-308-rally-can-btc-hit-270000/",
+      "source": "ZyCrypto",
+      "published": 1772824664,
+      "categories": "BTC|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Bitcoin|Markets|News|Bitcoin News|BTCUSD|BTCUSDC|BTCUSDT|Cryptocurrency News|XBTUSD",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Crude Oil Prices Skyrocket Amid Deepening Strait of Hormuz Crisis",
+      "url": "https://bitcoinworld.co.in/crude-oil-strait-hormuz-crisis/",
+      "source": "Bitcoin World",
+      "published": 1772824516,
+      "categories": "COMMODITY|MARKET|TRADING|MACROECONOMICS|SECURITY INCIDENTS",
+      "tags": "Forex News|#Markets|Energy|Geopolitics|Oil|Security",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Liquidity Pressures Slow Crypto Rally as Regulatory Uncertainty Persists",
+      "url": "https://en.coin-turk.com/liquidity-pressures-slow-crypto-rally-as-regulatory-uncertainty-persists/",
+      "source": "CoinTurk News",
+      "published": 1772824267,
+      "categories": "MARKET|TRADING",
+      "tags": "Cryptocurrency News",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "ECB’s Schnabel Warns: Iran Conflict Creates Alarming Upside Inflation Risks for Europe",
+      "url": "https://bitcoinworld.co.in/ecb-schnabel-iran-war-inflation-risks/",
+      "source": "Bitcoin World",
+      "published": 1772824212,
+      "categories": "COMMODITY|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Energy markets|European Central Bank|Geopolitics|Inflation|monetary policy",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "DOT Price Prediction Ahead of 21Shares Polkadot ETF Launch",
+      "url": "https://coinpaper.com/15230/dot-price-prediction-ahead-of-21-shares-polkadot-etf-launch",
+      "source": "Coinpaper",
+      "published": 1772824197,
+      "categories": "ALTCOIN|DOT|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "News|Crypto",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Ripple’s RLUSD and XRP Top Donation Charts",
+      "url": "https://u.today/ripples-rlusd-and-xrp-top-donation-charts",
+      "source": "U.Today",
+      "published": 1772823980,
+      "categories": "XRP|CRYPTOCURRENCY",
+      "tags": "Ripple News|XRP",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Analyst Predicts XRP Price Rally to $50. Here’s the Timeline",
+      "url": "https://timestabloid.com/analyst-predicts-xrp-price-rally-to-50-heres-the-timeline/",
+      "source": "TimesTabloid",
+      "published": 1772823926,
+      "categories": "BUSINESS|MARKET|TRADING|XRP|CRYPTOCURRENCY",
+      "tags": "Cryptocurrency|News|XRP|XRP Price|XRP Price Prediction",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Claude’s Defiant Surge: How an Ethical Stand Against the Pentagon Fueled Explosive Consumer Growth",
+      "url": "https://bitcoinworld.co.in/claude-pentagon-deal-consumer-growth/",
+      "source": "Bitcoin World",
+      "published": 1772823911,
+      "categories": "ASIA|BUSINESS|MARKET|TECHNOLOGY",
+      "tags": "AI News|Artificial Intelligence|Business Ethics|Consumer Trends|Mobile Apps|Technology news",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Bitcoin Slips to $68,000 as Middle East Conflict and US Jobs Data Trigger Sell-Off",
+      "url": "https://news.bitcoin.com/bitcoin-slips-to-68000-as-middle-east-conflict-and-us-jobs-data-trigger-sell-off/",
+      "source": "Bitcoin.com",
+      "published": 1772823698,
+      "categories": "BTC|MARKET|MACROECONOMICS|CRYPTOCURRENCY",
+      "tags": "Interview|Bitcoin (BTC)|markets and prices",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin’s Inter-Exchange Flow Pulse Signals Fresh Upturn After Year-Long Slump",
+      "url": "https://en.coin-turk.com/bitcoins-inter-exchange-flow-pulse-signals-fresh-upturn-after-year-long-slump/",
+      "source": "CoinTurk News",
+      "published": 1772823660,
+      "categories": "BTC|MARKET|TRADING|CRYPTOCURRENCY",
       "tags": "Cryptocurrency News",
       "sentiment": "Neutral"
     },
     {
-      "title": "Bitcoin Liquidation Map Predicts The Next Targets To Watch Out For",
-      "url": "https://www.newsbtc.com/news/bitcoin/bitcoin-liquidation-map-target/",
-      "source": "NewsBTC",
-      "published": 1772811041,
-      "categories": "BTC|MARKET|TRADING|ZRX|CRYPTOCURRENCY",
-      "tags": "Bitcoin|bitcoin|Bitcoin news|bitcoin price|btc|BTC news|btc price|btcusd|BTCUSDT",
+      "title": "CFO Gets Prison Time After Losing $35 Million of Company Money in Crypto Side Hustle",
+      "url": "https://decrypt.co/360270/cfo-gets-prison-time-losing-35-million-company-money-crypto-side-hustle",
+      "source": "Decrypt",
+      "published": 1772823651,
+      "categories": "OTHER",
+      "tags": "|terra-luna-2|Law and Order",
       "sentiment": "Neutral"
     },
     {
-      "title": "Vancouver Mayor’s Bitcoin Reserve Dream Hits Legal Wall",
-      "url": "https://bitcoinist.com/vancouver-mayors-bitcoin-reserve-dream-hits-wall/",
-      "source": "Bitcoinist",
-      "published": 1772811034,
-      "categories": "BTC|BUSINESS|FIAT|REGULATION|CRYPTOCURRENCY",
-      "tags": "Bitcoin News|bitcoin|bitcoin price|btc|btc price|btcusd",
+      "title": "‘Unlock for tokenization? ’- OCC clarifies capital rules for tokenized securities",
+      "url": "https://ambcrypto.com/unlock-for-tokenization-occ-clarifies-capital-rules-for-tokenized-securities/",
+      "source": "AMB Crypto",
+      "published": 1772823622,
+      "categories": "BUSINESS",
+      "tags": "Global News|News|News 1|Social|Trading View",
       "sentiment": "Neutral"
+    },
+    {
+      "title": "Dow Jones Plummets 600 Points: Devastating -92K NFP Print Sparks Market Panic",
+      "url": "https://bitcoinworld.co.in/dow-jones-nfp-report-plunge/",
+      "source": "Bitcoin World",
+      "published": 1772823612,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Economic data|Federal Reserve|financial news|Stock Market|US economy",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Managing financial AI agents is the only skill you’ll need to survive the AI layoffs",
+      "url": "https://www.coindesk.com/opinion/2026/03/06/managing-financial-ai-agents-is-the-only-skill-you-ll-need-to-survive-the-ai-layoffs",
+      "source": "CoinDesk",
+      "published": 1772823600,
+      "categories": "OTHER",
+      "tags": "Opinion|Artificial Intelligence|Opinion",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Bitcoin recovery meets DeFi tensions as Aave rift deepens: Finance Redefined",
+      "url": "https://cointelegraph.com/news/bitcoin-etf-rebound-stablecoin-inflows-defi-governance-hacks-finance-redefined?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "source": "Cointelegraph",
+      "published": 1772823600,
+      "categories": "BTC|EXCHANGE|CRYPTOCURRENCY",
+      "tags": "Latest News",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Asia FX Outlook: Critical Analysis of War Risks and Policy Divergence Shaping Regional Currencies",
+      "url": "https://bitcoinworld.co.in/asia-fx-war-risks-policy-divergence-outlook/",
+      "source": "Bitcoin World",
+      "published": 1772823312,
+      "categories": "ASIA|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Asia FX|Currency Markets|Economic Analysis|Geopolitical Risk|monetary policy",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "Why institutions are suddenly eyeing Latin America’s crypto market",
+      "url": "https://invezz.com/news/2026/03/06/why-institutions-are-suddenly-eyeing-latin-americas-crypto-market/",
+      "source": "Invezz",
+      "published": 1772823289,
+      "categories": "BTC|MARKET|REGULATION|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto|Crypto business",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Gold Price Skyrockets as Shocking US Payrolls Data Crushes US Dollar",
+      "url": "https://bitcoinworld.co.in/gold-price-surges-weak-payrolls/",
+      "source": "Bitcoin World",
+      "published": 1772823012,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|commodities|employment|Forex|Gold|monetary policy",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "USD/CAD Plummets: Weak US Jobs Data and Surging Oil Prices Crush the Greenback",
+      "url": "https://bitcoinworld.co.in/usd-cad-dips-nfp-oil-loonie/",
+      "source": "Bitcoin World",
+      "published": 1772822711,
+      "categories": "BUSINESS|COMMODITY|FIAT|MARKET|TRADING",
+      "tags": "Forex News|Canadian Dollar|Economic data|Forex|Oil Prices|USD-CAD",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Base overtakes other L2s as stablecoin activity surges",
+      "url": "https://www.cryptopolitan.com/base-leads-all-l2-chains-for-stablecoin-transfers/",
+      "source": "Cryptopolitan",
+      "published": 1772822574,
+      "categories": "AAVE|MATIC|TRADING|USDC|CRYPTOCURRENCY",
+      "tags": "News|Base|USDC",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Anthropic Pentagon Contract Collapse: The Stunning AI Ethics Battle and Why Fierce Competition is Vital",
+      "url": "https://bitcoinworld.co.in/anthropic-pentagon-contract-ai-ethics/",
+      "source": "Bitcoin World",
+      "published": 1772822413,
+      "categories": "BUSINESS|MARKET|REGULATION|TECHNOLOGY|CRYPTOCURRENCY",
+      "tags": "AI News|Artificial Intelligence|Business Ethics|Defense Technology|SaaS|VENTURE CAPITAL",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Anthropic’s Pentagon Deal Collapse: A Critical Warning for Startups Chasing Federal Contracts",
+      "url": "https://bitcoinworld.co.in/anthropic-pentagon-deal-warning-startups/",
+      "source": "Bitcoin World",
+      "published": 1772822112,
+      "categories": "BUSINESS|MARKET|REGULATION|TECHNOLOGY|SECURITY INCIDENTS",
+      "tags": "AI News|Artificial Intelligence|defense contracts|Government Procurement|Startup Strategy|technology ethics",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "Analyst Shares Timeline For When A New Bitcoin Bull Run Will Begin This Year",
+      "url": "https://www.newsbtc.com/news/bitcoin-cash/when-bitcoin-run-bull-begin/",
+      "source": "NewsBTC",
+      "published": 1772821855,
+      "categories": "BTC|MARKET|SPONSORED|TRADING|CRYPTOCURRENCY",
+      "tags": "Bitcoin Cash|bitcoin|Bitcoin news|bitcoin price|btc|BTC news|btc price|btcusd|BTCUSDT|CrypFlow|Rising Trendline|stochastic RSI",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "BlockFills Restructuring Looms as Shocking Lawsuit Alleges Client Fund Misuse",
+      "url": "https://bitcoinworld.co.in/blockfills-restructuring-lawsuit-client-funds/",
+      "source": "Bitcoin World",
+      "published": 1772821813,
+      "categories": "BTC|MARKET|REGULATION|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto News|BlockFills|CRYPTOCURRENCY|Digital Assets|Legal|REGULATION",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Federal Reserve’s Crucial Stance: Why Oil Price Volatility Typically Doesn’t Drive Monetary Policy Decisions",
+      "url": "https://bitcoinworld.co.in/federal-reserve-oil-prices-policy/",
+      "source": "Bitcoin World",
+      "published": 1772821511,
+      "categories": "COMMODITY|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Economic Analysis|Energy markets|Federal Reserve|Inflation|monetary policy",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Analysis: Bitcoin Exchange Outflows Signal Holder Conviction Amid Hormuz Crisis",
+      "url": "https://cryptopotato.com/analysis-bitcoin-exchange-outflows-signal-holder-conviction-amid-hormuz-crisis/",
+      "source": "Crypto Potato",
+      "published": 1772821445,
+      "categories": "BTC|EXCHANGE|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "AA News|Crypto News|social|Bitcoin|Bitcoin (BTC) Price",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "China Inflation and Trade Data Signal Firmer Economic Cycle – ABN AMRO Reveals Crucial Insights",
+      "url": "https://bitcoinworld.co.in/china-inflation-trade-data-cycle/",
+      "source": "Bitcoin World",
+      "published": 1772821212,
+      "categories": "ASIA|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|China Economy|economic indicators|Inflation Data|monetary policy|Trade Balance",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Musk ridicules Anthropic as AI rivalry with xAI intensifies",
+      "url": "https://www.cryptopolitan.com/musk-anthropic-ceo-strikes-trump-admin/",
+      "source": "Cryptopolitan",
+      "published": 1772821016,
+      "categories": "BUSINESS|REGULATION|TECHNOLOGY|TRADING|CRYPTOCURRENCY",
+      "tags": "Tech|Anthropic",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "USD/CHF Plummets as US Job Contraction and Geopolitical Tensions Trigger Market Turmoil",
+      "url": "https://bitcoinworld.co.in/usd-chf-dips-job-contraction-tensions/",
+      "source": "Bitcoin World",
+      "published": 1772820912,
+      "categories": "BUSINESS|FIAT|MARKET|TRADING|MACROECONOMICS",
+      "tags": "Forex News|Currency Markets|Economic data|Forex|Swiss Franc|US Dollar",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Private Equity Market Cracks Could Devastate Crypto: Analyst Warns of Spillover Risk to Bitcoin",
+      "url": "https://bitcoinworld.co.in/private-equity-crypto-spillover-risk/",
+      "source": "Bitcoin World",
+      "published": 1772820612,
+      "categories": "BTC|BUSINESS|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto News|BITCOIN|CRYPTOCURRENCY|Financial Risk|Market Analysis|Private Equity",
+      "sentiment": "Bearish"
+    },
+    {
+      "title": "Finance Coach Says It’s a Good Time to Start Accumulating XRP. Here’s Why",
+      "url": "https://timestabloid.com/finance-coach-says-its-a-good-time-to-start-accumulating-xrp-heres-why/",
+      "source": "TimesTabloid",
+      "published": 1772820317,
+      "categories": "BUSINESS|MARKET|TRADING|XRP|CRYPTOCURRENCY",
+      "tags": "Cryptocurrency|News|XRP",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "SPX6900 price prediction 2026-2032: Will SPX6900 soar 10x or crash?",
+      "url": "https://www.cryptopolitan.com/spx6900-price-prediction/",
+      "source": "Cryptopolitan",
+      "published": 1772820125,
+      "categories": "ALTCOIN|BUSINESS|ETH|EXCHANGE|MARKET|SNX|TRADING|ZRX|PYUSD|CRYPTOCURRENCY",
+      "tags": "Crypto Price Predictions|SPX",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "CCE.Cash: A Fast, Private Cryptocurrency Exchange Designed for Instant Cross-Chain Transactions",
+      "url": "https://news.bitcoin.com/cce-cash-a-fast-private-cryptocurrency-exchange-designed-for-instant-cross-chain-transactions/",
+      "source": "Bitcoin.com",
+      "published": 1772820003,
+      "categories": "EXCHANGE|CRYPTOCURRENCY",
+      "tags": "Branded Spotlight",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Michigan Sues Kalshi Over Sports Betting as $54M Iran Market Sparks Debate",
+      "url": "https://coinpaper.com/15229/michigan-sues-kalshi-over-sports-betting-as-54-m-iran-market-sparks-debate",
+      "source": "Coinpaper",
+      "published": 1772819919,
+      "categories": "BUSINESS|COMMODITY|MARKET|REGULATION|TRADING",
+      "tags": "News|Crypto",
+      "sentiment": "Neutral"
+    },
+    {
+      "title": "Zero-Interest Crypto Loans in 2026: Borrow Against Bitcoin With Clapp",
+      "url": "https://cryptodaily.co.uk/2026/03/zero-interest-crypto-loans-in-2026-borrow-against-bitcoin-with-clapp",
+      "source": "Crypto Daily",
+      "published": 1772819866,
+      "categories": "BTC|FIAT|MARKET|USDT|CRYPTOCURRENCY",
+      "tags": "More News",
+      "sentiment": "Bullish"
+    },
+    {
+      "title": "Bitcoin Price Plummets: BTC Falls Below Critical $68,000 Support Level",
+      "url": "https://bitcoinworld.co.in/bitcoin-price-falls-below-68000-8/",
+      "source": "Bitcoin World",
+      "published": 1772819711,
+      "categories": "BTC|BUSINESS|MARKET|TRADING|CRYPTOCURRENCY",
+      "tags": "Crypto News|BITCOIN|CRYPTOCURRENCY|Finance|Market Analysis|trading.",
+      "sentiment": "Bearish"
     }
   ]
 }
