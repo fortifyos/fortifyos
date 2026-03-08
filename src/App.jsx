@@ -3903,6 +3903,7 @@ function SettingsPanel({ open, settings, onToggle, onSetPayFrequency, onExport, 
 // DASHBOARD MODULES
 // ═══════════════════════════════════════════════════
 function NetWorthMod({ snapshots, latest, visible, t }) {
+  const [detailMode, setDetailMode] = useState('grouped');
   if (!visible) return null;
   const nw = latest?.netWorth || {};
   const assets = nw.assets || {};
@@ -3925,35 +3926,103 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
     .map(([name, value]) => ({ name, value: Number(value) || 0 }))
     .filter(l => l.value > 0)
     .sort((a, b) => b.value - a.value);
+  const debtDetailsByName = new Map(
+    (latest?.debts || []).map((debt) => [
+      debt.name,
+      {
+        debtType: debt?.debtType || null,
+        apr: Number(debt?.apr || 0),
+        dueDate: debt?.dueDate || '',
+      },
+    ])
+  );
+
+  const bnplDebts = (latest?.debts || []).filter(d => d?.debtType === 'bnpl' && (Number(d?.balance) || 0) > 0);
+  const bnplNames = new Set(bnplDebts.map(d => d.name));
+  const bnplTotal = bnplDebts.reduce((sum, debt) => sum + (Number(debt.balance) || 0), 0);
+  const revolvingLiabilities = liabilitiesList.filter(item => !bnplNames.has(item.name));
+  const groupedLiabilities = [];
+
+  if (revolvingLiabilities[0]) groupedLiabilities.push(revolvingLiabilities[0]);
+  if (revolvingLiabilities[1]) groupedLiabilities.push(revolvingLiabilities[1]);
+  if (revolvingLiabilities[2]) groupedLiabilities.push(revolvingLiabilities[2]);
+  if (bnplTotal > 0) {
+    groupedLiabilities.push({
+      name: `BNPL Stack (${bnplDebts.length})`,
+      value: bnplTotal,
+      detail: `${bnplDebts.length} accounts`,
+    });
+  }
+  const groupedNames = new Set(groupedLiabilities.map(item => item.name));
+  const otherDebtTotal = liabilitiesList
+    .filter(item => !groupedNames.has(item.name) && !bnplNames.has(item.name))
+    .reduce((sum, item) => sum + item.value, 0);
+  if (otherDebtTotal > 0) {
+    groupedLiabilities.push({
+      name: 'Other Debts',
+      value: otherDebtTotal,
+      detail: `${Math.max(0, liabilitiesList.length - groupedLiabilities.length - bnplDebts.length)} smaller debts`,
+    });
+  }
 
   const mapAssets = breakdown.map(b => ({ label: b.label, value: b.value, color: b.color }));
-  const mapLiabs = liabilitiesList.map(l => ({ label: l.name, value: l.value }));
+  const mapLiabs = groupedLiabilities.map(l => ({
+    label: l.name,
+    value: l.value,
+    detail: l.detail || null,
+  }));
   const mapTotal = [...mapAssets, ...mapLiabs].reduce((s, x) => s + (x.value || 0), 0) || 1;
 
   if (mapAssets.length === 0 && mapLiabs.length === 0) return null;
 
   return (
-    <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 14px' }}>
+    <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: '10px 14px', minWidth: 0, overflow: 'hidden' }}>
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Money Map</div>
-        <div style={{ display: 'flex', gap: 16, fontSize: 14 }}>
-          <span><span style={{ color: t.textDim, fontSize: 14 }}>ASSETS </span><span style={{ color: t.accent }}>{fmt(tA)}</span></span>
-          <span><span style={{ color: t.textDim, fontSize: 14 }}>LIABILITIES </span><span style={{ color: t.danger }}>{fmt(tL)}</span></span>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: 14 }}>
+            <span><span style={{ color: t.textDim, fontSize: 14 }}>ASSETS </span><span style={{ color: t.accent }}>{fmt(tA)}</span></span>
+            <span><span style={{ color: t.textDim, fontSize: 14 }}>LIABILITIES </span><span style={{ color: t.danger }}>{fmt(tL)}</span></span>
+          </div>
+          <div style={{ display: 'inline-flex', border: `1px solid ${t.borderDim}` }}>
+            {['grouped', 'detailed'].map(mode => (
+              <button
+                key={mode}
+                onClick={() => setDetailMode(mode)}
+                style={{
+                  background: detailMode === mode ? t.elevated : 'transparent',
+                  color: detailMode === mode ? t.textPrimary : t.textDim,
+                  border: 'none',
+                  borderLeft: mode === 'detailed' ? `1px solid ${t.borderDim}` : 'none',
+                  padding: '4px 8px',
+                  cursor: 'pointer',
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 12,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                }}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       {/* Map tiles */}
       <div style={{ display: 'grid', gap: 3 }}>
         {mapAssets.length > 0 && (
-          <div style={{ display: 'flex', gap: 3, minHeight: 44 }}>
+          <div style={{ display: 'flex', gap: 3, minHeight: 44, minWidth: 0 }}>
             {mapAssets.map((a, i) => (
               <div key={`ma-${i}`} style={{
-                flex: Math.max(1, a.value),
-                minWidth: `${Math.max(6, (a.value / mapTotal) * 100)}%`,
+                flex: `${Math.max(1, a.value)} 1 0%`,
+                flexBasis: `${Math.max(6, (a.value / mapTotal) * 100)}%`,
+                minWidth: 0,
                 background: t.accentMuted,
                 border: `1px solid ${t.borderDim}`,
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                 padding: '5px 7px',
+                overflow: 'hidden',
               }}>
                 <span style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.label}</span>
                 <span style={{ fontSize: 14, color: a.color, fontVariantNumeric: 'tabular-nums' }}>{fmt(a.value)}</span>
@@ -3962,24 +4031,43 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
           </div>
         )}
         {mapLiabs.length > 0 && (
-          <div style={{ display: 'flex', gap: 3, minHeight: 36 }}>
+          <div style={{ display: 'flex', gap: 3, minHeight: 36, minWidth: 0 }}>
             {mapLiabs.map((l, i) => (
               <div key={`ml-${i}`} style={{
-                flex: Math.max(1, l.value),
-                minWidth: `${Math.max(6, (l.value / mapTotal) * 100)}%`,
+                flex: `${Math.max(1, l.value)} 1 0%`,
+                flexBasis: `${Math.max(6, (l.value / mapTotal) * 100)}%`,
+                minWidth: 0,
                 background: `${t.danger}18`,
                 border: `1px solid ${t.danger}40`,
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                 padding: '5px 7px',
+                overflow: 'hidden',
               }}>
                 <span style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.label}</span>
                 <span style={{ fontSize: 14, color: t.danger, fontVariantNumeric: 'tabular-nums' }}>-{fmt(l.value)}</span>
+                {l.detail && (
+                  <span style={{ fontSize: 11, color: t.textGhost, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.detail}</span>
+                )}
               </div>
             ))}
           </div>
         )}
       </div>
       {/* Legend */}
+      {detailMode === 'grouped' && (
+        <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: '4px 12px', fontSize: 13 }}>
+          {bnplTotal > 0 && (
+            <div style={{ color: t.textDim }}>
+              <span style={{ color: t.danger }}>BNPL</span> {fmt(bnplTotal)} across {bnplDebts.length} accounts
+            </div>
+          )}
+          {groupedLiabilities.some(item => item.name === 'Other Debts') && (
+            <div style={{ color: t.textDim }}>
+              Smaller liabilities are folded into <span style={{ color: t.textPrimary }}>Other Debts</span>.
+            </div>
+          )}
+        </div>
+      )}
       {breakdown.length > 1 && (
         <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: '4px 12px' }}>
           {breakdown.map((b, i) => (
@@ -3991,12 +4079,56 @@ function NetWorthMod({ snapshots, latest, visible, t }) {
           ))}
         </div>
       )}
+      {detailMode === 'detailed' && liabilitiesList.length > 0 && (
+        <div style={{ marginTop: 12, display: 'grid', gap: 10 }}>
+          <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Liability Breakdown</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 8 }}>
+            {liabilitiesList.map((item, index) => {
+              const meta = debtDetailsByName.get(item.name) || {};
+              const debtType = meta.debtType === 'bnpl'
+                ? 'BNPL'
+                : meta.debtType === 'credit_card'
+                  ? 'Credit Card'
+                  : meta.debtType === 'loan'
+                    ? 'Loan'
+                    : meta.debtType || 'Debt';
+              const dueText = meta.dueDate ? meta.dueDate : 'No due date';
+              return (
+                <div
+                  key={`detail-${item.name}-${index}`}
+                  style={{
+                    border: `1px solid ${t.danger}30`,
+                    background: `${t.danger}10`,
+                    padding: '9px 10px',
+                    minWidth: 0,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'flex-start', marginBottom: 6 }}>
+                    <div style={{ color: t.textPrimary, fontSize: 14, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.name}
+                    </div>
+                    <div style={{ color: t.danger, fontSize: 14, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+                      -{fmt(item.value)}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', fontSize: 12 }}>
+                    <span style={{ color: t.textDim }}>{debtType}</span>
+                    {meta.apr > 0 && <span style={{ color: t.warn }}>{meta.apr.toFixed(2)}% APR</span>}
+                    <span style={{ color: t.textGhost }}>Due {dueText}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 function DebtMod({ latest, visible, t, onUpdateDebt }) {
   const [extraMonthly, setExtraMonthly] = useState('');
+  const [countdownDebtName, setCountdownDebtName] = useState('');
   const [panel, setPanel] = useState(null); // { name, mode: 'pay'|'balance', value }
 
   const today = new Date().toISOString().slice(0, 10);
@@ -4017,14 +4149,25 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
     const patch = {};
     if (isFixed) {
       newBalance = Math.max(0, (debt.balance || 0) - amount);
-      patch.paymentsMade = (debt.paymentsMade || 0) + 1;
+      patch.paymentsMade = newBalance <= 0
+        ? (debt.totalTerms || 0)
+        : Math.min((debt.totalTerms || 0), (debt.paymentsMade || 0) + 1);
     } else {
       const monthlyInterest = ((debt.balance || 0) * ((debt.apr || 0) / 100)) / 12;
       const principal = Math.max(0, amount - monthlyInterest);
       newBalance = Math.max(0, (debt.balance || 0) - principal);
     }
     const history = [...(debt._payHistory || []), { date: today, amount, type: 'payment' }].slice(-24);
-    onUpdateDebt?.(debt.name, { ...patch, balance: +newBalance.toFixed(2), _paidCycle: thisMonth, _lastPaid: today, _lastPayAmt: amount, _payHistory: history });
+    onUpdateDebt?.(debt.name, {
+      ...patch,
+      balance: +newBalance.toFixed(2),
+      _paidCycle: thisMonth,
+      _lastPaid: today,
+      _lastPayAmt: amount,
+      _payHistory: history,
+      _paidOff: newBalance <= 0,
+      _paidOffAt: newBalance <= 0 ? today : debt._paidOffAt,
+    });
     setPanel(null);
   };
 
@@ -4032,39 +4175,84 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
     const newBalance = parseFloat(panel.value);
     if (isNaN(newBalance) || newBalance < 0) return;
     const history = [...(debt._payHistory || []), { date: today, amount: newBalance, type: 'balance-update' }].slice(-24);
-    onUpdateDebt?.(debt.name, { balance: +newBalance.toFixed(2), _balanceUpdated: today, _payHistory: history });
+    onUpdateDebt?.(debt.name, {
+      balance: +newBalance.toFixed(2),
+      paymentsMade: (debt.totalTerms || 0) > 0 && newBalance <= 0 ? (debt.totalTerms || 0) : debt.paymentsMade,
+      _balanceUpdated: today,
+      _payHistory: history,
+      _paidOff: newBalance <= 0,
+      _paidOffAt: newBalance <= 0 ? today : debt._paidOffAt,
+    });
     setPanel(null);
   };
 
-  const debts = (latest?.debts || []).sort((a, b) => {
-    // Fixed-term debts sort by payments remaining (ascending), revolving by APR (descending)
-    const aFixed = (a.totalTerms || 0) > 0;
-    const bFixed = (b.totalTerms || 0) > 0;
-    if (aFixed && !bFixed) return 1; // revolving first (higher priority for avalanche)
-    if (!aFixed && bFixed) return -1;
-    if (aFixed && bFixed) return ((a.totalTerms - (a.paymentsMade || 0)) - (b.totalTerms - (b.paymentsMade || 0)));
-    return (b.apr || 0) - (a.apr || 0);
-  });
-  const total = totalDebt(debts); const di = dailyInterest(debts);
-  const maxB = debts.length ? Math.max(...debts.map(d => d.balance || 0)) : 1;
+  const debts = useMemo(() => {
+    const isActiveDebt = (debt) => {
+      const balance = Number(debt?.balance || 0);
+      const totalTerms = Number(debt?.totalTerms || 0);
+      const paymentsMade = Number(debt?.paymentsMade || 0);
+      if (totalTerms > 0) return balance > 0 && paymentsMade < totalTerms;
+      return balance > 0;
+    };
+    return [...(latest?.debts || [])].filter(isActiveDebt).sort((a, b) => {
+      // Fixed-term debts sort by payments remaining (ascending), revolving by APR (descending)
+      const aFixed = (a.totalTerms || 0) > 0;
+      const bFixed = (b.totalTerms || 0) > 0;
+      if (aFixed && !bFixed) return 1; // revolving first (higher priority for avalanche)
+      if (!aFixed && bFixed) return -1;
+      if (aFixed && bFixed) return ((a.totalTerms - (a.paymentsMade || 0)) - (b.totalTerms - (b.paymentsMade || 0)));
+      return (b.apr || 0) - (a.apr || 0);
+    });
+  }, [latest?.debts]);
+  const completedDebts = useMemo(
+    () => (latest?.debts || []).filter(debt => !debts.some(activeDebt => activeDebt.name === debt.name) && (Number(debt?.balance || 0) <= 0)),
+    [latest?.debts, debts]
+  );
   const revolving = debts.filter(d => !(d.totalTerms > 0));
+  const recommendedTarget = revolving[0] || debts[0] || null;
+
+  useEffect(() => {
+    if (!recommendedTarget) {
+      if (countdownDebtName) setCountdownDebtName('');
+      return;
+    }
+    if (!debts.some(debt => debt.name === countdownDebtName)) {
+      setCountdownDebtName(recommendedTarget.name);
+    }
+  }, [countdownDebtName, debts, recommendedTarget]);
+
+  const countdownDebt = debts.find(debt => debt.name === countdownDebtName) || recommendedTarget;
+  const total = totalDebt(debts);
+  const di = dailyInterest(debts);
+  const maxB = debts.length ? Math.max(...debts.map(d => d.balance || 0)) : 1;
+
   // ── Projected Freedom Date (avalanche target debt) ──────────────────────
   const _income = latest?.budget?.income || latest?._meta?.income || 0;
   const _spent = totalBudgetSpent(latest);
   const _surplus = Math.max(0, _income - _spent);
-  const calcFreedomDate = (debt) => {
+  const calcPayoffProjection = (debt, extraMonthlyInput = 0) => {
     if (!debt || (debt.balance || 0) <= 0) return null;
-    const r = (debt.apr || 0) / 100 / 12;
-    const totalMins = debts.reduce((s, d) => s + (d.minPayment || 0), 0);
-    const extra = Math.max(0, _surplus - 0);
-    const pmt = (debt.minPayment || 0) + extra;
-    if (pmt <= 0) return null;
-    const months = r > 0 && pmt > r * debt.balance
-      ? Math.ceil(-Math.log(1 - (r * debt.balance) / pmt) / Math.log(1 + r))
-      : Math.ceil(debt.balance / pmt);
+    const basePayment = Math.max(0, debt.minPayment || debt.monthlyPayment || 0);
+    const totalPayment = basePayment + _surplus + Math.max(0, extraMonthlyInput || 0);
+    if (totalPayment <= 0) return null;
+    const monthlyRate = (debt.apr || 0) / 100 / 12;
+    const months = monthlyRate > 0 && totalPayment > monthlyRate * debt.balance
+      ? Math.ceil(-Math.log(1 - (monthlyRate * debt.balance) / totalPayment) / Math.log(1 + monthlyRate))
+      : Math.ceil(debt.balance / totalPayment);
     if (!isFinite(months) || months > 600) return null;
-    const d = new Date(); d.setMonth(d.getMonth() + months);
-    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + months);
+    return {
+      months,
+      days: months * 30,
+      dateLabel: payoffDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      totalPayment,
+    };
+  };
+
+  const calcFreedomDate = (debt) => {
+    const projection = calcPayoffProjection(debt, 0);
+    return projection?.dateLabel || null;
   };
   return (<Card title="Debt Destruction" visible={visible} delay={80} alert={debts.some(d => d.balance > 2000)} t={t}>
     <div style={{ marginBottom: 14 }}><div style={{ fontSize: 28, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}><AnimNum value={total} /></div>
@@ -4209,6 +4397,11 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
         </div>);
     })}
     {revolving.length > 0 && <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginTop: 4, fontSize: 14, color: t.textSecondary }}>Avalanche target: <span style={{ color: t.accent }}>{revolving[0]?.name}</span> ({revolving[0]?.apr}% APR)</div>}
+    {completedDebts.length > 0 && (
+      <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8, marginTop: 6, fontSize: 14, color: t.textDim }}>
+        Cleared from active queue: <span style={{ color: t.accent }}>{completedDebts.map(d => d.name).join(', ')}</span>
+      </div>
+    )}
     {debts.length > 0 && di > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, paddingTop: 6, borderTop: `1px solid ${t.borderDim}`, fontSize: 15, color: t.textDim }}>
       <span>Monthly interest: <span style={{ color: t.danger }}>{fmt(Math.round(di * 30))}</span></span>
       <span>Annual if unchanged: <span style={{ color: t.danger }}>{fmt(Math.round(di * 365))}</span></span>
@@ -4216,42 +4409,70 @@ function DebtMod({ latest, visible, t, onUpdateDebt }) {
 
     {/* Liberation Countdown */}
     {(() => {
-      if (debts.length === 0 || total <= 0) return null;
-      const totalMinPayments = debts.reduce((s, d) => s + (d.minPayment || 0), 0);
-      const monthlyPrincipal = totalMinPayments > 0 ? Math.max(totalMinPayments - (di * 30), totalMinPayments * 0.3) : 0;
-      const liberationMonths = monthlyPrincipal > 0 ? Math.ceil(total / monthlyPrincipal) : 0;
-      const liberationDays = liberationMonths * 30;
-      const accelerated50 = monthlyPrincipal > 0 ? Math.ceil(total / (monthlyPrincipal * 1.5)) : 0;
-      const accelerated100 = monthlyPrincipal > 0 ? Math.ceil(total / (monthlyPrincipal * 2)) : 0;
+      if (!countdownDebt) return null;
       const extra = Math.max(0, parseFloat(extraMonthly) || 0);
-      const acceleratedCustom = monthlyPrincipal > 0 ? Math.ceil(total / (monthlyPrincipal + extra)) : 0;
-      const libDate = new Date();
-      libDate.setMonth(libDate.getMonth() + liberationMonths);
-      const libDateStr = libDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      const currentProjection = calcPayoffProjection(countdownDebt, 0);
+      const acceleratedProjection = calcPayoffProjection(countdownDebt, extra);
+      const accelerated50 = calcPayoffProjection(countdownDebt, 50);
+      const accelerated100 = calcPayoffProjection(countdownDebt, 100);
+      if (!currentProjection) return null;
+      const isRecommendedTarget = countdownDebt?.name === recommendedTarget?.name;
       return (
         <div style={{ marginTop: 8, padding: '10px 12px', background: t.elevated, border: `1px solid ${t.accent}30`, borderLeft: `3px solid ${t.accent}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 6 }}>
             <span style={{ fontSize: 15, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>🔓 Liberation Countdown</span>
-            <span style={{ fontSize: 15, color: t.textDim }}>{libDateStr}</span>
+            <span style={{ fontSize: 15, color: t.textDim }}>{currentProjection.dateLabel}</span>
+          </div>
+          <div style={{ fontSize: 14, color: t.textSecondary, marginBottom: 8 }}>
+            System priority: <span style={{ color: t.accent }}>{recommendedTarget?.name || 'None'}</span>
+            {recommendedTarget?.apr > 0 && <span style={{ color: t.textGhost }}> ({recommendedTarget.apr}% APR)</span>}
+          </div>
+          <div style={{ marginBottom: 8, display: 'grid', gridTemplateColumns: '1fr', gap: 6 }}>
+            <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Countdown Debt</div>
+            <select
+              value={countdownDebt?.name || ''}
+              onChange={e => setCountdownDebtName(e.target.value)}
+              style={{ width: '100%', background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 8px' }}
+            >
+              {debts.map(debt => (
+                <option key={debt.name} value={debt.name}>
+                  {debt.name}{debt.apr ? ` (${debt.apr}% APR)` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={{ fontSize: 14, color: isRecommendedTarget ? t.accent : t.warn, marginBottom: 8 }}>
+            {isRecommendedTarget ? 'Following recommended attack target.' : `Manual target override. Redirecting pressure to ${countdownDebt.name}.`}
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 8 }}>
-            <span style={{ fontSize: 22, fontWeight: 700, color: t.accent }}>{liberationDays}</span>
-            <span style={{ fontSize: 14, color: t.textSecondary }}>days at current pace</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: t.accent }}>{currentProjection.days}</span>
+            <span style={{ fontSize: 14, color: t.textSecondary }}>days to clear {countdownDebt.name} at current pace</span>
           </div>
-          {/* Progress toward zero */}
-          <div style={{ height: 4, background: t.borderDim, marginBottom: 8 }}>
-            <div style={{ height: '100%', background: `linear-gradient(90deg, ${t.accent}, ${t.accentBright})`, width: '0%', boxShadow: `0 0 6px ${t.accent}40` }} />
+          <div style={{ fontSize: 14, color: t.textDim, marginBottom: 8 }}>
+            Attack budget now: <span style={{ color: t.textPrimary }}>{fmt(currentProjection.totalPayment)}/mo</span>
+            {_surplus > 0 && <span style={{ color: t.textGhost }}> including {fmt(_surplus)}/mo free cash flow</span>}
           </div>
           <div style={{ marginBottom: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, alignItems: 'end' }}>
             <div>
               <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Extra Payment / Month</div>
               <input value={extraMonthly} onChange={e => setExtraMonthly(e.target.value)} placeholder="100" inputMode="decimal" style={{ width: '100%', background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 8px' }} />
             </div>
-            {extra > 0 && <div style={{ fontSize: 15, color: t.textSecondary }}>With {fmt(extra)} extra: <span style={{ color: t.accent }}>{acceleratedCustom * 30}d</span></div>}
+            {extra > 0 && acceleratedProjection && (
+              <div style={{ fontSize: 15, color: t.textSecondary }}>
+                With {fmt(extra)} extra: <span style={{ color: t.accent }}>{acceleratedProjection.days}d</span>
+                <span style={{ color: t.textGhost }}> ({Math.max(0, currentProjection.months - acceleratedProjection.months)} mo saved, done by {acceleratedProjection.dateLabel})</span>
+              </div>
+            )}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 14 }}>
-            <div style={{ color: t.textDim }}>+50%/mo extra: <span style={{ color: t.accent }}>{accelerated50 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated50)} mo saved)</span></div>
-            <div style={{ color: t.textDim }}>+100%/mo extra: <span style={{ color: t.accent }}>{accelerated100 * 30}d</span> <span style={{ color: t.textGhost }}>({(liberationMonths - accelerated100)} mo saved)</span></div>
+            <div style={{ color: t.textDim }}>
+              +{fmt(50)}/mo: <span style={{ color: t.accent }}>{accelerated50?.days || currentProjection.days}d</span>
+              {accelerated50 && <span style={{ color: t.textGhost }}> ({Math.max(0, currentProjection.months - accelerated50.months)} mo saved, {accelerated50.dateLabel})</span>}
+            </div>
+            <div style={{ color: t.textDim }}>
+              +{fmt(100)}/mo: <span style={{ color: t.accent }}>{accelerated100?.days || currentProjection.days}d</span>
+              {accelerated100 && <span style={{ color: t.textGhost }}> ({Math.max(0, currentProjection.months - accelerated100.months)} mo saved, {accelerated100.dateLabel})</span>}
+            </div>
           </div>
         </div>
       );
@@ -4552,7 +4773,13 @@ function EFundMod({ latest, visible, t }) {
     {/* ── Compact data row ── */}
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
       <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Balance</div><div style={{ fontSize: 15, fontWeight: 700 }}><AnimNum value={bal} /></div></div>
-      <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Monthly</div><div style={{ fontSize: 15, color: t.textSecondary }}>{fmt(monthly)}</div></div>
+      <div>
+        <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span>Monthly</span>
+          <InfoTip t={t} align="right" direction="down" text="Your current monthly spending baseline used for runway. It prioritizes actual budget spending, then synced statement spending, then your saved monthly expense fallback." />
+        </div>
+        <div style={{ fontSize: 15, color: t.textSecondary }}>{fmt(monthly)}</div>
+      </div>
       <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Phase</div><div style={{ fontSize: 15, color: t.textSecondary }}>{phase}/4</div></div>
       <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next</div><div style={{ fontSize: 11, color: t.accentDim }}>{labels[Math.min(phase, 3)]}</div></div>
     </div>
@@ -4801,9 +5028,9 @@ function KnoxTerminalMod({ latest, visible, t }) {
             ? `${directive.label}${directive.rec ? ' — ' + directive.rec : ''}`
             : 'All systems nominal. Sovereign Blueprint on track.';
           return (
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10, padding: '6px 8px', background: directive ? `${dirColor}10` : `${t.accent}08`, borderLeft: `3px solid ${dirColor}`, border: `1px solid ${dirColor}28`, borderLeftWidth: 3 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10, padding: '6px 8px', background: directive ? `${dirColor}10` : `${t.accent}08`, borderLeft: `3px solid ${dirColor}`, border: `1px solid ${dirColor}28`, borderLeftWidth: 3, minWidth: 0 }}>
               <span style={{ color: dirColor, fontWeight: 700, fontSize: 10, flexShrink: 0, letterSpacing: '0.1em', paddingTop: 1 }}>DIRECTIVE</span>
-              <span style={{ color: dirColor, fontSize: 11, lineHeight: 1.4, opacity: 0.9 }}>{dirText}</span>
+              <span style={{ color: dirColor, fontSize: 11, lineHeight: 1.4, opacity: 0.9, minWidth: 0, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{dirText}</span>
             </div>
           );
         })()}
@@ -7511,13 +7738,39 @@ function FortifyOSApp() {
     });
   }, [settings]);
   const handleUpdateDebt = useCallback(async (debtName, patch) => {
-    setLatest(prev => {
-      const debts = (prev.debts || []).map(d =>
+    const applyDebtPatch = (snapshot) => {
+      if (!snapshot) return snapshot;
+      const debts = (snapshot.debts || []).map(d =>
         d.name === debtName ? { ...d, ...patch } : d
       );
-      const nextLatest = { ...prev, debts };
+      const matchedDebt = debts.find(d => d.name === debtName);
+      const nextBalance = Math.max(0, Number(matchedDebt?.balance || 0));
+      const nextLiabilities = {
+        ...(snapshot.netWorth?.liabilities || {}),
+        [debtName]: nextBalance,
+      };
+      const nextAssets = snapshot.netWorth?.assets || {};
+      const nextNetWorth = {
+        ...(snapshot.netWorth || {}),
+        assets: nextAssets,
+        liabilities: nextLiabilities,
+        total: ((nextAssets.checking || 0) + (nextAssets.savings || 0) + (nextAssets.eFund || 0) + (nextAssets.other || 0))
+          - Object.values(nextLiabilities).reduce((sum, value) => sum + (Number(value) || 0), 0),
+      };
+      return { ...snapshot, debts, netWorth: nextNetWorth };
+    };
+
+    setLatest(prev => {
+      const nextLatest = applyDebtPatch(prev);
       store.set('fortify-latest', nextLatest);
       return nextLatest;
+    });
+    setSnapshots(prev => {
+      if (!Array.isArray(prev) || prev.length === 0) return prev;
+      const nextSnapshots = [...prev];
+      nextSnapshots[nextSnapshots.length - 1] = applyDebtPatch(nextSnapshots[nextSnapshots.length - 1]);
+      store.set('fortify-snapshots', nextSnapshots);
+      return nextSnapshots;
     });
   }, []);
 
