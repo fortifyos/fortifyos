@@ -7362,8 +7362,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           .ms2-wrap .black-box::-webkit-scrollbar-track { background: transparent; }
           .ms2-wrap .black-box::-webkit-scrollbar-thumb { background: var(--primary); opacity: 0.6; }
 
-          /* ── CRT SCANLINE OVERLAY (scoped to Radar page) ───────────────── */
-          .ms2-wrap::after { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04)); background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 9999; }
           @media (max-width: 980px) {
             .ms2-wrap { padding: 64px 10px 22px !important; }
             .ms2-top { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
@@ -7790,7 +7788,9 @@ function FortifyOSApp() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght;700&display=swap');
         * { box-sizing: border-box; margin: 0; }
-        html, body, #root { width: 100%; overflow-x: hidden; }
+        html { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: none; }
+        body { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; }
+        #root { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; }
         
 /* Responsive layout */
 .fo-main { padding-left: 14px; padding-right: 14px; }
@@ -7912,7 +7912,8 @@ function FortifyOSApp() {
           .dashboard-main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
         }
       `}</style>
-      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 998, opacity: 0.025, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, ${t.accent} 2px, ${t.accent} 4px)` }} />
+      {/* Global CRT scanline overlay — applied to all pages */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FortifyOS initializing...</div></div>}
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
