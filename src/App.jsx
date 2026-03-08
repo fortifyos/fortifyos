@@ -9,7 +9,7 @@ import {
   Shield, ChevronRight, Sun, Moon, Lock, Cpu, Activity,
   Settings, RefreshCw, X, Download, Trash2, Database, AlertCircle,
   FileText, Upload, Zap, ShieldAlert, TrendingUp,
-  ArrowRight, ChevronDown, Clock, Eye, Menu
+  ArrowRight, ChevronDown, Clock, Eye, Menu, Home, LayoutGrid
 } from 'lucide-react';
 import * as Papa from 'papaparse';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -1489,10 +1489,72 @@ function useMenuDismiss(menuOpen, setMenuOpen, menuRef) {
   }, [menuOpen, setMenuOpen, menuRef]);
 }
 
+function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 'Menu' }) {
+  return (
+    <div ref={menuRef} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setMenuOpen(v => !v)}
+        style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, borderRadius: 8, width: 34, height: 34, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        title={title}
+        aria-label={title}
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? <X size={14} /> : <Menu size={14} />}
+      </button>
+      {menuOpen && (
+        <div style={{
+          position: 'absolute', left: 0, top: 42, zIndex: 120,
+          minWidth: 200, padding: 8,
+          background: isDark ? t.elevated : '#f3f3f1',
+          border: `1px solid ${isDark ? t.borderMid : '#8e8e88'}`,
+          borderRadius: 18,
+          boxShadow: isDark ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 10px 24px rgba(0,0,0,0.16)',
+        }}>
+          {items.map((item) => {
+            const Icon = item.icon;
+            const isCurrent = !!item.current;
+            return (
+              <button
+                key={item.key}
+                onClick={() => {
+                  setMenuOpen(false);
+                  item.onClick?.();
+                }}
+                disabled={!item.onClick}
+                style={{
+                  width: '100%',
+                  background: isCurrent ? (isDark ? `${t.accent}18` : '#e7efe6') : 'none',
+                  border: 'none',
+                  color: isCurrent ? (item.color || t.accent) : (item.color || t.textSecondary),
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 13,
+                  padding: '10px 12px',
+                  cursor: item.onClick ? 'pointer' : 'default',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 10,
+                  opacity: item.onClick ? 1 : 0.8,
+                }}
+              >
+                {Icon ? <Icon size={15} /> : <span style={{ fontSize: 16, lineHeight: 1 }}>₿</span>}
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
-function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel }) {
+function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onBitcoin, onSettings }) {
   const [boot, setBoot] = useState(0);
   const [faqOpen, setFaqOpen] = useState(null);
   const [dailyBurn, setDailyBurn] = useState(0);
@@ -1540,29 +1602,30 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     { q: 'Can I use it on my phone?', a: 'Yes. You can run FortifyOS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
   ];
 
+  const navItems = [
+    { key: 'home', label: 'Home', icon: Home, onClick: null, current: true },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
+  ];
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
       {/* Nav */}
       <nav style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
-          <Shield size={18} style={{ color: accent }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FortifyOS</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
+          <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
+            <Shield size={18} style={{ color: accent }} />
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FortifyOS</span>
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
           </button>
-          <div ref={menuRef} style={{ position: 'relative' }}>
-            <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Menu">
-              {menuOpen ? <X size={16} /> : <Menu size={16} />}
-            </button>
-            {menuOpen && (
-              <div style={{ position: 'absolute', right: 0, top: 44, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, display: 'flex', flexDirection: 'column', gap: 5, minWidth: 160, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
-                <button onClick={() => { setMenuOpen(false); onMacroSentinel(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><Eye size={11} /> Radar</button>
-                <button onClick={() => { setMenuOpen(false); onDocs(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }}><FileText size={11} /> Docs</button>
-              </div>
-            )}
-          </div>
         </div>
       </nav>
 
@@ -1773,7 +1836,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 // ═══════════════════════════════════════════════════
 // DOCUMENTATION VIEW
 // ═══════════════════════════════════════════════════
-function DocsView({ t, isDark, onBack, onToggleTheme }) {
+function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onBitcoin, onSettings }) {
   const [activeSection, setActiveSection] = useState(null);
   const [expandedTier, setExpandedTier] = useState({ start: true, core: true, data: false, advanced: false, why: false });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1866,15 +1929,20 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
   }, []);
 
   const toggleTier = (key) => setExpandedTier(prev => ({ ...prev, [key]: !prev[key] }));
+  const navItems = [
+    { key: 'home', label: 'Home', icon: Home, onClick: onBack },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Docs', icon: FileText, onClick: null, current: true },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
       <nav style={sty.nav}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={onBack} style={{ background: 'none', border: 'none', color: t.textSecondary, cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: 15 }}>
-            <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> BACK
-          </button>
-          <span style={{ color: t.borderMid }}>|</span>
+          <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
             <Shield size={14} style={{ color: accent }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: accent }}>FortifyOS</span>
@@ -1885,16 +1953,6 @@ function DocsView({ t, isDark, onBack, onToggleTheme }) {
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
             {isDark ? <Sun size={14} /> : <Moon size={14} />}
           </button>
-          <div ref={menuRef} style={{ position: 'relative' }}>
-            <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }} title="Menu">
-              {menuOpen ? <X size={14} /> : <Menu size={14} />}
-            </button>
-            {menuOpen && (
-              <div style={{ position: 'absolute', right: 0, top: 40, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, minWidth: 160, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
-                <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', width: '100%' }}><ChevronRight size={11} style={{ transform: 'rotate(180deg)' }} /> Home</button>
-              </div>
-            )}
-          </div>
         </div>
       </nav>
 
@@ -6598,7 +6656,7 @@ function TransactionsMod({ latest, visible, t }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onBitcoin, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -6644,56 +6702,30 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   const _prevNW = snapshots.length > 1 ? (snapshots[snapshots.length - 2]?.netWorth?.total || 0) : 0;
   const _nwDelta = _nwTotal - _prevNW;
   const _equityPct = _tA > 0 ? Math.round((_nwTotal / _tA) * 100) : 0;
+  const navItems = [
+    { key: 'home', label: 'Home', icon: Home, onClick: onHome },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: null, current: true },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
+  ];
 
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50, animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }} onClick={onHome} title="Return to home">
-        <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <AppNavMenu t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} items={navItems} title="Open navigation" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={onHome} title="Return to home">
+          <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
+        </div>
       </div>
       <span className="phase-label" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
-      <div ref={quickMenuRef} className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+      <div className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
         <button
           onClick={onToggleTheme}
           title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
         >{isDark ? <Sun size={13} /> : <Moon size={13} />}</button>
-        <button
-          className="dash-menu-toggle"
-          onClick={() => setQuickMenuOpen(v => !v)}
-          style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 8px', cursor: 'pointer', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
-          title="Open actions menu"
-        >
-          {quickMenuOpen ? <X size={12} /> : <Menu size={12} />}
-        </button>
-        {quickMenuOpen && (
-          <div className="dash-menu-pop glass-panel" style={{
-            position: 'absolute', right: 0, top: 38, zIndex: 120,
-            minWidth: 200, paddingTop: 8, paddingBottom: 8,
-            boxShadow: isDark
-              ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)'
-              : '0 6px 24px rgba(0,0,0,0.13)',
-          }}>
-            {/* ── Primary navigation ── */}
-            <button className="fortify-nav-item nav-radar" onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}>
-              <Eye size={18} className="nav-icon radar-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Radar</span>
-            </button>
-            <button className="fortify-nav-item nav-bitcoin" onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }}>
-              <span className="nav-btc-glyph">₿</span> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Bitcoin</span>
-            </button>
-            <button className="fortify-nav-item nav-settings" onClick={() => { setQuickMenuOpen(false); onSettings && onSettings(); }}>
-              <Settings size={18} className="nav-icon gear-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Settings</span>
-            </button>
-            {/* ── Data operations ── */}
-            <div className="fortify-nav-divider" />
-            <div className="fortify-nav-section-label">Data</div>
-            <button className="fortify-nav-item nav-data" onClick={() => { setQuickMenuOpen(false); setSyncOpen(true); }}>
-              <Upload size={14} className="nav-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Import</span>
-            </button>
-            <button className="fortify-nav-item nav-data" onClick={() => { setQuickMenuOpen(false); onExport && onExport(); }}>
-              <Download size={14} className="nav-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Export</span>
-            </button>
-          </div>
-        )}
       </div>
     </header>
     <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
@@ -6884,7 +6916,7 @@ const DISTORTION_QUOTES = [
 
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
-function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings }) {
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onBitcoin, onSettings, onDocs }) {
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -7054,28 +7086,29 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
     return `${Math.floor(s / 86400)}d ago`;
   };
+  const navItems = [
+    { key: 'home', label: 'Home', icon: Home, onClick: onHome },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: null, current: true },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
       {/* Fixed full-width header — matches Dashboard/Landing pattern exactly */}
       <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <Shield size={14} style={{ color: t.accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Pre-Market Radar</span>
-        <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             {isDark ? <Sun size={13} /> : <Moon size={13} />}
           </button>
-          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
-            {menuOpen ? <X size={12} /> : <Menu size={12} />}
-          </button>
-          {menuOpen && (
-            <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, minWidth: 168, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.55)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', width: '100%' }}><ChevronRight size={11} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
-            </div>
-          )}
         </div>
       </header>
       <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
@@ -7212,26 +7245,26 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
               {walcl != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid ${t.accent}` }}>
-                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Balance Sheet</div>
+              <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${t.accent}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Balance Sheet</div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace" }}>${(walcl / 1000).toFixed(2)}T</div>
                 </div>
               )}
               {netLiq != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid ${netLiqColor}` }}>
-                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
+                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${netLiqColor}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: netLiqColor, fontFamily: "'JetBrains Mono', monospace" }}>{netLiq >= 0 ? '+' : ''}${Math.abs(netLiq / 1000).toFixed(2)}T</div>
                 </div>
               )}
               {latest?.macro?.fedWatchCut != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid #2d333b` }}>
-                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
+                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: latest.macro.fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.fedWatchCut}%</div>
                 </div>
               )}
               {latest?.macro?.nextFomc && (
-                <div style={{ padding: '7px 10px', border: `1px solid #2d333b`, borderLeft: `2px solid #2d333b` }}>
-                  <div style={{ fontSize: 10, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
+                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.nextFomc}</div>
                 </div>
               )}
@@ -7243,7 +7276,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             <div className="tag">DAILY MACRO ANALYSIS — THE DISTORTION HUB</div>
             <h2>"{lordsQuote.quote}"</h2>
             <p className="concept">Concept: {lordsQuote.concept}</p>
-            <p style={{ fontSize: 11, color: '#8b949e', fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>— Christopher Leonard · Lords of Easy Money</p>
+            <p style={{ fontSize: 11, color: isDark ? '#8b949e' : '#676c66', fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>— Christopher Leonard · Lords of Easy Money</p>
           </div>
 
         </div>
@@ -7322,15 +7355,15 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           /* ── DISTORTION HUB GRID ──────────────────────────────────────── */
           @keyframes glow-pulse { from { transform: scale(0.9); box-shadow: 0 0 30px rgba(0,251,255,0.3); } to { transform: scale(1.1); box-shadow: 0 0 60px rgba(0,251,255,0.6); } }
           .ms2-wrap .distortion-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-          .ms2-wrap .hub-card { background: #080a0c; border: 1px solid #2d333b; padding: 20px; position: relative; overflow: hidden; }
-          .ms2-wrap .hub-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid #2d333b; padding-bottom: 8px; }
+          .ms2-wrap .hub-card { background: ${isDark ? '#080a0c' : '#f4f4f1'}; border: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; padding: 20px; position: relative; overflow: hidden; }
+          .ms2-wrap .hub-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; padding-bottom: 8px; }
           .ms2-wrap .reactor-core { width: 100px; height: 100px; margin: 16px auto; border-radius: 50%; background: radial-gradient(circle, #00fbff 0%, transparent 70%); box-shadow: 0 0 30px rgba(0,251,255,0.3); animation: glow-pulse 4s ease-in-out infinite alternate; }
           .ms2-wrap .quote-section { grid-column: 1 / -1; }
-          .ms2-wrap .quote-section .tag { font-size: 10px; letter-spacing: 2px; color: #8b949e; border-bottom: 1px solid #2d333b; padding-bottom: 10px; margin-bottom: 14px; text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; display: block; }
+          .ms2-wrap .quote-section .tag { font-size: 10px; letter-spacing: 2px; color: ${isDark ? '#8b949e' : '#676c66'}; border-bottom: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; padding-bottom: 10px; margin-bottom: 14px; text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; display: block; }
           .ms2-wrap .quote-section h2 { font-style: italic; color: var(--primary); line-height: 1.55; font-size: 1.05rem; margin: 0 0 8px 0; font-weight: 400; }
           .ms2-wrap .quote-section .concept { font-size: 11px; color: var(--primary); opacity: 0.65; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono','Courier New',monospace; margin: 0; }
           .ms2-wrap .metric-overlay { text-align: center; margin-top: 8px; }
-          .ms2-wrap .metric-overlay small { font-size: 10px; letter-spacing: 2px; color: #8b949e; display: block; margin-bottom: 4px; font-family: 'JetBrains Mono','Courier New',monospace; text-transform: uppercase; }
+          .ms2-wrap .metric-overlay small { font-size: 10px; letter-spacing: 2px; color: ${isDark ? '#8b949e' : '#676c66'}; display: block; margin-bottom: 4px; font-family: 'JetBrains Mono','Courier New',monospace; text-transform: uppercase; }
           .ms2-wrap .ticker-value { font-size: 1.05rem; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono','Courier New',monospace; }
           @media (max-width: 640px) { .ms2-wrap .distortion-hub-grid { grid-template-columns: 1fr; } }
 
@@ -7343,7 +7376,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
           /* ── HUD PROGRESS BARS ─────────────────────────────────────────── */
           .ms2-wrap progress.hud-bar { appearance: none; -webkit-appearance: none; width: 72px; height: 5px; border: none; background: transparent; vertical-align: middle; }
-          .ms2-wrap progress.hud-bar::-webkit-progress-bar { background: #1a1a1a; border-radius: 1px; }
+          .ms2-wrap progress.hud-bar::-webkit-progress-bar { background: ${isDark ? '#1a1a1a' : '#d7dad4'}; border-radius: 1px; }
           .ms2-wrap progress.hud-bar::-webkit-progress-value { background: var(--primary); box-shadow: 0 0 8px var(--primary), 0 0 3px var(--primary); border-radius: 1px; transition: width 1.2s ease; }
           .ms2-wrap progress.hud-bar::-moz-progress-bar { background: var(--primary); box-shadow: 0 0 8px var(--primary); border-radius: 1px; }
           .ms2-wrap progress.hud-heat::-webkit-progress-value { background: #f0b429; box-shadow: 0 0 8px #f0b429aa, 0 0 3px #f0b429; }
@@ -7351,7 +7384,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
           /* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────── */
           @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-          .ms2-wrap .black-box { margin-top: 20px; padding: 15px; border-top: 2px solid var(--primary); background: rgba(0,0,0,0.4); max-height: 300px; overflow-y: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+          .ms2-wrap .black-box { margin-top: 20px; padding: 15px; border-top: 2px solid var(--primary); background: ${isDark ? 'rgba(0,0,0,0.4)' : '#efefeb'}; border-left: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; border-right: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; border-bottom: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; max-height: 300px; overflow-y: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; }
           .ms2-wrap .black-box h3 { font-size: 0.75rem; letter-spacing: 2px; margin: 0 0 15px 0; color: var(--primary); opacity: 0.8; font-weight: 700; }
           .ms2-wrap .black-box-entry { border-left: 2px solid var(--primary); margin-bottom: 10px; padding-left: 10px; font-size: 0.82rem; animation: slideIn 0.3s ease-out; }
           .ms2-wrap .black-box-entry .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
@@ -7383,7 +7416,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 // ═══════════════════════════════════════════════════
 // SETTINGS VIEW — Full-page, consistent with Docs/Radar
 // ═══════════════════════════════════════════════════
-function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear }) {
+function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onBitcoin, onDocs }) {
   const [confirm, setConfirm] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -7408,28 +7441,29 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
   ];
 
   const payFrequency = String(settings?.payFrequency || 'WEEKLY').toUpperCase();
+  const navItems = [
+    { key: 'home', label: 'Home', icon: Home, onClick: onHome },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: null, current: true },
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>
       {/* Fixed header */}
       <header style={{ position: 'fixed', top: 0, width: '100%', height: 48, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <Shield size={14} style={{ color: t.accent }} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FortifyOS</span>
         </div>
         <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.06em', position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>Settings</span>
-        <div ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             {isDark ? <Sun size={13} /> : <Moon size={13} />}
           </button>
-          <button onClick={() => setMenuOpen(v => !v)} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Menu">
-            {menuOpen ? <X size={12} /> : <Menu size={12} />}
-          </button>
-          {menuOpen && (
-            <div style={{ position: 'absolute', right: 0, top: 38, background: t.surface, border: `1px solid ${t.borderMid}`, zIndex: 120, padding: 6, minWidth: 168, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.55)' : '0 4px 16px rgba(0,0,0,0.12)' }}>
-              <button onClick={() => { setMenuOpen(false); onBack(); }} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '10px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}><ChevronRight size={11} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
-            </div>
-          )}
         </div>
       </header>
       <div style={{ position: 'fixed', top: 48, width: '100%', height: 1, background: `${t.accent}15`, zIndex: 50 }} />
@@ -7508,6 +7542,12 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
         {/* ── DATA ── */}
         <section>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Data</div>
+          <button onClick={onImport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
+            onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
+            <Upload size={12} /> Import Statements / Snapshots
+          </button>
+          <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 16 }}>Open the sync/import flow for CSVs, PDFs, screenshots, or JSON snapshots.</div>
           <button onClick={onExport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
             onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
@@ -7915,12 +7955,12 @@ function FortifyOSApp() {
       {/* Global CRT scanline overlay — applied to all pages */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FortifyOS initializing...</div></div>}
-      {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
-      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onUpdateDebt={handleUpdateDebt} />}
-      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} />}
-      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} />}
+      {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
+      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
+      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
     </div>
   );
 }
