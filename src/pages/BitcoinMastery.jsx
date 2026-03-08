@@ -31,7 +31,6 @@ async function loadNetworkState() {
   let priceOk = false;
   let chainOk = false;
 
-  // Price (CoinGecko)
   try {
     const cg = await fetchJson(
       "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
@@ -42,7 +41,6 @@ async function loadNetworkState() {
     }
   } catch { /* ignore */ }
 
-  // Chain status (mempool)
   try {
     const tip = await fetchJson("https://mempool.space/api/blocks/tip/height");
     if (typeof tip === "number") {
@@ -112,11 +110,14 @@ export default function BitcoinMastery({ onBack }) {
     return () => { alive = false; window.clearInterval(id); };
   }, [pulse]);
 
+  const lastSync = net.lastUpdatedIso == null
+    ? "—"
+    : new Date(net.lastUpdatedIso).toLocaleString();
+
   return (
     <div className="bm-root">
       <div ref={pulseRef} className="bm-pulse-overlay" aria-hidden="true" />
 
-      {/* Back navigation */}
       {onBack && (
         <div className="bm-back-bar">
           <button className="bm-back-btn" onClick={onBack}>← Back to Dashboard</button>
@@ -140,13 +141,13 @@ export default function BitcoinMastery({ onBack }) {
           </span>
           <span className="bm-divider">|</span>
           <span className="bm-kv">
-            <span className="bm-k">CAP</span>
+            <span className="bm-k">HARD CAP</span>
             <span className="bm-v">21,000,000</span>
           </span>
         </div>
 
         <h1 className="bm-title">THE SOVEREIGN STANDARD</h1>
-        <p className="bm-subtitle">1 BTC = 1/21,000,000 of Future Global Wealth</p>
+        <p className="bm-subtitle">1 BTC = 1 / 21,000,000 OF FUTURE GLOBAL WEALTH</p>
 
         <div className="bm-scarcity">
           <div className="bm-scarcity-row">
@@ -174,14 +175,21 @@ export default function BitcoinMastery({ onBack }) {
       </header>
 
       <main className="bm-grid">
+
+        {/* 01 | MACRO NARRATIVE */}
         <section className="bm-card bm-card--accent-gold">
-          <div className="bm-card-h">
-            <span className="bm-idx">01</span>
-            <h2>GENESIS & SCARCITY</h2>
+          <div className="bm-card-h bm-card-h--split">
+            <div>
+              <span className="bm-idx">01</span>
+              <h2>MACRO NARRATIVE: THE GENESIS</h2>
+            </div>
+            <span className="bm-proto-status">
+              PROTOCOL STATUS: <span className="bm-green">OPERATIONAL</span>
+            </span>
           </div>
           <p>
-            Born from the 2008 financial crisis. Bitcoin is a decentralized protocol of trust with an
-            immutable ledger and a hard cap enforced by global consensus.
+            Bitcoin is a decentralized protocol of trust with an immutable ledger and a hard cap
+            enforced by global consensus. Born from the 2008 financial crisis to provide network scarcity.
           </p>
           <div className="bm-tags">
             <span className="bm-tag">HARD CAP: 21,000,000</span>
@@ -190,38 +198,63 @@ export default function BitcoinMastery({ onBack }) {
           </div>
         </section>
 
+        {/* 02 | COMPARATIVE ANALYSIS */}
         <section className="bm-card bm-card--accent-green">
           <div className="bm-card-h">
             <span className="bm-idx">02</span>
-            <h2>BITCOIN VS. LEAKY ASSETS</h2>
+            <h2>COMPARATIVE ANALYSIS: LEAKY ASSETS</h2>
           </div>
-          <div className="bm-compare">
-            <div className="bm-compare-row">
-              <span className="bm-compare-k">Maintenance</span>
-              <span className="bm-compare-v">BTC: 0%  •  Real Estate: entropy + repairs  •  Gold: storage</span>
-            </div>
-            <div className="bm-compare-row">
-              <span className="bm-compare-k">Portability</span>
-              <span className="bm-compare-v">BTC: instant/global  •  Real Estate: immobile  •  Gold: heavy</span>
-            </div>
-            <div className="bm-compare-row">
-              <span className="bm-compare-k">Confiscation Risk</span>
-              <span className="bm-compare-v">BTC (self-custody): minimal  •  Real Estate: high  •  Gold: moderate</span>
-            </div>
-          </div>
+          <table className="bm-table">
+            <thead>
+              <tr>
+                <th>ATTRIBUTE</th>
+                <th>BITCOIN</th>
+                <th>REAL ESTATE</th>
+                <th>GOLD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Maintenance</td>
+                <td className="bm-td--btc">0% Repairs</td>
+                <td className="bm-td--risk">Entropy</td>
+                <td>Storage</td>
+              </tr>
+              <tr>
+                <td>Portability</td>
+                <td className="bm-td--btc">Instant / Global</td>
+                <td className="bm-td--risk">Immobile</td>
+                <td>Heavy</td>
+              </tr>
+              <tr>
+                <td>Confiscation</td>
+                <td className="bm-td--btc">Minimal (Self-Custody)</td>
+                <td className="bm-td--risk">High Risk</td>
+                <td>Moderate</td>
+              </tr>
+            </tbody>
+          </table>
           <p className="bm-note">
             Educational framework only. FortifyOS presents risk disclosures — past performance does not guarantee future results.
           </p>
         </section>
 
-        <section className="bm-card bm-card--wide bm-card--accent-orange">
+        {/* 03 | CONVICTION ENGINE */}
+        <section className="bm-card bm-card--wide bm-card--accent-amber">
           <div className="bm-card-h">
             <span className="bm-idx">03</span>
             <h2>THE CONVICTION ENGINE</h2>
           </div>
+          <div className="bm-conviction-level">
+            CURRENT LEVEL: <span className="bm-bracket-val">[ GENERATIONAL OPPORTUNITY ]</span>
+          </div>
+          <div className="bm-conviction-details">
+            <span>HORIZON: Minimum 4-year cycle; ignore short-term volatility.</span>
+            <span>STRATEGY: DCA (Recurring buys aligned to cycle gate).</span>
+          </div>
           <div className="bm-meter" aria-label="Conviction meter">
             <div className="bm-meter-top">
-              <span className="bm-meter-label">CURRENT CONVICTION LEVEL</span>
+              <span className="bm-meter-label">CONVICTION LEVEL</span>
               <span className="bm-meter-val">{convictionPct}%</span>
             </div>
             <div className="bm-meter-track">
@@ -251,23 +284,24 @@ export default function BitcoinMastery({ onBack }) {
           </div>
         </section>
 
+        {/* 04 | CITADEL PROTOCOL */}
         <section className="bm-card bm-card--wide bm-card--accent-gold">
           <div className="bm-card-h">
             <span className="bm-idx">04</span>
-            <h2>THE CITADEL PROTOCOL</h2>
+            <h2>THE CITADEL PROTOCOL (SECURITY)</h2>
           </div>
           <div className="bm-steps">
             <div className="bm-step">
-              <div className="bm-step-h">I. EXIT COUNTERPARTIES</div>
-              <div className="bm-step-p">Not your keys, not your coins. Withdraw to self-custody.</div>
+              <div className="bm-step-h"><span className="bm-step-num">1.</span> EXIT COUNTERPARTIES</div>
+              <div className="bm-step-p">Withdraw to self-custody immediately. Not your keys, not your coins.</div>
             </div>
             <div className="bm-step">
-              <div className="bm-step-h">II. HARDWARE VAULT</div>
+              <div className="bm-step-h"><span className="bm-step-num">2.</span> HARDWARE VAULT</div>
               <div className="bm-step-p">Use a Bitcoin-focused hardware wallet; keep seed offline.</div>
             </div>
             <div className="bm-step">
-              <div className="bm-step-h">III. VERIFY INDEPENDENTLY</div>
-              <div className="bm-step-p">Run a node (or use your own verifier endpoint) to confirm the chain.</div>
+              <div className="bm-step-h"><span className="bm-step-num">3.</span> VERIFY INDEPENDENTLY</div>
+              <div className="bm-step-p">Run a node to confirm the chain.</div>
             </div>
           </div>
           <div className="bm-actions">
@@ -286,13 +320,13 @@ export default function BitcoinMastery({ onBack }) {
             </div>
           </div>
         </section>
+
       </main>
 
       <footer className="bm-footer">
-        <span className="bm-foot-left">FORTIFYOS // BTC MASTER PAGE</span>
-        <span className="bm-foot-right">
-          Last update: {net.lastUpdatedIso == null ? "—" : new Date(net.lastUpdatedIso).toLocaleString()}
-        </span>
+        <span className="bm-foot-status">SYSTEM STATUS: EDUCATIONAL FRAMEWORK ONLY.</span>
+        <span>LEGAL: FortifyOS is not providing investment, tax, or legal advice.</span>
+        <span>LAST SYNC: {lastSync}</span>
       </footer>
     </div>
   );
