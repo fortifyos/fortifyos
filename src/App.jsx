@@ -6906,9 +6906,10 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [news, setNews] = useState([]);
-  const [newsLoading, setNewsLoading] = useState(true);
   const [warFocus, setWarFocus] = useState('policy');
+  const [schoolTab, setSchoolTab] = useState('learn');
+  const [lessonFocus, setLessonFocus] = useState('net-liquidity');
+  const [quizChoice, setQuizChoice] = useState(null);
   const [blackBoxLog, setBlackBoxLog] = useState(() => {
     try { return JSON.parse(localStorage.getItem('fortify_blackbox') || '[]'); } catch { return []; }
   });
@@ -6931,60 +6932,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     }
   }, []);
 
-  // Live news: CryptoCompare (live) → macro-news.json (static fallback updated by update-prices script)
-  const loadNews = useCallback(async () => {
-    setNewsLoading(true);
-    let loaded = false;
-
-    // 1. Try CryptoCompare live (has CORS in real browsers)
-    try {
-      const r = await fetch(
-        'https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest&limit=30',
-        { headers: { 'Accept': 'application/json' } }
-      );
-      if (r.ok) {
-        const j = await r.json();
-        const items = Array.isArray(j?.Data) ? j.Data : [];
-        if (items.length) {
-          setNews(items.map(item => ({
-            title: item.title,
-            url: item.url,
-            source: { name: item.source_info?.name || item.source || 'CryptoCompare' },
-            published_on: item.published_on,
-            categories: item.categories || '',
-            tags: item.tags || '',
-          })));
-          loaded = true;
-        }
-      }
-    } catch (_) { }
-
-    // 2. Fall back to static macro-news.json (written by `pnpm update-prices`)
-    if (!loaded) {
-      try {
-        const base = import.meta.env.BASE_URL || '/';
-        const r = await fetch(`${base}macro-news.json?v=${Date.now()}`, { cache: 'no-store' });
-        if (r.ok) {
-          const j = await r.json();
-          const items = Array.isArray(j?.items) ? j.items : [];
-          if (items.length) {
-            setNews(items.map(item => ({
-              title: item.title,
-              url: item.url,
-              source: { name: item.source || 'CryptoCompare' },
-              published_on: item.published,
-              categories: item.categories || '',
-              tags: item.tags || '',
-            })));
-          }
-        }
-      } catch (_) { }
-    }
-
-    setNewsLoading(false);
-  }, []);
-
-  useEffect(() => { load(); loadNews(); }, [load, loadNews]);
+  useEffect(() => { load(); }, [load]);
 
   // ── Black Box recorder — fires when FRED data loads ───────────────────────
   useEffect(() => {
@@ -7139,20 +7087,131 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       note: tga != null ? `$${(tga / 1000).toFixed(2)}T TGA` : 'no data'
     },
   ];
+  const schoolSignals = [
+    {
+      key: 'net-liquidity',
+      label: 'Net Liquidity',
+      current: netLiq == null ? 'Need WALCL, TGA, and RRP' : `${netLiq >= 0 ? '+' : ''}$${Math.abs(netLiq / 1000).toFixed(2)}T`,
+      explain: 'Net liquidity is the fuel available to financial markets after Treasury cash and reverse repo balances are removed from the Fed balance sheet.',
+      bullish: 'When it rises, risk assets usually get more oxygen.',
+      bearish: 'When it falls, markets lose fuel even if headlines sound dovish.',
+      connects: 'Fed balance sheet -> Treasury cash drain -> reserves -> risk appetite',
+      color: netLiqColor,
+    },
+    {
+      key: 'fed-funds',
+      label: 'Fed Funds',
+      current: fedFundsRate == null ? 'Need DFF series' : `${fedFundsRate.toFixed(2)}%`,
+      explain: 'This is the policy rate. It sets the price of short-term money and influences borrowing costs across the economy.',
+      bullish: 'Cuts reduce policy drag and can improve posture if liquidity confirms.',
+      bearish: 'High rates hold pressure on refinancing, hiring, and credit creation.',
+      connects: 'Fed policy -> loan pricing -> demand -> growth and stress',
+      color: reactorColor,
+    },
+    {
+      key: 'tga',
+      label: 'TGA',
+      current: tga == null ? 'Need Treasury data' : `$${(tga / 1000).toFixed(2)}T`,
+      explain: 'The Treasury General Account is the government cash pile at the Fed. When it rises, cash can be pulled out of the system.',
+      bullish: 'A falling TGA usually releases liquidity back toward markets.',
+      bearish: 'A rising TGA can drain reserves even without a rate hike.',
+      connects: 'Treasury issuance -> cash balance -> reserves -> liquidity pressure',
+      color: t.warn,
+    },
+    {
+      key: 'curve',
+      label: '10Y-2Y Curve',
+      current: yieldCurve == null ? 'Need yield curve' : `${yieldCurve.toFixed(2)}%`,
+      explain: 'The curve compares long-term and short-term yields. It is a fast read on growth expectations and policy tightness.',
+      bullish: 'A healthier curve can signal less stress in the system.',
+      bearish: 'An inverted curve often means policy is too tight for growth.',
+      connects: 'Rate path -> bond market -> recession probability -> posture',
+      color: yieldCurve != null && yieldCurve < 0 ? t.danger : t.accent,
+    },
+    {
+      key: 'vix',
+      label: 'VIX',
+      current: vix == null ? 'Need volatility feed' : vix.toFixed(2),
+      explain: 'VIX is the market’s stress meter. It shows how much fear is being priced into options.',
+      bullish: 'A calm VIX lets liquidity and policy improvements matter more.',
+      bearish: 'A spike in VIX can override otherwise supportive macro signals.',
+      connects: 'Stress -> positioning -> forced selling -> defensive posture',
+      color: volatilityPressure >= 65 ? t.danger : volatilityPressure >= 40 ? t.warn : t.accent,
+    },
+  ];
+  const activeLesson = schoolSignals.find((item) => item.key === lessonFocus) || schoolSignals[0];
+  const simulateWarGame = ({ fedFunds = fedFundsRate, treasury = tga, volatility = vix, liquidity = netLiq }) => {
+    const simPolicy = fedFunds == null ? 35 : clampRadar((fedFunds / 5) * 100, 0, 100);
+    const simTreasury = treasury == null ? 25 : clampRadar((treasury / 1200000) * 100, 0, 100);
+    const simVol = volatility == null ? 30 : clampRadar(((volatility - 12) / 28) * 100, 0, 100);
+    const simLiqPts = liquidity == null ? 0 : liquidity > 5500000 ? 40 : liquidity > 5000000 ? 20 : 0;
+    const simScore = simLiqPts + cyclePts + (treasury != null && treasury < 800 ? 20 : 0);
+    return {
+      score: simScore,
+      theater: simScore >= 75 ? 'RISK-ON' : simScore >= 40 ? 'NEUTRAL' : 'RISK-OFF',
+      posture: simScore >= 75 ? 'ATTACK' : simScore >= 40 ? 'WAIT' : 'DEFEND',
+      primary: [
+        { label: 'Policy', score: simPolicy },
+        { label: 'Treasury', score: simTreasury },
+        { label: 'Volatility', score: simVol },
+        { label: 'Cycle', score: cyclePressure },
+      ].reduce((top, item) => item.score > top.score ? item : top, { label: 'Policy', score: simPolicy }),
+    };
+  };
+  const flightScenarios = [
+    {
+      key: 'cut-50',
+      label: 'Fed cuts 50 bps',
+      detail: 'Policy relief arrives before a full easing cycle is priced in.',
+      snapshot: simulateWarGame({ fedFunds: fedFundsRate == null ? null : Math.max(0, fedFundsRate - 0.5) }),
+    },
+    {
+      key: 'tga-draw',
+      label: 'Treasury drains $100B',
+      detail: 'Treasury cash leaves the account and reserves loosen.',
+      snapshot: simulateWarGame({ treasury: tga == null ? null : Math.max(0, tga - 100) }),
+    },
+    {
+      key: 'stress-spike',
+      label: 'VIX spikes to 28',
+      detail: 'Stress jumps and defensive posture starts to dominate.',
+      snapshot: simulateWarGame({ volatility: 28 }),
+    },
+    {
+      key: 'liq-boost',
+      label: 'Net liquidity rises $250B',
+      detail: 'Fuel improves and the war-game score climbs quickly.',
+      snapshot: simulateWarGame({ liquidity: netLiq == null ? null : netLiq + 250000 }),
+    },
+  ];
+  const drillQuestion = {
+    prompt: 'What would most directly improve the current macro theater from here?',
+    options: [
+      { key: 'a', text: 'Higher TGA with the same rate path', correct: false, why: 'That drains liquidity and usually tightens the field.' },
+      { key: 'b', text: 'Lower Fed Funds with net liquidity staying firm', correct: true, why: 'Policy relief plus steady liquidity is the cleanest path to a better posture.' },
+      { key: 'c', text: 'Higher VIX with the same liquidity backdrop', correct: false, why: 'Stress can overpower otherwise neutral or improving macro conditions.' },
+    ],
+  };
+  const quizResult = drillQuestion.options.find((item) => item.key === quizChoice) || null;
+  const recentEntries = [...blackBoxLog].reverse();
+  const latestEntry = recentEntries[0] || null;
+  const oldestEntry = recentEntries[recentEntries.length - 1] || null;
+  const debriefShift = latestEntry && oldestEntry ? latestEntry.score - oldestEntry.score : 0;
+  const debriefHeadline = latestEntry == null
+    ? 'No recorded regime changes yet.'
+    : debriefShift > 0
+      ? `Signal strength improved ${debriefShift} points across the recent campaign log.`
+      : debriefShift < 0
+        ? `Signal strength weakened ${Math.abs(debriefShift)} points across the recent campaign log.`
+        : 'Signal strength has been stable across the recent campaign log.';
+  const debriefGuidance = latestEntry == null
+    ? 'Once macro data refreshes, the system will start logging regime snapshots automatically.'
+    : latestEntry.status === 'LOCKED'
+      ? 'Conditions are aligned enough to justify offensive monitoring, but you still want confirmation from stress and policy.'
+      : latestEntry.status === 'SCANNING'
+        ? 'The system is in observation mode. Wait for a cleaner trigger instead of forcing conviction.'
+        : 'The environment is still hostile. Defense and patience matter more than speed.';
 
-  const classifySentiment = (title = '') => {
-    const lo = title.toLowerCase();
-    if (/surge|rally|soar|gains?|rises?|bullish|breaks?|record|ath|approval|adoption|jumps?|pump|up \d|grew|higher|outperform/.test(lo)) return 'Bullish';
-    if (/drops?|falls?|crash|plunges?|bearish|declines?|concern|risk|selloff|fear|ban|rejects?|dumps?|lower|down \d|warning|losses/.test(lo)) return 'Bearish';
-    return 'Neutral';
-  };
-  const timeAgo = (unixTs) => {
-    const s = Math.floor(Date.now() / 1000) - unixTs;
-    if (s < 60) return `${s}s ago`;
-    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-    return `${Math.floor(s / 86400)}d ago`;
-  };
   const navItems = [
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
@@ -7330,64 +7389,185 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
         </div>
 
-        {/* ── LIVE NEWS FEED (full width) ───────────────────────────────────── */}
-        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 14, animation: 'radarFadeUp 0.4s ease-out 0.6s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <span style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Live News Feed</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {newsLoading && <span style={{ fontSize: 12, color: t.textDim }}>loading…</span>}
-              {!newsLoading && <button onClick={loadNews} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textDim, fontSize: 12, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>REFRESH</button>}
+        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.6s both' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Fed Flight School</div>
+              <div style={{ marginTop: 6, fontSize: 15, color: t.textGhost, maxWidth: 680 }}>Learn the Fed by interacting with the live signals already driving this page. No headlines, just cause, effect, and signal training.</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[
+                { key: 'learn', label: 'Learn' },
+                { key: 'simulate', label: 'Simulate' },
+                { key: 'drill', label: 'Drill' },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => { setSchoolTab(tab.key); if (tab.key !== 'drill') setQuizChoice(null); }}
+                  style={{
+                    background: schoolTab === tab.key ? (isDark ? `${confColor}16` : `${confColor}10`) : 'transparent',
+                    color: schoolTab === tab.key ? confColor : t.textDim,
+                    border: `1px solid ${schoolTab === tab.key ? confColor : t.borderDim}`,
+                    padding: '6px 10px',
+                    cursor: 'pointer',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 12,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                  }}
+                >{tab.label}</button>
+              ))}
             </div>
           </div>
-          <div style={{ display: 'grid', gap: 6, maxHeight: 420, overflowY: 'auto' }}>
-            {news.length === 0 ? (
-              <div style={{ color: t.textDim, fontSize: 14, padding: '12px 0' }}>{newsLoading ? 'Fetching live headlines…' : 'Unable to load news. Refresh to retry.'}</div>
-            ) : news.slice(0, 12).map((item, i) => {
-              const sent = classifySentiment(item.title);
-              const sentColor = sent === 'Bullish' ? t.accent : sent === 'Bearish' ? t.danger : t.textDim;
-              const sentBg = sent === 'Bullish' ? t.accentMuted : sent === 'Bearish' ? (isDark ? '#2D0A0A' : '#FEE2E2') : (isDark ? '#1a1a1a' : '#f3f4f6');
-              const srcName = item.source?.name || 'CryptoCompare';
-              const ago = item.published_on ? timeAgo(item.published_on) : '';
-              return (
-                <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" style={{ border: `1px solid ${t.borderDim}`, borderLeft: `2px solid ${sentColor}`, padding: '8px 10px', display: 'block', textDecoration: 'none', animation: `radarFadeUp 0.25s ease-out ${0.03 * i}s both` }}>
-                  <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}>
-                    <span style={{ background: sentBg, color: sentColor, fontSize: 11, padding: '2px 5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{sent}</span>
-                    <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.45, fontWeight: 500 }}>{item.title}</div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <span style={{ fontSize: 12, color: t.textDim }}>{srcName}</span>
-                    {ago && <span style={{ fontSize: 12, color: t.textGhost }}>· {ago}</span>}
-                    {item.categories && <span style={{ fontSize: 12, color: t.textGhost, marginLeft: 'auto' }}>{item.categories.split('|').slice(0, 3).join(' · ')}</span>}
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────────── */}
-        {blackBoxLog.length > 0 && (
-          <div className="black-box" style={{ animation: 'radarFadeUp 0.4s ease-out 0.7s both' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3>[ FLIGHT RECORDER / SIGNAL HISTORY ]</h3>
-              <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '2px 7px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR LOG</button>
-            </div>
-            {[...blackBoxLog].reverse().map((entry, i) => {
-              const tag = entry.status === 'LOCKED' ? 'LOCK' : entry.status === 'SCANNING' ? 'SCAN' : 'JAM';
-              return (
-                <div key={entry.ts + i} className="black-box-entry">
-                  <div className="entry-header">
-                    <span className="timestamp">[ {entry.ts} ]</span>
-                    <span className="signal-tag">{tag}: {entry.score}%</span>
+          {schoolTab === 'learn' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 0.9fr) minmax(280px, 1.1fr)', gap: 12 }}>
+              <div style={{ display: 'grid', gap: 8 }}>
+                {schoolSignals.map((item) => (
+                  <button
+                    key={item.key}
+                    onClick={() => setLessonFocus(item.key)}
+                    style={{
+                      border: `1px solid ${lessonFocus === item.key ? item.color : t.borderDim}`,
+                      background: lessonFocus === item.key ? (isDark ? `${item.color}12` : `${item.color}10`) : (isDark ? t.elevated : t.surface),
+                      padding: '10px 12px',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: lessonFocus === item.key ? item.color : t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>{item.label}</span>
+                      <span style={{ fontSize: 13, color: item.color, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{item.current}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div style={{ border: `1px solid ${activeLesson.color}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
+                <div style={{ fontSize: 12, color: activeLesson.color, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 10 }}>{activeLesson.label}</div>
+                <div style={{ fontSize: 16, color: t.textPrimary, lineHeight: 1.65, marginBottom: 12 }}>{activeLesson.explain}</div>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <div style={{ borderLeft: `2px solid ${t.accent}`, paddingLeft: 10 }}>
+                    <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bullish Read</div>
+                    <div style={{ fontSize: 14, color: t.textPrimary }}>{activeLesson.bullish}</div>
                   </div>
-                  <div className="entry-data">
-                    LIQUIDITY_SIG: ${(entry.netLiq / 1000).toFixed(2)}T | TGA: ${(entry.tga / 1000).toFixed(2)}T | CYCLE: {entry.dph}d | STATUS: {entry.status}
+                  <div style={{ borderLeft: `2px solid ${t.danger}`, paddingLeft: 10 }}>
+                    <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Bearish Read</div>
+                    <div style={{ fontSize: 14, color: t.textPrimary }}>{activeLesson.bearish}</div>
+                  </div>
+                  <div style={{ borderLeft: `2px solid ${activeLesson.color}`, paddingLeft: 10 }}>
+                    <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signal Chain</div>
+                    <div style={{ fontSize: 14, color: t.textPrimary }}>{activeLesson.connects}</div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            </div>
+          )}
+
+          {schoolTab === 'simulate' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 10 }}>
+              {flightScenarios.map((item) => (
+                <div key={item.key} style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
+                  <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>{item.label}</div>
+                  <div style={{ fontSize: 14, color: t.textGhost, lineHeight: 1.6, marginBottom: 12 }}>{item.detail}</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Theater</div>
+                      <div style={{ fontSize: 15, color: item.snapshot.score >= 75 ? t.accent : item.snapshot.score >= 40 ? t.warn : t.danger, fontWeight: 700 }}>{item.snapshot.theater}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Posture</div>
+                      <div style={{ fontSize: 15, color: t.textPrimary, fontWeight: 700 }}>{item.snapshot.posture}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Pressure</div>
+                      <div style={{ fontSize: 15, color: t.textPrimary, fontWeight: 700 }}>{item.snapshot.primary.label}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {schoolTab === 'drill' && (
+            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
+              <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 10 }}>Command Drill</div>
+              <div style={{ fontSize: 18, color: t.textPrimary, marginBottom: 14 }}>{drillQuestion.prompt}</div>
+              <div style={{ display: 'grid', gap: 8 }}>
+                {drillQuestion.options.map((option) => (
+                  <button
+                    key={option.key}
+                    onClick={() => setQuizChoice(option.key)}
+                    style={{
+                      border: `1px solid ${quizChoice === option.key ? (option.correct ? t.accent : t.warn) : t.borderDim}`,
+                      background: quizChoice === option.key ? (isDark ? `${option.correct ? t.accent : t.warn}14` : `${option.correct ? t.accent : t.warn}10`) : 'transparent',
+                      color: t.textPrimary,
+                      textAlign: 'left',
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                  >{option.text}</button>
+                ))}
+              </div>
+              {quizResult && (
+                <div style={{ marginTop: 14, borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
+                  <div style={{ fontSize: 12, color: quizResult.correct ? t.accent : t.warn, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
+                    {quizResult.correct ? 'Correct' : 'Not quite'}
+                  </div>
+                  <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65 }}>{quizResult.why}</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.7s both' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Signal Debrief</div>
+              <div style={{ marginTop: 6, fontSize: 15, color: t.textGhost, maxWidth: 720 }}>{debriefHeadline}</div>
+            </div>
+            <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '4px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR HISTORY</button>
           </div>
-        )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 0.95fr) minmax(280px, 1.05fr)', gap: 12 }}>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
+              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Why It Matters Now</div>
+              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, marginBottom: 12 }}>{debriefGuidance}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
+                <div>
+                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Latest</div>
+                  <div style={{ fontSize: 16, color: latestEntry?.status === 'LOCKED' ? t.accent : latestEntry?.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700 }}>{latestEntry?.status || '—'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Shift</div>
+                  <div style={{ fontSize: 16, color: debriefShift >= 0 ? t.accent : t.danger, fontWeight: 700 }}>{latestEntry ? `${debriefShift >= 0 ? '+' : ''}${debriefShift}` : '—'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Next Watch</div>
+                  <div style={{ fontSize: 16, color: primaryPressure.tone, fontWeight: 700 }}>{primaryPressure.label}</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
+              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Campaign Log</div>
+              <div style={{ display: 'grid', gap: 8, maxHeight: 260, overflowY: 'auto' }}>
+                {recentEntries.length === 0 ? (
+                  <div style={{ fontSize: 14, color: t.textDim }}>Awaiting enough macro refreshes to build a campaign history.</div>
+                ) : recentEntries.slice(0, 6).map((entry, i) => (
+                  <div key={entry.ts + i} style={{ borderLeft: `2px solid ${entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger}`, paddingLeft: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>[ {entry.ts} ]</span>
+                      <span style={{ fontSize: 11, color: entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700, letterSpacing: '0.08em' }}>{entry.score}/100</span>
+                    </div>
+                    <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.55 }}>
+                      Status {entry.status} with liquidity at ${(entry.netLiq / 1000).toFixed(2)}T, TGA at ${(entry.tga / 1000).toFixed(2)}T, and cycle age {entry.dph} days.
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <style>{`
           @keyframes radarFadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -7430,19 +7610,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           .ms2-wrap progress.hud-bar::-moz-progress-bar { background: var(--primary); box-shadow: 0 0 8px var(--primary); border-radius: 1px; }
           .ms2-wrap progress.hud-heat::-webkit-progress-value { background: #f0b429; box-shadow: 0 0 8px #f0b429aa, 0 0 3px #f0b429; }
           .ms2-wrap progress.hud-heat::-moz-progress-bar { background: #f0b429; box-shadow: 0 0 8px #f0b429; }
-
-          /* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────── */
-          @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-          .ms2-wrap .black-box { margin-top: 20px; padding: 15px; border-top: 2px solid var(--primary); background: ${isDark ? 'rgba(0,0,0,0.4)' : t.input}; border-left: 1px solid ${isDark ? t.borderMid : t.borderDim}; border-right: 1px solid ${isDark ? t.borderMid : t.borderDim}; border-bottom: 1px solid ${isDark ? t.borderMid : t.borderDim}; max-height: 300px; overflow-y: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; }
-          .ms2-wrap .black-box h3 { font-size: 0.75rem; letter-spacing: 2px; margin: 0 0 15px 0; color: var(--primary); opacity: 0.8; font-weight: 700; }
-          .ms2-wrap .black-box-entry { border-left: 2px solid var(--primary); margin-bottom: 10px; padding-left: 10px; font-size: 0.82rem; animation: slideIn 0.3s ease-out; }
-          .ms2-wrap .black-box-entry .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-          .ms2-wrap .black-box-entry .timestamp { color: var(--primary); opacity: 0.6; font-size: 0.75rem; }
-          .ms2-wrap .black-box-entry .signal-tag { color: var(--primary); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.1em; }
-          .ms2-wrap .black-box-entry .entry-data { color: var(--primary); opacity: 0.5; font-size: 0.75rem; letter-spacing: 0.03em; }
-          .ms2-wrap .black-box::-webkit-scrollbar { width: 5px; }
-          .ms2-wrap .black-box::-webkit-scrollbar-track { background: transparent; }
-          .ms2-wrap .black-box::-webkit-scrollbar-thumb { background: var(--primary); opacity: 0.6; }
 
           @media (max-width: 980px) {
             .ms2-wrap { padding: 64px 10px 22px !important; }
