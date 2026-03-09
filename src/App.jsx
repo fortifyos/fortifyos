@@ -6928,7 +6928,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [menuOpen, setMenuOpen] = useState(false);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
-  const [rateLevel, setRateLevel] = useState(0); // 0 = easy money, 100 = tight
   const [blackBoxLog, setBlackBoxLog] = useState(() => {
     try { return JSON.parse(localStorage.getItem('fortify_blackbox') || '[]'); } catch { return []; }
   });
@@ -7033,19 +7032,34 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
   const lordsQuote = DISTORTION_QUOTES[dayOfYear % DISTORTION_QUOTES.length];
 
-  const reactorIntensity = 0.2 + (1 - rateLevel / 5) * 0.8;
-  const reactorColor = rateLevel < 1.5 ? '#00fbff' : rateLevel < 3.5 ? '#f0b429' : '#f85149';
-  const reactorStatus = rateLevel < 1.5 ? 'ACCOMMODATIVE' : rateLevel < 3.5 ? 'NEUTRAL' : 'TIGHTENING';
-  const reactorDesc = rateLevel < 1.5 ? 'Zero bound — Asset bubble risk rising'
-    : rateLevel < 3.5 ? 'Neutral territory — Balanced stance'
-      : 'Tightening cycle — Liquidity contracting';
-
   const _fm = macro || fredMacro;
   const walcl = _fm?.walcl?.value ?? null;
   const tga = _fm?.tga?.value ?? null;
   const rrp = _fm?.rrp?.value ?? null;
+  const yieldCurve = _fm?.yieldCurve10Y2Y?.value ?? _fm?.yieldCurve?.value ?? latest?.macro?.yieldCurve10Y2Y ?? latest?.macro?.yieldCurve ?? null;
+  const fedWatchCut = latest?.macro?.fedWatchCut ?? _fm?.fedWatchCut?.value ?? null;
   const netLiq = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
   const netLiqColor = netLiq == null ? t.textDim : netLiq > 5000 ? t.accent : netLiq > 3000 ? t.warn : t.danger;
+  const clampRadar = (value, min, max) => Math.max(min, Math.min(max, value));
+  const walclTightness = walcl == null ? null : clampRadar(((6800000 - walcl) / 1200000) * 35, 0, 35);
+  const tgaTightness = tga == null ? null : clampRadar((tga / 1200000) * 25, 0, 25);
+  const rrpTightness = rrp == null ? null : clampRadar((rrp / 2000) * 15, 0, 15);
+  const curveTightness = yieldCurve == null ? null : clampRadar((((0 - yieldCurve) + 0.5) / 1.5) * 25, 0, 25);
+  const heatParts = [walclTightness, tgaTightness, rrpTightness, curveTightness].filter(v => v != null);
+  const heatMax = (walclTightness != null ? 35 : 0) + (tgaTightness != null ? 25 : 0) + (rrpTightness != null ? 15 : 0) + (curveTightness != null ? 25 : 0);
+  const heatPct = heatParts.length ? (heatParts.reduce((sum, v) => sum + v, 0) / heatMax) * 100 : null;
+  const rateLevel = heatPct == null ? null : (heatPct / 100) * 5;
+  const reactorIntensity = rateLevel == null ? 0.45 : 0.2 + (1 - rateLevel / 5) * 0.8;
+  const reactorColor = rateLevel == null ? t.textDim : rateLevel < 1.75 ? '#00fbff' : rateLevel < 3.25 ? '#f0b429' : '#f85149';
+  const reactorStatus = rateLevel == null ? 'DATA PENDING' : rateLevel < 1.75 ? 'ACCOMMODATIVE' : rateLevel < 3.25 ? 'NEUTRAL' : 'TIGHTENING';
+  const reactorDesc = rateLevel == null
+    ? 'Awaiting FRED liquidity series.'
+    : rateLevel < 1.75 ? 'Liquidity loose — supportive of risk assets'
+      : rateLevel < 3.25 ? 'Mixed regime — monitor balance sheet and Treasury drain'
+        : 'Liquidity restrictive — policy drag remains elevated';
+  const liquidityPulseDur = netLiq == null ? '2.8s' : netLiq > 5500000 ? '1.8s' : netLiq > 4500000 ? '2.4s' : '3.2s';
+  const liquidityFlowOpacity = netLiq == null ? 0.45 : clampRadar(((netLiq - 3500000) / 2500000), 0.25, 1);
+  const pumpLabel = netLiq == null ? 'LIVE NET LIQUIDITY' : netLiq > 5500000 ? 'LIQUIDITY FLOOD' : netLiq > 4500000 ? 'LIQUIDITY OPEN' : 'LIQUIDITY TIGHT';
 
   // ── Signal Confluence Engine ───────────────────────────────────────────────
   const confNetLiq = walcl != null && tga != null ? walcl - tga : null;
@@ -7222,12 +7236,16 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                 <div style={{ fontSize: 11, color: t.textGhost, marginTop: 4 }}>{reactorDesc}</div>
               </div>
             </div>
-            <div className="control-panel" style={{ borderTop: `1px solid #2d333b`, paddingTop: 10 }}>
+            <div className="control-panel" style={{ borderTop: `1px solid ${isDark ? '#2d333b' : '#c8cbc5'}`, paddingTop: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>
                 <span>0% Easy</span><span>Rate Lever</span><span>5%+ Tight</span>
               </div>
-              <input type="range" min={0} max={5} step={0.25} value={rateLevel} onChange={e => setRateLevel(Number(e.target.value))} style={{ width: '100%', accentColor: reactorColor, cursor: 'pointer' }} />
-              <p style={{ textAlign: 'center', fontSize: 11, color: reactorColor, fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>Fed Funds Rate: {rateLevel.toFixed(2)}%</p>
+              <div style={{ height: 10, borderRadius: 999, border: `1px solid ${t.borderDim}`, background: isDark ? '#1a1a1a' : '#d7dad4', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${heatPct == null ? 0 : heatPct}%`, background: reactorColor, boxShadow: `0 0 12px ${reactorColor}55`, transition: 'width 1.2s ease' }} />
+              </div>
+              <p style={{ textAlign: 'center', fontSize: 11, color: reactorColor, fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>
+                FRED Liquidity Heat: {rateLevel == null ? '—' : `${rateLevel.toFixed(2)} / 5.00`}
+              </p>
             </div>
           </div>
 
@@ -7238,16 +7256,16 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               <circle cx="44" cy="50" r="30" fill={isDark ? '#0d2a2a' : '#e8f5e9'} stroke={t.accent} strokeWidth="1.5" />
               <text x="44" y="46" fill={t.accent} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">FED</text>
               <text x="44" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Reserve</text>
-              <path d="M76 50 L264 50" stroke={`${t.accent}40`} strokeWidth="2" strokeDasharray="4 4" />
-              <circle r="5" fill={t.accent} opacity="0.9"><animateMotion dur="2.5s" repeatCount="indefinite" path="M76 50 L264 50" /></circle>
-              <circle r="3" fill={t.accent} opacity="0.5"><animateMotion dur="2.5s" begin="1.25s" repeatCount="indefinite" path="M76 50 L264 50" /></circle>
+              <path d="M76 50 L264 50" stroke={`${netLiqColor}40`} strokeWidth="2" strokeDasharray="4 4" />
+              <circle r="5" fill={netLiqColor} opacity={liquidityFlowOpacity}><animateMotion dur={liquidityPulseDur} repeatCount="indefinite" path="M76 50 L264 50" /></circle>
+              <circle r="3" fill={netLiqColor} opacity={Math.max(0.25, liquidityFlowOpacity * 0.55)}><animateMotion dur={liquidityPulseDur} begin="1.25s" repeatCount="indefinite" path="M76 50 L264 50" /></circle>
               <circle cx="296" cy="50" r="30" fill={isDark ? '#2a1a0d' : '#fff8e1'} stroke={t.warn} strokeWidth="1.5" />
               <text x="296" y="46" fill={t.warn} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">BANKS</text>
               <text x="296" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Primary</text>
             </svg>
             <div className="metric-overlay">
-              <small>EST. QE INJECTION</small>
-              <div className="ticker-value">{walcl != null ? `$${walcl.toLocaleString(undefined, { maximumFractionDigits: 0 })}B` : '—'}</div>
+              <small>{pumpLabel}</small>
+              <div className="ticker-value">{netLiq != null ? `$${netLiq.toLocaleString(undefined, { maximumFractionDigits: 0 })}B` : '—'}</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
               {walcl != null && (
@@ -7262,16 +7280,28 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                   <div style={{ fontSize: 13, fontWeight: 700, color: netLiqColor, fontFamily: "'JetBrains Mono', monospace" }}>{netLiq >= 0 ? '+' : ''}${Math.abs(netLiq / 1000).toFixed(2)}T</div>
                 </div>
               )}
-              {latest?.macro?.fedWatchCut != null && (
+              {tga != null && (
                 <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: latest.macro.fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.fedWatchCut}%</div>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Treasury General Account</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: t.warn, fontFamily: "'JetBrains Mono', monospace" }}>${(tga / 1000).toFixed(2)}T</div>
                 </div>
               )}
-              {latest?.macro?.nextFomc && (
+              {rrp != null && (
                 <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next FOMC</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{latest.macro.nextFomc}</div>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Reverse Repo</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>${(rrp / 1000).toFixed(3)}T</div>
+                </div>
+              )}
+              {fedWatchCut != null && (
+                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${fedWatchCut > 50 ? t.accent : t.borderMid}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{fedWatchCut}%</div>
+                </div>
+              )}
+              {yieldCurve != null && (
+                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${yieldCurve < 0 ? t.danger : t.accent}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
+                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>10Y-2Y Curve</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: yieldCurve < 0 ? t.danger : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{yieldCurve.toFixed(2)}%</div>
                 </div>
               )}
             </div>
