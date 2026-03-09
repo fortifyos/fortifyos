@@ -6910,6 +6910,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [schoolTab, setSchoolTab] = useState('learn');
   const [lessonFocus, setLessonFocus] = useState('net-liquidity');
   const [quizChoice, setQuizChoice] = useState(null);
+  const [simState, setSimState] = useState({ fedFunds: null, treasury: null, volatility: null, liquidity: null });
   const [blackBoxLog, setBlackBoxLog] = useState(() => {
     try { return JSON.parse(localStorage.getItem('fortify_blackbox') || '[]'); } catch { return []; }
   });
@@ -7158,6 +7159,12 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       ].reduce((top, item) => item.score > top.score ? item : top, { label: 'Policy', score: simPolicy }),
     };
   };
+  const simSnapshot = simulateWarGame({
+    fedFunds: simState.fedFunds ?? fedFundsRate,
+    treasury: simState.treasury ?? tga,
+    volatility: simState.volatility ?? vix,
+    liquidity: simState.liquidity ?? netLiq,
+  });
   const flightScenarios = [
     {
       key: 'cut-50',
@@ -7184,6 +7191,71 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       snapshot: simulateWarGame({ liquidity: netLiq == null ? null : netLiq + 250000 }),
     },
   ];
+  const simControls = [
+    {
+      key: 'fedFunds',
+      label: 'Fed Funds',
+      unit: '%',
+      step: 0.25,
+      min: 0,
+      max: 6,
+      base: fedFundsRate,
+      accent: reactorColor,
+      description: 'Change the policy rate and watch policy pressure move.',
+      format: (value) => `${value.toFixed(2)}%`,
+    },
+    {
+      key: 'treasury',
+      label: 'TGA',
+      unit: 'T',
+      step: 25,
+      min: 0,
+      max: 1200,
+      base: tga,
+      accent: t.warn,
+      description: 'Treasury cash drains or releases reserves into the system.',
+      format: (value) => `$${(value / 1000).toFixed(2)}T`,
+    },
+    {
+      key: 'liquidity',
+      label: 'Net Liquidity',
+      unit: 'T',
+      step: 100,
+      min: 3500,
+      max: 6500,
+      base: netLiq,
+      accent: netLiqColor,
+      description: 'This is the market fuel line for the war game.',
+      format: (value) => `$${(value / 1000).toFixed(2)}T`,
+    },
+    {
+      key: 'volatility',
+      label: 'VIX',
+      unit: '',
+      step: 1,
+      min: 10,
+      max: 40,
+      base: vix,
+      accent: volatilityPressure >= 65 ? t.danger : volatilityPressure >= 40 ? t.warn : t.accent,
+      description: 'Stress can overpower otherwise supportive macro signals.',
+      format: (value) => value.toFixed(0),
+    },
+  ];
+  const simSummary = [
+    { label: 'Theater', value: simSnapshot.theater, tone: simSnapshot.score >= 75 ? t.accent : simSnapshot.score >= 40 ? t.warn : t.danger },
+    { label: 'Posture', value: simSnapshot.posture, tone: simSnapshot.posture === 'ATTACK' ? t.accent : simSnapshot.posture === 'WAIT' ? t.warn : t.danger },
+    { label: 'Primary Pressure', value: simSnapshot.primary.label, tone: t.textPrimary },
+    { label: 'Signal Score', value: `${simSnapshot.score}/100`, tone: simSnapshot.score >= 75 ? t.accent : simSnapshot.score >= 40 ? t.warn : t.danger },
+  ];
+
+  useEffect(() => {
+    setSimState({
+      fedFunds: fedFundsRate,
+      treasury: tga,
+      volatility: vix,
+      liquidity: netLiq,
+    });
+  }, [fedFundsRate, tga, vix, netLiq]);
   const drillQuestionBank = useMemo(() => {
     const improveSetups = [
       {
@@ -7528,27 +7600,126 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           )}
 
           {schoolTab === 'simulate' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 10 }}>
-              {flightScenarios.map((item) => (
-                <div key={item.key} style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-                  <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>{item.label}</div>
-                  <div style={{ fontSize: 14, color: t.textGhost, lineHeight: 1.6, marginBottom: 12 }}>{item.detail}</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
-                    <div>
-                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Theater</div>
-                      <div style={{ fontSize: 15, color: item.snapshot.score >= 75 ? t.accent : item.snapshot.score >= 40 ? t.warn : t.danger, fontWeight: 700 }}>{item.snapshot.theater}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.05fr) minmax(260px, 0.95fr)', gap: 12 }}>
+              <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>Fed Scenario Lab</div>
+                    <div style={{ fontSize: 14, color: t.textGhost, lineHeight: 1.6, maxWidth: 500 }}>
+                      Move one lever at a time and watch the regime shift. This is the closest thing to a policy sandbox on the page.
                     </div>
-                    <div>
-                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Posture</div>
-                      <div style={{ fontSize: 15, color: t.textPrimary, fontWeight: 700 }}>{item.snapshot.posture}</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Pressure</div>
-                      <div style={{ fontSize: 15, color: t.textPrimary, fontWeight: 700 }}>{item.snapshot.primary.label}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSimState({ fedFunds: fedFundsRate, treasury: tga, volatility: vix, liquidity: netLiq })}
+                    style={{
+                      border: `1px solid ${t.borderDim}`,
+                      background: 'transparent',
+                      color: t.textSecondary,
+                      padding: '6px 10px',
+                      cursor: 'pointer',
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    Reset To Live
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gap: 14 }}>
+                  {simControls.map((control) => {
+                    const value = simState[control.key] ?? control.base;
+                    const pct = value == null ? 0 : ((value - control.min) / (control.max - control.min)) * 100;
+                    return (
+                      <div key={control.key} style={{ border: `1px solid ${t.borderDim}`, padding: 12, background: isDark ? t.panel : t.surface }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'baseline', marginBottom: 8, flexWrap: 'wrap' }}>
+                          <div>
+                            <div style={{ fontSize: 11, color: control.accent, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>{control.label}</div>
+                            <div style={{ marginTop: 4, fontSize: 13, color: t.textGhost }}>{control.description}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: 16, color: control.accent, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+                              {value == null ? '—' : control.format(value)}
+                            </div>
+                            <div style={{ marginTop: 2, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                              live {control.base == null ? '—' : control.format(control.base)}
+                            </div>
+                          </div>
+                        </div>
+                        <input
+                          type="range"
+                          min={control.min}
+                          max={control.max}
+                          step={control.step}
+                          value={value ?? control.min}
+                          onChange={(event) => setSimState((prev) => ({ ...prev, [control.key]: Number(event.target.value) }))}
+                          style={{ width: '100%', accentColor: control.accent }}
+                        />
+                        <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          <span>{control.min}{control.unit}</span>
+                          <span>{Math.round(pct)}% of simulation range</span>
+                          <span>{control.max}{control.unit}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gap: 12 }}>
+                <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
+                  <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>Simulated Outcome</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(120px, 1fr))', gap: 8 }}>
+                    {simSummary.map((item) => (
+                      <div key={item.label} style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.panel : t.surface }}>
+                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</div>
+                        <div style={{ marginTop: 6, fontSize: 19, color: item.tone, fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 14, borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
+                    <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Interpretation</div>
+                    <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65 }}>
+                      {simSnapshot.theater === 'RISK-ON'
+                        ? 'The sandbox now favors offensive positioning. Policy, liquidity, and stress are aligned well enough to support ATTACK.'
+                        : simSnapshot.theater === 'NEUTRAL'
+                          ? 'The sandbox is mixed. One or two conditions improved, but the system still prefers WAIT over aggression.'
+                          : 'The sandbox stays defensive. One lever alone is not enough to overpower the current drag profile.'}
                     </div>
                   </div>
                 </div>
-              ))}
+
+                <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Preset Actions</div>
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {flightScenarios.map((item) => (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => {
+                          if (item.key === 'cut-50') setSimState((prev) => ({ ...prev, fedFunds: fedFundsRate == null ? prev.fedFunds : Math.max(0, fedFundsRate - 0.5) }));
+                          if (item.key === 'tga-draw') setSimState((prev) => ({ ...prev, treasury: tga == null ? prev.treasury : Math.max(0, tga - 100) }));
+                          if (item.key === 'stress-spike') setSimState((prev) => ({ ...prev, volatility: 28 }));
+                          if (item.key === 'liq-boost') setSimState((prev) => ({ ...prev, liquidity: netLiq == null ? prev.liquidity : netLiq + 250000 }));
+                        }}
+                        style={{
+                          textAlign: 'left',
+                          border: `1px solid ${t.borderDim}`,
+                          background: 'transparent',
+                          color: t.textPrimary,
+                          padding: '10px 12px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>{item.label}</div>
+                        <div style={{ fontSize: 13, color: t.textGhost, lineHeight: 1.55 }}>{item.detail}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
