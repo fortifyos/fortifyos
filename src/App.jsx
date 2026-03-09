@@ -7250,10 +7250,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
-        <div style={{ marginTop: 12 }}>
-          <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
-        </div>
-
         <div style={{ marginTop: 12, border: `2px solid ${primaryPressure.tone}`, background: t.panel, padding: '18px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
             <div>
@@ -7351,7 +7347,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         </div>
 
         <div style={{ marginTop: 12 }}>
-          <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
+          <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
         </div>
 
         {/* ── LIVE NEWS FEED (full width) ───────────────────────────────────── */}
