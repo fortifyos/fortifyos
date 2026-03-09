@@ -7031,6 +7031,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   // ── Derived values ────────────────────────────────────────────────────────
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
   const lordsQuote = DISTORTION_QUOTES[dayOfYear % DISTORTION_QUOTES.length];
+  const macroTheme = MONTHLY_THEMES[new Date().getMonth()] || MONTHLY_THEMES[0];
 
   const _fm = macro || fredMacro;
   const walcl = _fm?.walcl?.value ?? null;
@@ -7145,6 +7146,34 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               {tga != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(tga / 1000).toFixed(2)}T</span>}
             </div>
             <span style={{ fontSize: 11, fontWeight: 900, color: confColor, border: `1px solid ${confColor}`, padding: '1px 7px', letterSpacing: '0.06em' }}>{confScore}/100</span>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12, border: `1px solid ${confColor}55`, background: t.panel, padding: '22px 26px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: confColor, opacity: 0.55 }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 10px', border: `1px solid ${confColor}55`, background: isDark ? `${confColor}10` : `${confColor}08`, fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                Daily Macro Analysis
+              </div>
+              <div style={{ marginTop: 8, fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
+                {macroTheme.theme}
+              </div>
+            </div>
+            <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
+              The Distortion Hub · Day {dayOfYear}
+            </div>
+          </div>
+          <div style={{ fontSize: 34, lineHeight: 1.1, color: t.textPrimary, fontWeight: 800, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>
+            {lordsQuote.concept}
+          </div>
+          <div style={{ borderLeft: `3px solid ${confColor}`, paddingLeft: 14, marginBottom: 14 }}>
+            <div style={{ fontSize: 16, fontStyle: 'italic', color: confColor, lineHeight: 1.65 }}>
+              "{lordsQuote.quote}"
+            </div>
+          </div>
+          <div style={{ fontSize: 15, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
+            Macro Objective · {macroTheme.objective}
           </div>
         </div>
 
@@ -7300,14 +7329,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                 </div>
               )}
             </div>
-          </div>
-
-          {/* QUOTE SECTION — spans full width */}
-          <div className="hub-card quote-section" style={{ animation: 'radarFadeUp 0.4s ease-out 0.55s both' }}>
-            <div className="tag">DAILY MACRO ANALYSIS — THE DISTORTION HUB</div>
-            <h2>"{lordsQuote.quote}"</h2>
-            <p className="concept">Concept: {lordsQuote.concept}</p>
-            <p style={{ fontSize: 11, color: isDark ? '#8b949e' : '#676c66', fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>— Christopher Leonard · Lords of Easy Money</p>
           </div>
 
         </div>
