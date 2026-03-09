@@ -1,7 +1,7 @@
 :root{
   --bm-bg: #000000;
-  --bm-card: #0a0a0a;
-  --bm-border: #333333;
+  --bm-card: #050505;
+  --bm-border: #232323;
   --bm-text: rgba(255,255,255,.92);
   --bm-dim: rgba(255,255,255,.55);
   --bm-soft: rgba(255,255,255,.72);
@@ -19,15 +19,15 @@
 }
 
 .bm-root.bm-light{
-  --bm-bg: #f7f5ef;
-  --bm-card: #f7f3ea;
-  --bm-border: #c9c3b7;
-  --bm-text: #151515;
-  --bm-dim: rgba(21,21,21,.65);
-  --bm-soft: rgba(21,21,21,.82);
-  --bm-muted: rgba(21,21,21,.48);
-  --bm-shadow: rgba(70,60,45,.08);
-  --bm-shadow-strong: rgba(70,60,45,.14);
+  --bm-bg: #ffffff;
+  --bm-card: #f7f7f7;
+  --bm-border: #cecece;
+  --bm-text: #121212;
+  --bm-dim: #444444;
+  --bm-soft: #2a2a2a;
+  --bm-muted: #888888;
+  --bm-shadow: rgba(0,0,0,.08);
+  --bm-shadow-strong: rgba(0,0,0,.14);
 }
 
 .bm-root{
@@ -89,7 +89,7 @@
   padding: 8px;
   border-radius: 10px;
   border: 1px solid var(--bm-border);
-  background: rgba(10,10,10,.96);
+  background: rgba(5,5,5,.96);
   backdrop-filter: blur(10px);
   box-shadow: 0 20px 60px var(--bm-shadow);
 }
@@ -171,7 +171,7 @@
   gap: 8px;
   align-items: center;
   border: 1px solid var(--bm-border);
-  background: #0d0d0d;
+  background: var(--bm-card);
   border-radius: var(--bm-radius);
   padding: 8px 12px;
   font-size: 11px;
@@ -220,7 +220,7 @@
 
 .bm-scarcity{
   border: 1px solid var(--bm-border);
-  background: #0d0d0d;
+  background: var(--bm-card);
   border-radius: var(--bm-radius);
   padding: 12px 14px 14px;
 }
@@ -242,7 +242,7 @@
   margin-top: 10px;
   height: 6px;
   border-radius: 2px;
-  background: #111;
+  background: var(--bm-card);
   border: 1px solid var(--bm-border);
   overflow: hidden;
 }

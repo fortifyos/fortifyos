@@ -27,9 +27,9 @@ import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 // ═══════════════════════════════════════════════════
 const THEMES = {
   dark: {
-    void: '#0B0B0C', surface: '#111315', elevated: '#181C1F', input: '#13161A',
-    panel: '#13161A', panel2: '#181C1F',
-    borderDim: '#1F1F22', borderMid: '#1F1F22', borderBright: '#3A4149',
+    void: '#000000', surface: '#050505', elevated: '#0B0B0C', input: '#0B0B0C',
+    panel: '#0B0B0C', panel2: '#111315',
+    borderDim: '#232323', borderMid: '#343434', borderBright: '#4A4A4A',
     textPrimary: '#E4E4E7', textSecondary: '#A8AEBB', textDim: '#828A96', textGhost: '#4E5662',
     accent: '#00FF41', accentBright: '#39FF14', accentDim: '#00CC33', accentMuted: '#0A3D1A',
     danger: '#FF3B3B', warn: '#FFB800',
@@ -1505,8 +1505,8 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
         <div style={{
           position: 'absolute', left: 0, top: 42, zIndex: 120,
           minWidth: 200, padding: 8,
-          background: isDark ? t.elevated : '#f3f3f1',
-          border: `1px solid ${isDark ? t.borderMid : '#8e8e88'}`,
+          background: isDark ? t.elevated : t.surface,
+          border: `1px solid ${isDark ? t.borderMid : t.borderMid}`,
           borderRadius: 18,
           boxShadow: isDark ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 10px 24px rgba(0,0,0,0.16)',
         }}>
@@ -1523,7 +1523,7 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
                 disabled={!item.onClick}
                 style={{
                   width: '100%',
-                  background: isCurrent ? (isDark ? `${t.accent}18` : '#e7efe6') : 'none',
+                  background: isCurrent ? (isDark ? `${t.accent}18` : t.accentMuted) : 'none',
                   border: 'none',
                   color: isCurrent ? (item.color || t.accent) : (item.color || t.textSecondary),
                   fontFamily: "'JetBrains Mono', monospace",
@@ -7361,15 +7361,15 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           /* ── DISTORTION HUB GRID ──────────────────────────────────────── */
           @keyframes glow-pulse { from { transform: scale(0.9); box-shadow: 0 0 30px rgba(0,251,255,0.3); } to { transform: scale(1.1); box-shadow: 0 0 60px rgba(0,251,255,0.6); } }
           .ms2-wrap .distortion-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-          .ms2-wrap .hub-card { background: ${isDark ? '#080a0c' : '#f4f4f1'}; border: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; padding: 20px; position: relative; overflow: hidden; }
-          .ms2-wrap .hub-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; padding-bottom: 8px; }
+          .ms2-wrap .hub-card { background: ${isDark ? t.elevated : t.surface}; border: 1px solid ${isDark ? t.borderMid : t.borderDim}; padding: 20px; position: relative; overflow: hidden; }
+          .ms2-wrap .hub-card-title { font-size: 11px; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid ${isDark ? t.borderMid : t.borderDim}; padding-bottom: 8px; }
           .ms2-wrap .reactor-core { width: 100px; height: 100px; margin: 16px auto; border-radius: 50%; background: radial-gradient(circle, #00fbff 0%, transparent 70%); box-shadow: 0 0 30px rgba(0,251,255,0.3); animation: glow-pulse 4s ease-in-out infinite alternate; }
           .ms2-wrap .quote-section { grid-column: 1 / -1; }
-          .ms2-wrap .quote-section .tag { font-size: 10px; letter-spacing: 2px; color: ${isDark ? '#8b949e' : '#676c66'}; border-bottom: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; padding-bottom: 10px; margin-bottom: 14px; text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; display: block; }
+          .ms2-wrap .quote-section .tag { font-size: 10px; letter-spacing: 2px; color: ${isDark ? t.textSecondary : t.textDim}; border-bottom: 1px solid ${isDark ? t.borderMid : t.borderDim}; padding-bottom: 10px; margin-bottom: 14px; text-transform: uppercase; font-family: 'JetBrains Mono','Courier New',monospace; display: block; }
           .ms2-wrap .quote-section h2 { font-style: italic; color: var(--primary); line-height: 1.55; font-size: 1.05rem; margin: 0 0 8px 0; font-weight: 400; }
           .ms2-wrap .quote-section .concept { font-size: 11px; color: var(--primary); opacity: 0.65; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono','Courier New',monospace; margin: 0; }
           .ms2-wrap .metric-overlay { text-align: center; margin-top: 8px; }
-          .ms2-wrap .metric-overlay small { font-size: 10px; letter-spacing: 2px; color: ${isDark ? '#8b949e' : '#676c66'}; display: block; margin-bottom: 4px; font-family: 'JetBrains Mono','Courier New',monospace; text-transform: uppercase; }
+          .ms2-wrap .metric-overlay small { font-size: 10px; letter-spacing: 2px; color: ${isDark ? t.textSecondary : t.textDim}; display: block; margin-bottom: 4px; font-family: 'JetBrains Mono','Courier New',monospace; text-transform: uppercase; }
           .ms2-wrap .ticker-value { font-size: 1.05rem; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono','Courier New',monospace; }
           @media (max-width: 640px) { .ms2-wrap .distortion-hub-grid { grid-template-columns: 1fr; } }
 
@@ -7382,7 +7382,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
           /* ── HUD PROGRESS BARS ─────────────────────────────────────────── */
           .ms2-wrap progress.hud-bar { appearance: none; -webkit-appearance: none; width: 72px; height: 5px; border: none; background: transparent; vertical-align: middle; }
-          .ms2-wrap progress.hud-bar::-webkit-progress-bar { background: ${isDark ? '#1a1a1a' : '#d7dad4'}; border-radius: 1px; }
+          .ms2-wrap progress.hud-bar::-webkit-progress-bar { background: ${isDark ? t.input : t.input}; border-radius: 1px; }
           .ms2-wrap progress.hud-bar::-webkit-progress-value { background: var(--primary); box-shadow: 0 0 8px var(--primary), 0 0 3px var(--primary); border-radius: 1px; transition: width 1.2s ease; }
           .ms2-wrap progress.hud-bar::-moz-progress-bar { background: var(--primary); box-shadow: 0 0 8px var(--primary); border-radius: 1px; }
           .ms2-wrap progress.hud-heat::-webkit-progress-value { background: #f0b429; box-shadow: 0 0 8px #f0b429aa, 0 0 3px #f0b429; }
@@ -7390,7 +7390,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
           /* ── BLACK BOX / FLIGHT RECORDER ──────────────────────────────── */
           @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-          .ms2-wrap .black-box { margin-top: 20px; padding: 15px; border-top: 2px solid var(--primary); background: ${isDark ? 'rgba(0,0,0,0.4)' : '#efefeb'}; border-left: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; border-right: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; border-bottom: 1px solid ${isDark ? '#2d333b' : '#c8cbc5'}; max-height: 300px; overflow-y: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+          .ms2-wrap .black-box { margin-top: 20px; padding: 15px; border-top: 2px solid var(--primary); background: ${isDark ? 'rgba(0,0,0,0.4)' : t.input}; border-left: 1px solid ${isDark ? t.borderMid : t.borderDim}; border-right: 1px solid ${isDark ? t.borderMid : t.borderDim}; border-bottom: 1px solid ${isDark ? t.borderMid : t.borderDim}; max-height: 300px; overflow-y: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; }
           .ms2-wrap .black-box h3 { font-size: 0.75rem; letter-spacing: 2px; margin: 0 0 15px 0; color: var(--primary); opacity: 0.8; font-weight: 700; }
           .ms2-wrap .black-box-entry { border-left: 2px solid var(--primary); margin-bottom: 10px; padding-left: 10px; font-size: 0.82rem; animation: slideIn 0.3s ease-out; }
           .ms2-wrap .black-box-entry .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
