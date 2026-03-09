@@ -6857,67 +6857,46 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   </div>);
 }
 
-// ═══════════════════════════════════════════════════
-// Lords of Easy Money — 365-Day Rotating Quotes
-// ── THE DISTORTION HUB — Daily Insight Engine ─────────────────────────────
-// Source: "Lords of Easy Money" by Christopher Leonard
-// getDailyInsight: rotate by day-of-year so the quote changes each day.
-// Extend to 365 entries for full annual coverage.
-const DISTORTION_QUOTES = [
-  // ── Monetary Sovereignty ───────────────────────────────────────────────
-  { quote: "The Fed is the only institution on earth that can create US dollars at will.", concept: "Monetary Sovereignty" },
-  { quote: "The Federal Reserve's power is the power to reshape the economy without a single vote from Congress.", concept: "Monetary Sovereignty" },
-  { quote: "No private institution and no foreign government can do what the Fed does with a committee vote.", concept: "Monetary Sovereignty" },
+const RADAR_MONTHLY_THEMES = [
+  { month: 'JAN', theme: 'Policy Reset Window', objective: 'Start the year by defining the Fed posture, liquidity base, and risk regime.' },
+  { month: 'FEB', theme: 'Credit Sensitivity Check', objective: 'Track whether tighter policy is flowing into credit spreads, employment, and stress.' },
+  { month: 'MAR', theme: 'Liquidity Command Center', objective: 'Measure balance-sheet flow, Treasury drain, and whether reserves are loosening or tightening.' },
+  { month: 'APR', theme: 'Posture Versus Promise', objective: 'Separate what the Fed says from what rates, liquidity, and markets are actually doing.' },
+  { month: 'MAY', theme: 'Price Stability Friction', objective: 'Watch where inflation persistence collides with growth and forces policy hesitation.' },
+  { month: 'JUN', theme: 'Summer Funding Watch', objective: 'Focus on reserves, auctions, and Treasury financing pressure during thinner liquidity.' },
+  { month: 'JUL', theme: 'Reaction Function Audit', objective: 'Test whether the Fed is responding more to inflation, labor, or market stress.' },
+  { month: 'AUG', theme: 'Risk Appetite Gauge', objective: 'Monitor whether easy liquidity is feeding speculation faster than the real economy.' },
+  { month: 'SEP', theme: 'Autumn Stress Mapping', objective: 'Map where tightening pressure could show up first across credit, duration, and volatility.' },
+  { month: 'OCT', theme: 'Financial Conditions Trap', objective: 'Check whether markets are easing the Fed’s job by themselves or fighting it.' },
+  { month: 'NOV', theme: 'Narrative Versus Data', objective: 'Force every policy narrative to prove itself against hard macro data.' },
+  { month: 'DEC', theme: 'Year-End Liquidity Close', objective: 'Close the year by judging what policy actually changed, not what was projected.' },
+];
 
-  // ── The Delay Effect ───────────────────────────────────────────────────
-  { quote: "Monetary policy operates with long and variable lags.", concept: "The Delay Effect" },
-  { quote: "The Fed fires its cannon today and waits 18 months to see where the shell lands.", concept: "The Delay Effect" },
-  { quote: "By the time the effects of QE were felt in the real economy, the next crisis was already forming.", concept: "The Delay Effect" },
-
-  // ── The Yield Trap ─────────────────────────────────────────────────────
-  { quote: "In a 0% world... a risky bet beats nothing.", concept: "The Yield Trap" },
-  { quote: "When safe assets yield nothing, the hunt for return forces capital into progressively riskier territory.", concept: "The Yield Trap" },
-  { quote: "Zero rates don't stimulate the economy — they force every saver to become a speculator.", concept: "The Yield Trap" },
-
-  // ── Financial Stratification ───────────────────────────────────────────
-  { quote: "The FOMC debates were technical... but at their core they were about choosing winners and losers.", concept: "Financial Stratification" },
-  { quote: "QE doesn't put money in people's pockets — it inflates asset prices.", concept: "Financial Stratification" },
-  { quote: "Every dollar of QE that flowed into assets widened the gap between owners and workers.", concept: "Financial Stratification" },
-  { quote: "The wealth effect is real — but only for those who already have wealth.", concept: "Financial Stratification" },
-
-  // ── The Zero Trap ──────────────────────────────────────────────────────
-  { quote: "Life at the zero bound was going to last for a while.", concept: "The Zero Trap" },
-  { quote: "The Fed kept rates at zero for seven years after the financial crisis.", concept: "The Zero Trap" },
-  { quote: "Once you reach zero, the only tools left are ones you have never tested.", concept: "The Zero Trap" },
-
-  // ── Fragility & Scale ──────────────────────────────────────────────────
-  { quote: "The long crash of 2008 had evolved into the long crash of 2020. The bills had yet to be paid.", concept: "Fragility" },
-  { quote: "The Fed's balance sheet became the largest in history.", concept: "Scale" },
-  { quote: "A balance sheet that takes years to build can unwind in ways no model can predict.", concept: "Scale" },
-
-  // ── Debasement & Savings ───────────────────────────────────────────────
-  { quote: "Money printing is a tax on savings, hidden in plain sight.", concept: "Debasement" },
-  { quote: "When you suppress the price of money, you suppress the signal that allocates all other resources.", concept: "Debasement" },
-  { quote: "The saver is the unrepresented constituency of every FOMC meeting.", concept: "Debasement" },
-
-  // ── Moral Hazard ───────────────────────────────────────────────────────
-  { quote: "When you keep rates very low... you are inviting bubbles.", concept: "Moral Hazard" },
-  { quote: "Each rescue teaches the market that risk has a backstop — and so more risk is taken.", concept: "Moral Hazard" },
-  { quote: "The institutions that created the crisis were made whole. The workers who lost jobs were not.", concept: "Moral Hazard" },
-
-  // ── Price Discovery ────────────────────────────────────────────────────
-  { quote: "Interest rates are the price of money. When the Fed sets that price, markets stop discovering it.", concept: "Price Discovery" },
-  { quote: "Asset prices untethered from yield are no longer prices — they are policy projections.", concept: "Price Discovery" },
-
-  // ── The Exit Problem ───────────────────────────────────────────────────
-  { quote: "Getting into QE was easy. Getting out proved to be an entirely different operation.", concept: "The Exit Problem" },
-  { quote: "The taper tantrum of 2013 showed that markets had become addicted to the Fed's purchases.", concept: "The Exit Problem" },
-  { quote: "When the central bank owns the bond market, the bond market can no longer warn you.", concept: "The Exit Problem" },
-
-  // ── Reflexivity ────────────────────────────────────────────────────────
-  { quote: "The Fed watches the markets. The markets watch the Fed. Neither has a clear view of reality.", concept: "Reflexivity" },
-  { quote: "Forward guidance made Fed policy a self-fulfilling prophecy, for better and for worse.", concept: "Reflexivity" },
-  // Developer: extend to 365 entries for full annual rotation
+const FED_DAILY_BRIEFS = [
+  { headline: 'Policy moves first. The economy answers later.', brief: 'The Fed changes the cost of money immediately, but households and businesses respond on delay. Today’s market tone is reacting to old policy as much as current headlines.', lens: 'Delay Effect' },
+  { headline: 'When rates stay high, time becomes a weapon.', brief: 'Restrictive policy does its work by extending pressure across refinancing, hiring, and credit demand. The longer the stance holds, the more the lagged damage accumulates.', lens: 'Higher for Longer' },
+  { headline: 'Liquidity can ease even when the Fed sounds tough.', brief: 'Balance-sheet flow, Treasury cash drawdowns, and reserve conditions can soften financial conditions beneath hawkish language. Watch the plumbing, not just the press conference.', lens: 'Liquidity Versus Rhetoric' },
+  { headline: 'Easy money rarely lands evenly.', brief: 'When liquidity expands, asset owners usually feel relief before wage earners do. Risk assets can celebrate while the real economy is still digesting prior tightening.', lens: 'Wealth Effect' },
+  { headline: 'The market trades the next cut long before the cut arrives.', brief: 'Forward guidance and Fed-watch probabilities change behavior before policy does. That reflex can loosen conditions early and complicate the Fed’s job.', lens: 'Reflexivity' },
+  { headline: 'A low policy rate is not the same as a low-risk market.', brief: 'When cash yields fall, capital gets pushed outward on the risk curve. Speculation often returns faster than durable growth.', lens: 'Yield Trap' },
+  { headline: 'Treasury issuance can tighten the field without a rate hike.', brief: 'If the Treasury rebuilds cash aggressively, reserves can be absorbed even while the Fed stands still. Funding pressure sometimes comes from issuance more than the policy rate.', lens: 'Treasury Drain' },
+  { headline: 'Markets weaken first at the margin.', brief: 'The Fed does not need every borrower to break. It only needs enough marginal stress in housing, hiring, and financing to cool demand.', lens: 'Transmission' },
+  { headline: 'The zero bound solved panic and invited distortion.', brief: 'Emergency accommodation can stop collapse, but staying too easy for too long distorts price signals and encourages leverage to fill the yield vacuum.', lens: 'Zero Bound' },
+  { headline: 'Cut probabilities are not relief until liquidity confirms them.', brief: 'A dovish path matters less if reserves are still tight or Treasury pressure is rising. The signal only improves when policy expectations and liquidity align.', lens: 'Confirmation' },
+  { headline: 'The bond market still matters, even when the Fed dominates the room.', brief: 'Curve shape, term premiums, and credit spreads remain warning systems. If those are strained, the policy message is not as clean as headlines suggest.', lens: 'Market Signal' },
+  { headline: 'Tight money punishes the weakest balance sheets first.', brief: 'Highly levered borrowers, refinancing windows, and speculative assets feel policy pressure before strong incumbents do. Stress begins on the edges and moves inward.', lens: 'Fragility' },
+  { headline: 'Net liquidity is the battlefield map.', brief: 'Fed assets, Treasury cash, and reverse repo balances together explain how much fuel is left for risk-taking. This is the terrain capital is fighting on.', lens: 'Liquidity Map' },
+  { headline: 'A patient Fed can still break a fast market.', brief: 'Financial conditions can reverse sharply if traders get ahead of easing that never arrives. Markets often front-run relief more confidently than policymakers deliver it.', lens: 'Expectation Risk' },
+  { headline: 'Inflation cooling is not the same thing as victory.', brief: 'The Fed needs enough evidence that price pressure is broken, not merely easing. One soft print changes sentiment; a trend changes policy.', lens: 'Disinflation Test' },
+  { headline: 'If volatility stays calm, liquidity tends to lead.', brief: 'When stress is low, reserves and policy expectations drive the tape. When volatility spikes, posture matters more than liquidity optimism.', lens: 'Stress Filter' },
+  { headline: 'The real question is not cut or hike. It is whether conditions are loosening.', brief: 'Markets care about the full transmission channel: yields, spreads, reserves, and confidence. Fed policy is the trigger, but conditions are the outcome.', lens: 'Financial Conditions' },
+  { headline: 'Emergency tools are easiest to start and hardest to unwind.', brief: 'Asset purchases and crisis backstops can stabilize panic quickly, but removing them without market tantrums is far more difficult. Exit risk is part of the original intervention.', lens: 'Exit Problem' },
+  { headline: 'A strong market can work against the Fed.', brief: 'If risk assets rally too hard, wealth effects and easier financing can re-stimulate demand. The market can partially undo the intended restraint.', lens: 'Policy Friction' },
+  { headline: 'The Fed is always choosing a trade-off.', brief: 'Price stability, labor resilience, and financial stability rarely peak together. Each meeting is a decision about which risk deserves priority.', lens: 'Trade-Offs' },
+  { headline: 'The lag is where policy hides its consequences.', brief: 'The most dangerous mistake is assuming calm conditions mean policy is harmless. Often the full effect has simply not arrived yet.', lens: 'Long and Variable Lags' },
+  { headline: 'When reserve conditions improve, risk appetite usually notices quickly.', brief: 'Equities and crypto tend to respond faster than the real economy when liquidity loosens. Markets are often the first screen where easier conditions appear.', lens: 'Risk Response' },
+  { headline: 'Tighter policy is also a test of market addiction.', brief: 'If every hint of reduced accommodation produces disorder, that reveals how dependent asset prices became on central-bank support.', lens: 'Addiction Test' },
+  { headline: 'The cleanest policy signal is one confirmed by multiple channels.', brief: 'When the rate path, the curve, reserves, and volatility all point the same way, the regime is clearer. Mixed signals deserve patience, not conviction.', lens: 'Confluence' },
 ];
 
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
@@ -7031,8 +7010,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
   // ── Derived values ────────────────────────────────────────────────────────
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-  const lordsQuote = DISTORTION_QUOTES[dayOfYear % DISTORTION_QUOTES.length];
-  const macroTheme = MONTHLY_THEMES[new Date().getMonth()] || MONTHLY_THEMES[0];
+  const fedBrief = FED_DAILY_BRIEFS[dayOfYear % FED_DAILY_BRIEFS.length];
+  const radarTheme = RADAR_MONTHLY_THEMES[new Date().getMonth()] || RADAR_MONTHLY_THEMES[0];
 
   const _fm = macro || fredMacro;
   const walcl = _fm?.walcl?.value ?? null;
@@ -7228,23 +7207,23 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                 Daily Macro Analysis
               </div>
               <div style={{ marginTop: 8, fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
-                {macroTheme.theme}
+                {radarTheme.theme}
               </div>
             </div>
             <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
-              The Distortion Hub · Day {dayOfYear}
+              Fed Command Brief · Day {dayOfYear}
             </div>
           </div>
           <div style={{ fontSize: 34, lineHeight: 1.1, color: t.textPrimary, fontWeight: 800, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>
-            {lordsQuote.concept}
+            {fedBrief.headline}
           </div>
           <div style={{ borderLeft: `3px solid ${confColor}`, paddingLeft: 14, marginBottom: 14 }}>
-            <div style={{ fontSize: 16, fontStyle: 'italic', color: confColor, lineHeight: 1.65 }}>
-              "{lordsQuote.quote}"
+            <div style={{ fontSize: 16, color: confColor, lineHeight: 1.65 }}>
+              {fedBrief.brief}
             </div>
           </div>
           <div style={{ fontSize: 15, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
-            Macro Objective · {macroTheme.objective}
+            Fed Lens · {fedBrief.lens} · Objective · {radarTheme.objective}
           </div>
         </div>
 
