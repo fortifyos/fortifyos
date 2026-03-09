@@ -6928,6 +6928,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const [menuOpen, setMenuOpen] = useState(false);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
+  const [warFocus, setWarFocus] = useState('policy');
   const [blackBoxLog, setBlackBoxLog] = useState(() => {
     try { return JSON.parse(localStorage.getItem('fortify_blackbox') || '[]'); } catch { return []; }
   });
@@ -7040,6 +7041,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const fedFundsRate = _fm?.fedFundsRate?.value ?? latest?.macro?.fedFundsRate ?? null;
   const yieldCurve = _fm?.yieldCurve10Y2Y?.value ?? _fm?.yieldCurve?.value ?? latest?.macro?.yieldCurve10Y2Y ?? latest?.macro?.yieldCurve ?? null;
   const fedWatchCut = latest?.macro?.fedWatchCut ?? _fm?.fedWatchCut?.value ?? null;
+  const vix = _fm?.vix?.value ?? null;
   const netLiq = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
   const netLiqColor = netLiq == null ? t.textDim : netLiq > 5000 ? t.accent : netLiq > 3000 ? t.warn : t.danger;
   const clampRadar = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -7074,6 +7076,75 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const confStatus = confScore >= 75 ? 'TARGET ACQUIRED // CONFLUENCE HIGH'
     : confScore >= 40 ? 'SCANNING // SEARCHING FOR SIGNAL'
       : 'SIGNAL JAMMED // DEFENSIVE POSITION';
+  const theater = confScore >= 75 ? 'RISK-ON' : confScore >= 40 ? 'NEUTRAL' : 'RISK-OFF';
+  const posture = confScore >= 75 ? 'ATTACK' : confScore >= 40 ? 'WAIT' : 'DEFEND';
+  const policyPressure = fedFundsRate == null ? 35 : clampRadar((fedFundsRate / 5) * 100, 0, 100);
+  const treasuryPressure = tga == null ? 25 : clampRadar((tga / 1200000) * 100, 0, 100);
+  const cyclePressure = daysPostHalving <= 500 ? 25 : daysPostHalving < 800 ? 55 : 85;
+  const volatilityPressure = vix == null ? 30 : clampRadar(((vix - 12) / 28) * 100, 0, 100);
+  const warPressures = [
+    {
+      key: 'policy',
+      label: 'Policy',
+      score: policyPressure,
+      tone: policyPressure >= 65 ? t.danger : policyPressure >= 40 ? t.warn : t.accent,
+      summary: fedFundsRate == null ? 'Waiting on Fed Funds series.' : `Fed Funds at ${fedFundsRate.toFixed(2)}% is the current policy drag.`,
+      why: fedFundsRate == null ? 'Once DFF updates, System Heat and War Game will auto-align.' : fedFundsRate >= 3.5 ? 'Policy is still restrictive. Cuts are the cleanest way to unlock a more aggressive posture.' : fedFundsRate >= 1.5 ? 'Policy is no longer crushing liquidity, but it is not fully accommodative either.' : 'Policy is loose enough that other pressures matter more than rates.',
+      flips: [
+        fedFundsRate == null ? 'Load DFF series into macro feed' : fedFundsRate > 3.5 ? `Below 3.50% shifts policy from restrictive to neutral` : `Above 3.50% reopens restrictive policy pressure`,
+        fedWatchCut == null ? 'FedWatch unavailable' : `Cut probability above 50% improves posture odds`,
+      ],
+    },
+    {
+      key: 'treasury',
+      label: 'Treasury',
+      score: treasuryPressure,
+      tone: treasuryPressure >= 65 ? t.danger : treasuryPressure >= 40 ? t.warn : t.accent,
+      summary: tga == null ? 'No TGA data.' : `TGA at $${(tga / 1000).toFixed(2)}T is the Treasury drain on liquidity.`,
+      why: tga == null ? 'Treasury pressure cannot be scored without TGA.' : tga >= 900 ? 'Treasury is absorbing liquidity instead of releasing it. This is a brake on risk assets.' : tga >= 800 ? 'Treasury pressure is active but not yet dominant.' : 'Treasury pressure is light. Falling TGA is usually a tailwind for liquidity.',
+      flips: [
+        tga == null ? 'Load TGA series' : `Below $0.80T upgrades Treasury pressure from drag to tailwind`,
+        tga == null ? 'No data' : `Above $0.95T pushes Treasury pressure into high-risk territory`,
+      ],
+    },
+    {
+      key: 'cycle',
+      label: 'Cycle',
+      score: cyclePressure,
+      tone: cyclePressure >= 65 ? t.danger : cyclePressure >= 40 ? t.warn : t.accent,
+      summary: `${daysPostHalving} days post-halving defines the cycle tailwind.`,
+      why: daysPostHalving <= 500 ? 'Cycle support is still active. Time is on the side of upside reflexivity.' : daysPostHalving < 800 ? 'Cycle tailwind is fading. Macro matters more from here.' : 'Cycle support is largely spent. New upside needs policy or liquidity help.',
+      flips: [
+        daysPostHalving <= 500 ? 'After day 500, cycle support fades from strong to moderate' : 'Cycle support already faded below strong',
+        daysPostHalving < 800 ? 'After day 800, cycle becomes a structural drag' : 'Cycle is already beyond the core tailwind window',
+      ],
+    },
+    {
+      key: 'volatility',
+      label: 'Volatility',
+      score: volatilityPressure,
+      tone: volatilityPressure >= 65 ? t.danger : volatilityPressure >= 40 ? t.warn : t.accent,
+      summary: vix == null ? 'No VIX data.' : `VIX at ${vix.toFixed(2)} measures stress in the theater.`,
+      why: vix == null ? 'Without VIX, volatility pressure is only estimated.' : vix >= 25 ? 'Stress is high. Defensive posture deserves respect even if liquidity is improving.' : vix >= 18 ? 'Stress is elevated but not broken. Wait for cleaner confirmation.' : 'Stress is low enough that liquidity and policy can lead the theater.',
+      flips: [
+        vix == null ? 'Load VIX feed' : 'Below 18 reduces stress pressure meaningfully',
+        vix == null ? 'No data' : 'Above 25 forces volatility into the primary threat slot',
+      ],
+    },
+  ];
+  const primaryPressure = warPressures.reduce((top, item) => item.score > top.score ? item : top, warPressures[0]);
+  const focusPressure = warPressures.find((item) => item.key === warFocus) || primaryPressure;
+  const warHeadline = theater === 'RISK-ON'
+    ? 'Liquidity and cycle conditions support offensive positioning.'
+    : theater === 'NEUTRAL'
+      ? 'The theater is mixed. Capital should stay patient and selective.'
+      : 'Defensive conditions dominate. Survival matters more than speed.';
+  const warThresholds = [
+    { label: 'Risk-On Trigger', value: netLiq == null ? 'Need live net liquidity' : netLiq > 5500000 ? 'Active now' : 'Net liquidity above $5.50T', tone: t.accent },
+    { label: 'Treasury Flip', value: tga == null ? 'Need TGA data' : tga < 800 ? 'Active now' : 'TGA below $0.80T', tone: t.warn },
+    { label: 'Policy Relief', value: fedFundsRate == null ? 'Need DFF data' : fedFundsRate < 3.5 ? 'Active now' : 'Fed Funds below 3.50%', tone: reactorColor },
+    { label: 'Stress Exit', value: vix == null ? 'Need VIX data' : vix < 18 ? 'Active now' : 'VIX below 18', tone: t.textSecondary },
+  ];
   const confComponents = [
     {
       label: 'NET LIQUIDITY (WALCL − TGA)', score: liqPts, max: 40,
@@ -7183,154 +7254,104 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
         </div>
 
-        <div style={{ marginTop: 12 }}>
-          <MarketIntelligenceMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('market')} t={t} isDark={isDark} fredMacro={macro || fredMacro} />
+        <div style={{ marginTop: 12, border: `2px solid ${primaryPressure.tone}`, background: t.panel, padding: '18px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>Macro War Game</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 46, fontWeight: 900, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{theater}</span>
+                <span style={{ fontSize: 13, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>Current Theater</span>
+              </div>
+              <div style={{ marginTop: 8, fontSize: 16, color: t.textPrimary, fontWeight: 600 }}>{warHeadline}</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(120px, 1fr))', gap: 8, minWidth: 'min(100%, 420px)', flex: '1 1 320px' }}>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
+                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Best Posture</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: posture === 'ATTACK' ? t.accent : posture === 'WAIT' ? t.warn : t.danger, fontFamily: "'JetBrains Mono', monospace" }}>{posture}</div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
+                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Primary Pressure</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace" }}>{primaryPressure.label}</div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
+                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signal Score</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: confColor, fontFamily: "'JetBrains Mono', monospace" }}>{confScore}/100</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 1.1fr) minmax(260px, 0.9fr)', gap: 12 }}>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
+              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Choose the Pressure to Study</div>
+              <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
+                {warPressures.map((item) => (
+                  <button
+                    key={item.key}
+                    onClick={() => setWarFocus(item.key)}
+                    style={{
+                      width: '100%',
+                      display: 'grid',
+                      gridTemplateColumns: '110px 1fr auto',
+                      gap: 10,
+                      alignItems: 'center',
+                      background: warFocus === item.key ? (isDark ? `${item.tone}12` : `${item.tone}10`) : 'transparent',
+                      border: `1px solid ${warFocus === item.key ? item.tone : t.borderDim}`,
+                      color: t.textPrimary,
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                  >
+                    <span style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', color: warFocus === item.key ? item.tone : t.textSecondary }}>{item.label}</span>
+                    <div style={{ height: 6, background: t.borderDim, position: 'relative' }}>
+                      <div style={{ height: '100%', width: `${item.score}%`, background: item.tone, boxShadow: `0 0 8px ${item.tone}66` }} />
+                    </div>
+                    <span style={{ fontSize: 12, color: item.tone, fontWeight: 700 }}>{Math.round(item.score)}</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
+                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>Why It Matters</div>
+                <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, marginBottom: 8 }}>{focusPressure.why}</div>
+                <div style={{ fontSize: 14, color: focusPressure.tone }}>{focusPressure.summary}</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gap: 12 }}>
+              <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
+                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>What Flips the Signal</div>
+                <div style={{ display: 'grid', gap: 8 }}>
+                  {warThresholds.map((item) => (
+                    <div key={item.label} style={{ borderLeft: `2px solid ${item.tone}`, paddingLeft: 10 }}>
+                      <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</div>
+                      <div style={{ fontSize: 14, color: item.tone, fontWeight: 700 }}>{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
+                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Operational Readout</div>
+                <div style={{ display: 'grid', gap: 8 }}>
+                  {confComponents.map(({ label, score, max, note }) => (
+                    <div key={label}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                        <span>{label}</span>
+                        <span style={{ color: score > 0 ? confColor : t.textGhost }}>{score}/{max} · {note}</span>
+                      </div>
+                      <div style={{ height: 3, background: t.borderDim, borderRadius: 2 }}>
+                        <div style={{ height: '100%', width: `${(score / max) * 100}%`, background: score > 0 ? confColor : t.borderDim, borderRadius: 2 }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style={{ marginTop: 12 }}>
           <PortfolioMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('portfolio')} t={t} />
-        </div>
-
-        {/* ── SIGNAL CONFLUENCE ENGINE ─────────────────────────────────────── */}
-        <div style={{ marginTop: 12, border: `2px solid ${confColor}`, background: t.panel, padding: '16px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
-
-            {/* Score + status */}
-            <div>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>SIGNAL CONFLUENCE ENGINE</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                <span style={{ fontSize: 52, fontWeight: 900, color: confColor, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{confScore}</span>
-                <span style={{ fontSize: 13, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>/100</span>
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: confColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 6, fontFamily: "'JetBrains Mono', monospace" }}>
-                STATUS: {confStatus}
-              </div>
-            </div>
-
-            {/* Crosshair targeting reticle */}
-            <svg viewBox="0 0 80 80" width="80" height="80" style={{ flexShrink: 0, opacity: confScore >= 75 ? 1 : 0.6 }}>
-              <circle cx="40" cy="40" r="34" fill="none" stroke={confColor} strokeWidth="1" opacity="0.25" className="bracket"
-                style={{ animation: confScore >= 40 ? 'reactorRing1 3s ease-in-out infinite' : 'none' }} />
-              <circle cx="40" cy="40" r="20" fill="none" stroke={confColor} strokeWidth="1" opacity="0.45" />
-              <line x1="40" y1="4" x2="40" y2="18" stroke={confColor} strokeWidth="1.5" />
-              <line x1="40" y1="62" x2="40" y2="76" stroke={confColor} strokeWidth="1.5" />
-              <line x1="4" y1="40" x2="18" y2="40" stroke={confColor} strokeWidth="1.5" />
-              <line x1="62" y1="40" x2="76" y2="40" stroke={confColor} strokeWidth="1.5" />
-              {/* Radar sweep line — rotated by CSS in state-locked */}
-              <line x1="40" y1="40" x2="40" y2="7" stroke={confColor} strokeWidth="1" opacity="0.7" className="radar-sweep" />
-              <circle cx="40" cy="40" r={confScore >= 75 ? 5 : 2.5} fill={confColor}
-                style={{ animation: confScore >= 75 ? 'reactorPulse 2s ease-in-out infinite' : 'none' }} />
-              <polyline points="4,14 4,4 14,4" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
-              <polyline points="66,4 76,4 76,14" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
-              <polyline points="4,66 4,76 14,76" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
-              <polyline points="66,76 76,76 76,66" fill="none" stroke={confColor} strokeWidth="1.5" className="bracket" opacity={confScore >= 40 ? 1 : 0.25} />
-            </svg>
-          </div>
-
-          {/* Component score bars */}
-          <div style={{ display: 'grid', gap: 10 }}>
-            {confComponents.map(({ label, score, max, note }) => (
-              <div key={label}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>
-                  <span>{label}</span>
-                  <span style={{ color: score > 0 ? confColor : t.textGhost }}>{score}/{max} pts · {note}</span>
-                </div>
-                <div style={{ height: 3, background: t.borderDim, borderRadius: 2 }}>
-                  <div style={{ height: '100%', width: `${(score / max) * 100}%`, background: score > 0 ? confColor : t.borderDim, borderRadius: 2, transition: 'width 1.2s ease' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── THE DISTORTION HUB — MACRO INTELLIGENCE GRID ─────────────────── */}
-        <div className="distortion-hub-grid" style={{ marginTop: 12, animation: 'radarFadeUp 0.3s ease-out 0.3s both' }}>
-
-          {/* REACTOR SECTION */}
-          <div className="hub-card reactor-section" style={{ animation: 'radarFadeUp 0.4s ease-out 0.4s both' }}>
-            <div className="hub-card-title">SYSTEM HEAT: THE ZERO BOUND</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div className="reactor-core" style={{
-                opacity: reactorIntensity,
-                filter: `hue-rotate(${rateLevel * 20}deg)`,
-                boxShadow: `0 0 ${20 + reactorIntensity * 40}px rgba(0,251,255,${(reactorIntensity * 0.6).toFixed(2)})`
-              }} />
-              <div style={{ textAlign: 'center', marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: reactorColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>{reactorStatus}</div>
-                <div style={{ fontSize: 11, color: t.textGhost, marginTop: 4 }}>{reactorDesc}</div>
-              </div>
-            </div>
-            <div className="control-panel" style={{ borderTop: `1px solid ${isDark ? '#2d333b' : '#c8cbc5'}`, paddingTop: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>
-                <span>0% Easy</span><span>5%+ Tight</span>
-              </div>
-              <div style={{ height: 10, borderRadius: 999, border: `1px solid ${t.borderDim}`, background: isDark ? '#1a1a1a' : '#d7dad4', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${heatPct == null ? 0 : heatPct}%`, background: reactorColor, boxShadow: `0 0 12px ${reactorColor}55`, transition: 'width 1.2s ease' }} />
-              </div>
-              <p style={{ textAlign: 'center', fontSize: 11, color: reactorColor, fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>
-                Fed Funds Rate: {rateLevel == null ? '—' : `${rateLevel.toFixed(2)}%`}
-              </p>
-            </div>
-          </div>
-
-          {/* FLOW SECTION */}
-          <div className="hub-card flow-section" style={{ animation: 'radarFadeUp 0.4s ease-out 0.5s both' }}>
-            <div className="hub-card-title">DIGITAL LIQUIDITY PUMP</div>
-            <svg viewBox="0 0 340 100" style={{ width: '100%', maxHeight: 90, overflow: 'visible', marginBottom: 8 }}>
-              <circle cx="44" cy="50" r="30" fill={isDark ? '#0d2a2a' : '#e8f5e9'} stroke={t.accent} strokeWidth="1.5" />
-              <text x="44" y="46" fill={t.accent} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">FED</text>
-              <text x="44" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Reserve</text>
-              <path d="M76 50 L264 50" stroke={`${netLiqColor}40`} strokeWidth="2" strokeDasharray="4 4" />
-              <circle r="5" fill={netLiqColor} opacity={liquidityFlowOpacity}><animateMotion dur={liquidityPulseDur} repeatCount="indefinite" path="M76 50 L264 50" /></circle>
-              <circle r="3" fill={netLiqColor} opacity={Math.max(0.25, liquidityFlowOpacity * 0.55)}><animateMotion dur={liquidityPulseDur} begin="1.25s" repeatCount="indefinite" path="M76 50 L264 50" /></circle>
-              <circle cx="296" cy="50" r="30" fill={isDark ? '#2a1a0d' : '#fff8e1'} stroke={t.warn} strokeWidth="1.5" />
-              <text x="296" y="46" fill={t.warn} fontSize="10" fontWeight="700" textAnchor="middle" fontFamily="JetBrains Mono,monospace">BANKS</text>
-              <text x="296" y="58" fill={isDark ? '#8b949e' : '#666'} fontSize="8" textAnchor="middle">Primary</text>
-            </svg>
-            <div className="metric-overlay">
-              <small>{pumpLabel}</small>
-              <div className="ticker-value">{netLiq != null ? `$${netLiq.toLocaleString(undefined, { maximumFractionDigits: 0 })}B` : '—'}</div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
-              {walcl != null && (
-              <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${t.accent}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Balance Sheet</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace" }}>${(walcl / 1000).toFixed(2)}T</div>
-                </div>
-              )}
-              {netLiq != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${netLiqColor}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Liquidity</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: netLiqColor, fontFamily: "'JetBrains Mono', monospace" }}>{netLiq >= 0 ? '+' : ''}${Math.abs(netLiq / 1000).toFixed(2)}T</div>
-                </div>
-              )}
-              {tga != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Treasury General Account</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: t.warn, fontFamily: "'JetBrains Mono', monospace" }}>${(tga / 1000).toFixed(2)}T</div>
-                </div>
-              )}
-              {rrp != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Reverse Repo</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>${(rrp / 1000).toFixed(3)}T</div>
-                </div>
-              )}
-              {fedWatchCut != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${fedWatchCut > 50 ? t.accent : t.borderMid}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Cut Probability</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: fedWatchCut > 50 ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{fedWatchCut}%</div>
-                </div>
-              )}
-              {yieldCurve != null && (
-                <div style={{ padding: '7px 10px', border: `1px solid ${isDark ? '#2d333b' : '#c9cbc6'}`, borderLeft: `2px solid ${yieldCurve < 0 ? t.danger : t.accent}`, background: isDark ? 'transparent' : '#f8f8f5' }}>
-                  <div style={{ fontSize: 10, color: isDark ? '#8b949e' : '#6c716b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>10Y-2Y Curve</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: yieldCurve < 0 ? t.danger : t.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{yieldCurve.toFixed(2)}%</div>
-                </div>
-              )}
-            </div>
-          </div>
-
         </div>
 
         {/* ── LIVE NEWS FEED (full width) ───────────────────────────────────── */}
