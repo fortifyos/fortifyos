@@ -47,14 +47,45 @@
   margin: 0 auto 16px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--bm-border);
+  background: var(--bm-card);
+}
+
+.bm-topbar-left{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .bm-topbar-actions{
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.bm-brand{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bm-green);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.bm-topbar-title{
+  flex: 1;
+  text-align: center;
+  color: var(--bm-dim);
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .bm-menu-shell{
@@ -149,7 +180,24 @@
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
-  padding-top: 10px;
+  white-space: nowrap;
+}
+
+@media (max-width: 780px){
+  .bm-topbar{
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+
+  .bm-topbar-title{
+    font-size: 11px;
+    letter-spacing: .08em;
+  }
+
+  .bm-topbar-status{
+    display: none;
+  }
 }
 
 .bm-pulse-overlay{

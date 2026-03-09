@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, FileText, Home, LayoutGrid, Menu, Moon, Settings, Sun, X } from "lucide-react";
+import { Eye, FileText, Home, LayoutGrid, Menu, Moon, Settings, Shield, Sun, X } from "lucide-react";
 import "./bitcoin-mastery.css";
 
 const SATS_PER_BTC = 100_000_000;
@@ -199,39 +199,46 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       <div ref={pulseRef} className="bm-pulse-overlay" aria-hidden="true" />
 
       <div className="bm-topbar">
-        <div ref={menuRef} className="bm-menu-shell">
-          <button
-            className="bm-menu-btn"
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-label={menuOpen ? "Close page menu" : "Open page menu"}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? <X size={14} /> : <Menu size={14} />}
-          </button>
-          {menuOpen && (
-            <div className="bm-menu-pop" role="menu" aria-label="Page navigation">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    className={`bm-menu-item${item.current ? " is-current" : ""}`}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      item.onClick?.();
-                    }}
-                    disabled={!item.onClick}
-                  >
-                    {Icon ? <Icon size={15} /> : <span className="bm-menu-btc">₿</span>}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+        <div className="bm-topbar-left">
+          <div ref={menuRef} className="bm-menu-shell">
+            <button
+              className="bm-menu-btn"
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label={menuOpen ? "Close page menu" : "Open page menu"}
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? <X size={14} /> : <Menu size={14} />}
+            </button>
+            {menuOpen && (
+              <div className="bm-menu-pop" role="menu" aria-label="Page navigation">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={`bm-menu-item${item.current ? " is-current" : ""}`}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        item.onClick?.();
+                      }}
+                      disabled={!item.onClick}
+                    >
+                      {Icon ? <Icon size={15} /> : <span className="bm-menu-btc">₿</span>}
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div className="bm-brand">
+            <Shield size={14} />
+            <span>FortifyOS</span>
+          </div>
         </div>
+        <div className="bm-topbar-title">SOVEREIGN BITCOIN</div>
         <div className="bm-topbar-actions">
           <div className="bm-topbar-status">LAST SYNC {lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}</div>
           <button
