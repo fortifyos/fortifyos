@@ -7184,14 +7184,82 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       snapshot: simulateWarGame({ liquidity: netLiq == null ? null : netLiq + 250000 }),
     },
   ];
-  const drillQuestion = {
-    prompt: 'What would most directly improve the current macro theater from here?',
-    options: [
-      { key: 'a', text: 'Higher TGA with the same rate path', correct: false, why: 'That drains liquidity and usually tightens the field.' },
-      { key: 'b', text: 'Lower Fed Funds with net liquidity staying firm', correct: true, why: 'Policy relief plus steady liquidity is the cleanest path to a better posture.' },
-      { key: 'c', text: 'Higher VIX with the same liquidity backdrop', correct: false, why: 'Stress can overpower otherwise neutral or improving macro conditions.' },
-    ],
-  };
+  const drillQuestionBank = useMemo(() => {
+    const improveSetups = [
+      {
+        prompt: 'What would most directly improve the current macro theater from here?',
+        correct: 'b',
+        options: [
+          { key: 'a', text: 'Higher TGA with the same rate path', why: 'That pulls more liquidity out of the system and usually tightens conditions.' },
+          { key: 'b', text: 'Lower Fed Funds with net liquidity staying firm', why: 'Policy relief plus stable liquidity is the cleanest path to a better theater.' },
+          { key: 'c', text: 'Higher VIX with the same liquidity backdrop', why: 'Stress rising makes the field harder to operate in even if other signals hold up.' },
+        ],
+      },
+      {
+        prompt: 'Which change would most likely push the war game toward ATTACK?',
+        correct: 'c',
+        options: [
+          { key: 'a', text: 'TGA rising above $0.95T', why: 'A larger Treasury cash pile is usually a liquidity drain, not a tailwind.' },
+          { key: 'b', text: 'VIX jumping above 25', why: 'That adds stress pressure and usually supports a more defensive stance.' },
+          { key: 'c', text: 'Net liquidity moving above $5.50T', why: 'That is one of the clearest conditions for shifting the theater into a stronger risk-on posture.' },
+        ],
+      },
+      {
+        prompt: 'Which signal improvement would best reduce policy pressure?',
+        correct: 'a',
+        options: [
+          { key: 'a', text: 'Fed Funds drifting below 3.50%', why: 'That is the clean threshold in this model for policy moving from restrictive toward neutral.' },
+          { key: 'b', text: 'TGA rising while rates stay unchanged', why: 'That affects Treasury pressure, not policy pressure, and it usually hurts liquidity.' },
+          { key: 'c', text: 'VIX staying elevated above 25', why: 'That measures stress, not policy relief.' },
+        ],
+      },
+    ];
+    const signalSetups = schoolSignals.map((signal, index) => {
+      const wrongA = schoolSignals[(index + 1) % schoolSignals.length];
+      const wrongB = schoolSignals[(index + 2) % schoolSignals.length];
+      return {
+        prompt: `Which signal does this best describe: ${signal.explain}`,
+        correct: 'a',
+        options: [
+          { key: 'a', text: signal.label, why: `${signal.label} is the right answer because it directly matches this function in the system.` },
+          { key: 'b', text: wrongA.label, why: `${wrongA.label} matters, but it is not the signal being defined here.` },
+          { key: 'c', text: wrongB.label, why: `${wrongB.label} affects the macro picture, but the definition points to ${signal.label}.` },
+        ],
+      };
+    });
+    const thresholdSetups = warThresholds.map((threshold, index) => {
+      const next = warThresholds[(index + 1) % warThresholds.length];
+      return {
+        prompt: `What threshold is the page watching here: ${threshold.label}?`,
+        correct: 'a',
+        options: [
+          { key: 'a', text: threshold.value, why: `${threshold.label} flips when ${threshold.value}. That is the exact trigger shown on the page.` },
+          { key: 'b', text: next.value, why: `That belongs to ${next.label}, not ${threshold.label}.` },
+          { key: 'c', text: 'No specific threshold matters here', why: `${threshold.label} is built around a concrete trigger, so there is a specific line to watch.` },
+        ],
+      };
+    });
+    const scenarioSetups = flightScenarios.map((scenario) => ({
+      prompt: `If this happens, what posture follows: ${scenario.label}?`,
+      correct: 'b',
+      options: [
+        { key: 'a', text: `Primary pressure disappears immediately`, why: 'One change can help or hurt, but it does not erase all pressure in the system.' },
+        { key: 'b', text: `${scenario.snapshot.posture} posture with ${scenario.snapshot.primary.label} still leading pressure`, why: `That matches the live simulation for this scenario.` },
+        { key: 'c', text: 'The war game becomes irrelevant', why: 'The simulator is designed to show how one variable shifts the same framework, not replace it.' },
+      ],
+    }));
+
+    const baseQuestions = [...improveSetups, ...signalSetups, ...thresholdSetups, ...scenarioSetups];
+    return Array.from({ length: 365 }, (_, index) => {
+      const template = baseQuestions[index % baseQuestions.length];
+      return {
+        ...template,
+        day: index + 1,
+        missionCode: `FED-${String(index + 1).padStart(3, '0')}`,
+      };
+    });
+  }, [flightScenarios, schoolSignals, warThresholds]);
+  const drillQuestion = drillQuestionBank[(dayOfYear - 1) % drillQuestionBank.length];
   const quizResult = drillQuestion.options.find((item) => item.key === quizChoice) || null;
   const recentEntries = [...blackBoxLog].reverse();
   const latestEntry = recentEntries[0] || null;
@@ -7486,7 +7554,25 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
           {schoolTab === 'drill' && (
             <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
-              <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 10 }}>Command Drill</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: 10 }}>
+                <div>
+                  <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>Command Drill</div>
+                  <div style={{ marginTop: 6, fontSize: 14, color: t.textGhost, lineHeight: 1.6 }}>
+                    One question per day. Build Fed fluency by repeating one clean concept instead of grinding through a full quiz bank.
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', minWidth: 170 }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
+                    Daily Mission
+                  </div>
+                  <div style={{ marginTop: 4, fontSize: 15, color: confColor, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+                    Day {drillQuestion.day} / 365
+                  </div>
+                  <div style={{ marginTop: 2, fontSize: 11, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>
+                    {drillQuestion.missionCode}
+                  </div>
+                </div>
+              </div>
               <div style={{ fontSize: 18, color: t.textPrimary, marginBottom: 14 }}>{drillQuestion.prompt}</div>
               <div style={{ display: 'grid', gap: 8 }}>
                 {drillQuestion.options.map((option) => (
