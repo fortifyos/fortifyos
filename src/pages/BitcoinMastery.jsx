@@ -148,6 +148,61 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     const remaining = mined == null ? null : Math.max(0, HARD_CAP_BTC - mined);
     return { pct, mined, remaining };
   }, [net.supplyPct, net.supplyMined]);
+  const halving = useMemo(() => {
+    const msDay = 86400000;
+    const now = new Date();
+    const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const lastHalvingUTC = Date.UTC(2024, 3, 20);
+    const nextHalvingUTC = Date.UTC(2028, 3, 18);
+    const daysPost = Math.floor((todayUTC - lastHalvingUTC) / msDay);
+    const window500Closed = daysPost > 500;
+    const window500EndUTC = lastHalvingUTC + 500 * msDay;
+    const nextBuyUTC = nextHalvingUTC - 500 * msDay;
+    const daysToNextBuy = Math.floor((nextBuyUTC - todayUTC) / msDay);
+    const daysToNextHalving = Math.floor((nextHalvingUTC - todayUTC) / msDay);
+    const buyZoneOpen = daysToNextBuy <= 0;
+
+    let phase = "Pre-Halving";
+    let phaseTone = "neutral";
+    let phaseDesc = "Before the April 2024 halving.";
+    if (daysPost >= 0 && daysPost <= 200) {
+      phase = "Early Expansion";
+      phaseTone = "accum";
+      phaseDesc = "Fresh post-halving supply shock. Reflexive upside is usually strongest here.";
+    } else if (daysPost <= 350) {
+      phase = "Mid Expansion";
+      phaseTone = "accum";
+      phaseDesc = "Historically the strongest upside zone of the cycle. Expansion is still active.";
+    } else if (daysPost <= 500) {
+      phase = "Distribution";
+      phaseTone = "dist";
+      phaseDesc = "Late-cycle historically. Upside may persist, but risk management matters more.";
+    } else if (daysPost > 500) {
+      phase = "Past Peak / Wait";
+      phaseTone = "wait";
+      phaseDesc = "The +500 day window is closed. Monitor for the next accumulation gate.";
+    }
+
+    const posInWindow = Math.max(0, Math.min(100, ((daysPost + 500) / 1000) * 100));
+    const fmtDate = (utc) => new Date(utc).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+
+    return {
+      btcPrice: net.priceUsd,
+      daysPost,
+      phase,
+      phaseTone,
+      phaseDesc,
+      posInWindow,
+      lastHalvingLabel: fmtDate(lastHalvingUTC),
+      window500Label: fmtDate(window500EndUTC),
+      window500Closed,
+      nextHalvingLabel: fmtDate(nextHalvingUTC),
+      nextBuyLabel: fmtDate(nextBuyUTC),
+      daysToNextBuy,
+      daysToNextHalving,
+      buyZoneOpen,
+    };
+  }, [net.priceUsd]);
 
   useEffect(() => {
     let alive = true;
@@ -406,9 +461,81 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </div>
         </section>
 
+        <section className={`bm-card bm-card--wide bm-card--accent-cycle bm-phase-${halving.phaseTone}`}>
+          <div className="bm-card-h bm-card-h--split">
+            <div>
+              <span className="bm-idx">04</span>
+              <h2>BTC 500-DAY HALVING CYCLE</h2>
+            </div>
+            <span className={`bm-phase-chip bm-phase-chip--${halving.phaseTone}`}>{halving.phase}</span>
+          </div>
+          <div className="bm-cycle-kpis">
+            <div className="bm-cycle-kpi">
+              <div className="bm-cycle-label">BTC PRICE</div>
+              <div className="bm-cycle-value bm-cycle-value--gold">{halving.btcPrice == null ? "—" : fmtUsd(halving.btcPrice)}</div>
+            </div>
+            <div className="bm-cycle-kpi">
+              <div className="bm-cycle-label">DAYS POST-HALVING</div>
+              <div className={`bm-cycle-value bm-phase-text--${halving.phaseTone}`}>{halving.daysPost}</div>
+              <div className="bm-cycle-sub">of 500-day window</div>
+            </div>
+            <div className="bm-cycle-kpi bm-cycle-kpi--phase">
+              <div className="bm-cycle-label">PHASE</div>
+              <div className={`bm-cycle-phase bm-phase-text--${halving.phaseTone}`}>{halving.phase}</div>
+            </div>
+          </div>
+          <div className="bm-cycle-timeline">
+            <div className="bm-cycle-scale">
+              <span>-500D BUY ZONE</span>
+              <span>HALVING APR 2024</span>
+              <span>+500D PEAK</span>
+            </div>
+            <div className="bm-cycle-track">
+              <div className="bm-cycle-zone bm-cycle-zone--accum" />
+              <div className="bm-cycle-zone bm-cycle-zone--expand" />
+              <div className="bm-cycle-zone bm-cycle-zone--dist" />
+              <div className="bm-cycle-halving-mark" />
+              <div className={`bm-cycle-now bm-phase-now--${halving.phaseTone}`} style={{ left: `${halving.posInWindow}%` }} />
+            </div>
+            <div className="bm-cycle-legend">
+              <span className="bm-cycle-legend-accum">Accumulate</span>
+              <span className="bm-cycle-legend-expand">Expand</span>
+              <span className="bm-cycle-legend-dist">Distribute</span>
+            </div>
+            <div className="bm-cycle-desc">{halving.phaseDesc}</div>
+          </div>
+          <div className="bm-cycle-grid">
+            <div className="bm-cycle-stat bm-cycle-stat--gold">
+              <div className="bm-cycle-stat-label">LAST HALVING</div>
+              <div className="bm-cycle-stat-value">{halving.lastHalvingLabel}</div>
+            </div>
+            <div className={`bm-cycle-stat ${halving.window500Closed ? "bm-cycle-stat--neutral" : "bm-cycle-stat--amber"}`}>
+              <div className="bm-cycle-stat-label">+500D WINDOW</div>
+              <div className="bm-cycle-stat-value">{halving.window500Label}{halving.window500Closed ? " ✓" : ""}</div>
+            </div>
+            <div className={`bm-cycle-stat ${halving.buyZoneOpen ? "bm-cycle-stat--green" : "bm-cycle-stat--purple"}`}>
+              <div className="bm-cycle-stat-label">{halving.buyZoneOpen ? "BUY ZONE" : "NEXT BUY ZONE"}</div>
+              <div className="bm-cycle-stat-value">{halving.buyZoneOpen ? `OPEN (${Math.abs(halving.daysToNextBuy)}D IN)` : `IN ${halving.daysToNextBuy}D`}</div>
+            </div>
+            <div className="bm-cycle-stat bm-cycle-stat--purple">
+              <div className="bm-cycle-stat-label">NEXT HALVING (EST.)</div>
+              <div className="bm-cycle-stat-value">~{halving.nextHalvingLabel}</div>
+              <div className="bm-cycle-sub">in {halving.daysToNextHalving} days</div>
+            </div>
+            <div className={`bm-cycle-stat ${halving.buyZoneOpen ? "bm-cycle-stat--green" : "bm-cycle-stat--purple"} bm-cycle-stat--wide`}>
+              <div className="bm-cycle-stat-label">NEXT BUY WINDOW (EST.)</div>
+              <div className="bm-cycle-stat-value">~{halving.nextBuyLabel}</div>
+              <div className="bm-cycle-sub">{halving.buyZoneOpen ? "Open now" : `in ${halving.daysToNextBuy} days`}</div>
+            </div>
+          </div>
+          <p className="bm-note">
+            Pattern fit to 3 historical cycles, not a protocol rule. Macro, regulation, ETF flows, and liquidity still matter. Use this as a timing framework, not a mechanical trigger.
+          </p>
+        </section>
+
         <section className="bm-card bm-card--wide bm-card--accent-gold">
           <div className="bm-card-h">
-            <span className="bm-idx">04</span>
+            <span className="bm-idx">05</span>
             <h2>THE CITADEL PROTOCOL (SECURITY)</h2>
           </div>
           <div className="bm-steps">

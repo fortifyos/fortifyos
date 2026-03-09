@@ -7385,10 +7385,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           </div>
         </div>
 
-        <div style={{ marginTop: 12 }}>
-          <MacroSignalsMod latest={latest} visible={!settings?.visibleModules || settings.visibleModules.includes('macro')} t={t} fredMacro={macro || fredMacro} />
-        </div>
-
         <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.6s both' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
             <div>
