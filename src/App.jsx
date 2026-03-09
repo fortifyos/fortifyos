@@ -7364,14 +7364,14 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 0' }}>
-        <div style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
+          <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
             <Shield size={14} style={{ color: t.accent }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
           </div>
-          <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>RADAR</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>RADAR</span>
+          <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
             <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
             </button>
@@ -7439,7 +7439,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               </div>
               <div style={{ marginTop: 8, fontSize: 16, color: t.textPrimary, fontWeight: 600 }}>{warHeadline}</div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(120px, 1fr))', gap: 8, minWidth: 'min(100%, 420px)', flex: '1 1 320px' }}>
+            <div className="radar-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(120px, 1fr))', gap: 8, minWidth: 'min(100%, 420px)', flex: '1 1 320px' }}>
               <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
                 <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Best Posture</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: posture === 'ATTACK' ? t.accent : posture === 'WAIT' ? t.warn : t.danger, fontFamily: "'JetBrains Mono', monospace" }}>{posture}</div>
@@ -7455,12 +7455,13 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 1.1fr) minmax(260px, 0.9fr)', gap: 12 }}>
+          <div className="radar-war-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 1.1fr) minmax(260px, 0.9fr)', gap: 12 }}>
             <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
               <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Choose the Pressure to Study</div>
               <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
                 {warPressures.map((item) => (
                   <button
+                    className="radar-pressure-btn"
                     key={item.key}
                     onClick={() => setWarFocus(item.key)}
                     style={{
@@ -7557,7 +7558,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           </div>
 
           {schoolTab === 'learn' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 0.9fr) minmax(280px, 1.1fr)', gap: 12 }}>
+            <div className="radar-school-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 0.9fr) minmax(280px, 1.1fr)', gap: 12 }}>
               <div style={{ display: 'grid', gap: 8 }}>
                 {schoolSignals.map((item) => (
                   <button
@@ -7600,7 +7601,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           )}
 
           {schoolTab === 'simulate' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.05fr) minmax(260px, 0.95fr)', gap: 12 }}>
+            <div className="radar-sim-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.05fr) minmax(260px, 0.95fr)', gap: 12 }}>
               <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: 14 }}>
                   <div>
@@ -7657,7 +7658,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                           onChange={(event) => setSimState((prev) => ({ ...prev, [control.key]: Number(event.target.value) }))}
                           style={{ width: '100%', accentColor: control.accent }}
                         />
-                        <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        <div className="radar-sim-scale" style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                           <span>{control.min}{control.unit}</span>
                           <span>{Math.round(pct)}% of simulation range</span>
                           <span>{control.max}{control.unit}</span>
@@ -7671,7 +7672,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               <div style={{ display: 'grid', gap: 12 }}>
                 <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
                   <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>Simulated Outcome</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(120px, 1fr))', gap: 8 }}>
+                  <div className="radar-sim-summary" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(120px, 1fr))', gap: 8 }}>
                     {simSummary.map((item) => (
                       <div key={item.label} style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.panel : t.surface }}>
                         <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</div>
@@ -7782,11 +7783,11 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             </div>
             <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '4px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR HISTORY</button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 0.95fr) minmax(280px, 1.05fr)', gap: 12 }}>
+          <div className="radar-debrief-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 0.95fr) minmax(280px, 1.05fr)', gap: 12 }}>
             <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
               <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Why It Matters Now</div>
               <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, marginBottom: 12 }}>{debriefGuidance}</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
+              <div className="radar-debrief-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Latest</div>
                   <div style={{ fontSize: 16, color: latestEntry?.status === 'LOCKED' ? t.accent : latestEntry?.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700 }}>{latestEntry?.status || '—'}</div>
@@ -8312,6 +8313,10 @@ function FortifyOSApp() {
   .fo-main { padding-left: 10px; padding-right: 10px; }
 }
 
+.fo-pagebar-left,
+.fo-pagebar-right,
+.fo-pagebar-title { min-width: 0; }
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -8420,6 +8425,40 @@ function FortifyOSApp() {
           .stage-labels span { font-size: 14px !important; }
           .fo-main { overflow-x: hidden !important; }
           .dashboard-main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+          .fo-pagebar {
+            height: auto !important;
+            min-height: 48px;
+            display: grid !important;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 8px;
+            padding: 8px 12px !important;
+          }
+          .fo-pagebar-title {
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+            font-size: 13px !important;
+            line-height: 1.2;
+            letter-spacing: 0.08em !important;
+          }
+          .radar-summary-grid,
+          .radar-sim-summary,
+          .radar-debrief-stats {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+          .radar-pressure-btn {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+          .radar-sim-scale {
+            flex-wrap: wrap;
+          }
+        }
+        @media (max-width: 900px) {
+          .radar-war-grid,
+          .radar-school-grid,
+          .radar-sim-grid,
+          .radar-debrief-grid {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
         }
       `}</style>
       {/* Global CRT scanline overlay — applied to all pages */}

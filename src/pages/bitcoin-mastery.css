@@ -86,6 +86,7 @@
   letter-spacing: .12em;
   text-transform: uppercase;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .bm-menu-shell{
@@ -186,13 +187,16 @@
 @media (max-width: 780px){
   .bm-topbar{
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
   }
 
   .bm-topbar-title{
     font-size: 11px;
     letter-spacing: .08em;
+    white-space: normal;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
   }
 
   .bm-topbar-status{
@@ -909,6 +913,12 @@
   .bm-topbar-status{ font-size: 10px; padding-top: 12px; }
   .bm-menu-pop{ min-width: 190px; }
   .bm-title{ letter-spacing: .16em; }
+  .bm-brand span{ font-size: 12px; }
+  .bm-card-h--split > div{ flex-wrap: wrap; }
+  .bm-phase-chip{ align-self: flex-start; }
+  .bm-cycle-scale,
+  .bm-cycle-legend{ font-size: 9px; }
+  .bm-cycle-sub{ overflow-wrap: anywhere; }
 }
 
 @media (prefers-reduced-motion: reduce){
