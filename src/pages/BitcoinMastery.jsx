@@ -25,6 +25,49 @@ async function fetchJson(url, timeoutMs = 7000) {
   }
 }
 
+async function fetchText(url, timeoutMs = 7000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, headers: { accept: "text/plain, application/json" } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+function parseBlockHeight(payload) {
+  if (typeof payload === "number" && Number.isFinite(payload)) return payload;
+  if (typeof payload === "string") {
+    const parsed = Number(payload.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  if (payload && typeof payload === "object") {
+    const nested = payload.height ?? payload.block_height ?? payload.data?.height ?? payload.data?.block_height;
+    return parseBlockHeight(nested);
+  }
+  return null;
+}
+
+async function fetchFirstBlockHeight() {
+  const sources = [
+    async () => parseBlockHeight(await fetchJson("https://mempool.space/api/blocks/tip/height")),
+    async () => parseBlockHeight(await fetchText("https://mempool.space/api/blocks/tip/height")),
+    async () => parseBlockHeight(await fetchText("https://blockstream.info/api/blocks/tip/height")),
+    async () => parseBlockHeight(await fetchText("https://blockchain.info/q/getblockcount")),
+  ];
+
+  for (const load of sources) {
+    try {
+      const height = await load();
+      if (Number.isFinite(height)) return height;
+    } catch {}
+  }
+
+  return null;
+}
+
 function estimateIssuedSupply(blockHeight) {
   const height = Number.isFinite(blockHeight) ? Math.max(0, Math.floor(blockHeight)) : null;
   if (height == null) return null;
@@ -60,12 +103,7 @@ async function loadNetworkState() {
   } catch {}
 
   try {
-    const tip = await fetchJson("https://mempool.space/api/blocks/tip/height");
-    if (typeof tip === "number") {
-      blockHeight = tip;
-    } else if (typeof tip?.height === "number") {
-      blockHeight = tip.height;
-    }
+    blockHeight = await fetchFirstBlockHeight();
     if (typeof blockHeight === "number") {
       supplyMined = estimateIssuedSupply(blockHeight);
       supplyPct = (supplyMined / HARD_CAP_BTC) * 100;
