@@ -50,6 +50,44 @@ function parseBlockHeight(payload) {
   return null;
 }
 
+function parsePriceUsd(payload) {
+  if (typeof payload === "number" && Number.isFinite(payload)) return payload;
+  if (typeof payload === "string") {
+    const parsed = Number(payload.replace(/[$,]/g, "").trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  if (payload && typeof payload === "object") {
+    const nested =
+      payload?.bitcoin?.usd ??
+      payload?.data?.amount ??
+      payload?.result?.price ??
+      payload?.USD?.last ??
+      payload?.last ??
+      payload?.price ??
+      payload?.amount;
+    return parsePriceUsd(nested);
+  }
+  return null;
+}
+
+async function fetchFirstPriceUsd() {
+  const sources = [
+    async () => parsePriceUsd(await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")),
+    async () => parsePriceUsd(await fetchJson("https://api.coinbase.com/v2/prices/BTC-USD/spot")),
+    async () => parsePriceUsd(await fetchJson("https://api.kraken.com/0/public/Ticker?pair=XBTUSD")),
+    async () => parsePriceUsd(await fetchJson("https://api.gemini.com/v1/pubticker/btcusd")),
+  ];
+
+  for (const load of sources) {
+    try {
+      const price = await load();
+      if (Number.isFinite(price)) return price;
+    } catch {}
+  }
+
+  return null;
+}
+
 async function fetchFirstBlockHeight() {
   const sources = [
     async () => parseBlockHeight(await fetchJson("https://mempool.space/api/blocks/tip/height")),
@@ -95,9 +133,8 @@ async function loadNetworkState() {
   let chainOk = false;
 
   try {
-    const cg = await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
-    if (typeof cg?.bitcoin?.usd === "number") {
-      priceUsd = cg.bitcoin.usd;
+    priceUsd = await fetchFirstPriceUsd();
+    if (typeof priceUsd === "number") {
       priceOk = true;
     }
   } catch {}
