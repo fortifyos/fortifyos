@@ -57,6 +57,12 @@ function parsePriceUsd(payload) {
     return Number.isFinite(parsed) ? parsed : null;
   }
   if (payload && typeof payload === "object") {
+    if (payload?.result && typeof payload.result === "object") {
+      const firstMarket = Object.values(payload.result)[0];
+      const krakenLast = firstMarket?.c?.[0] ?? firstMarket?.p?.[0] ?? firstMarket?.a?.[0];
+      const parsedKraken = parsePriceUsd(krakenLast);
+      if (Number.isFinite(parsedKraken)) return parsedKraken;
+    }
     const nested =
       payload?.bitcoin?.usd ??
       payload?.data?.amount ??
@@ -70,12 +76,34 @@ function parsePriceUsd(payload) {
   return null;
 }
 
+async function fetchYahooPriceUsd() {
+  const target = "https://query2.finance.yahoo.com/v8/finance/chart/BTC-USD?range=2d&interval=1d";
+  const proxies = [
+    (url) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const payload = await fetchJson(proxy(target));
+      const result = payload?.chart?.result?.[0];
+      const metaPrice = Number(result?.meta?.regularMarketPrice);
+      if (Number.isFinite(metaPrice)) return metaPrice;
+      const closes = (result?.indicators?.quote?.[0]?.close ?? []).filter((value) => Number.isFinite(value));
+      if (closes.length) return closes[closes.length - 1];
+    } catch {}
+  }
+
+  return null;
+}
+
 async function fetchFirstPriceUsd() {
   const sources = [
     async () => parsePriceUsd(await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")),
     async () => parsePriceUsd(await fetchJson("https://api.coinbase.com/v2/prices/BTC-USD/spot")),
     async () => parsePriceUsd(await fetchJson("https://api.kraken.com/0/public/Ticker?pair=XBTUSD")),
     async () => parsePriceUsd(await fetchJson("https://api.gemini.com/v1/pubticker/btcusd")),
+    async () => fetchYahooPriceUsd(),
   ];
 
   for (const load of sources) {
@@ -135,9 +163,22 @@ async function loadNetworkState() {
   try {
     priceUsd = await fetchFirstPriceUsd();
     if (typeof priceUsd === "number") {
+      try {
+        localStorage.setItem("fortify_btc_price_usd", String(priceUsd));
+      } catch {}
       priceOk = true;
     }
   } catch {}
+
+  if (!priceOk) {
+    try {
+      const cachedPrice = Number(localStorage.getItem("fortify_btc_price_usd"));
+      if (Number.isFinite(cachedPrice) && cachedPrice > 0) {
+        priceUsd = cachedPrice;
+        priceOk = true;
+      }
+    } catch {}
+  }
 
   try {
     blockHeight = await fetchFirstBlockHeight();
