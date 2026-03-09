@@ -37,8 +37,8 @@ const THEMES = {
     crypto: '#FFA733', cryptoDim: '#C67A15', cryptoMuted: '#3D250A',
   },
   light: {
-    void: '#FFFFFF', surface: '#FFFFFF', elevated: '#FFFFFF', input: '#F7F7F7',
-    panel: '#F7F7F7', panel2: '#FFFFFF',
+    void: '#FFFFFF', surface: '#F7F7F7', elevated: '#F7F7F7', input: '#FFFFFF',
+    panel: '#F7F7F7', panel2: '#F7F7F7',
     borderDim: '#CECECE', borderMid: '#B9B9B9', borderBright: '#A8A8A8',
     textPrimary: '#121212', textSecondary: '#2A2A2A', textDim: '#444444', textGhost: '#888888',
     accent: '#1D7A3A', accentBright: '#2A9950', accentDim: '#14572A', accentMuted: '#E6F4EA',
