@@ -48,6 +48,36 @@ async function fetchJSON(url, label = url) {
   }
 }
 
+async function fetchText(url, label = url) {
+  try {
+    const r = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; FortifyOS/1.0; price-updater)',
+        'Accept':     'text/plain,text/csv,*/*',
+      },
+    });
+    if (!r.ok) { console.warn(`  ${label}: HTTP ${r.status}`); return null; }
+    return await r.text();
+  } catch (e) {
+    console.warn(`  ${label}: ${e.message}`);
+    return null;
+  }
+}
+
+async function fetchFredSeriesCSV(seriesId) {
+  const csv = await fetchText(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(seriesId)}`, `FRED ${seriesId}`);
+  if (!csv) return null;
+  const rows = csv.trim().split('\n').slice(1).map((line) => line.split(','));
+  for (let i = rows.length - 1; i >= 0; i -= 1) {
+    const [date, rawValue] = rows[i];
+    const value = Number(rawValue);
+    if (date && Number.isFinite(value)) {
+      return { date, value, change: null };
+    }
+  }
+  return null;
+}
+
 // ── Finnhub ────────────────────────────────────────────────────────────────
 // GET /quote returns: { c: price, d: change$, dp: change%, h, l, o, pc }
 
@@ -226,11 +256,24 @@ async function main() {
   console.log('\nFetching stocks & commodities...');
   const stocks = await fetchStocks();
 
+  console.log('\nFetching Fed Funds...');
+  const fedFundsRate = await fetchFredSeriesCSV('DFF');
+  if (fedFundsRate) {
+    console.log(`  DFF     : ${fedFundsRate.value}% (${fedFundsRate.date})`);
+  }
+
   console.log('\nFetching news headlines...');
   const newsItems = await fetchNews();
 
   const output = {
     ...existing,
+    ...(fedFundsRate ? {
+      fedFundsRate,
+      source: {
+        ...(existing.source || {}),
+        fedFundsRate: 'FRED CSV: DFF',
+      },
+    } : {}),
     ...crypto,
     ...stocks,
     asOf: today(),

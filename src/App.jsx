@@ -7036,27 +7036,22 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const walcl = _fm?.walcl?.value ?? null;
   const tga = _fm?.tga?.value ?? null;
   const rrp = _fm?.rrp?.value ?? null;
+  const fedFundsRate = _fm?.fedFundsRate?.value ?? latest?.macro?.fedFundsRate ?? null;
   const yieldCurve = _fm?.yieldCurve10Y2Y?.value ?? _fm?.yieldCurve?.value ?? latest?.macro?.yieldCurve10Y2Y ?? latest?.macro?.yieldCurve ?? null;
   const fedWatchCut = latest?.macro?.fedWatchCut ?? _fm?.fedWatchCut?.value ?? null;
   const netLiq = walcl != null && tga != null && rrp != null ? walcl - tga - rrp : null;
   const netLiqColor = netLiq == null ? t.textDim : netLiq > 5000 ? t.accent : netLiq > 3000 ? t.warn : t.danger;
   const clampRadar = (value, min, max) => Math.max(min, Math.min(max, value));
-  const walclTightness = walcl == null ? null : clampRadar(((6800000 - walcl) / 1200000) * 35, 0, 35);
-  const tgaTightness = tga == null ? null : clampRadar((tga / 1200000) * 25, 0, 25);
-  const rrpTightness = rrp == null ? null : clampRadar((rrp / 2000) * 15, 0, 15);
-  const curveTightness = yieldCurve == null ? null : clampRadar((((0 - yieldCurve) + 0.5) / 1.5) * 25, 0, 25);
-  const heatParts = [walclTightness, tgaTightness, rrpTightness, curveTightness].filter(v => v != null);
-  const heatMax = (walclTightness != null ? 35 : 0) + (tgaTightness != null ? 25 : 0) + (rrpTightness != null ? 15 : 0) + (curveTightness != null ? 25 : 0);
-  const heatPct = heatParts.length ? (heatParts.reduce((sum, v) => sum + v, 0) / heatMax) * 100 : null;
-  const rateLevel = heatPct == null ? null : (heatPct / 100) * 5;
+  const rateLevel = fedFundsRate == null ? null : clampRadar(fedFundsRate, 0, 5);
+  const heatPct = rateLevel == null ? null : (rateLevel / 5) * 100;
   const reactorIntensity = rateLevel == null ? 0.45 : 0.2 + (1 - rateLevel / 5) * 0.8;
-  const reactorColor = rateLevel == null ? t.textDim : rateLevel < 1.75 ? '#00fbff' : rateLevel < 3.25 ? '#f0b429' : '#f85149';
-  const reactorStatus = rateLevel == null ? 'DATA PENDING' : rateLevel < 1.75 ? 'ACCOMMODATIVE' : rateLevel < 3.25 ? 'NEUTRAL' : 'TIGHTENING';
+  const reactorColor = rateLevel == null ? t.textDim : rateLevel < 1.5 ? '#00fbff' : rateLevel < 3.5 ? '#f0b429' : '#f85149';
+  const reactorStatus = rateLevel == null ? 'DATA PENDING' : rateLevel < 1.5 ? 'ACCOMMODATIVE' : rateLevel < 3.5 ? 'NEUTRAL' : 'TIGHTENING';
   const reactorDesc = rateLevel == null
-    ? 'Awaiting FRED liquidity series.'
-    : rateLevel < 1.75 ? 'Liquidity loose — supportive of risk assets'
-      : rateLevel < 3.25 ? 'Mixed regime — monitor balance sheet and Treasury drain'
-        : 'Liquidity restrictive — policy drag remains elevated';
+    ? 'Awaiting FRED Fed Funds series.'
+    : rateLevel < 1.5 ? 'Zero bound — Asset bubble risk rising'
+      : rateLevel < 3.5 ? 'Neutral territory — Balanced stance'
+        : 'Tightening cycle — Liquidity contracting';
   const liquidityPulseDur = netLiq == null ? '2.8s' : netLiq > 5500000 ? '1.8s' : netLiq > 4500000 ? '2.4s' : '3.2s';
   const liquidityFlowOpacity = netLiq == null ? 0.45 : clampRadar(((netLiq - 3500000) / 2500000), 0.25, 1);
   const pumpLabel = netLiq == null ? 'LIVE NET LIQUIDITY' : netLiq > 5500000 ? 'LIQUIDITY FLOOD' : netLiq > 4500000 ? 'LIQUIDITY OPEN' : 'LIQUIDITY TIGHT';
@@ -7238,13 +7233,13 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             </div>
             <div className="control-panel" style={{ borderTop: `1px solid ${isDark ? '#2d333b' : '#c8cbc5'}`, paddingTop: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: t.textGhost, marginBottom: 6, fontFamily: "'JetBrains Mono', monospace" }}>
-                <span>0% Easy</span><span>Rate Lever</span><span>5%+ Tight</span>
+                <span>0% Easy</span><span>5%+ Tight</span>
               </div>
               <div style={{ height: 10, borderRadius: 999, border: `1px solid ${t.borderDim}`, background: isDark ? '#1a1a1a' : '#d7dad4', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${heatPct == null ? 0 : heatPct}%`, background: reactorColor, boxShadow: `0 0 12px ${reactorColor}55`, transition: 'width 1.2s ease' }} />
               </div>
               <p style={{ textAlign: 'center', fontSize: 11, color: reactorColor, fontFamily: "'JetBrains Mono', monospace", margin: '6px 0 0' }}>
-                FRED Liquidity Heat: {rateLevel == null ? '—' : `${rateLevel.toFixed(2)} / 5.00`}
+                Fed Funds Rate: {rateLevel == null ? '—' : `${rateLevel.toFixed(2)}%`}
               </p>
             </div>
           </div>

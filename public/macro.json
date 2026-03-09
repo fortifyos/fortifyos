@@ -15,6 +15,11 @@
     "value": 0.496,
     "change": null
   },
+  "fedFundsRate": {
+    "date": "2026-02-26",
+    "value": 3.64,
+    "change": null
+  },
   "silver": {
     "value": 84.84,
     "change": 0.627
@@ -28,6 +33,7 @@
     "walcl": "FRED API: WALCL",
     "tga": "FRED API: WDTGAL",
     "rrp": "FRED API: RRPONTSYD",
+    "fedFundsRate": "FRED CSV: DFF",
     "silver": "FRED API: SLVPRUSD",
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
