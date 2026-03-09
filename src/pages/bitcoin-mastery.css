@@ -98,7 +98,16 @@
 }
 
 .bm-root.bm-light .bm-menu-pop{
-  background: rgba(247,243,234,.98);
+  background: rgba(247,247,247,.98);
+}
+
+.bm-root.bm-light .bm-menu-item:hover{
+  background: rgba(0,0,0,.04);
+}
+
+.bm-root.bm-light .bm-menu-item.is-current,
+.bm-root.bm-light .bm-menu-item:disabled{
+  background: rgba(0,0,0,.05);
 }
 
 .bm-menu-item{
