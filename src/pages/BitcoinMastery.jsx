@@ -8,6 +8,7 @@ const HARD_CAP_BTC = 21_000_000;
 function fmtUsd(n) {
   return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
+
 function fmtNum(n, maxFrac = 0) {
   return n.toLocaleString(undefined, { maximumFractionDigits: maxFrac });
 }
@@ -16,51 +17,12 @@ async function fetchJson(url, timeoutMs = 7000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { "accept": "application/json" } });
+    const res = await fetch(url, { signal: ctrl.signal, headers: { accept: "application/json" } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } finally {
     clearTimeout(t);
   }
-}
-
-async function loadNetworkState() {
-  let priceUsd = null;
-  let blockHeight = null;
-  let supplyMined = null;
-  let supplyPct = null;
-  let priceOk = false;
-  let chainOk = false;
-
-  // Price (CoinGecko)
-  try {
-    const cg = await fetchJson(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
-    );
-    if (typeof cg?.bitcoin?.usd === "number") {
-      priceUsd = cg.bitcoin.usd;
-      priceOk = true;
-    }
-  } catch { /* ignore */ }
-
-  // Chain status (mempool)
-  try {
-    const tip = await fetchJson("https://mempool.space/api/blocks/tip/height");
-    if (typeof tip === "number") {
-      blockHeight = tip;
-    } else if (typeof tip?.height === "number") {
-      blockHeight = tip.height;
-    }
-    if (typeof blockHeight === "number") {
-      supplyMined = estimateIssuedSupply(blockHeight);
-      supplyPct = (supplyMined / HARD_CAP_BTC) * 100;
-      chainOk = true;
-    }
-  } catch { /* ignore */ }
-
-  const status = priceOk && chainOk ? "LIVE" : (priceOk || chainOk ? "DEGRADED" : "OFFLINE");
-
-  return { priceUsd, blockHeight, supplyMined, supplyPct, status, lastUpdatedIso: new Date().toISOString() };
 }
 
 function estimateIssuedSupply(blockHeight) {
@@ -79,6 +41,40 @@ function estimateIssuedSupply(blockHeight) {
   }
 
   return Math.min(HARD_CAP_BTC, issued);
+}
+
+async function loadNetworkState() {
+  let priceUsd = null;
+  let blockHeight = null;
+  let supplyMined = null;
+  let supplyPct = null;
+  let priceOk = false;
+  let chainOk = false;
+
+  try {
+    const cg = await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+    if (typeof cg?.bitcoin?.usd === "number") {
+      priceUsd = cg.bitcoin.usd;
+      priceOk = true;
+    }
+  } catch {}
+
+  try {
+    const tip = await fetchJson("https://mempool.space/api/blocks/tip/height");
+    if (typeof tip === "number") {
+      blockHeight = tip;
+    } else if (typeof tip?.height === "number") {
+      blockHeight = tip.height;
+    }
+    if (typeof blockHeight === "number") {
+      supplyMined = estimateIssuedSupply(blockHeight);
+      supplyPct = (supplyMined / HARD_CAP_BTC) * 100;
+      chainOk = true;
+    }
+  } catch {}
+
+  const status = priceOk && chainOk ? "LIVE" : (priceOk || chainOk ? "DEGRADED" : "OFFLINE");
+  return { priceUsd, blockHeight, supplyMined, supplyPct, status, lastUpdatedIso: new Date().toISOString() };
 }
 
 function usePulseOverlay() {
@@ -125,21 +121,20 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     };
     tick();
     const id = window.setInterval(tick, 30_000);
-    return () => { alive = false; window.clearInterval(id); };
+    return () => {
+      alive = false;
+      window.clearInterval(id);
+    };
   }, [pulse]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
-
     const onPointerDown = (event) => {
-      if (!menuRef.current?.contains(event.target)) {
-        setMenuOpen(false);
-      }
+      if (!menuRef.current?.contains(event.target)) setMenuOpen(false);
     };
     const onKeyDown = (event) => {
       if (event.key === "Escape") setMenuOpen(false);
     };
-
     document.addEventListener("mousedown", onPointerDown);
     document.addEventListener("touchstart", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -158,6 +153,8 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     { key: "docs", label: "Docs", icon: FileText, onClick: onDocs },
     { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
   ];
+
+  const lastSync = net.lastUpdatedIso == null ? "—" : new Date(net.lastUpdatedIso).toLocaleString();
 
   return (
     <div className={`bm-root ${isDark ? "bm-dark" : "bm-light"}`}>
@@ -185,7 +182,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
                     className={`bm-menu-item${item.current ? " is-current" : ""}`}
                     onClick={() => {
                       setMenuOpen(false);
-                      if (item.onClick) item.onClick();
+                      item.onClick?.();
                     }}
                     disabled={!item.onClick}
                   >
@@ -198,9 +195,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           )}
         </div>
         <div className="bm-topbar-actions">
-          <div className="bm-topbar-status">
-            {net.lastUpdatedIso == null ? "Awaiting network sync" : `Last sync ${new Date(net.lastUpdatedIso).toLocaleTimeString()}`}
-          </div>
+          <div className="bm-topbar-status">LAST SYNC {lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}</div>
           <button
             className="bm-theme-btn"
             type="button"
@@ -230,21 +225,19 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </span>
           <span className="bm-divider">|</span>
           <span className="bm-kv">
-            <span className="bm-k">CAP</span>
+            <span className="bm-k">HARD CAP</span>
             <span className="bm-v">21,000,000</span>
           </span>
         </div>
 
         <h1 className="bm-title">THE SOVEREIGN STANDARD</h1>
-        <p className="bm-subtitle">1 BTC = 1/21,000,000 of Future Global Wealth</p>
+        <p className="bm-subtitle">1 BTC = 1 / 21,000,000 OF FUTURE GLOBAL WEALTH</p>
 
         <div className="bm-scarcity">
           <div className="bm-scarcity-row">
             <span className="bm-scarcity-label">
               NETWORK SCARCITY:
-              <span className="bm-scarcity-val">
-                {net.supplyPct == null ? " — " : ` ${scarcity.pct.toFixed(2)}% `}
-              </span>
+              <span className="bm-scarcity-val">{net.supplyPct == null ? " — " : ` ${scarcity.pct.toFixed(2)}% `}</span>
               MINED
             </span>
             <span className="bm-scarcity-meta">
@@ -252,26 +245,9 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
               {scarcity.remaining == null ? "" : `  |  REMAINING: ${fmtNum(scarcity.remaining, 4)}`}
             </span>
           </div>
-          <div className="bm-scarcity-stats">
-            <div className="bm-scarcity-stat">
-              <span className="bm-scarcity-stat-label">Mined Supply</span>
-              <strong className="bm-scarcity-stat-value">{scarcity.mined == null ? "—" : fmtNum(scarcity.mined, 4)}</strong>
-            </div>
-            <div className="bm-scarcity-stat">
-              <span className="bm-scarcity-stat-label">Remaining Supply</span>
-              <strong className="bm-scarcity-stat-value">{scarcity.remaining == null ? "—" : fmtNum(scarcity.remaining, 4)}</strong>
-            </div>
-            <div className="bm-scarcity-stat">
-              <span className="bm-scarcity-stat-label">Issued %</span>
-              <strong className="bm-scarcity-stat-value">{net.supplyPct == null ? "—" : `${scarcity.pct.toFixed(4)}%`}</strong>
-            </div>
-          </div>
           <div className="bm-progress" aria-label="Scarcity progress">
             <div className="bm-progress-track">
-              <div
-                className="bm-progress-fill"
-                style={{ width: `${Math.max(0, Math.min(100, scarcity.pct))}%` }}
-              />
+              <div className="bm-progress-fill" style={{ width: `${Math.max(0, Math.min(100, scarcity.pct))}%` }} />
             </div>
           </div>
         </div>
@@ -279,13 +255,18 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
 
       <main className="bm-grid">
         <section className="bm-card bm-card--accent-gold">
-          <div className="bm-card-h">
-            <span className="bm-idx">01</span>
-            <h2>GENESIS & SCARCITY</h2>
+          <div className="bm-card-h bm-card-h--split">
+            <div>
+              <span className="bm-idx">01</span>
+              <h2>MACRO NARRATIVE: THE GENESIS</h2>
+            </div>
+            <span className="bm-proto-status">
+              PROTOCOL STATUS: <span className="bm-green">OPERATIONAL</span>
+            </span>
           </div>
           <p>
-            Born from the 2008 financial crisis. Bitcoin is a decentralized protocol of trust with an
-            immutable ledger and a hard cap enforced by global consensus.
+            Bitcoin is a decentralized protocol of trust with an immutable ledger and a hard cap
+            enforced by global consensus. Born from the 2008 financial crisis to provide network scarcity.
           </p>
           <div className="bm-tags">
             <span className="bm-tag">HARD CAP: 21,000,000</span>
@@ -297,35 +278,60 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
         <section className="bm-card bm-card--accent-green">
           <div className="bm-card-h">
             <span className="bm-idx">02</span>
-            <h2>BITCOIN VS. LEAKY ASSETS</h2>
+            <h2>COMPARATIVE ANALYSIS: LEAKY ASSETS</h2>
           </div>
-          <div className="bm-compare">
-            <div className="bm-compare-row">
-              <span className="bm-compare-k">Maintenance</span>
-              <span className="bm-compare-v">BTC: 0%  •  Real Estate: entropy + repairs  •  Gold: storage</span>
-            </div>
-            <div className="bm-compare-row">
-              <span className="bm-compare-k">Portability</span>
-              <span className="bm-compare-v">BTC: instant/global  •  Real Estate: immobile  •  Gold: heavy</span>
-            </div>
-            <div className="bm-compare-row">
-              <span className="bm-compare-k">Confiscation Risk</span>
-              <span className="bm-compare-v">BTC (self-custody): minimal  •  Real Estate: high  •  Gold: moderate</span>
-            </div>
+          <div className="bm-table-wrap">
+            <table className="bm-table">
+              <thead>
+                <tr>
+                  <th>ATTRIBUTE</th>
+                  <th>BITCOIN</th>
+                  <th>REAL ESTATE</th>
+                  <th>GOLD</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Maintenance</td>
+                  <td className="bm-td--btc">0% Repairs</td>
+                  <td className="bm-td--risk">Entropy</td>
+                  <td>Storage</td>
+                </tr>
+                <tr>
+                  <td>Portability</td>
+                  <td className="bm-td--btc">Instant / Global</td>
+                  <td className="bm-td--risk">Immobile</td>
+                  <td>Heavy</td>
+                </tr>
+                <tr>
+                  <td>Confiscation</td>
+                  <td className="bm-td--btc">Minimal (Self-Custody)</td>
+                  <td className="bm-td--risk">High Risk</td>
+                  <td>Moderate</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <p className="bm-note">
             Educational framework only. FortifyOS presents risk disclosures — past performance does not guarantee future results.
           </p>
         </section>
 
-        <section className="bm-card bm-card--wide bm-card--accent-orange">
+        <section className="bm-card bm-card--wide bm-card--accent-amber">
           <div className="bm-card-h">
             <span className="bm-idx">03</span>
             <h2>THE CONVICTION ENGINE</h2>
           </div>
+          <div className="bm-conviction-level">
+            CURRENT LEVEL: <span className="bm-bracket-val">[ GENERATIONAL OPPORTUNITY ]</span>
+          </div>
+          <div className="bm-conviction-details">
+            <span>HORIZON: Minimum 4-year cycle; ignore short-term volatility.</span>
+            <span>STRATEGY: DCA (Recurring buys aligned to cycle gate).</span>
+          </div>
           <div className="bm-meter" aria-label="Conviction meter">
             <div className="bm-meter-top">
-              <span className="bm-meter-label">CURRENT CONVICTION LEVEL</span>
+              <span className="bm-meter-label">CONVICTION LEVEL</span>
               <span className="bm-meter-val">{convictionPct}%</span>
             </div>
             <div className="bm-meter-track">
@@ -358,20 +364,20 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
         <section className="bm-card bm-card--wide bm-card--accent-gold">
           <div className="bm-card-h">
             <span className="bm-idx">04</span>
-            <h2>THE CITADEL PROTOCOL</h2>
+            <h2>THE CITADEL PROTOCOL (SECURITY)</h2>
           </div>
           <div className="bm-steps">
             <div className="bm-step">
-              <div className="bm-step-h">I. EXIT COUNTERPARTIES</div>
-              <div className="bm-step-p">Not your keys, not your coins. Withdraw to self-custody.</div>
+              <div className="bm-step-h"><span className="bm-step-num">1.</span> EXIT COUNTERPARTIES</div>
+              <div className="bm-step-p">Withdraw to self-custody immediately. Not your keys, not your coins.</div>
             </div>
             <div className="bm-step">
-              <div className="bm-step-h">II. HARDWARE VAULT</div>
+              <div className="bm-step-h"><span className="bm-step-num">2.</span> HARDWARE VAULT</div>
               <div className="bm-step-p">Use a Bitcoin-focused hardware wallet; keep seed offline.</div>
             </div>
             <div className="bm-step">
-              <div className="bm-step-h">III. VERIFY INDEPENDENTLY</div>
-              <div className="bm-step-p">Run a node (or use your own verifier endpoint) to confirm the chain.</div>
+              <div className="bm-step-h"><span className="bm-step-num">3.</span> VERIFY INDEPENDENTLY</div>
+              <div className="bm-step-p">Run a node to confirm the chain.</div>
             </div>
           </div>
           <div className="bm-actions">
@@ -393,10 +399,9 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       </main>
 
       <footer className="bm-footer">
-        <span className="bm-foot-left">FORTIFYOS // BTC MASTER PAGE</span>
-        <span className="bm-foot-right">
-          Last update: {net.lastUpdatedIso == null ? "—" : new Date(net.lastUpdatedIso).toLocaleString()}
-        </span>
+        <span className="bm-foot-status">SYSTEM STATUS: EDUCATIONAL FRAMEWORK ONLY.</span>
+        <span>LEGAL: FortifyOS is not providing investment, tax, or legal advice.</span>
+        <span>LAST SYNC: {lastSync}</span>
       </footer>
     </div>
   );
