@@ -4,6 +4,7 @@
 
 :root {
   color-scheme: dark;
+  --fortify-mono: "JetBrains Mono", "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
   --app-bg: #050505;
   --app-text: #f4f4f5;
   --panel-bg: #111113;
@@ -33,6 +34,22 @@
 }
 
 * { -webkit-tap-highlight-color: transparent; }
+
+html,
+body,
+#root {
+  font-family: var(--fortify-mono);
+}
+
+button,
+input,
+select,
+textarea,
+option,
+pre,
+code {
+  font-family: var(--fortify-mono);
+}
 
 .app-shell { background: var(--app-bg); color: var(--app-text); }
 .app-panel { background: var(--panel-bg); border: 1px solid var(--panel-border); }
@@ -66,7 +83,7 @@
   background:#0A0A0A;
   padding:12px 14px;
   margin:0 0 12px 0;
-  font-family:'JetBrains Mono',monospace;
+  font-family:var(--fortify-mono);
   font-size:11px;
 }
 .intel-anim{animation:intelFade .35s ease-out both}
@@ -163,7 +180,7 @@
 
 .assistant .chat{height:420px;overflow:auto;border:1px solid #1f2a35;background:#0b0d10;border-radius:10px;padding:10px}
 .msg{margin:0 0 10px 0}
-.msg pre{margin:0;white-space:pre-wrap;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px;line-height:1.35}
+.msg pre{margin:0;white-space:pre-wrap;font-family:var(--fortify-mono);font-size:12px;line-height:1.35}
 .msg.user pre{color:#e8edf2}
 .msg.assistant pre{color:#9fe7c6}
 .quickRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -218,7 +235,7 @@
 
 /* Quick Menu Styles (Dashboard Nav) */
 .dash-menu-pop {
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--fortify-mono) !important;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -265,7 +282,7 @@
   font-weight: 700;
   color: #FFA733;
   text-shadow: 0 0 10px rgba(255,167,51,0.5);
-  font-family: system-ui;
+  font-family: var(--fortify-mono);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,4 +324,3 @@
 .dash-menu-toggle {
   border-radius: 8px !important;
 }
-
