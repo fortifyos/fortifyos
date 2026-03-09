@@ -6524,7 +6524,7 @@ const CAT_COLORS = {
   Income: '#3eff8b',
   Uncategorized: '#888',
 };
-function TransactionsMod({ latest, visible, t }) {
+function TransactionsMod({ latest, visible, t, onImport }) {
   const [showAll, setShowAll] = useState(false);
   const txns = latest?._recentTxns || [];
   const meta = latest?._meta || {};
@@ -6535,7 +6535,13 @@ function TransactionsMod({ latest, visible, t }) {
     return (
       <Card title="Transactions" visible={visible} delay={280} t={t}>
         <div style={{ color: t.textDim, fontSize: 14, padding: '18px 0', textAlign: 'center' }}>
-          No transactions — sync a bank statement via <span style={{ color: t.accent }}>Import</span>
+          No transactions — sync a bank statement via{" "}
+          <button
+            onClick={onImport}
+            style={{ background: "none", border: "none", padding: 0, color: t.accent, cursor: "pointer", font: "inherit", fontWeight: 700 }}
+          >
+            Import
+          </button>
         </div>
       </Card>
     );
@@ -6816,7 +6822,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         )}
 
         {/* Row 5 — Review + Coverage: historical lookup and protection check */}
-        <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} />
+        <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} onImport={() => setSyncOpen(true)} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
 
       </div>
