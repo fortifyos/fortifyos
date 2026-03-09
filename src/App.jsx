@@ -8042,11 +8042,12 @@ function FortifyOSApp() {
   return (
     <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; }
         html { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: none; }
-        body { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; }
+        body { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace; }
         #root { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; }
+        button, input, select, textarea, option { font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace; }
         
 /* Responsive layout */
 .fo-main { padding-left: 14px; padding-right: 14px; }
