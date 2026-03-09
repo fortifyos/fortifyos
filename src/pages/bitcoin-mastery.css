@@ -665,20 +665,7 @@
 
 .bm-card--accent-cycle{
   border-color: rgba(var(--bm-green-rgb), .25);
-  border-left: 3px solid var(--bm-border);
-}
-
-.bm-card--accent-cycle.bm-phase-accum{
-  border-left-color: var(--bm-green);
-}
-
-.bm-card--accent-cycle.bm-phase-dist{
-  border-left-color: var(--bm-amber);
-}
-
-.bm-card--accent-cycle.bm-phase-wait,
-.bm-card--accent-cycle.bm-phase-neutral{
-  border-left-color: var(--bm-red);
+  border-left: 3px solid var(--bm-gold);
 }
 
 .bm-phase-chip{
