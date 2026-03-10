@@ -5556,7 +5556,7 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
     <Card title="BTC 500-Day Halving Cycle" visible={visible} delay={240} t={t}>
 
       {/* ── Row 1: key KPIs ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+      <div className="fo-halving-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>BTC Price</div>
           <div style={{ marginTop: 4, fontSize: 14, fontWeight: 700, color: t.crypto }}>{btcPrice ? fmt(btcPrice) : '—'}</div>
@@ -5602,7 +5602,7 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       </div>
 
       {/* ── Row 2: Last cycle window + Next cycle ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
+      <div className="fo-halving-window-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
         <div style={{ borderLeft: `2px solid ${t.crypto}`, paddingLeft: 8 }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Last Halving</div>
           <div style={{ marginTop: 2, fontSize: 15, fontWeight: 700, color: t.textPrimary }}>Apr 20, 2024</div>
@@ -5624,7 +5624,7 @@ function MacroSignalsMod({ latest, visible, t, fredMacro }) {
       </div>
 
       {/* ── Row 3: Next cycle countdown ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div className="fo-halving-next-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: '8px 10px' }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Next Halving (est.)</div>
           <div style={{ marginTop: 4, fontSize: 15, fontWeight: 700, color: t.purple }}>~Apr 18, 2028</div>
@@ -6566,7 +6566,7 @@ function TransactionsMod({ latest, visible, t, onImport }) {
   return (
     <Card title="Transactions" visible={visible} delay={280} t={t}>
       {/* Scan Summary Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
+      <div className="tx-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
         <div style={{ background: t.elevated, padding: '8px 10px', textAlign: 'center' }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Source</div>
           <div style={{ fontSize: 15, color: t.textSecondary, fontWeight: 600, wordBreak: 'break-word' }}>{source}</div>
@@ -6582,7 +6582,7 @@ function TransactionsMod({ latest, visible, t, onImport }) {
       </div>
 
       {/* Income vs Spend */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+      <div className="tx-income-row" style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         <div style={{ flex: 1, background: t.elevated, padding: '7px 10px', borderLeft: `2px solid ${t.accent}` }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Income</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: t.accent, marginTop: 2 }}>{fmt(income)}</div>
@@ -6629,7 +6629,7 @@ function TransactionsMod({ latest, visible, t, onImport }) {
             {displayTxns.map((tx, i) => (
               <div key={i} style={{ padding: '5px 8px', background: i % 2 === 0 ? t.elevated : 'transparent', fontSize: 14 }}>
                 {/* Row 1: date + description + amount */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="tx-row-main" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: t.textGhost, flexShrink: 0, width: 44, fontVariantNumeric: 'tabular-nums', fontSize: 13 }}>{tx.date ? tx.date.slice(5) : '—'}</span>
                   <span style={{ color: t.textSecondary, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</span>
                   <span style={{ flexShrink: 0, fontWeight: 700, color: tx.amount >= 0 ? t.accent : t.danger, textAlign: 'right', fontVariantNumeric: 'tabular-nums', minWidth: 60 }}>
@@ -6719,15 +6719,15 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 12px 0' }}>
-      <div style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
+        <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <AppNavMenu t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} items={navItems} title="Open navigation" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={onHome} title="Return to home">
             <Shield size={14} style={{ color: t.accent }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none', whiteSpace: 'nowrap' }}>FortifyOS</span>
           </div>
         </div>
-        <span className="phase-label" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
-        <div className="dash-actions-shell" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+        <span className="phase-label fo-pagebar-title" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
+        <div className="dash-actions-shell fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
           <button
             onClick={onToggleTheme}
             title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -7923,14 +7923,14 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 0' }}>
-        <div style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
+          <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
             <Shield size={14} style={{ color: t.accent }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.accent, fontWeight: 700, textShadow: isDark ? `0 0 10px ${t.accent}30` : 'none' }}>FortifyOS</span>
           </div>
-          <span style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>SETTINGS</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
+          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>SETTINGS</span>
+          <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
             <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
             </button>
@@ -8450,6 +8450,21 @@ function FortifyOSApp() {
           }
           .radar-sim-scale {
             flex-wrap: wrap;
+          }
+          .tx-summary-grid,
+          .fo-halving-kpi-grid,
+          .fo-halving-window-grid,
+          .fo-halving-next-grid {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+          .tx-income-row,
+          .tx-row-main {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .tx-row-main > span:last-child {
+            min-width: 0 !important;
+            text-align: left !important;
           }
         }
         @media (max-width: 900px) {
