@@ -1654,6 +1654,7 @@ function RefusalOverlay({ enforcement, onRoute }) {
 function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onBitcoin, onSettings, latest }) {
   const [boot, setBoot] = useState(0);
   const [bootComplete, setBootComplete] = useState(false);
+  const [heatStage, setHeatStage] = useState(0);
   const [faqOpen, setFaqOpen] = useState(null);
   const [dailyBurn, setDailyBurn] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1662,8 +1663,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   useEffect(() => {
-    const bootKey = 'fortify_boot_seen_v3';
-    if (sessionStorage.getItem(bootKey) === '1') {
+    const bootKey = 'fortify_boot_seen_day_v4';
+    const todayKey = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem(bootKey) === todayKey) {
       setBoot(8);
       setBootComplete(true);
       return;
@@ -1674,13 +1676,18 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
         if (next === 8) {
           clearInterval(id);
           setTimeout(() => {
-            sessionStorage.setItem(bootKey, '1');
+            localStorage.setItem(bootKey, todayKey);
             setBootComplete(true);
           }, 320);
         }
         return next;
       });
     }, 170);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setHeatStage((prev) => (prev + 1) % 8), 1300);
     return () => clearInterval(id);
   }, []);
 
@@ -1727,6 +1734,14 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     { n: 6, name: 'Freedom', color: accent },
     { n: 7, name: 'Legacy', color: accent },
   ];
+  const stageHeatTone = (index) => {
+    const distance = (index - heatStage + 8) % 8;
+    if (distance === 0) return { border: '#ff0000', bg: 'rgba(255,0,0,0.12)', glow: '0 0 22px rgba(255,0,0,0.24)' };
+    if (distance === 1) return { border: '#ff9900', bg: 'rgba(255,153,0,0.12)', glow: '0 0 16px rgba(255,153,0,0.18)' };
+    if (distance === 2) return { border: '#d4b000', bg: 'rgba(212,176,0,0.10)', glow: '0 0 10px rgba(212,176,0,0.12)' };
+    if (distance >= 5) return { border: '#00d084', bg: 'rgba(0,208,132,0.08)', glow: '0 0 10px rgba(0,208,132,0.10)' };
+    return { border: t.borderDim, bg: t.panel, glow: 'none' };
+  };
 
   const faqs = [
     { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FortifyOS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
@@ -1747,6 +1762,26 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 
   return (
     <div className="fo-home-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
+      {!bootComplete ? (
+        <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+          <div className="fo-panel-corner" style={{ width: 'min(100%, 860px)', border: `1px solid ${t.borderDim}`, background: t.surface, padding: '20px 18px' }}>
+            <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 14 }}>
+              System Boot // Privacy Handshake
+            </div>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? '#050505' : '#efefef', padding: '14px 12px', minHeight: 240 }}>
+              {bootLogs.map((line, idx) => (
+                <div key={line} style={{ ...ln(idx + 1), color: idx === 4 || idx === 6 ? accent : t.textSecondary, marginBottom: 8 }}>
+                  &gt; {line}
+                </div>
+              ))}
+              <div style={{ ...ln(8), color: t.textSecondary }}>
+                &gt; AWAITING OPERATOR INPUT<span style={{ animation: 'blink 1s infinite' }}>_</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
       {/* Nav */}
       <nav className="fo-pagebar" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: t.surface }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1767,17 +1802,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '30px 24px 36px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(300px, 0.88fr) minmax(320px, 1.12fr)', gap: 18, alignItems: 'start' }}>
           <div className="fo-panel-corner" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18, minHeight: 320 }}>
-            <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: 12 }}>System Boot // Privacy Handshake</div>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? '#060606' : '#efefef', padding: 14, minHeight: 206, marginBottom: 14 }}>
-              {bootLogs.map((line, idx) => (
-                <div key={line} style={{ ...ln(idx + 1), color: idx === 4 || idx === 6 ? accent : t.textSecondary, marginBottom: 6 }}>
-                  &gt; {line}
-                </div>
-              ))}
-              <div style={{ ...ln(8), color: t.textSecondary }}>
-                &gt; AWAITING OPERATOR INPUT<span style={{ animation: 'blink 1s infinite' }}>_</span>
-              </div>
-            </div>
+            <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: 12 }}>System Diagnostics</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
               <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
                 <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Stage</div>
@@ -1830,20 +1855,21 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
                 <div style={{ fontSize: 12, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.18em' }}>Sovereignty Blueprint</div>
                 <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Investment logic gated until stage 3</div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4, marginBottom: 10 }}>
+              <div className="fo-blueprint-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4, marginBottom: 10 }}>
                 {stages.map((s) => {
                   const locked = blueprintLocks.includes(s.n);
                   const active = currentStage === s.n;
+                  const heat = stageHeatTone(s.n);
                   return (
-                    <div key={s.n} style={{ position: 'relative', border: `1px solid ${active ? s.color : t.borderDim}`, background: active ? `${s.color}14` : t.panel, padding: '10px 4px', minHeight: 74, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                      <div style={{ fontSize: 11, color: active ? s.color : t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.n}</div>
+                    <div key={s.n} style={{ position: 'relative', border: `1px solid ${active ? s.color : heat.border}`, background: active ? `${s.color}16` : heat.bg, boxShadow: active ? `0 0 24px ${s.color}26` : heat.glow, padding: '10px 4px', minHeight: 90, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', transition: 'all 0.45s ease' }}>
+                      <div style={{ fontSize: 11, color: active ? s.color : heat.border === t.borderDim ? t.textGhost : heat.border, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.n}</div>
                       <div style={{ fontSize: 13, color: active ? t.textPrimary : t.textSecondary, fontWeight: 700, lineHeight: 1.2 }}>{s.name}</div>
                       {locked && <div style={{ fontSize: 10, color: '#ff0000', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Locked</div>}
                     </div>
                   );
                 })}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
+              <div className="fo-blueprint-meta" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
                 <div style={{ borderLeft: `2px solid ${accent}`, paddingLeft: 10 }}>
                   <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Gate</div>
                   <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Stage 3 clears the debt liberation protocol and unlocks investment systems.</div>
@@ -2026,6 +2052,8 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           </div>
         ))}
       </section>
+      </>
+      )}
     </div>
   );
 }
@@ -8491,7 +8519,14 @@ function FortifyOSApp() {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 0);
   }, [snapshots, latest, settings]);
-  const handleClear = useCallback(async () => { setSnapshots([]); setLatest(DEFAULT_SNAPSHOT); setView('landing'); await store.del('fortify-snapshots'); await store.del('fortify-latest'); }, []);
+  const handleClear = useCallback(async () => {
+    setSnapshots([]);
+    setLatest(DEFAULT_SNAPSHOT);
+    setView('landing');
+    try { localStorage.removeItem('fortify_boot_seen_day_v4'); } catch (_) {}
+    await store.del('fortify-snapshots');
+    await store.del('fortify-latest');
+  }, []);
 
   return (
     <div className={`fo-os-shell ${isDark ? 'fo-os-dark' : 'fo-os-light'}`} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
@@ -8555,9 +8590,12 @@ function FortifyOSApp() {
   .fo-topgrid { grid-template-columns: 1fr !important; }
   .fo-modgrid { grid-template-columns: 1fr !important; }
   .fo-command-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .fo-blueprint-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .fo-blueprint-meta { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 520px) {
   .fo-main { padding-left: 10px; padding-right: 10px; }
+  .fo-blueprint-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 
 .fo-pagebar-left,
