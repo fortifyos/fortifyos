@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-03-10T08:00:00-04:00",
+  "timezone": "America/New_York",
+  "regimeMode": "risk_off",
+  "confidence": 0.78,
+  "scores": {
+    "liquidity": -1,
+    "inflationPressure": 2,
+    "growthHealth": -1,
+    "volatilityStress": 2,
+    "dollarPressure": 1,
+    "breadthQuality": -1,
+    "cryptoRiskAppetite": 0
+  },
+  "dominantDrivers": ["inflation_shock", "dollar_strength", "breadth_weakness"],
+  "supportingEvidence": [
+    "VIX elevated above 25 — breadth not confirming index recovery",
+    "Dollar strengthening against key EM currencies — DXY approaching 104",
+    "Oil remains above $87 — inflation pressure floor intact",
+    "Fed pause signals still absent from futures market"
+  ],
+  "watchLevels": [
+    "VIX > 28 — stress escalation trigger",
+    "10Y yield > 4.55% — duration pressure breakout",
+    "WTI > $90 — inflation re-acceleration signal",
+    "DXY > 105 — EM tightening risk threshold"
+  ],
+  "invalidationConditions": [
+    "VIX collapses below 18 while breadth confirms",
+    "Fed signals pivot — futures reprice more than 2 cuts",
+    "Oil drops below $75 on demand destruction data"
+  ]
+}
