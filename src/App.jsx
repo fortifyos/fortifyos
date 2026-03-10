@@ -1813,32 +1813,82 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '30px 24px 36px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gap: 14, alignItems: 'start' }}>
             <div className="fo-panel-corner fo-hero-card" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
-              <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '7px 12px', marginBottom: 18, fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                Daily interest burn <strong style={{ color: t.danger, marginLeft: 8 }}>${dailyBurn.toFixed(2)}</strong>
-              </div>
-              <h1 className="fo-terror-head" style={{ fontFamily: "'Times New Roman', 'Georgia', serif", fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.88, letterSpacing: '-0.06em', marginBottom: 16, color: t.textPrimary }}>
-                Strategic
-                <br />
-                Command
-              </h1>
-              <p style={{ color: t.textSecondary, maxWidth: 620, lineHeight: 1.7, marginBottom: 18 }} className="hero-sub">
-                FORTIFY OS is a financial operating system. It calculates the stage, verifies the gate, redacts the data locally, and enforces the next lawful move before capital leaks into chaos.
-              </p>
-              <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'flex-start', maxWidth: 520, marginBottom: 18 }}>
-                {hasData ? (
-                  <>
-                    <button onClick={onDashboard} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Open Dashboard <ArrowRight size={16} /></button>
-                    <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Sync New Data</button>
-                  </>
-                ) : (
-                  <>
-                    <button onClick={onInitialize} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Initiate Sovereign Transition <ArrowRight size={16} /></button>
-                    <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Field Manual</button>
-                  </>
-                )}
-              </div>
-              <div style={{ fontSize: 11, color: enforcement ? t.danger : '#00ffff', textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'JetBrains Mono', monospace" }}>
-                {enforcement ? `System alert // ${enforcement.code}` : bootComplete ? `System status // nominal` : `System status // booting`}
+              <div className="fo-hero-shell" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)', gap: 18, alignItems: 'stretch' }}>
+                <div>
+                  <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '7px 12px', marginBottom: 18, fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                    Daily interest burn <strong style={{ color: t.danger, marginLeft: 8 }}>${dailyBurn.toFixed(2)}</strong>
+                  </div>
+                  <h1 className="fo-terror-head" style={{ fontFamily: "'Times New Roman', 'Georgia', serif", fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.88, letterSpacing: '-0.06em', marginBottom: 16, color: t.textPrimary }}>
+                    Strategic
+                    <br />
+                    Command
+                  </h1>
+                  <p style={{ color: t.textSecondary, maxWidth: 620, lineHeight: 1.7, marginBottom: 18 }} className="hero-sub">
+                    FORTIFY OS is a financial operating system. It calculates the stage, verifies the gate, redacts the data locally, and enforces the next lawful move before capital leaks into chaos.
+                  </p>
+                  <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'flex-start', maxWidth: 520, marginBottom: 18 }}>
+                    {hasData ? (
+                      <>
+                        <button onClick={onDashboard} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Open Dashboard <ArrowRight size={16} /></button>
+                        <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Sync New Data</button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={onInitialize} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Initiate Sovereign Transition <ArrowRight size={16} /></button>
+                        <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Field Manual</button>
+                      </>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 11, color: enforcement ? t.danger : '#00ffff', textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'JetBrains Mono', monospace" }}>
+                    {enforcement ? `System alert // ${enforcement.code}` : bootComplete ? `System status // nominal` : `System status // booting`}
+                  </div>
+                </div>
+
+                <div className="fo-hero-ops" style={{ display: 'grid', gap: 10, alignContent: 'start' }}>
+                  <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 12 }}>
+                    <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: 10 }}>Live Readout</div>
+                    <div className="fo-hero-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
+                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Current Stage</div>
+                        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1, color: accent, fontWeight: 700 }}>{currentStage}</div>
+                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>{stages[currentStage]?.name || 'Chaos'}</div>
+                      </div>
+                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
+                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Velocity</div>
+                        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1, color: velocity < 0.1 ? t.danger : accent, fontWeight: 700 }}>{velocity.toFixed(2)}</div>
+                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>{velocity < 0.1 ? 'Threat state' : 'Nominal flow'}</div>
+                      </div>
+                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
+                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Runway</div>
+                        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1, color: runway != null && runway < 30 ? t.danger : t.textPrimary, fontWeight: 700 }}>{runway != null ? `${runway}d` : '—'}</div>
+                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>Survival buffer</div>
+                      </div>
+                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
+                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Investment Gate</div>
+                        <div style={{ marginTop: 6, fontSize: 20, lineHeight: 1.1, color: currentStage >= 3 ? '#00ffff' : t.warn, fontWeight: 700 }}>{currentStage >= 3 ? 'Unlocked' : 'Locked'}</div>
+                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>{currentStage >= 3 ? 'Protocols active' : 'Stage 3 required'}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 10, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                      <span>Stage Pressure</span>
+                      <span>{stages[currentStage]?.name || 'Chaos'}</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4 }}>
+                      {stages.map((s) => {
+                        const active = currentStage === s.n;
+                        const passed = currentStage > s.n;
+                        return (
+                          <div key={`hero-stage-${s.n}`} style={{ height: 44, border: `1px solid ${active ? s.color : t.borderDim}`, background: active ? `${s.color}18` : passed ? `${accent}0F` : 'transparent', color: active ? s.color : passed ? t.textPrimary : t.textGhost, display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 700, transition: 'all 0.35s ease' }}>
+                            {s.n}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -8616,6 +8666,7 @@ function FortifyOSApp() {
   .fo-topgrid { grid-template-columns: 1fr !important; }
   .fo-modgrid { grid-template-columns: 1fr !important; }
   .fo-command-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .fo-hero-shell { grid-template-columns: minmax(0, 1fr) !important; }
   .fo-blueprint-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
   .fo-blueprint-meta { grid-template-columns: 1fr !important; }
 }
