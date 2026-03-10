@@ -1663,26 +1663,20 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   useEffect(() => {
-    const bootKey = 'fortify_boot_seen_day_v4';
-    const todayKey = new Date().toISOString().slice(0, 10);
-    if (localStorage.getItem(bootKey) === todayKey) {
-      setBoot(8);
-      setBootComplete(true);
-      return;
-    }
+    setBoot(0);
+    setBootComplete(false);
+    const totalSteps = 10;
+    const stepMs = 1000;
     const id = setInterval(() => {
       setBoot((p) => {
-        const next = p < 8 ? p + 1 : 8;
-        if (next === 8) {
+        const next = p < totalSteps ? p + 1 : totalSteps;
+        if (next === totalSteps) {
           clearInterval(id);
-          setTimeout(() => {
-            localStorage.setItem(bootKey, todayKey);
-            setBootComplete(true);
-          }, 320);
+          setBootComplete(true);
         }
         return next;
       });
-    }, 170);
+    }, stepMs);
     return () => clearInterval(id);
   }, []);
 
@@ -1707,7 +1701,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     return () => clearTimeout(delay);
   }, []);
 
-  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.18s', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' });
+  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.35s', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' });
   const currentStage = calcStage(latest || {});
   const velocity = calcVelocity(latest || {});
   const runway = runwayDaysFromLatest(latest);
@@ -1722,6 +1716,8 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     'BANK FINGERPRINTING SIGNATURES: LOADED',
     'ENFORCEMENT ENGINE: ACTIVE',
     'SAFETY RAILS: IMMUTABLE',
+    'PRIVACY CONTAINMENT FIELD: VERIFIED',
+    'OPERATOR CHANNEL: OPEN',
   ];
 
   const stages = [
@@ -8554,7 +8550,6 @@ function FortifyOSApp() {
     setSnapshots([]);
     setLatest(DEFAULT_SNAPSHOT);
     setView('landing');
-    try { localStorage.removeItem('fortify_boot_seen_day_v4'); } catch (_) {}
     await store.del('fortify-snapshots');
     await store.del('fortify-latest');
   }, []);
