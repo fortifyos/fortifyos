@@ -1265,6 +1265,60 @@ function calcVelocity(latest) {
   return (savings + debtPaid) / income;
 }
 
+function deriveEnforcementState(latest) {
+  const snapshot = latest || {};
+  const stage = calcStage(snapshot);
+  const velocity = calcVelocity(snapshot);
+  const runway = runwayDaysFromLatest(snapshot);
+  const income = snapshot?.budget?.income || snapshot?._meta?.income || 0;
+  const debts = Array.isArray(snapshot?.debts) ? snapshot.debts : [];
+  const hasConsumerDebt = debts.some((d) => (d?.balance || 0) > 0 && !(d?.totalTerms > 0));
+  const hasPositions = (snapshot?.portfolio?.equities?.length || 0) > 0 || (snapshot?.portfolio?.crypto?.length || 0) > 0;
+  const blownLifestyle = (snapshot?.budget?.categories || []).some((c) => c?.name === 'Discretionary' && (c?.budgeted || 0) > 0 && (c?.actual || 0) > (c?.budgeted || 0));
+
+  if (hasConsumerDebt && hasPositions && stage <= 2) {
+    return {
+      code: 'DEBT_LIBERATION_PROTOCOL_ACTIVE',
+      detail: 'STAGE_3_VERIFICATION_FAILED // INVESTMENT_LOGIC_LOCKED',
+      summary: '[SYSTEM HALT] DEBT PRINCIPAL REMAINS UNVERIFIED. STAGE 3 GATE IS LOCKED.',
+      action: 'ROUTE TO DEBT AVALANCHE',
+      priority: 'critical',
+    };
+  }
+
+  if (runway > 0 && runway < 30) {
+    return {
+      code: 'SYSTEM_RUNWAY_CRITICAL',
+      detail: 'SURVIVAL_BUFFER_PROTECTION_ENABLED // NON_ESSENTIAL_OUTFLOW_GATED',
+      summary: '[IMMUTABLE] EMERGENCY FUND IS MEASURED IN SURVIVAL DAYS. CURRENT RUNWAY IS BELOW 30 DAYS.',
+      action: 'RETURN TO FORTRESS WALL',
+      priority: 'danger',
+    };
+  }
+
+  if (income > 0 && velocity < 0.10) {
+    return {
+      code: 'BUDGET_SLASH_ACTIVE',
+      detail: 'VELOCITY_THRESHOLD_FAILED // LIFESTYLE_AUDIT_AUTHORIZED',
+      summary: '[ALERT] FINANCIAL VELOCITY DROPPED BELOW 0.10. BUDGET SLASH PROTOCOL IS NOW ACTIVE.',
+      action: 'EXECUTE BUDGET SLASH',
+      priority: 'warning',
+    };
+  }
+
+  if (blownLifestyle) {
+    return {
+      code: 'NON_ESSENTIAL_OUTFLOW_BLOCKED',
+      detail: 'BUDGET_PERIMETER_BREACHED // DISCRETIONARY_OVERRUN',
+      summary: '[WARNING] LIFESTYLE OUTFLOW EXCEEDED ITS ASSIGNED PERIMETER.',
+      action: 'RETURN TO BUDGET HUD',
+      priority: 'warning',
+    };
+  }
+
+  return null;
+}
+
 function calcSavingsRate(latest) {
   const income = latest?.budget?.income || latest?._meta?.income || 0;
   if (income <= 0) return 0;
@@ -1552,11 +1606,54 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
   );
 }
 
+function RefusalOverlay({ enforcement, onRoute }) {
+  if (!enforcement) return null;
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10002, background: 'rgba(0,0,0,0.92)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'auto' }}>
+      <div style={{ height: 34, background: 'repeating-linear-gradient(45deg, #ff0000, #ff0000 18px, #000000 18px, #000000 36px)' }} />
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 20px' }}>
+        <div style={{ width: 'min(100%, 920px)', border: '1px solid rgba(255,0,0,0.55)', background: 'rgba(5,0,0,0.88)', padding: '22px 20px', boxShadow: '0 0 40px rgba(255,0,0,0.16)' }}>
+          <div style={{ fontSize: 11, letterSpacing: '0.26em', textTransform: 'uppercase', color: '#ff9a9a', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
+            KNOX ENFORCEMENT // IMMUTABLE SAFETY RAIL
+          </div>
+          <div style={{ fontFamily: "'Times New Roman', 'Georgia', serif", fontSize: 'clamp(74px, 15vw, 148px)', fontWeight: 700, lineHeight: 0.78, letterSpacing: '-0.09em', transform: 'scaleX(0.76)', transformOrigin: 'left center', color: '#ff0000', textTransform: 'uppercase', margin: '0 0 22px' }}>
+            Refused
+          </div>
+          <div style={{ display: 'grid', gap: 10, marginBottom: 18 }}>
+            <div style={{ fontSize: 13, color: '#ff6767', textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'JetBrains Mono', monospace" }}>
+              Violation: {enforcement.code}
+            </div>
+            <div style={{ fontSize: 15, color: '#ffd9d9', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
+              {enforcement.detail}
+            </div>
+            <div style={{ fontSize: 16, color: '#f5b4b4', lineHeight: 1.65, maxWidth: 760 }}>
+              {enforcement.summary}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={onRoute}
+              style={{ background: '#ff9900', color: '#000', border: '1px solid #ff9900', padding: '12px 18px', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer' }}
+            >
+              {enforcement.action}
+            </button>
+            <span style={{ fontSize: 11, color: '#ff8080', textTransform: 'uppercase', letterSpacing: '0.18em', fontFamily: "'JetBrains Mono', monospace" }}>
+              Operator override denied
+            </span>
+          </div>
+        </div>
+      </div>
+      <div style={{ height: 34, background: 'repeating-linear-gradient(-45deg, #ff0000, #ff0000 18px, #000000 18px, #000000 36px)' }} />
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
-function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onBitcoin, onSettings }) {
+function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onBitcoin, onSettings, latest }) {
   const [boot, setBoot] = useState(0);
+  const [bootComplete, setBootComplete] = useState(false);
   const [faqOpen, setFaqOpen] = useState(null);
   const [dailyBurn, setDailyBurn] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1564,7 +1661,28 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   const accent = t.accent;
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
-  useEffect(() => { const id = setInterval(() => setBoot(p => p < 4 ? p + 1 : 4), 600); return () => clearInterval(id); }, []);
+  useEffect(() => {
+    const bootKey = 'fortify_boot_seen_v3';
+    if (sessionStorage.getItem(bootKey) === '1') {
+      setBoot(8);
+      setBootComplete(true);
+      return;
+    }
+    const id = setInterval(() => {
+      setBoot((p) => {
+        const next = p < 8 ? p + 1 : 8;
+        if (next === 8) {
+          clearInterval(id);
+          setTimeout(() => {
+            sessionStorage.setItem(bootKey, '1');
+            setBootComplete(true);
+          }, 320);
+        }
+        return next;
+      });
+    }, 170);
+    return () => clearInterval(id);
+  }, []);
 
   // Animated daily burn counter
   useEffect(() => {
@@ -1582,7 +1700,22 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     return () => clearTimeout(delay);
   }, []);
 
-  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.3s', fontFamily: "'JetBrains Mono', monospace", fontSize: 15 });
+  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.18s', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' });
+  const currentStage = calcStage(latest || {});
+  const velocity = calcVelocity(latest || {});
+  const runway = runwayDaysFromLatest(latest);
+  const enforcement = deriveEnforcementState(latest);
+  const blueprintLocks = [3, 4, 5, 6, 7];
+  const bootLogs = [
+    'INITIALIZING FORTIFY_OS KERNEL V3.0',
+    'LOADING KNOX SKILL PACKAGE [24 FILES DETECTED]',
+    'SYNCING CLOUD_LAYER PROTOCOLS',
+    'MOUNTING LOCAL_BROWSER_PROFILE',
+    'SENTINEL REDACTION SYSTEM: ONLINE',
+    'BANK FINGERPRINTING SIGNATURES: LOADED',
+    'ENFORCEMENT ENGINE: ACTIVE',
+    'SAFETY RAILS: IMMUTABLE',
+  ];
 
   const stages = [
     { n: 0, name: 'Chaos', color: t.danger },
@@ -1613,16 +1746,17 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   ];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
+    <div className="fo-home-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
       {/* Nav */}
-      <nav style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${t.borderDim}` }}>
+      <nav className="fo-pagebar" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: t.surface }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
             <Shield size={18} style={{ color: accent }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>FortifyOS</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: accent }}>FortifyOS</span>
           </div>
         </div>
+        <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em' }}>Strategic Command</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
@@ -1630,38 +1764,100 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
         </div>
       </nav>
 
-      {/* ═══ HERO SECTION ═══ */}
-      <section style={{ padding: '60px 24px 48px', textAlign: 'center', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          {/* Pain hook */}
-          <div style={{ display: 'inline-block', background: t.surface, border: `1px solid ${t.borderDim}`, padding: '8px 16px', marginBottom: 32, fontSize: 15, color: t.textSecondary }}>
-            <span><strong style={{ color: t.danger, fontFamily: "'JetBrains Mono', monospace" }}>${dailyBurn.toFixed(2)}</strong> disappeared from your account today in interest alone</span>
+      <section style={{ padding: '30px 24px 36px', borderBottom: `1px solid ${t.borderDim}` }}>
+        <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(300px, 0.88fr) minmax(320px, 1.12fr)', gap: 18, alignItems: 'start' }}>
+          <div className="fo-panel-corner" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18, minHeight: 320 }}>
+            <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: 12 }}>System Boot // Privacy Handshake</div>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? '#060606' : '#efefef', padding: 14, minHeight: 206, marginBottom: 14 }}>
+              {bootLogs.map((line, idx) => (
+                <div key={line} style={{ ...ln(idx + 1), color: idx === 4 || idx === 6 ? accent : t.textSecondary, marginBottom: 6 }}>
+                  &gt; {line}
+                </div>
+              ))}
+              <div style={{ ...ln(8), color: t.textSecondary }}>
+                &gt; AWAITING OPERATOR INPUT<span style={{ animation: 'blink 1s infinite' }}>_</span>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
+                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Stage</div>
+                <div style={{ marginTop: 6, fontSize: 22, color: currentStage >= 3 ? accent : t.warn, fontWeight: 800 }}>{currentStage}</div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
+                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Velocity</div>
+                <div style={{ marginTop: 6, fontSize: 22, color: velocity >= 0.25 ? accent : velocity >= 0.10 ? t.warn : t.danger, fontWeight: 800 }}>{Math.round(velocity * 100)}%</div>
+              </div>
+              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
+                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Runway</div>
+                <div style={{ marginTop: 6, fontSize: 22, color: runway >= 60 ? accent : runway >= 30 ? t.warn : t.danger, fontWeight: 800 }}>{runway || 0}d</div>
+              </div>
+            </div>
           </div>
 
-          {/* Headline */}
-          <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.0, letterSpacing: '-0.03em', marginBottom: 20 }}>
-            <span className="hero-title" style={{ display: 'block' }}>Stop Tracking.</span>
-            <span className="hero-title" style={{ display: 'block', color: accent, textShadow: isDark ? `0 0 10px ${accent}66` : 'none' }}>Start Enforcing.</span>
-          </h1>
+          <div style={{ display: 'grid', gap: 14 }}>
+            <div className="fo-panel-corner fo-hero-card" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+              <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '7px 12px', marginBottom: 18, fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                Daily interest burn <strong style={{ color: t.danger, marginLeft: 8 }}>${dailyBurn.toFixed(2)}</strong>
+              </div>
+              <h1 className="fo-terror-head" style={{ fontFamily: "'Times New Roman', 'Georgia', serif", fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.88, letterSpacing: '-0.06em', marginBottom: 16, color: t.textPrimary }}>
+                Strategic
+                <br />
+                Command
+              </h1>
+              <p style={{ color: t.textSecondary, maxWidth: 620, lineHeight: 1.7, marginBottom: 18 }} className="hero-sub">
+                FortifyOS is a financial operating system. It calculates the stage, verifies the gate, redacts the data locally, and enforces the next lawful move before capital leaks into chaos.
+              </p>
+              <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'flex-start', maxWidth: 520, marginBottom: 18 }}>
+                {hasData ? (
+                  <>
+                    <button onClick={onDashboard} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Open Dashboard <ArrowRight size={16} /></button>
+                    <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Sync New Data</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={onInitialize} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Initiate Sovereign Transition <ArrowRight size={16} /></button>
+                    <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Field Manual</button>
+                  </>
+                )}
+              </div>
+              <div style={{ fontSize: 11, color: enforcement ? t.danger : '#00ffff', textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'JetBrains Mono', monospace" }}>
+                {enforcement ? `System alert // ${enforcement.code}` : bootComplete ? `System status // nominal` : `System status // booting`}
+              </div>
+            </div>
 
-          {/* Sub */}
-          <p style={{ color: t.textSecondary, maxWidth: 520, margin: '0 auto 36px', lineHeight: 1.7 }} className="hero-sub">
-            You know what you should do with your money. You can't execute it. FortifyOS is the financial operating system that enforces discipline — calculates your debt order, blocks premature investments, and tells you exactly what to do every morning.
-          </p>
-
-          {/* CTAs */}
-          <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'center', maxWidth: 460, margin: '0 auto 0' }}>
-            {hasData ? (
-              <>
-                <button onClick={onDashboard} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>OPEN DASHBOARD <ArrowRight size={16} /></button>
-                <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>SYNC NEW DATA</button>
-              </>
-            ) : (
-              <>
-                <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%' }}>GET STARTED <ArrowRight size={16} /></button>
-                <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center' }}>HOW IT WORKS</button>
-              </>
-            )}
+            <div className="fo-panel-corner" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: 12, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.18em' }}>Sovereignty Blueprint</div>
+                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Investment logic gated until stage 3</div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4, marginBottom: 10 }}>
+                {stages.map((s) => {
+                  const locked = blueprintLocks.includes(s.n);
+                  const active = currentStage === s.n;
+                  return (
+                    <div key={s.n} style={{ position: 'relative', border: `1px solid ${active ? s.color : t.borderDim}`, background: active ? `${s.color}14` : t.panel, padding: '10px 4px', minHeight: 74, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div style={{ fontSize: 11, color: active ? s.color : t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.n}</div>
+                      <div style={{ fontSize: 13, color: active ? t.textPrimary : t.textSecondary, fontWeight: 700, lineHeight: 1.2 }}>{s.name}</div>
+                      {locked && <div style={{ fontSize: 10, color: '#ff0000', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Locked</div>}
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
+                <div style={{ borderLeft: `2px solid ${accent}`, paddingLeft: 10 }}>
+                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Gate</div>
+                  <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Stage 3 clears the debt liberation protocol and unlocks investment systems.</div>
+                </div>
+                <div style={{ borderLeft: `2px solid #00ffff`, paddingLeft: 10 }}>
+                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Sentinel</div>
+                  <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Sensitive fields are black-barred before parsing or display.</div>
+                </div>
+                <div style={{ borderLeft: `2px solid ${t.danger}`, paddingLeft: 10 }}>
+                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Authority</div>
+                  <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Never List violations halt the operator before capital can misfire.</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -8051,6 +8247,8 @@ function FortifyOSApp() {
   const [intelRefreshing, setIntelRefreshing] = useState(false);
   const [intelRefreshNonce, setIntelRefreshNonce] = useState(0);
   const t = isDark ? THEMES.dark : THEMES.light;
+  const enforcement = deriveEnforcementState(latest);
+  const enforcementActive = !!enforcement && (view === 'landing' || view === 'macroSentinel' || view === 'bitcoin');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -8296,20 +8494,67 @@ function FortifyOSApp() {
   const handleClear = useCallback(async () => { setSnapshots([]); setLatest(DEFAULT_SNAPSHOT); setView('landing'); await store.del('fortify-snapshots'); await store.del('fortify-latest'); }, []);
 
   return (
-    <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+    <div className={`fo-os-shell ${isDark ? 'fo-os-dark' : 'fo-os-light'}`} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; }
         html { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: none; }
         body { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace; }
         #root { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; }
         button, input, select, textarea, option { font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace; }
+        .fo-os-shell { position: relative; isolation: isolate; }
+        .fo-panel-corner { position: relative; }
+        .fo-panel-corner::before, .fo-panel-corner::after {
+          content: '+'; position: absolute; font-size: 10px; line-height: 1; color: ${isDark ? 'rgba(255,153,0,0.42)' : 'rgba(232,133,15,0.48)'}; font-family: 'JetBrains Mono', monospace;
+        }
+        .fo-panel-corner::before { top: 6px; left: 6px; }
+        .fo-panel-corner::after { right: 6px; bottom: 6px; }
+        .fo-terror-head { font-size: clamp(44px, 8vw, 110px); transform: scaleX(0.82); transform-origin: left center; }
+        .fo-home-shell section { position: relative; }
+        .fo-home-shell section::before {
+          content: ''; position: absolute; left: 12px; top: 12px; bottom: 12px; width: 1px; opacity: 0.38;
+          background: repeating-linear-gradient(to bottom, ${t.borderMid}, ${t.borderMid} 6px, transparent 6px, transparent 14px);
+        }
+        .fo-command-grid { position: relative; }
+        .fo-command-grid::before {
+          content: ''; position: absolute; inset: -12px; pointer-events: none; opacity: ${isDark ? 0.12 : 0.08};
+          background-image:
+            linear-gradient(${isDark ? 'rgba(255,153,0,0.22)' : 'rgba(232,133,15,0.18)'} 1px, transparent 1px),
+            linear-gradient(90deg, ${isDark ? 'rgba(255,153,0,0.18)' : 'rgba(232,133,15,0.14)'} 1px, transparent 1px);
+          background-size: 96px 96px, 96px 96px;
+        }
+        .fo-os-shell .fortify-ref-grid {
+          position: fixed; inset: 0; pointer-events: none; z-index: 9996; opacity: ${isDark ? 0.16 : 0.08};
+          background-image:
+            linear-gradient(${isDark ? 'rgba(255,153,0,0.14)' : 'rgba(232,133,15,0.10)'} 1px, transparent 1px),
+            linear-gradient(90deg, ${isDark ? 'rgba(255,153,0,0.10)' : 'rgba(232,133,15,0.08)'} 1px, transparent 1px),
+            radial-gradient(circle at 50% 50%, ${isDark ? 'rgba(0,255,255,0.05)' : 'rgba(0,180,180,0.04)'} 0, transparent 48%);
+          background-size: 84px 84px, 84px 84px, 100% 100%;
+        }
+        .fo-os-shell .fortify-edge-rulers {
+          position: fixed; inset: 0; pointer-events: none; z-index: 9997;
+        }
+        .fo-os-shell .fortify-edge-rulers::before,
+        .fo-os-shell .fortify-edge-rulers::after {
+          content: ''; position: absolute; top: 0; bottom: 0; width: 18px; opacity: ${isDark ? 0.28 : 0.15};
+          background: repeating-linear-gradient(to bottom, ${isDark ? '#ff9900' : '#d48a00'} 0 2px, transparent 2px 14px);
+        }
+        .fo-os-shell .fortify-edge-rulers::before { left: 0; }
+        .fo-os-shell .fortify-edge-rulers::after { right: 0; }
+        .fo-os-shell .fortify-corner-cross {
+          position: fixed; width: 18px; height: 18px; pointer-events: none; z-index: 9997; opacity: ${isDark ? 0.4 : 0.24};
+          border-top: 1px solid ${isDark ? '#00ffff' : '#0d8f8f'}; border-left: 1px solid ${isDark ? '#00ffff' : '#0d8f8f'};
+        }
+        .fo-os-shell .fortify-corner-cross.tr { right: 8px; top: 8px; transform: rotate(90deg); }
+        .fo-os-shell .fortify-corner-cross.tl { left: 8px; top: 8px; }
+        .fo-os-shell .fortify-corner-cross.br { right: 8px; bottom: 8px; transform: rotate(180deg); }
+        .fo-os-shell .fortify-corner-cross.bl { left: 8px; bottom: 8px; transform: rotate(-90deg); }
         
 /* Responsive layout */
 .fo-main { padding-left: 14px; padding-right: 14px; }
 @media (max-width: 980px) {
   .fo-topgrid { grid-template-columns: 1fr !important; }
   .fo-modgrid { grid-template-columns: 1fr !important; }
+  .fo-command-grid { grid-template-columns: minmax(0, 1fr) !important; }
 }
 @media (max-width: 520px) {
   .fo-main { padding-left: 10px; padding-right: 10px; }
@@ -8442,6 +8687,7 @@ function FortifyOSApp() {
             line-height: 1.2;
             letter-spacing: 0.08em !important;
           }
+          .fo-home-shell section::before { display: none; }
           .radar-summary-grid,
           .radar-sim-summary,
           .radar-debrief-stats {
@@ -8478,16 +8724,23 @@ function FortifyOSApp() {
           }
         }
       `}</style>
+      <div className="fortify-ref-grid" />
+      <div className="fortify-edge-rulers" />
+      <div className="fortify-corner-cross tl" />
+      <div className="fortify-corner-cross tr" />
+      <div className="fortify-corner-cross bl" />
+      <div className="fortify-corner-cross br" />
       {/* Global CRT scanline overlay — applied to all pages */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FortifyOS initializing...</div></div>}
-      {view === 'landing' && <LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
+      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
       {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
       {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} />}
+      {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} />
     </div>
   );
