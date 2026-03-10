@@ -1735,12 +1735,27 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     { n: 7, name: 'Legacy', color: accent },
   ];
   const stageHeatTone = (index) => {
-    const distance = (index - heatStage + 8) % 8;
+    const distance = Math.abs(index - heatStage);
     if (distance === 0) return { border: '#ff0000', bg: 'rgba(255,0,0,0.12)', glow: '0 0 22px rgba(255,0,0,0.24)' };
     if (distance === 1) return { border: '#ff9900', bg: 'rgba(255,153,0,0.12)', glow: '0 0 16px rgba(255,153,0,0.18)' };
-    if (distance === 2) return { border: '#d4b000', bg: 'rgba(212,176,0,0.10)', glow: '0 0 10px rgba(212,176,0,0.12)' };
-    if (distance >= 5) return { border: '#00d084', bg: 'rgba(0,208,132,0.08)', glow: '0 0 10px rgba(0,208,132,0.10)' };
+    if (distance === 2) return { border: '#c989ff', bg: 'rgba(124,58,237,0.10)', glow: '0 0 10px rgba(124,58,237,0.12)' };
     return { border: t.borderDim, bg: t.panel, glow: 'none' };
+  };
+  const blueprintBands = [
+    { key: 'defense', code: '00', label: 'Defense', hue: '#52d7d0' },
+    { key: 'liberation', code: '01', label: 'Liberation', hue: '#4aa9d7' },
+    { key: 'wealth', code: '02', label: 'Wealth', hue: '#9147d7' },
+  ];
+  const blueprintSegments = 24;
+  const segmentTone = (bandIndex, segmentIndex) => {
+    const stagePos = (segmentIndex / (blueprintSegments - 1)) * 7;
+    const dist = Math.abs(stagePos - heatStage);
+    const isDanger = stagePos >= 5.5;
+    const base = blueprintBands[bandIndex].hue;
+    if (dist < 0.45) return { bg: '#ff9900', shadow: '0 0 10px rgba(255,153,0,0.45)', opacity: 1 };
+    if (dist < 0.9) return { bg: base, shadow: `0 0 8px ${base}55`, opacity: 0.95 };
+    if (isDanger) return { bg: 'rgba(124,58,237,0.55)', shadow: 'none', opacity: 0.75 };
+    return { bg: `${base}66`, shadow: 'none', opacity: 0.52 };
   };
 
   const faqs = [
@@ -1800,26 +1815,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       </nav>
 
       <section style={{ padding: '30px 24px 36px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(300px, 0.88fr) minmax(320px, 1.12fr)', gap: 18, alignItems: 'start' }}>
-          <div className="fo-panel-corner" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18, minHeight: 320 }}>
-            <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.24em', marginBottom: 12 }}>System Diagnostics</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Stage</div>
-                <div style={{ marginTop: 6, fontSize: 22, color: currentStage >= 3 ? accent : t.warn, fontWeight: 800 }}>{currentStage}</div>
-              </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Velocity</div>
-                <div style={{ marginTop: 6, fontSize: 22, color: velocity >= 0.25 ? accent : velocity >= 0.10 ? t.warn : t.danger, fontWeight: 800 }}>{Math.round(velocity * 100)}%</div>
-              </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px', background: t.panel }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Runway</div>
-                <div style={{ marginTop: 6, fontSize: 22, color: runway >= 60 ? accent : runway >= 30 ? t.warn : t.danger, fontWeight: 800 }}>{runway || 0}d</div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gap: 14 }}>
+        <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gap: 14, alignItems: 'start' }}>
             <div className="fo-panel-corner fo-hero-card" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
               <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '7px 12px', marginBottom: 18, fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                 Daily interest burn <strong style={{ color: t.danger, marginLeft: 8 }}>${dailyBurn.toFixed(2)}</strong>
@@ -1855,6 +1851,42 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
                 <div style={{ fontSize: 12, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.18em' }}>Sovereignty Blueprint</div>
                 <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Investment logic gated until stage 3</div>
               </div>
+              <div className="fo-blueprint-spectrum" style={{ display: 'grid', gap: 12, marginBottom: 14 }}>
+                {blueprintBands.map((band, bandIndex) => (
+                  <div key={band.key} style={{ display: 'grid', gridTemplateColumns: '68px minmax(0,1fr)', gap: 14, alignItems: 'start' }}>
+                    <div style={{ display: 'grid', gap: 4 }}>
+                      <div style={{ fontSize: 18, color: '#ff5b18', fontWeight: 800, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{band.code}</div>
+                      <div style={{ fontSize: 11, color: '#ff8a4c', textTransform: 'uppercase', letterSpacing: '0.14em' }}>{band.label}</div>
+                    </div>
+                    <div>
+                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${blueprintSegments}, minmax(0, 1fr))`, gap: 4, marginBottom: 6 }}>
+                        {Array.from({ length: blueprintSegments }).map((_, segmentIndex) => {
+                          const tone = segmentTone(bandIndex, segmentIndex);
+                          return (
+                            <div
+                              key={`${band.key}-${segmentIndex}`}
+                              style={{
+                                height: 28,
+                                background: tone.bg,
+                                boxShadow: tone.shadow,
+                                opacity: tone.opacity,
+                                border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                                transition: 'all 0.35s ease',
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                        <span>-100.0</span>
+                        <span>+0</span>
+                        <span>+10.0</span>
+                        <span>+15.0</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
               <div className="fo-blueprint-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4, marginBottom: 10 }}>
                 {stages.map((s) => {
                   const locked = blueprintLocks.includes(s.n);
@@ -1884,7 +1916,6 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
