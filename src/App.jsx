@@ -135,6 +135,28 @@ class AppErrorBoundary extends React.Component {
   }
 }
 
+/* =========================================================================
+   GENERIC APP TOPBAR (Unified Header)
+   ========================================================================= */
+function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onToggleTheme }) {
+  return (
+    <nav className="fo-pagebar" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: t.surface }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
+        <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
+        </div>
+      </div>
+      <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em' }}>FORTIFY OS</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
+          {isDark ? <Sun size={15} /> : <Moon size={15} />}
+        </button>
+      </div>
+    </nav>
+  );
+}
+
 // ═══════════════════════════════════════════════════
 // BANK FINGERPRINT LIBRARY
 // ═══════════════════════════════════════════════════
@@ -1818,20 +1840,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       ) : (
         <>
       {/* Nav */}
-      <nav className="fo-pagebar" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: t.surface }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
-          <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
-          </div>
-        </div>
-        <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em' }}>FORTIFY OS</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-        </div>
-      </nav>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       <section style={{ padding: '30px 24px 36px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gap: 14, alignItems: 'start' }}>
@@ -2321,20 +2330,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <nav style={{ ...sty.nav, display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', alignItems: 'center', gap: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: t.textPrimary }}>FORTIFY OS</span>
-          </div>
-        </div>
-        <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em', textAlign: 'center' }}>FORTIFY OS</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
-            {isDark ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
-        </div>
-      </nav>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       <div style={sty.container}>
         {/* Hero */}
@@ -7099,23 +7095,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   ];
 
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 12px 0' }}>
-      <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
-        <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <AppNavMenu t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} items={navItems} title="Open navigation" />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={onHome} title="Return to home"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
-          </div>
-        </div>
-        <span className="phase-label fo-pagebar-title" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
-        <div className="dash-actions-shell fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
-          <button
-            onClick={onToggleTheme}
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-          >{isDark ? <Sun size={13} /> : <Moon size={13} />}</button>
-        </div>
-      </div>
-    </div>
+    <AppTopbar t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 12px 52px' }}>
       <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 16px' }}>
         {/* Row 1 — greeting (left) + net worth number (right) */}
@@ -7744,20 +7724,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 0' }}>
-        <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
-          <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
-          </div>
-          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
-          <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
-            <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              {isDark ? <Sun size={13} /> : <Moon size={13} />}
-            </button>
-          </div>
-        </div>
-      </div>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       <div className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`} style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 28px', '--primary': confColor }}>
 
@@ -8303,20 +8270,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace" }}>
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 0' }}>
-        <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
-          <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700 }}>FORTIFY OS</span>
-          </div>
-          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
-          <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
-            <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              {isDark ? <Sun size={13} /> : <Moon size={13} />}
-            </button>
-          </div>
-        </div>
-      </div>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       {/* Page content */}
       <main style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 60px' }}>
@@ -8932,7 +8886,7 @@ function FortifyOSApp() {
       {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
-      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} />
