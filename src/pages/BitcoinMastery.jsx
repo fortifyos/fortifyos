@@ -371,7 +371,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
             <span>FORTIFY OS</span>
           </div>
         </div>
-        <div className="bm-topbar-title">SOVEREIGN BITCOIN</div>
+        <div className="bm-topbar-title">FORTIFY OS</div>
         <div className="bm-topbar-actions">
           <div className="bm-topbar-status">LAST SYNC {lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}</div>
           <button

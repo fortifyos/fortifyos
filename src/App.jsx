@@ -1802,7 +1802,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
           </div>
         </div>
-        <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em' }}>Strategic Command</span>
+        <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em' }}>FORTIFY OS</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
@@ -2242,15 +2242,15 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <nav style={sty.nav}>
+      <nav style={{ ...sty.nav, display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', alignItems: 'center', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
             <Shield size={14} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: t.textPrimary }}>FORTIFY OS</span>
-            <span style={{ fontSize: 14, color: t.textDim }}>DOCS</span>
           </div>
         </div>
+        <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em', textAlign: 'center' }}>FORTIFY OS</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
             {isDark ? <Sun size={14} /> : <Moon size={14} />}
@@ -7029,7 +7029,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
             <Shield size={14} style={{ color: t.textPrimary }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
           </div>
         </div>
-        <span className="phase-label fo-pagebar-title" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>{latest.macro?.bennerPhase ? `Benner: ${latest.macro.bennerPhase}` : 'Phase-Aware Execution Active'}</span>
+        <span className="phase-label fo-pagebar-title" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
         <div className="dash-actions-shell fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
           <button
             onClick={onToggleTheme}
@@ -7673,7 +7673,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             <Shield size={14} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
           </div>
-          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>RADAR</span>
+          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
           <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
             <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
@@ -8232,7 +8232,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
             <Shield size={14} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700 }}>FORTIFY OS</span>
           </div>
-          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>SETTINGS</span>
+          <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
           <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, position: 'relative' }}>
             <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, padding: '6px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               {isDark ? <Sun size={13} /> : <Moon size={13} />}
