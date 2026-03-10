@@ -1666,7 +1666,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     setBoot(0);
     setBootComplete(false);
     const totalSteps = 10;
-    const stepMs = 1000;
+    const stepMs = 600;
     const id = setInterval(() => {
       setBoot((p) => {
         const next = p < totalSteps ? p + 1 : totalSteps;
