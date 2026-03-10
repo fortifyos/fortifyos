@@ -368,7 +368,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </div>
           <div className="bm-brand">
             <Shield size={14} />
-            <span>FortifyOS</span>
+            <span>FORTIFY OS</span>
           </div>
         </div>
         <div className="bm-topbar-title">SOVEREIGN BITCOIN</div>
@@ -491,7 +491,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
             </table>
           </div>
           <p className="bm-note">
-            Educational framework only. FortifyOS presents risk disclosures — past performance does not guarantee future results.
+            Educational framework only. FORTIFY OS presents risk disclosures — past performance does not guarantee future results.
           </p>
         </section>
 
@@ -642,7 +642,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
               INITIATE SOVEREIGN TRANSITION
             </button>
             <div className="bm-disclaimer">
-              Educational content only. FortifyOS is not providing investment, tax, or legal advice.
+              Educational content only. FORTIFY OS is not providing investment, tax, or legal advice.
             </div>
           </div>
         </section>
@@ -650,7 +650,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
 
       <footer className="bm-footer">
         <span className="bm-foot-status">SYSTEM STATUS: EDUCATIONAL FRAMEWORK ONLY.</span>
-        <span>LEGAL: FortifyOS is not providing investment, tax, or legal advice.</span>
+        <span>LEGAL: FORTIFY OS is not providing investment, tax, or legal advice.</span>
         <span>LAST SYNC: {lastSync}</span>
       </footer>
     </div>
