@@ -1798,7 +1798,6 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
-            <Shield size={18} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
           </div>
         </div>
@@ -2246,7 +2245,6 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={onBack} title="Return to home">
-            <Shield size={14} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 15, color: t.textPrimary }}>FORTIFY OS</span>
           </div>
         </div>
@@ -7025,8 +7023,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', animation: syncFlash ? 'pulse 0.6s ease' : 'none' }}>
         <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <AppNavMenu t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} items={navItems} title="Open navigation" />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={onHome} title="Return to home">
-            <Shield size={14} style={{ color: t.textPrimary }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={onHome} title="Return to home"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
           </div>
         </div>
         <span className="phase-label fo-pagebar-title" style={{ color: t.textSecondary, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
@@ -7670,7 +7667,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
           <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
-            <Shield size={14} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700, whiteSpace: 'nowrap' }}>FORTIFY OS</span>
           </div>
           <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>
@@ -8229,7 +8225,6 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
         <div className="fo-pagebar" style={{ height: 48, background: t.surface, border: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
           <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
-            <Shield size={14} style={{ color: t.textPrimary }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textPrimary, fontWeight: 700 }}>FORTIFY OS</span>
           </div>
           <span className="fo-pagebar-title" style={{ color: t.textDim, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em', whiteSpace: 'nowrap', textAlign: 'center', flex: 1 }}>FORTIFY OS</span>

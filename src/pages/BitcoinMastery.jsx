@@ -367,7 +367,6 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
             )}
           </div>
           <div className="bm-brand">
-            <Shield size={14} />
             <span>FORTIFY OS</span>
           </div>
         </div>
