@@ -1,26 +1,48 @@
-SESSION: {session_label}
-RUN TIME: {run_time} ET
-DATE: {date}
-REGIME MODE: {regime_mode} (confidence: {confidence_pct}%)
-
-=== MARKET SNAPSHOT ===
-{market_snapshot_table}
+SESSION: {session}
+TIMESTAMP: {timestamp}
+REGIME MODE: {regime_mode}
+CONFIDENCE: {confidence}
 
 === REGIME SCORES (scale: -2 to +2) ===
-Liquidity:           {score_liquidity:+d}
-Inflation Pressure:  {score_inflation_pressure:+d}
-Growth Health:       {score_growth_health:+d}
-Volatility Stress:   {score_volatility_stress:+d}
-Dollar Pressure:     {score_dollar_pressure:+d}
-Breadth Quality:     {score_breadth_quality:+d}
-Crypto Risk Appetite:{score_crypto_risk_appetite:+d}
+{scores_json}
 
-Dominant Drivers: {dominant_drivers}
+=== CURRENT MARKET SNAPSHOT ===
+{market_snapshot_json}
 
-=== PRIOR SESSION CONTEXT ===
-{prior_session_context}
+=== PRIOR CHECKPOINT MARKET DATA ===
+{prior_market_json}
 
-=== UNCERTAINTY FLAGS ===
-{uncertainty_flags}
+=== WHAT CHANGED SINCE LAST CHECKPOINT ===
+{what_changed_json}
 
-Generate the macro narrative JSON for this update. All numeric data in your response must match the snapshot above exactly. Be direct and operator-grade. Return only the JSON object.
+=== SUPPORTING EVIDENCE (rule-derived) ===
+{supporting_evidence_json}
+
+=== WATCH LEVELS (rule-derived) ===
+{watch_levels_json}
+
+---
+
+Your task: Generate the macro intelligence narrative for this checkpoint.
+
+Requirements:
+1. Your headline must be specific to THIS checkpoint's data — not a generic regime label.
+2. Your dominantStory must explain the structural mechanism driving the regime, not just describe price levels.
+3. crossAssetConnections must name the relationships between assets — not isolated observations.
+4. whatChangedSinceLastReport must reference the PRIOR CHECKPOINT DATA above (prior_market_json), not yesterday's close.
+5. operatorPosture must be a concrete directional stance — no hedging phrases.
+6. watchNext must include specific levels or conditions — no generic monitoring language.
+7. confidenceCommentary must address any contradictions in the score data above.
+8. uncertaintyFlags must name the specific conditions that would invalidate the current regime read.
+
+Required output fields:
+- headline
+- dominantStory
+- crossAssetConnections (array of strings)
+- whatChangedSinceLastReport (array of strings)
+- operatorPosture
+- watchNext (array of strings)
+- confidenceCommentary
+- uncertaintyFlags (array of strings)
+
+Return ONLY a valid JSON object with these fields. No markdown. No preamble. No text outside the JSON.
