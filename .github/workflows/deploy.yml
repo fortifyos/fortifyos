@@ -1,0 +1,215 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          corepack pnpm install --frozen-lockfile
+
+      - name: Verify build toolchain
+        run: |
+          corepack pnpm list vite
+          corepack pnpm exec vite --version
+
+      - name: Build public/macro.json (FRED API, non-blocking)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          out_path = Path("public/macro.json")
+          out_path.parent.mkdir(parents=True, exist_ok=True)
+
+          def now_iso():
+              return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+          fallback = {
+              "asOf": now_iso(),
+              "walcl": {"date": None, "value": None, "change": None},
+              "tga": {"date": None, "value": None, "change": None},
+              "rrp": {"date": None, "value": None, "change": None},
+              "silver": {"date": None, "value": None, "change": None},
+              "gold": {"date": None, "value": None, "change": None},
+              "btc": {"value": None, "change": None},
+              "eth": {"value": None, "change": None},
+              "oil": {"value": None, "change": None},
+              "spy": {"value": None, "change": None},
+              "vix": {"value": None, "change": None},
+              "sp500": {"value": None, "change": None},
+              "nasdaq": {"value": None, "change": None},
+              "yieldCurve": None,
+              "source": "fallback",
+              "warning": "FRED unavailable during workflow run"
+          }
+
+          if out_path.exists():
+              try:
+                  fallback = json.loads(out_path.read_text(encoding="utf-8"))
+              except Exception:
+                  pass
+
+          api_key = os.environ.get("FRED_API_KEY", "").strip()
+          endpoint = "https://api.stlouisfed.org/fred/series/observations"
+
+          series_map = {
+              "walcl": "WALCL",
+              "tga": "WDTGAL",
+              "rrp": "RRPONTSYD",
+              "silver": "SLVPRUSD",
+              "gold": "GOLDAMGBD228NLBM",
+          }
+
+          def latest_from_fred(series_id):
+              params = {
+                  "series_id": series_id,
+                  "file_type": "json",
+                  "sort_order": "desc",
+                  "limit": "2",
+              }
+              if api_key:
+                  params["api_key"] = api_key
+              url = endpoint + "?" + urllib.parse.urlencode(params)
+              with urllib.request.urlopen(url, timeout=20) as r:
+                  data = json.loads(r.read().decode("utf-8"))
+              obs = [x for x in data.get("observations", []) if x.get("value") not in (".", None, "")]
+              if not obs:
+                  return {"date": None, "value": None, "change": None}
+              latest = obs[0]
+              prev = obs[1] if len(obs) > 1 else None
+              latest_val = float(latest["value"])
+              prev_val = float(prev["value"]) if prev else None
+              chg = None
+              if prev_val not in (None, 0):
+                  chg = round(((latest_val - prev_val) / abs(prev_val)) * 100.0, 2)
+              return {"date": latest.get("date"), "value": latest_val, "change": chg}
+
+          def yahoo_quote(symbol):
+              url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(symbol)}?range=2d&interval=1d"
+              req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  data = json.loads(r.read().decode("utf-8"))
+              result = ((data.get("chart") or {}).get("result") or [None])[0] or {}
+              meta = result.get("meta") or {}
+              price = meta.get("regularMarketPrice")
+              prev = meta.get("chartPreviousClose") or meta.get("previousClose")
+              try:
+                  price = float(price) if price is not None else None
+              except Exception:
+                  price = None
+              try:
+                  prev = float(prev) if prev is not None else None
+              except Exception:
+                  prev = None
+              chg = None
+              if price is not None and prev not in (None, 0):
+                  chg = round(((price - prev) / abs(prev)) * 100.0, 2)
+              return {"value": price, "change": chg}
+
+          def coingecko_simple():
+              url = (
+                  "https://api.coingecko.com/api/v3/simple/price"
+                  "?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true"
+              )
+              with urllib.request.urlopen(url, timeout=20) as r:
+                  data = json.loads(r.read().decode("utf-8"))
+              btc = data.get("bitcoin") or {}
+              eth = data.get("ethereum") or {}
+              return {
+                  "btc": {"value": btc.get("usd"), "change": btc.get("usd_24h_change")},
+                  "eth": {"value": eth.get("usd"), "change": eth.get("usd_24h_change")},
+              }
+
+          output = {
+              "asOf": now_iso(),
+              "source": {"provider": "FRED"},
+          }
+
+          try:
+              for key, sid in series_map.items():
+                  output[key] = latest_from_fred(sid)
+              # Market pack (server-side fetch, avoids browser CORS/runtime gaps)
+              try:
+                  cg = coingecko_simple()
+                  output["btc"] = cg["btc"]
+                  output["eth"] = cg["eth"]
+              except Exception:
+                  pass
+              for key, symbol in {
+                  "oil": "CL=F",
+                  "spy": "SPY",
+                  "vix": "^VIX",
+                  "sp500": "^GSPC",
+                  "nasdaq": "^IXIC",
+              }.items():
+                  try:
+                      output[key] = yahoo_quote(symbol)
+                  except Exception:
+                      pass
+              output["yieldCurve"] = None
+              out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
+              print("macro.json updated from FRED")
+          except Exception as e:
+              fallback["asOf"] = now_iso()
+              fallback["warning"] = f"FRED fetch failed: {type(e).__name__}"
+              out_path.write_text(json.dumps(fallback, indent=2), encoding="utf-8")
+              print(f"FRED fetch failed, wrote fallback macro.json: {e}")
+          PY
+
+      - name: Update market prices (Finnhub + CoinGecko + Yahoo fallback)
+        env:
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+        run: corepack pnpm run update-prices
+        continue-on-error: true
+
+      - name: Build
+        run: DEPLOY_TARGET=pages corepack pnpm build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    timeout-minutes: 10
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
