@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "market_snapshot",
+  "title": "MarketSnapshot",
+  "description": "Point-in-time cross-asset market data used by the Macro Intel Engine.",
+  "type": "object",
+  "required": ["timestamp", "timezone", "session", "assets"],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp with timezone offset (America/New_York)."
+    },
+    "timezone": {
+      "type": "string",
+      "const": "America/New_York"
+    },
+    "session": {
+      "type": "string",
+      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"]
+    },
+    "assets": {
+      "type": "object",
+      "description": "Map of asset key → AssetData.",
+      "additionalProperties": {
+        "$ref": "#/definitions/AssetData"
+      }
+    }
+  },
+  "definitions": {
+    "AssetData": {
+      "type": "object",
+      "required": ["key", "label", "value", "changeSinceLast", "pctSinceLast", "changeVsClose", "pctVsClose", "impactTag"],
+      "properties": {
+        "key": { "type": "string" },
+        "label": { "type": "string" },
+        "value": { "type": "number" },
+        "changeSinceLast": { "type": "number" },
+        "pctSinceLast": { "type": "number" },
+        "changeVsClose": { "type": "number" },
+        "pctVsClose": { "type": "number" },
+        "impactTag": {
+          "type": "string",
+          "enum": ["risk_positive", "risk_negative", "inflationary", "deflationary", "dollar_stress", "defensive", "neutral"]
+        },
+        "sparkline": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 20
+        }
+      }
+    }
+  }
+}

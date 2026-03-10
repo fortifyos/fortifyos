@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import IntelFreshness from './components/IntelFreshness.jsx';
 import BitcoinMastery from './pages/BitcoinMastery.jsx';
+import MacroIntelPage from './pages/MacroIntelPage.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, BarChart, Bar, CartesianGrid, Legend
@@ -6598,7 +6599,7 @@ function TransactionsMod({ latest, visible, t }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onBitcoin, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onMacroIntel, onBitcoin, onSettings, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -6676,6 +6677,9 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
             {/* ── Primary navigation ── */}
             <button className="fortify-nav-item nav-radar" onClick={() => { setQuickMenuOpen(false); onMacroSentinel && onMacroSentinel(); }}>
               <Eye size={18} className="nav-icon radar-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Radar</span>
+            </button>
+            <button className="fortify-nav-item nav-macro-intel" onClick={() => { setQuickMenuOpen(false); onMacroIntel && onMacroIntel(); }}>
+              <Activity size={18} className="nav-icon" /> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Macro Intel</span>
             </button>
             <button className="fortify-nav-item nav-bitcoin" onClick={() => { setQuickMenuOpen(false); onBitcoin && onBitcoin(); }}>
               <span className="nav-btc-glyph">₿</span> <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>Bitcoin</span>
@@ -7918,9 +7922,10 @@ function FortifyOSApp() {
       {view === 'landing' && <><LandingView t={t} isDark={isDark} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} /><UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} /></>}
       {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} />}
       {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onUpdateDebt={handleUpdateDebt} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} />}
       {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} />}
+      {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} />}
     </div>
   );
 }

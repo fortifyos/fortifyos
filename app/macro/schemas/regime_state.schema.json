@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "regime_state",
+  "title": "RegimeState",
+  "description": "Current macro regime classification and dimensional scores.",
+  "type": "object",
+  "required": ["timestamp", "regimeMode", "confidence", "scores", "dominantDrivers"],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "regimeMode": {
+      "type": "string",
+      "enum": ["risk_on", "risk_off", "mixed", "inflation_shock", "deflation_shock", "liquidity_crisis", "vol_squeeze"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Regime classification confidence as a decimal (0.0–1.0)."
+    },
+    "scores": {
+      "$ref": "#/definitions/RegimeScores"
+    },
+    "dominantDrivers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 5
+    },
+    "uncertaintyFlags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "definitions": {
+    "RegimeScores": {
+      "type": "object",
+      "required": [
+        "liquidity",
+        "inflationPressure",
+        "growthHealth",
+        "volatilityStress",
+        "dollarPressure",
+        "breadthQuality",
+        "cryptoRiskAppetite"
+      ],
+      "properties": {
+        "liquidity":           { "type": "integer", "minimum": -2, "maximum": 2 },
+        "inflationPressure":   { "type": "integer", "minimum": -2, "maximum": 2 },
+        "growthHealth":        { "type": "integer", "minimum": -2, "maximum": 2 },
+        "volatilityStress":    { "type": "integer", "minimum": -2, "maximum": 2 },
+        "dollarPressure":      { "type": "integer", "minimum": -2, "maximum": 2 },
+        "breadthQuality":      { "type": "integer", "minimum": -2, "maximum": 2 },
+        "cryptoRiskAppetite":  { "type": "integer", "minimum": -2, "maximum": 2 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

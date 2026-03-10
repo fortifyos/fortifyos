@@ -1,0 +1,26 @@
+SESSION: {session_label}
+RUN TIME: {run_time} ET
+DATE: {date}
+REGIME MODE: {regime_mode} (confidence: {confidence_pct}%)
+
+=== MARKET SNAPSHOT ===
+{market_snapshot_table}
+
+=== REGIME SCORES (scale: -2 to +2) ===
+Liquidity:           {score_liquidity:+d}
+Inflation Pressure:  {score_inflation_pressure:+d}
+Growth Health:       {score_growth_health:+d}
+Volatility Stress:   {score_volatility_stress:+d}
+Dollar Pressure:     {score_dollar_pressure:+d}
+Breadth Quality:     {score_breadth_quality:+d}
+Crypto Risk Appetite:{score_crypto_risk_appetite:+d}
+
+Dominant Drivers: {dominant_drivers}
+
+=== PRIOR SESSION CONTEXT ===
+{prior_session_context}
+
+=== UNCERTAINTY FLAGS ===
+{uncertainty_flags}
+
+Generate the macro narrative JSON for this update. All numeric data in your response must match the snapshot above exactly. Be direct and operator-grade. Return only the JSON object.

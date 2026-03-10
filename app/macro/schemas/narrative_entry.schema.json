@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "narrative_entry",
+  "title": "NarrativeEntry",
+  "description": "A single timed macro intelligence update entry.",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "runTime",
+    "session",
+    "headline",
+    "dominantStory",
+    "crossAssetConnections",
+    "whatChangedSinceLastReport",
+    "operatorPosture",
+    "watchNext",
+    "confidenceCommentary",
+    "signalScores",
+    "drivers"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "runTime": {
+      "type": "string",
+      "description": "Human-readable run time, e.g. '08:00 AM ET'."
+    },
+    "session": {
+      "type": "string",
+      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"]
+    },
+    "headline": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "dominantStory": {
+      "type": "string"
+    },
+    "crossAssetConnections": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 8
+    },
+    "whatChangedSinceLastReport": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "operatorPosture": {
+      "type": "string"
+    },
+    "watchNext": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "confidenceCommentary": {
+      "type": "string"
+    },
+    "uncertaintyFlags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "signalScores": {
+      "$ref": "regime_state.schema.json#/definitions/RegimeScores"
+    },
+    "drivers": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "archive_index",
+  "title": "ArchiveIndex",
+  "description": "Rolling index of archived macro intel days (archive-index.json).",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/ArchiveEntry"
+  },
+  "definitions": {
+    "ArchiveEntry": {
+      "type": "object",
+      "required": ["date", "regimeMode", "dominantDrivers", "entryCount", "tags"],
+      "properties": {
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "regimeMode": {
+          "type": "string"
+        },
+        "dominantDrivers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 5
+        },
+        "entryCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
