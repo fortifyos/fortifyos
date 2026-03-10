@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, FileText, Home, LayoutGrid, Menu, Moon, Settings, Shield, Sun, X } from "lucide-react";
+import { Eye, FileText, Home, LayoutGrid, Menu, Moon, Settings, Shield, Sun, X, Activity } from "lucide-react";
 import "./bitcoin-mastery.css";
 
 const SATS_PER_BTC = 100_000_000;
@@ -205,7 +205,7 @@ function usePulseOverlay() {
   return { ref, trigger };
 }
 
-export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSentinel, onSettings, onDocs, isDark = true, onToggleTheme }) {
+export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSentinel, onMacroIntel, onSettings, onDocs, isDark = true, onToggleTheme }) {
   const [net, setNet] = useState({
     priceUsd: null,
     blockHeight: null,
@@ -320,6 +320,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     { key: "home", label: "Home", icon: Home, onClick: onHome },
     { key: "dashboard", label: "Dashboard", icon: LayoutGrid, onClick: onDashboard || onBack },
     { key: "radar", label: "Radar", icon: Eye, onClick: onMacroSentinel },
+    { key: "macroIntel", label: "Macro Intel", icon: Activity, onClick: onMacroIntel },
     { key: "bitcoin", label: "Bitcoin", icon: null, onClick: null, current: true },
     { key: "docs", label: "Docs", icon: FileText, onClick: onDocs },
     { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
