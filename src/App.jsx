@@ -1350,6 +1350,85 @@ function interestSavedEstimate(debts) {
   return extraPayments * ((alpha.apr || 0) / 100 / 12);
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// PHASE 6 — ENFORCEMENT ENGINE
+// Multi-mode enforcement state with diagnostic codes and recovery routing
+// ═══════════════════════════════════════════════════════════════════
+const ENFORCEMENT_MODES = {
+  INVESTING_WHILE_IN_DEBT: {
+    code: 'EFR-001',
+    title: 'INVESTING WHILE IN DEBT',
+    reason: 'Passive investment is blocked. High-interest debt is consuming returns before they compound. You cannot outrun interest drag with market returns at this stage.',
+    action: 'ROUTE ALL SURPLUS → DEBT AVALANCHE',
+    severity: 'red',
+  },
+  RUNWAY_CRITICAL: {
+    code: 'EFR-002',
+    title: 'RUNWAY CRITICAL',
+    reason: 'Emergency fund runway is below 7 days. A single financial shock — job loss, medical, vehicle — puts the entire operation at risk. This is not a warning. This is the failure mode.',
+    action: 'FREEZE DISCRETIONARY SPEND → REBUILD RUNWAY',
+    severity: 'red',
+  },
+  BUDGET_SLASH_ACTIVE: {
+    code: 'EFR-003',
+    title: 'BUDGET SLASH ACTIVE',
+    reason: 'Velocity has fallen below 10%. The ratio of income captured versus income leaked has crossed the minimum threshold. Non-essential outflow must be reduced immediately.',
+    action: 'IDENTIFY LEAKAGE → CUT LIFESTYLE CATEGORIES',
+    severity: 'red',
+  },
+  NON_ESSENTIAL_OUTFLOW_BREACH: {
+    code: 'EFR-004',
+    title: 'NON-ESSENTIAL OUTFLOW BREACH',
+    reason: 'One or more budget categories have exceeded their allocated limit this period. Overspend in lifestyle categories directly compresses debt payoff and emergency fund timelines.',
+    action: 'REVIEW OVERSPENT CATEGORIES → ENFORCE LIMITS',
+    severity: 'amber',
+  },
+  NEVER_LIST_VIOLATION: {
+    code: 'EFR-005',
+    title: 'NEVER LIST VIOLATION',
+    reason: 'A transaction matches a category flagged on your Never List. The Never List represents your personal enforcement boundary — items that represent known wealth leaks or values violations.',
+    action: 'AUDIT FLAGGED TRANSACTIONS → REMOVE OR JUSTIFY',
+    severity: 'amber',
+  },
+  DEBT_VELOCITY_WARNING: {
+    code: 'EFR-006',
+    title: 'DEBT VELOCITY DEGRADED',
+    reason: 'Velocity is between 10-20%. Debt payoff timeline is extending. At current trajectory, interest accumulation will outpace principal reduction in this category.',
+    action: 'DIAGNOSIS REQUIRED → FIND LEAK SOURCE',
+    severity: 'amber',
+  },
+};
+
+function deriveEnforcementState(latest) {
+  const modes = [];
+  const vel = calcVelocity(latest);
+  const income = latest?.budget?.income || 0;
+  const debts = Array.isArray(latest?.debts) ? latest.debts : [];
+  const hasDebt = totalDebt(debts) > 2000;
+  const runway = runwayDays(latest?.eFund);
+  const blownCats = (latest?.budget?.categories || []).filter(c => c.budgeted > 0 && c.actual > c.budgeted && c.name !== 'Medical');
+  const hasData = income > 0 || totalDebt(debts) > 0 || (latest?.eFund?.balance || 0) > 0;
+
+  if (!hasData) return modes;
+
+  // EFR-001: Investing while in debt (Stage < 3 and has investable assets)
+  const stage = calcStage(latest);
+  const hasInvestments = ((latest?.portfolio?.equities || []).length > 0 || (latest?.portfolio?.crypto || []).some(c => c.amount > 0)) && stage < 3 && hasDebt;
+  if (hasInvestments) modes.push('INVESTING_WHILE_IN_DEBT');
+
+  // EFR-002: Runway critical
+  if (runway < 7 && runway >= 0) modes.push('RUNWAY_CRITICAL');
+
+  // EFR-003: Budget slash
+  if (income > 0 && vel < 0.10) modes.push('BUDGET_SLASH_ACTIVE');
+  else if (income > 0 && vel < 0.20) modes.push('DEBT_VELOCITY_WARNING');
+
+  // EFR-004: Non-essential outflow breach
+  if (blownCats.length > 0) modes.push('NON_ESSENTIAL_OUTFLOW_BREACH');
+
+  return modes;
+}
+
 // ═══════════════════════════════════════════════════
 // MACRO DATA — Delivered via morning brief, not dashboard
 // ═══════════════════════════════════════════════════
@@ -1849,7 +1928,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
   const sty = {
     nav: { position: 'sticky', top: 0, zIndex: 50, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.surface, borderBottom: `1px solid ${t.borderDim}`, backdropFilter: 'blur(8px)' },
     container: { maxWidth: 780, margin: '0 auto', padding: '24px 24px 80px' },
-    h2: { fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.01em', color: accent, marginTop: 48, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${t.borderDim}` },
+    h2: { fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', color: accent, marginTop: 40, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', gap: 10 },
     h3: { fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary, marginTop: 20, marginBottom: 8 },
     p: { fontSize: 15, color: t.textSecondary, marginBottom: 14, lineHeight: 1.7 },
     code: { background: t.surface, color: accent, padding: '2px 6px', border: `1px solid ${t.borderDim}`, fontSize: 14 },
@@ -1958,18 +2037,28 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       </nav>
 
       <div style={sty.container}>
-        {/* Hero */}
-        <div style={{ padding: '32px 0 24px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 32 }}>
-          <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 28, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: 8 }}>
-            FortifyOS <span style={{ color: accent }}>// Docs</span>
+        {/* Hero — Classified Blueprint Header */}
+        <div style={{ padding: '28px 0 20px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 24, position: 'relative' }}>
+          {/* Classification banner */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: '5px 10px', border: `1px solid ${accent}44`, background: isDark ? `${accent}08` : `${accent}06`, fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: 8, letterSpacing: '0.22em', color: accent, fontWeight: 700, textTransform: 'uppercase' }}>RESTRICTED</span>
+            <span style={{ fontSize: 8, color: t.borderBright }}>//</span>
+            <span style={{ fontSize: 8, letterSpacing: '0.14em', color: t.textGhost, textTransform: 'uppercase' }}>FORTIFYOS SYSTEM BLUEPRINT // CLASSIFIED FIELD MANUAL</span>
+            <span style={{ marginLeft: 'auto', fontSize: 8, letterSpacing: '0.1em', color: t.textGhost }}>v2.3 // KNOX v2.1</span>
+          </div>
+          <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 24, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', marginBottom: 8, lineHeight: 1.1 }}>
+            FORTIFY<span style={{ color: accent }}>OS</span> <span style={{ color: t.borderBright }}>//</span> <span style={{ color: t.textDim }}>FIELD MANUAL</span>
           </h1>
-          <p style={{ color: t.textSecondary, fontSize: 15, maxWidth: 560, lineHeight: 1.7 }}>System field manual. From first sync to financial independence — the architecture, enforcement logic, and methodology behind every calculation.</p>
-          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — FortifyOS v2.2</span>
+          <p style={{ color: t.textSecondary, fontSize: 14, maxWidth: 560, lineHeight: 1.65, fontFamily: "'JetBrains Mono', monospace" }}>Architecture, enforcement logic, and methodology. From first sync to financial sovereignty — every calculation, every gate, every doctrine block documented.</p>
         </div>
 
-        {/* Tiered TOC */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '16px 20px', marginBottom: 32 }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Navigation</div>
+        {/* Tiered TOC — Classified Document Table */}
+        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, marginBottom: 28, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', borderBottom: `1px solid ${t.borderDim}`, background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: 9, letterSpacing: '0.16em', color: accent, fontWeight: 700, textTransform: 'uppercase' }}>TABLE OF CONTENTS // INDEX</span>
+            <span style={{ fontSize: 9, letterSpacing: '0.1em', color: t.textGhost }}>{TOC_TIERS.reduce((s, tier) => s + tier.items.length, 0)} SECTIONS</span>
+          </div>
+          <div style={{ padding: '12px 16px' }}>
           {TOC_TIERS.map(tier => (
             <div key={tier.key} style={{ marginBottom: 4 }}>
               <div style={sty.tierHead(expandedTier[tier.key])} onClick={() => toggleTier(tier.key)}>
@@ -1983,14 +2072,24 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
               ))}
             </div>
           ))}
-        </div>
+          </div>{/* closes padding div */}
+        </div>{/* closes TOC */}
 
         {/* ══════════════════════════════════════════════════════════
            TIER 1: GETTING STARTED
            ══════════════════════════════════════════════════════════ */}
 
+        {/* DOCTRINE HEADER HELPER — renders blueprint-style section header */}
         {/* 01 THE 7 STAGES */}
-        <h2 id="doc-stages" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>01</span> The 7 Stages</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}>
+          <div className="cross" />
+          <hr />
+          <div className="cross" />
+        </div>
+        <h2 id="doc-stages" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 01</span>
+          <span>The 7 Stages</span>
+        </h2>
         <p style={sty.p}>FortifyOS maps your entire financial life onto a <strong style={{ color: t.textPrimary }}>7-stage journey</strong> — from chaos to generational wealth. Your current stage is calculated from live data, not a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
 
         {/* Stage progress visualization */}
@@ -2034,7 +2133,11 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
         </div>
 
         {/* 02 HOW IT WORKS */}
-        <h2 id="doc-how-it-works" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>02</span> How It Works</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-how-it-works" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 02</span>
+          <span>How It Works</span>
+        </h2>
         <p style={sty.p}>FortifyOS runs inside Claude AI through a skill package called <strong style={{ color: t.textPrimary }}>KNOX</strong> (Knowledge Nexus Operations eXecution) — 24 files that give Claude a persistent financial identity, enforcement logic, and data processing capability. Three layers keep your data safe and the system operational.</p>
 
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
@@ -2067,7 +2170,11 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
         </div>
 
         {/* 03 INSTALLATION */}
-        <h2 id="doc-installation" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>03</span> Installation</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-installation" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 03</span>
+          <span>Installation</span>
+        </h2>
         <p style={sty.p}>Three paths depending on your platform. Desktop gives you maximum privacy with local file processing. Mobile gives you daily access on the go.</p>
 
         <h3 style={sty.h3}>Mac (Full Local Workflow) — 30–45 min</h3>
@@ -2205,7 +2312,11 @@ cd %USERPROFILE%\\FORTIFY && claude
            ══════════════════════════════════════════════════════════ */}
 
         {/* 04 THE ENFORCEMENT ENGINE */}
-        <h2 id="doc-enforcement" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>04</span> The Enforcement Engine</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-enforcement" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 04</span>
+          <span>The Enforcement Engine</span>
+        </h2>
         <p style={sty.p}>This is the core differentiator. Other tools track what happened. FortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
 
         <h3 style={sty.h3}>Layer 1: Validation Loop (Pre-Execution)</h3>
@@ -2260,7 +2371,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         <p style={sty.p}>Before Budget Slash fires, KNOX identifies <em>why</em> Velocity is low — because the wrong treatment makes things worse. If minimums are consuming the Wealth allocation, it's a debt restructuring audit. If it's lifestyle overspend, Budget Slash fires. If both, lifestyle gets slashed first, then debt restructure.</p>
 
         {/* 05 BUDGET ALLOCATION */}
-        <h2 id="doc-budget" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>05</span> Budget Allocation</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-budget" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 05</span>
+          <span>Budget Allocation</span>
+        </h2>
         <p style={sty.p}>Each category has a target (budgeted) and actual spend, with utilization percentage calculated live. Every dollar is assigned a job. Unallocated cash is treated as wasted potential.</p>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
           <thead><tr><th style={sty.th}>Category</th><th style={sty.th}>Scope</th><th style={sty.th}>Priority</th></tr></thead>
@@ -2277,7 +2392,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         </div>
 
         {/* 06 EMERGENCY FUND */}
-        <h2 id="doc-efund" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>06</span> Emergency Fund Phases</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-efund" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 06</span>
+          <span>Emergency Fund Phases</span>
+        </h2>
         <p style={sty.p}>The emergency fund is measured in <strong style={{ color: t.textPrimary }}>days of survival</strong>, not raw dollars. This forces evaluation through the lens of time: not "I have $3,000 saved" but "I have 30 days before system failure."</p>
         <div style={sty.formula}><Lbl>Runway Calculation</Lbl>Runway Days = (E-Fund Balance / Monthly Expenses) × 30</div>
 
@@ -2308,7 +2427,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         </div>
 
         {/* 07 SAFETY RAILS */}
-        <h2 id="doc-safety" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>07</span> Safety Rails</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-safety" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 07</span>
+          <span>Safety Rails</span>
+        </h2>
         <p style={sty.p}>Hard safety rails are immutable. They cannot be overridden by the operator, by KNOX, or by any system logic. These exist because financial ruin is not an option.</p>
         {[
           'Never invest emergency fund money',
@@ -2338,7 +2461,11 @@ cd %USERPROFILE%\\FORTIFY && claude
            ══════════════════════════════════════════════════════════ */}
 
         {/* 08 DATA INGESTION */}
-        <h2 id="doc-ingestion" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>08</span> Data Ingestion</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-ingestion" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 08</span>
+          <span>Data Ingestion</span>
+        </h2>
         <p style={sty.p}><strong style={{ color: t.textPrimary }}>Offline-First.</strong> No data leaves the device. The system accepts financial data through three ingestion paths, prioritized by fidelity.</p>
         <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
           {[
@@ -2365,7 +2492,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         </table>
 
         {/* 09 SNAPSHOT SCHEMA */}
-        <h2 id="doc-schema" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>09</span> Snapshot Schema</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-schema" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 09</span>
+          <span>Snapshot Schema</span>
+        </h2>
         <p style={sty.p}>Every sync produces a snapshot — a single JSON object representing your complete financial state at a point in time. Snapshots are stored locally and power the dashboard's trend charts.</p>
         <pre style={sty.pre}>{`{
   "date": "2026-02-21",
@@ -2392,7 +2523,11 @@ cd %USERPROFILE%\\FORTIFY && claude
 }`}</pre>
 
         {/* 10 SENTINEL */}
-        <h2 id="doc-sentinel" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>10</span> Sentinel Redaction</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-sentinel" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 10</span>
+          <span>Sentinel Redaction</span>
+        </h2>
         <p style={sty.p}>All data ingested via CSV or file import passes through the Sentinel filter before processing. This is automatic — you don't have to remember to redact.</p>
         <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
           <thead><tr><th style={sty.th}>Pattern</th><th style={sty.th}>Action</th><th style={sty.th}>Example</th></tr></thead>
@@ -2413,7 +2548,11 @@ cd %USERPROFILE%\\FORTIFY && claude
            ══════════════════════════════════════════════════════════ */}
 
         {/* 11 CORE CALCULATIONS */}
-        <h2 id="doc-calculations" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>11</span> Core Calculations</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-calculations" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 11</span>
+          <span>Core Calculations</span>
+        </h2>
 
         <h3 style={sty.h3}>Net Worth</h3>
         <div style={sty.formula}><Lbl>Net Worth Formula</Lbl>Net Worth = Σ Assets − Σ Liabilities</div>
@@ -2438,7 +2577,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         <div style={sty.formula}><Lbl>Monthly Savings Rate</Lbl>Savings Rate = ((Income − Total Spent) / Income) × 100</div>
 
         {/* 12 MACRO */}
-        <h2 id="doc-macro" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>12</span> Macro Intelligence & Benner Cycle</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-macro" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 12</span>
+          <span>Macro Intelligence &amp; Benner Cycle</span>
+        </h2>
         <div style={sty.note(t.warn)}>
           <strong style={{ color: t.textPrimary }}>Phase Note:</strong> This module provides contextual awareness for long-term positioning. During Defense Mode (Stages 0–3), macro intelligence is informational only — no trade execution is permitted. Investment logic unlocks at Stage 3.
         </div>
@@ -2482,7 +2625,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         </div>
 
         {/* 13 COMMANDS */}
-        <h2 id="doc-commands" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>13</span> Command Reference</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-commands" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 13</span>
+          <span>Command Reference</span>
+        </h2>
         <p style={sty.p}>Slash commands for direct access. Natural language triggers for conversational use. Both produce the same output.</p>
         {[
           ['/cfo', 'Morning Pulse — CFO snapshot + macro intel. Also triggered by "Good morning".'],
@@ -2520,7 +2667,11 @@ cd %USERPROFILE%\\FORTIFY && claude
         ))}
 
         {/* 14 CLAUDE CODE */}
-        <h2 id="doc-claude-code" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>14</span> Desktop Parsing (Claude Code)</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-claude-code" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 14</span>
+          <span>Desktop Parsing (Claude Code)</span>
+        </h2>
         <p style={sty.p}>Screenshots and PDFs can't be parsed in the browser artifact. Claude Code on desktop fills this gap with full filesystem and library access.</p>
 
         <h3 style={sty.h3}>Setup</h3>
@@ -2547,7 +2698,11 @@ cat snapshot.json | pbcopy`}</pre>
            ══════════════════════════════════════════════════════════ */}
 
         {/* 15 COMPETITIVE COMPARISON */}
-        <h2 id="doc-comparison" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>15</span> Competitive Comparison</h2>
+        <div className="blueprint-cross-rule" style={{ color: t.borderMid, marginTop: 32 }}><div className="cross" /><hr /><div className="cross" /></div>
+        <h2 id="doc-comparison" style={{ ...sty.h2, display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, borderBottom: 'none', paddingBottom: 0 }}>
+          <span style={{ fontSize: 9, letterSpacing: '0.2em', color: t.textGhost, fontWeight: 700, borderRight: `1px solid ${t.borderDim}`, paddingRight: 10, marginRight: 2 }}>DOCTRINE BLOCK 15</span>
+          <span>Competitive Comparison</span>
+        </h2>
         <p style={sty.p}>FortifyOS is not a budgeting app, a chatbot, or a dashboard. Here's how it compares to the alternatives.</p>
 
         <h3 style={sty.h3}>vs. Budgeting Apps (Mint, YNAB, Copilot, Monarch)</h3>
@@ -5060,24 +5215,35 @@ function KnoxTerminalMod({ latest, visible, t }) {
 
   return (
     <Card title="Agent KNOX" visible={visible} delay={280} alert={criticalCount > 0} t={t}>
-      <div style={{
+      <div className="knox-console" style={{
+        borderColor: criticalCount > 0 ? t.danger : warnCount > 0 ? t.warn : `${t.accent}55`,
         background: isDarkKnox ? 'rgba(2,10,4,0.97)' : 'rgba(240,247,240,0.97)',
-        border: `1px solid ${t.accent}40`,
-        boxShadow: `0 0 8px ${t.accent}20, inset 0 0 20px ${t.accent}05`,
-        padding: '12px 14px',
+        boxShadow: criticalCount > 0 ? `0 0 12px ${t.danger}20` : `0 0 8px ${t.accent}15`,
         fontFamily: "'JetBrains Mono', monospace",
         fontSize: 12,
       }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, borderBottom: `1px solid ${t.accent}30`, paddingBottom: 8 }}>
-          <span style={{ color: t.accent, fontWeight: 700, letterSpacing: '0.08em', fontSize: 13 }}>
-            {'>'} MISSION BRIEFING
-          </span>
-          <span style={{ color: t.accent, animation: 'pulse 1s step-end infinite', fontSize: 14, lineHeight: 1 }}>▋</span>
-          <span style={{ marginLeft: 'auto', color: t.textGhost, fontSize: 11 }}>
-            {new Date().toLocaleTimeString('en-US', { hour12: false })}
-          </span>
+        {/* Console header bar */}
+        <div className="knox-console-header" style={{
+          borderBottomColor: criticalCount > 0 ? `${t.danger}50` : `${t.accent}30`,
+          background: isDarkKnox ? 'rgba(0,5,2,0.9)' : 'rgba(235,245,235,0.9)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: criticalCount > 0 ? t.danger : t.accent }}>◈</span>
+            <span style={{ color: criticalCount > 0 ? t.danger : t.accent, letterSpacing: '0.14em' }}>
+              AGENT KNOX // MISSION CONSOLE
+            </span>
+            <span style={{ color: t.accent, animation: 'pulse 1s step-end infinite', fontSize: 10, lineHeight: 1 }}>▋</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ color: criticalCount > 0 ? t.danger : warnCount > 0 ? t.warn : t.accent, letterSpacing: '0.1em' }}>
+              {criticalCount > 0 ? `${criticalCount}× CRITICAL` : warnCount > 0 ? `${warnCount}× WARNING` : 'NOMINAL'}
+            </span>
+            <span style={{ color: t.textGhost, letterSpacing: '0.04em' }}>
+              {new Date().toLocaleTimeString('en-US', { hour12: false })}
+            </span>
+          </div>
         </div>
+        <div className="knox-console-body">
 
         {/* Knox Pulse — Primary Directive */}
         {(() => {
@@ -5140,12 +5306,13 @@ function KnoxTerminalMod({ latest, visible, t }) {
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${t.accent}20`, fontSize: 11, color: t.textGhost, display: 'flex', justifyContent: 'space-between' }}>
-          <span>KNOX v2.0 | {criticalCount > 0 ? `${criticalCount} CRITICAL` : warnCount > 0 ? `${warnCount} WARNING` : '0 ALERTS'} | Stage {stage} / 7</span>
-          <span style={{ color: criticalCount > 0 ? t.danger : warnCount > 0 ? t.warn : t.accent }}>
-            {criticalCount > 0 ? '⬤ CRITICAL' : warnCount > 0 ? '⬤ WARNING' : '⬤ NOMINAL'}
+        <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${criticalCount > 0 ? t.danger : t.accent}20`, fontSize: 10, color: t.textGhost, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4 }}>
+          <span style={{ letterSpacing: '0.08em' }}>KNOX v2.1 // STAGE {stage}/7 // ENFORCEMENT ENGINE ACTIVE</span>
+          <span style={{ color: criticalCount > 0 ? t.danger : warnCount > 0 ? t.warn : t.accent, fontWeight: 700, letterSpacing: '0.1em' }}>
+            {criticalCount > 0 ? '◈ CRITICAL THREAT' : warnCount > 0 ? '◈ WARNING ACTIVE' : '◈ SYSTEMS NOMINAL'}
           </span>
         </div>
+        </div>{/* end knox-console-body */}
       </div>
     </Card>
   );
@@ -6739,41 +6906,156 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
       </div>
     </div>
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 12px 52px' }}>
-      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 16px' }}>
-        {/* Row 1 — greeting (left) + net worth number (right) */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: (_nwTotal !== 0 || _tA > 0) ? 10 : 0 }}>
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
-            <div style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-            </div>
-          </div>
-          {(_nwTotal !== 0 || _tA > 0) && (
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: 12, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end' }}>
-                <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
-                {snapshots.length > 1 && <span style={{ fontSize: 13, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
+
+      {/* ═══ COMMAND RAIL — Operational HUD ═══ */}
+      {(() => {
+        const _vel = calcVelocity(latest || {});
+        const _stage = calcStage(latest || {});
+        const _runway = runwayDays(latest?.eFund);
+        const _stageMeta = STAGE_META[_stage] || STAGE_META[0];
+        const _stageColor = _stageMeta.color === 'danger' ? t.danger : _stageMeta.color === 'warn' ? t.warn : t.accent;
+        const _velColor = _vel < 0.10 ? t.danger : _vel < 0.20 ? t.warn : t.accent;
+        const _velClass = _vel < 0.10 ? 'critical' : _vel < 0.20 ? 'warn' : 'good';
+        const _runwayColor = _runway < 7 ? t.danger : _runway < 30 ? t.warn : t.accent;
+        const _directive = nextAction(latest || {});
+        const _dirColor = _directive.color === 'danger' ? t.danger : _directive.color === 'warn' ? t.warn : t.accent;
+        const _hasData = (latest?.budget?.income || 0) > 0 || _tA > 0 || totalDebt(latest?.debts) > 0;
+        const _enforceModes = deriveEnforcementState(latest || {});
+        const _topEnforce = _enforceModes.length > 0 ? ENFORCEMENT_MODES[_enforceModes[0]] : null;
+
+        return (
+          <div style={{ marginBottom: 8 }}>
+            {/* System status header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 12px', background: isDark ? '#060806' : '#f0f7f0', border: `1px solid ${t.borderDim}`, borderBottom: 'none', fontFamily: "'JetBrains Mono', monospace" }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 9, color: t.accent, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>FORTIFY·OS // PILOT HUD</span>
+                <span style={{ fontSize: 9, color: t.borderBright }}>·</span>
+                <span style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  {now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase()}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {ac.red > 0 && <span style={{ fontSize: 8, fontWeight: 700, color: '#000', background: t.danger, padding: '1px 5px', letterSpacing: '0.1em' }}>{ac.red} RED</span>}
+                {ac.amber > 0 && <span style={{ fontSize: 8, fontWeight: 700, color: '#000', background: t.warn, padding: '1px 5px', letterSpacing: '0.1em' }}>{ac.amber} AMBER</span>}
+                {ac.green > 0 && <span style={{ fontSize: 8, fontWeight: 700, color: '#000', background: t.accent, padding: '1px 5px', letterSpacing: '0.1em' }}>{ac.green} NOMINAL</span>}
+                {ac.red === 0 && ac.amber === 0 && ac.green === 0 && <span style={{ fontSize: 8, color: t.textGhost, letterSpacing: '0.1em' }}>AWAITING DATA</span>}
               </div>
             </div>
-          )}
-        </div>
-        {/* Row 2 — full-width equity bar + labels */}
-        {_tA > 0 && (
-          <div>
-            <div style={{ display: 'flex', height: 6, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
-              <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
-              <div style={{ flex: 1, background: `${t.danger}50` }} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, letterSpacing: '0.04em' }}>
-              <span style={{ color: t.accent }}>{_equityPct}% Equity Owned</span>
-              <span style={{ color: t.textGhost }}>Assets {fmt(_tA)} · Debt {fmt(_tL)}</span>
+
+            {/* Command Rail Grid */}
+            <div className="cmd-rail" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, position: 'relative' }}>
+              {/* Corner crosses */}
+              <div className="corner-cross corner-tl" style={{ color: t.borderBright, zIndex: 1 }} />
+              <div className="corner-cross corner-tr" style={{ color: t.borderBright, zIndex: 1 }} />
+              <div className="corner-cross corner-bl" style={{ color: t.borderBright, zIndex: 1 }} />
+              <div className="corner-cross corner-br" style={{ color: t.borderBright, zIndex: 1 }} />
+
+              <div className="cmd-rail-grid">
+                {/* NET WORTH / PSYCHIC ESSENCE */}
+                <div className="cmd-rail-cell" style={{ borderColor: t.borderDim, borderBottom: `1px solid ${t.borderDim}` }}>
+                  <div className="cmd-rail-label" style={{ color: t.textGhost }}>PSYCHIC THRESHOLD</div>
+                  <div className="cmd-rail-value" style={{ color: _tA > 0 ? (_nwDelta >= 0 ? t.accent : t.danger) : t.textDim, fontSize: _tA > 0 ? 18 : 14 }}>
+                    {_tA > 0 ? <AnimNum value={_nwTotal} /> : '——'}
+                  </div>
+                  <div className="cmd-rail-sub" style={{ color: _tA > 0 ? (_nwDelta >= 0 ? t.accentDim : t.danger) : t.textGhost }}>
+                    {_tA > 0 ? (snapshots.length > 1 ? `${_nwDelta >= 0 ? '↑' : '↓'} ${fmt(Math.abs(_nwDelta))}` : 'BASELINE') : 'NO DATA'}
+                  </div>
+                  {_tA > 0 && (
+                    <div style={{ marginTop: 6 }}>
+                      <div style={{ display: 'flex', height: 3, gap: 1 }}>
+                        <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.8, transition: 'width 0.8s ease', minWidth: 1 }} />
+                        <div style={{ flex: 1, background: `${t.danger}40` }} />
+                      </div>
+                      <div style={{ fontSize: 9, color: t.textGhost, marginTop: 2, letterSpacing: '0.06em' }}>{_equityPct}% EQUITY</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* CURRENT STAGE */}
+                <div className="cmd-rail-cell" style={{ borderColor: t.borderDim, borderBottom: `1px solid ${t.borderDim}` }}>
+                  <div className="cmd-rail-label" style={{ color: t.textGhost }}>CURRENT STAGE</div>
+                  <div className="cmd-rail-value" style={{ color: _stageColor, fontSize: _hasData ? 28 : 14 }}>
+                    {_hasData ? _stage : '—'}
+                  </div>
+                  <div className="cmd-rail-sub" style={{ color: _stageColor, fontSize: 9 }}>
+                    {_hasData ? _stageMeta.name.toUpperCase() : 'AWAITING DATA'}
+                  </div>
+                  {_hasData && (
+                    <div className="stage-gate-rail">
+                      {[0,1,2,3,4,5,6,7].map(i => (
+                        <div key={i} className={`stage-gate-seg ${i === _stage ? 'active' : i < _stage ? '' : 'locked'}`}
+                          style={{ background: i < _stage ? _stageColor : i === _stage ? _stageColor : t.borderDim, color: _stageColor }} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* RUNWAY */}
+                <div className="cmd-rail-cell" style={{ borderColor: t.borderDim, borderBottom: `1px solid ${t.borderDim}` }}>
+                  <div className="cmd-rail-label" style={{ color: t.textGhost }}>RUNWAY</div>
+                  <div className="cmd-rail-value" style={{ color: (latest?.eFund?.balance || 0) > 0 ? _runwayColor : t.textDim, fontSize: (latest?.eFund?.balance || 0) > 0 ? 28 : 14 }}>
+                    {(latest?.eFund?.balance || 0) > 0 ? _runway : '——'}
+                  </div>
+                  <div className="cmd-rail-sub" style={{ color: (latest?.eFund?.balance || 0) > 0 ? _runwayColor : t.textGhost }}>
+                    {(latest?.eFund?.balance || 0) > 0 ? 'DAYS CLEAR' : 'NO E-FUND'}
+                  </div>
+                  {(latest?.eFund?.balance || 0) > 0 && (
+                    <div className="velocity-gauge" style={{ marginTop: 6 }}>
+                      <div className={`velocity-gauge-fill ${_runway < 7 ? 'critical' : _runway < 30 ? 'warn' : 'good'}`}
+                        style={{ width: `${Math.min(100, (_runway / 180) * 100)}%` }} />
+                    </div>
+                  )}
+                </div>
+
+                {/* VELOCITY */}
+                <div className="cmd-rail-cell" style={{ borderColor: t.borderDim, borderBottom: `1px solid ${t.borderDim}` }}>
+                  <div className="cmd-rail-label" style={{ color: t.textGhost }}>VELOCITY</div>
+                  <div className="cmd-rail-value" style={{ color: income > 0 ? _velColor : t.textDim, fontSize: income > 0 ? 28 : 14 }}>
+                    {income > 0 ? `${Math.round(_vel * 100)}%` : '——'}
+                  </div>
+                  <div className="cmd-rail-sub" style={{ color: income > 0 ? _velColor : t.textGhost }}>
+                    {income > 0 ? (_vel < 0.10 ? 'SLASH ACTIVE' : _vel < 0.20 ? 'ALERT' : _vel < 0.25 ? 'NOMINAL' : 'STRONG') : 'NO INCOME'}
+                  </div>
+                  {income > 0 && (
+                    <div className="velocity-gauge">
+                      <div className={`velocity-gauge-fill ${_velClass}`} style={{ width: `${Math.min(100, _vel * 250)}%` }} />
+                    </div>
+                  )}
+                </div>
+
+                {/* PRIMARY DIRECTIVE */}
+                <div className="cmd-rail-cell" style={{ borderColor: 'transparent', borderBottom: `1px solid ${t.borderDim}`, gridColumn: 'span 1' }}>
+                  <div className="cmd-rail-label" style={{ color: t.textGhost }}>PRIMARY DIRECTIVE</div>
+                  <div style={{ fontSize: 11, color: _dirColor, lineHeight: 1.4, fontFamily: "'JetBrains Mono', monospace", marginTop: 4, fontWeight: 700 }}>
+                    {_directive.text}
+                  </div>
+                </div>
+              </div>
+
+              {/* Enforcement strip — shown when violations active */}
+              {_topEnforce && (
+                <div className="hazard-block" style={{ borderColor: _topEnforce.severity === 'red' ? t.danger : t.warn, color: _topEnforce.severity === 'red' ? t.danger : t.warn, borderTop: `1px solid ${_topEnforce.severity === 'red' ? t.danger : t.warn}`, borderLeft: 'none', borderRight: 'none', borderBottom: 'none', margin: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+                    <div>
+                      <div className="hazard-block-code">{_topEnforce.code}</div>
+                      <div className="hazard-block-title" style={{ color: _topEnforce.severity === 'red' ? t.danger : t.warn }}>{_topEnforce.title}</div>
+                      <div className="hazard-block-body" style={{ color: t.textSecondary }}>{_topEnforce.reason}</div>
+                    </div>
+                    {_enforceModes.length > 1 && (
+                      <div style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.12em', whiteSpace: 'nowrap' }}>
+                        +{_enforceModes.length - 1} MORE VIOLATION{_enforceModes.length > 2 ? 'S' : ''}
+                      </div>
+                    )}
+                  </div>
+                  <div className="hazard-block-action" style={{ borderTopColor: _topEnforce.severity === 'red' ? `${t.danger}40` : `${t.warn}40` }}>{_topEnforce.action}</div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        );
+      })()}
 
-      {/* ═══ DAILY LAW HERO — Right below greeting, above all modules ═══ */}
+      {/* ═══ DAILY LAW HERO ═══ */}
       <div style={{ marginBottom: 12 }}>
         <DailyLawHero t={t} />
       </div>
@@ -6804,6 +7086,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         {/* Row 3b — KNOX Terminal: policy enforcement AI */}
         {vis.includes('knox') && (
           <div style={{ gridColumn: '1 / -1' }}>
+            <div className="section-ruler" style={{ color: t.textGhost }}>ENFORCEMENT ENGINE // AGENT KNOX</div>
             <KnoxTerminalMod latest={latest} visible t={t} />
           </div>
         )}
@@ -6820,40 +7103,51 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
         {/* Row 4 — Debt: full width, strategic/monthly "What's my payoff plan?" */}
         {vis.includes('debt') && (
           <div style={{ gridColumn: '1 / -1' }}>
+            <div className="section-ruler" style={{ color: t.textGhost }}>MISSION ASSETS // DEBT ELIMINATION STACK</div>
             <DebtMod latest={latest} visible t={t} onUpdateDebt={onUpdateDebt} />
           </div>
         )}
 
         {/* Row 5 — Review + Coverage: historical lookup and protection check */}
+        {(vis.includes('transactions') || vis.includes('protection')) && (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <div className="section-ruler" style={{ color: t.textGhost }}>SYSTEM LOGS // TRANSACTION REVIEW + COVERAGE</div>
+          </div>
+        )}
         <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} onImport={() => setSyncOpen(true)} />
         <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
 
       </div>
     </main>
-    <footer style={{ position: 'fixed', bottom: 0, width: '100%', height: 32, background: t.surface, borderTop: `1px solid ${t.borderDim}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 12, zIndex: 50 }}>
-      {/* Left — sync status */}
-      <button
-        onClick={() => setSyncOpen(true)}
-        title="Import new statement to update"
-        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}
-      >
-        <span style={{ color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Synced</span>
-        <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.accent, fontWeight: 700 }}>
-          {daysSince(latest.date) === 0 ? 'Today' : daysSince(latest.date) === 1 ? 'Yesterday' : daysSince(latest.date) >= 999 ? 'Never' : `${daysSince(latest.date)}d ago`}
-        </span>
-        {daysSince(latest.date) >= 7 && <span style={{ color: t.danger }}>· Update</span>}
-      </button>
-      {/* Center — daily interest burn */}
-      {dailyInterest(latest?.debts) > 0 && (
-        <span style={{ color: t.danger, fontWeight: 700, letterSpacing: '0.04em' }}>
-          ${dailyInterest(latest?.debts).toFixed(2)}/day
-        </span>
-      )}
-      {/* Right — alert dots */}
-      <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-        {ac.red > 0 && <span style={{ color: t.danger, fontSize: 11 }}>{ac.red}●</span>}
-        {ac.amber > 0 && <span style={{ color: t.warn, fontSize: 11 }}>{ac.amber}●</span>}
-        {ac.green > 0 && <span style={{ color: t.accent, fontSize: 11 }}>{ac.green}●</span>}
+    <footer style={{ position: 'fixed', bottom: 0, width: '100%', background: t.surface, borderTop: `1px solid ${t.borderDim}`, zIndex: 50 }}>
+      {/* Threat-level bar */}
+      <div style={{ height: 3, display: 'flex', overflow: 'hidden' }}>
+        {ac.red > 0 && <div style={{ flex: ac.red, background: t.danger, boxShadow: `0 0 6px ${t.danger}88` }} />}
+        {ac.amber > 0 && <div style={{ flex: ac.amber, background: t.warn, boxShadow: `0 0 6px ${t.warn}88` }} />}
+        {ac.green > 0 && <div style={{ flex: ac.green, background: t.accent, boxShadow: `0 0 4px ${t.accent}44` }} />}
+        {ac.red === 0 && ac.amber === 0 && ac.green === 0 && <div style={{ flex: 1, background: t.borderDim }} />}
+      </div>
+      <div style={{ height: 29, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', fontSize: 11 }}>
+        {/* Left — sync */}
+        <button onClick={() => setSyncOpen(true)} title="Import statement" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>
+          <span style={{ color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>SYN</span>
+          <span style={{ color: daysSince(latest.date) >= 7 ? t.danger : daysSince(latest.date) >= 3 ? t.warn : t.accent, fontWeight: 700, letterSpacing: '0.04em' }}>
+            {daysSince(latest.date) === 0 ? 'TODAY' : daysSince(latest.date) === 1 ? '1D AGO' : daysSince(latest.date) >= 999 ? 'NEVER' : `${daysSince(latest.date)}D AGO`}
+          </span>
+        </button>
+        {/* Center — interest burn */}
+        {dailyInterest(latest?.debts) > 0 && (
+          <span style={{ color: t.danger, fontWeight: 700, letterSpacing: '0.06em', fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>
+            ${dailyInterest(latest?.debts).toFixed(2)}/DAY BURN
+          </span>
+        )}
+        {/* Right — threat summary */}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontFamily: "'JetBrains Mono', monospace" }}>
+          {ac.red > 0 && <span style={{ color: t.danger, fontSize: 10, fontWeight: 700, letterSpacing: '0.1em' }}>{ac.red}× RED</span>}
+          {ac.amber > 0 && <span style={{ color: t.warn, fontSize: 10, fontWeight: 700, letterSpacing: '0.1em' }}>{ac.amber}× AMB</span>}
+          {ac.green > 0 && <span style={{ color: t.accent, fontSize: 10, fontWeight: 700, letterSpacing: '0.1em' }}>{ac.green}× NOM</span>}
+          {ac.red === 0 && ac.amber === 0 && ac.green === 0 && <span style={{ color: t.textGhost, fontSize: 10, letterSpacing: '0.1em' }}>STANDBY</span>}
+        </div>
       </div>
     </footer>
     <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={onSync} t={t} />
@@ -7383,79 +7677,112 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
       <div className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`} style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 28px', '--primary': confColor }}>
 
-        {/* ── TACTICAL HUD BAR ─────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: isDark ? '#060c06' : '#f0f7f0', border: `1px solid ${confColor}44`, marginBottom: 8, flexWrap: 'wrap', gap: 8, fontFamily: "'JetBrains Mono', monospace" }}>
-          <span style={{ fontSize: 11, color: confColor, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>STATUS: {confStatus}</span>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>FUEL</span>
-              <progress className="hud-bar" value={Math.min(100, ((confNetLiq || 0) / 6000) * 100)} max="100" />
-              {confNetLiq != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(confNetLiq / 1000).toFixed(1)}T</span>}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>HEAT</span>
-              <progress className="hud-bar hud-heat" value={Math.min(100, ((tga || 0) / 1000) * 100)} max="100" />
-              {tga != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(tga / 1000).toFixed(2)}T</span>}
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 900, color: confColor, border: `1px solid ${confColor}`, padding: '1px 7px', letterSpacing: '0.06em' }}>{confScore}/100</span>
-          </div>
+        {/* ── PAGE IDENTITY BAR ────────────────────────────────────────────── */}
+        <div className="page-id-bar" style={{ color: confColor }}>
+          <span className="page-id-classification" style={{ color: confColor }}>ACTIVE</span>
+          <span>FORTIFYOS // WAR ROOM // MACRO INTELLIGENCE TERMINAL</span>
+          <span style={{ marginLeft: 'auto', fontSize: 8, color: t.textGhost, letterSpacing: '0.12em' }}>THREAT·LEVEL {confScore >= 75 ? 'LOCKED' : confScore >= 40 ? 'SCANNING' : 'JAMMED'}</span>
         </div>
+
+        {/* ── WAR ROOM SYSTEM HEADER ───────────────────────────────────────── */}
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 0, border: `1px solid ${confColor}55`, marginBottom: 8, overflow: 'hidden', fontFamily: "'JetBrains Mono', monospace" }}>
+          {/* Left: Theater posture block */}
+          <div className={`war-cmd-box posture-${posture.toLowerCase()}`} style={{ flex: '0 0 auto', minWidth: 140, borderTop: 'none', borderLeft: 'none', borderBottom: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '12px 16px' }}>
+            <div style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>POSTURE</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: confColor, letterSpacing: '-0.01em', lineHeight: 1 }}>{posture}</div>
+            <div style={{ fontSize: 9, color: confColor, letterSpacing: '0.12em', marginTop: 3, textTransform: 'uppercase', opacity: 0.75 }}>{theater}</div>
+          </div>
+
+          {/* Center: HUD metrics */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '6px 12px', background: isDark ? '#060c06' : '#f0f7f0', gap: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4 }}>
+              <span style={{ fontSize: 9, color: confColor, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' }}>WAR ROOM // TACTICAL OPERATIONS</span>
+              <span style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.1em' }}>CONF·SCORE {confScore}/100</span>
+            </div>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.1em', textTransform: 'uppercase' }}>FUEL</span>
+                <progress className="hud-bar" value={Math.min(100, ((confNetLiq || 0) / 6000) * 100)} max="100" />
+                {confNetLiq != null && <span style={{ fontSize: 9, color: t.accent, fontWeight: 700 }}>${(confNetLiq / 1000).toFixed(1)}T</span>}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.1em', textTransform: 'uppercase' }}>HEAT</span>
+                <progress className="hud-bar hud-heat" value={Math.min(100, ((tga || 0) / 1000) * 100)} max="100" />
+                {tga != null && <span style={{ fontSize: 9, color: t.warn, fontWeight: 700 }}>${(tga / 1000).toFixed(2)}T</span>}
+              </div>
+            </div>{/* closes metrics flex row */}
+          </div>{/* closes center flex col */}
+
+          {/* Right: score block */}
+          <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px 16px', borderLeft: `1px solid ${confColor}33`, background: isDark ? `${confColor}05` : `${confColor}04` }}>
+            <div style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 2 }}>SIGNAL</div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: confColor, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{confScore}</div>
+            <div style={{ fontSize: 9, color: t.textGhost, letterSpacing: '0.08em', marginTop: 1 }}>/100</div>
+          </div>
+        </div>{/* closes war-room system header */}
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
-        <div style={{ marginTop: 12, border: `1px solid ${confColor}55`, background: t.panel, padding: '22px 26px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
+        <div style={{ marginTop: 12, border: `1px solid ${confColor}55`, background: t.panel, padding: '18px 22px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: confColor, opacity: 0.55 }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 10px', border: `1px solid ${confColor}55`, background: isDark ? `${confColor}10` : `${confColor}08`, fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
-                Daily Macro Analysis
-              </div>
-              <div style={{ marginTop: 8, fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
-                {radarTheme.theme}
-              </div>
-            </div>
-            <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
-              Fed Command Brief · Day {dayOfYear}
-            </div>
+          {/* DIRECT LINK header */}
+          <div className="signal-link-header" style={{ color: confColor, marginBottom: 12 }}>
+            <span className="link-type direct">DIRECT-LINK</span>
+            <span style={{ letterSpacing: '0.12em' }}>FED COMMAND BRIEF</span>
+            <span style={{ marginLeft: 'auto', fontSize: 9, color: t.textGhost, letterSpacing: '0.1em' }}>
+              {radarTheme.month} // {radarTheme.theme.toUpperCase()} // DAY {dayOfYear}
+            </span>
           </div>
-          <div style={{ fontSize: 34, lineHeight: 1.1, color: t.textPrimary, fontWeight: 800, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>
+          <div style={{ fontSize: 28, lineHeight: 1.1, color: t.textPrimary, fontWeight: 800, marginBottom: 12, fontFamily: "'JetBrains Mono', monospace" }}>
             {fedBrief.headline}
           </div>
-          <div style={{ borderLeft: `3px solid ${confColor}`, paddingLeft: 14, marginBottom: 14 }}>
-            <div style={{ fontSize: 16, color: confColor, lineHeight: 1.65 }}>
+          <div style={{ borderLeft: `3px solid ${confColor}`, paddingLeft: 14, marginBottom: 12 }}>
+            <div style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.65 }}>
               {fedBrief.brief}
             </div>
           </div>
-          <div style={{ fontSize: 15, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
-            Fed Lens · {fedBrief.lens} · Objective · {radarTheme.objective}
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ color: confColor }}>LENS:</span> {fedBrief.lens}
+            </div>
+            <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ color: confColor }}>OBJECTIVE:</span> {radarTheme.objective}
+            </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 12, border: `2px solid ${primaryPressure.tone}`, background: t.panel, padding: '18px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>Macro War Game</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 46, fontWeight: 900, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{theater}</span>
-                <span style={{ fontSize: 13, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>Current Theater</span>
+        <div style={{ marginTop: 12, border: `1px solid ${primaryPressure.tone}55`, background: t.panel, animation: 'radarFadeUp 0.35s ease-out 0.35s both', overflow: 'hidden' }}>
+          {/* War Game header strip */}
+          <div style={{ display: 'flex', alignItems: 'stretch', borderBottom: `1px solid ${t.borderDim}`, flexWrap: 'wrap' }}>
+            {/* SUB-LINK label */}
+            <div style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', borderRight: `1px solid ${t.borderDim}`, background: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.04)' }}>
+              <div className="signal-link-header" style={{ color: primaryPressure.tone, marginBottom: 0, gap: 6 }}>
+                <span className="link-type sub">SUB-LINK</span>
+                <span style={{ fontSize: 9, letterSpacing: '0.14em' }}>MACRO WAR GAME</span>
               </div>
-              <div style={{ marginTop: 8, fontSize: 16, color: t.textPrimary, fontWeight: 600 }}>{warHeadline}</div>
             </div>
-            <div className="radar-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(120px, 1fr))', gap: 8, minWidth: 'min(100%, 420px)', flex: '1 1 320px' }}>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Best Posture</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: posture === 'ATTACK' ? t.accent : posture === 'WAIT' ? t.warn : t.danger, fontFamily: "'JetBrains Mono', monospace" }}>{posture}</div>
+            {/* Command boxes */}
+            <div className="radar-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', flex: 1 }}>
+              <div className={`war-cmd-box posture-${posture.toLowerCase()}`} style={{ border: 'none', borderRight: `1px solid ${t.borderDim}`, padding: '8px 12px' }}>
+                <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>BEST POSTURE</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: posture === 'ATTACK' ? t.accent : posture === 'WAIT' ? t.warn : t.danger, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.01em' }}>{posture}</div>
               </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Primary Pressure</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace" }}>{primaryPressure.label}</div>
+              <div style={{ padding: '8px 12px', borderRight: `1px solid ${t.borderDim}` }}>
+                <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>PRESSURE</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace" }}>{primaryPressure.label}</div>
               </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signal Score</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: confColor, fontFamily: "'JetBrains Mono', monospace" }}>{confScore}/100</div>
+              <div style={{ padding: '8px 12px' }}>
+                <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>SIGNAL</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: confColor, fontFamily: "'JetBrains Mono', monospace" }}>{confScore}/100</div>
               </div>
             </div>
           </div>
+          {/* Theater + headline */}
+          <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 40, fontWeight: 900, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{theater}</span>
+            <span style={{ fontSize: 14, color: t.textSecondary, lineHeight: 1.5 }}>{warHeadline}</span>
+          </div>
+          <div style={{ padding: '14px 18px' }}>
 
           <div className="radar-war-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 1.1fr) minmax(260px, 0.9fr)', gap: 12 }}>
             <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
@@ -7526,13 +7853,18 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               </div>
             </div>
           </div>
-        </div>
+          </div>{/* closes padding div */}
+        </div>{/* closes war game panel */}
 
-        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.6s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, animation: 'radarFadeUp 0.4s ease-out 0.6s both', overflow: 'hidden' }}>
+          {/* Fed Flight School header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, padding: '12px 16px', borderBottom: `1px solid ${t.borderDim}`, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Fed Flight School</div>
-              <div style={{ marginTop: 6, fontSize: 15, color: t.textGhost, maxWidth: 680 }}>Learn the Fed by interacting with the live signals already driving this page. No headlines, just cause, effect, and signal training.</div>
+              <div className="signal-link-header" style={{ color: t.textDim, marginBottom: 4, gap: 6 }}>
+                <span className="link-type sub">SUB-LINK</span>
+                <span style={{ fontSize: 9, letterSpacing: '0.14em' }}>FED FLIGHT SCHOOL // OPERATOR TRAINING</span>
+              </div>
+              <div style={{ fontSize: 13, color: t.textGhost, maxWidth: 680, lineHeight: 1.5 }}>Live signal training. Learn the Fed through the same data driving this page — cause, effect, and regime logic.</div>
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {[
@@ -7559,6 +7891,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             </div>
           </div>
 
+          <div style={{ padding: '14px 16px' }}>
           {schoolTab === 'learn' && (
             <div className="radar-school-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 0.9fr) minmax(280px, 1.1fr)', gap: 12 }}>
               <div style={{ display: 'grid', gap: 8 }}>
@@ -7775,51 +8108,58 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               )}
             </div>
           )}
-        </div>
+          </div>{/* closes flight school padding div */}
+        </div>{/* closes flight school panel */}
 
-        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.7s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
-            <div>
-              <div style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Signal Debrief</div>
-              <div style={{ marginTop: 6, fontSize: 15, color: t.textGhost, maxWidth: 720 }}>{debriefHeadline}</div>
+        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, animation: 'radarFadeUp 0.4s ease-out 0.7s both', overflow: 'hidden' }}>
+          {/* Signal Debrief header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: `1px solid ${t.borderDim}`, flexWrap: 'wrap', gap: 8 }}>
+            <div className="signal-link-header" style={{ color: t.textDim, marginBottom: 0, gap: 6 }}>
+              <span className="link-type sub">SUB-LINK</span>
+              <span style={{ fontSize: 9, letterSpacing: '0.14em' }}>SIGNAL DEBRIEF // CAMPAIGN LOG</span>
             </div>
-            <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '4px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR HISTORY</button>
+            <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 9, padding: '3px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.1em', textTransform: 'uppercase' }}>PURGE LOG</button>
           </div>
-          <div className="radar-debrief-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 0.95fr) minmax(280px, 1.05fr)', gap: 12 }}>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Why It Matters Now</div>
-              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, marginBottom: 12 }}>{debriefGuidance}</div>
+          <div style={{ padding: '12px 16px', borderBottom: `1px solid ${t.borderDim}` }}>
+            <div style={{ fontSize: 13, color: t.textPrimary, lineHeight: 1.55, marginBottom: 8 }}>{debriefHeadline}</div>
+          </div>
+          <div className="radar-debrief-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 0.95fr) minmax(280px, 1.05fr)', gap: 0 }}>
+            <div style={{ borderRight: `1px solid ${t.borderDim}`, padding: 14 }}>
+              <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 8, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>CURRENT ASSESSMENT</div>
+              <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.65, marginBottom: 12 }}>{debriefGuidance}</div>
               <div className="radar-debrief-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
                 <div>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Latest</div>
-                  <div style={{ fontSize: 16, color: latestEntry?.status === 'LOCKED' ? t.accent : latestEntry?.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700 }}>{latestEntry?.status || '—'}</div>
+                  <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>LATEST</div>
+                  <div style={{ fontSize: 14, color: latestEntry?.status === 'LOCKED' ? t.accent : latestEntry?.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700, letterSpacing: '0.06em' }}>{latestEntry?.status || '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Shift</div>
-                  <div style={{ fontSize: 16, color: debriefShift >= 0 ? t.accent : t.danger, fontWeight: 700 }}>{latestEntry ? `${debriefShift >= 0 ? '+' : ''}${debriefShift}` : '—'}</div>
+                  <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>SHIFT</div>
+                  <div style={{ fontSize: 14, color: debriefShift >= 0 ? t.accent : t.danger, fontWeight: 700 }}>{latestEntry ? `${debriefShift >= 0 ? '+' : ''}${debriefShift}` : '—'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Next Watch</div>
-                  <div style={{ fontSize: 16, color: primaryPressure.tone, fontWeight: 700 }}>{primaryPressure.label}</div>
+                  <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>WATCH</div>
+                  <div style={{ fontSize: 14, color: primaryPressure.tone, fontWeight: 700 }}>{primaryPressure.label}</div>
                 </div>
               </div>
             </div>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Campaign Log</div>
-              <div style={{ display: 'grid', gap: 8, maxHeight: 260, overflowY: 'auto' }}>
+            <div style={{ padding: 14 }}>
+              <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>CAMPAIGN LOG // BLACK BOX TAPE</div>
+              <div className="campaign-tape" style={{ maxHeight: 260, overflowY: 'auto' }}>
                 {recentEntries.length === 0 ? (
-                  <div style={{ fontSize: 14, color: t.textDim }}>Awaiting enough macro refreshes to build a campaign history.</div>
-                ) : recentEntries.slice(0, 6).map((entry, i) => (
-                  <div key={entry.ts + i} style={{ borderLeft: `2px solid ${entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger}`, paddingLeft: 10 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>[ {entry.ts} ]</span>
-                      <span style={{ fontSize: 11, color: entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700, letterSpacing: '0.08em' }}>{entry.score}/100</span>
+                  <div style={{ fontSize: 12, color: t.textDim, padding: '8px 0', fontFamily: "'JetBrains Mono', monospace" }}>AWAITING MACRO REFRESH — LOG EMPTY</div>
+                ) : recentEntries.slice(0, 8).map((entry, i) => {
+                  const entryColor = entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger;
+                  return (
+                    <div key={entry.ts + i} className="campaign-tape-entry" style={{ borderBottomColor: t.borderDim }}>
+                      <div className="campaign-tape-index" style={{ color: entryColor, fontWeight: 700 }}>{String(i + 1).padStart(2, '0')}</div>
+                      <div>
+                        <div className="campaign-tape-ts">[{entry.ts}]</div>
+                        <div className="campaign-tape-status" style={{ color: entryColor }}>{entry.status} // {entry.score}/100</div>
+                        <div className="campaign-tape-detail">LIQ ${(entry.netLiq / 1000).toFixed(2)}T · TGA ${(entry.tga / 1000).toFixed(2)}T · CYCLE {entry.dph}d</div>
+                      </div>
                     </div>
-                    <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.55 }}>
-                      Status {entry.status} with liquidity at ${(entry.netLiq / 1000).toFixed(2)}T, TGA at ${(entry.tga / 1000).toFixed(2)}T, and cycle age {entry.dph} days.
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -7943,37 +8283,56 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
       {/* Page content */}
       <main style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 60px' }}>
 
-        {/* ── THEME ── */}
-        <section style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Theme</div>
-          <div onClick={onToggleTheme} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: t.surface, border: `1px solid ${t.borderDim}`, cursor: 'pointer' }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
-            onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
-            <span style={{ fontSize: 14, color: t.textPrimary }}>{isDark ? 'Noir (Dark)' : 'Tactical (Light)'}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: t.accent }}>
-              {isDark ? <Moon size={14} /> : <Sun size={14} />}
-              <span style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase' }}>Click to toggle</span>
+        {/* Page identity bar */}
+        <div className="page-id-bar" style={{ color: t.accent }}>
+          <span className="page-id-classification" style={{ color: t.accent }}>RESTRICTED</span>
+          <span>FORTIFYOS // MAINTENANCE TERMINAL // SYSTEM CONFIGURATION</span>
+        </div>
+
+        {/* Maintenance terminal header */}
+        <div style={{ marginBottom: 16, padding: '8px 14px', border: `1px solid ${t.borderDim}`, background: t.surface, fontFamily: "'JetBrains Mono', monospace" }}>
+          <div style={{ fontSize: 9, color: t.accent, letterSpacing: '0.2em', fontWeight: 700, textTransform: 'uppercase', marginBottom: 2 }}>FORTIFYOS // INTERNAL MAINTENANCE TERMINAL</div>
+          <div style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.1em', textTransform: 'uppercase' }}>SYSTEM CONFIGURATION // SUBSYSTEM CONTROLS // DATA MANAGEMENT</div>
+        </div>
+
+        {/* ── THEME — SUBSYSTEM: DISPLAY CONTROLLER ── */}
+        <div className="sys-module">
+          <div className="sys-module-header" style={{ color: t.textDim }}>
+            <span style={{ color: t.accent }}>MODULE:</span>
+            <span style={{ marginLeft: 6, letterSpacing: '0.12em' }}>DISPLAY_CONTROLLER</span>
+            <span style={{ marginLeft: 'auto', color: t.textGhost }}>ACTIVE</span>
+          </div>
+          <div className="sys-module-body">
+            <div onClick={onToggleTheme} className="sys-toggle-row" style={{ borderBottom: 'none', padding: '10px 0' }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: t.textPrimary, letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+                  {isDark ? 'MODE: NOIR [DARK]' : 'MODE: CLINICAL [LIGHT]'}
+                </div>
+                <div style={{ fontSize: 10, color: t.textGhost, marginTop: 2, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>
+                  {isDark ? 'DARK — Primary system mode. Emergency OS aesthetic.' : 'LIGHT — Clinical briefing mode.'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {isDark ? <Moon size={12} style={{ color: t.accent }} /> : <Sun size={12} style={{ color: t.accent }} />}
+                <div className={`sys-toggle-led ${isDark ? 'on' : 'off'}`} style={{ borderColor: t.accent, color: t.accent }} />
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* ── DASHBOARD MODULES ── */}
+        {/* ── MODULE CONTROLS ── */}
         {(() => {
           const renderModList = (modList) => (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {modList.map(m => {
                 const on = (settings?.visibleModules || []).includes(m.key);
                 return (
-                  <div key={m.key} onClick={() => onToggle(m.key)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: t.surface, border: `1px solid ${on ? t.borderDim : t.elevated}`, cursor: 'pointer', opacity: on ? 1 : 0.55, transition: 'all 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = on ? t.borderDim : t.elevated}>
+                  <div key={m.key} onClick={() => onToggle(m.key)} className="sys-toggle-row" style={{ opacity: on ? 1 : 0.5 }}>
                     <div>
-                      <div style={{ fontSize: 15, color: on ? t.textPrimary : t.textDim, fontWeight: on ? 600 : 400 }}>{m.label}</div>
-                      <div style={{ fontSize: 15, color: t.textGhost, marginTop: 2 }}>{m.desc}</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: on ? t.textPrimary : t.textDim, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
+                      <div style={{ fontSize: 10, color: t.textGhost, marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>{m.desc}</div>
                     </div>
-                    <div style={{ width: 32, height: 16, borderRadius: 8, background: on ? t.accentMuted : t.elevated, position: 'relative', flexShrink: 0, transition: 'background 0.2s', border: `1px solid ${on ? t.accent + '60' : t.borderDim}` }}>
-                      <div style={{ width: 12, height: 12, borderRadius: '50%', position: 'absolute', top: 1, left: on ? 17 : 1, background: on ? t.accent : t.textDim, transition: 'left 0.2s' }} />
-                    </div>
+                    <div className={`sys-toggle-led ${on ? 'on' : 'off'}`} style={{ borderColor: on ? t.accent : t.borderDim, color: on ? t.accent : t.textDim }} />
                   </div>
                 );
               })}
@@ -7981,59 +8340,123 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
           );
           return (
             <>
-              <section style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Dashboard Modules</div>
-                <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 12 }}>Personal finance sections on your Dashboard</div>
-                {renderModList(dashMods)}
-              </section>
-              <section style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Radar Modules</div>
-                <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 12 }}>Sections visible on the Pre-Market Radar page</div>
-                {renderModList(radarMods)}
-              </section>
+              <div className="sys-module">
+                <div className="sys-module-header" style={{ color: t.textDim }}>
+                  <span style={{ color: t.accent }}>MODULE:</span>
+                  <span style={{ marginLeft: 6, letterSpacing: '0.12em' }}>DASHBOARD_SUBSYSTEMS</span>
+                  <span style={{ marginLeft: 'auto', color: t.textGhost }}>{dashMods.filter(m => (settings?.visibleModules || []).includes(m.key)).length}/{dashMods.length} ACTIVE</span>
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>{renderModList(dashMods)}</div>
+              </div>
+              <div className="sys-module">
+                <div className="sys-module-header" style={{ color: t.textDim }}>
+                  <span style={{ color: t.accent }}>MODULE:</span>
+                  <span style={{ marginLeft: 6, letterSpacing: '0.12em' }}>RADAR_SUBSYSTEMS</span>
+                  <span style={{ marginLeft: 'auto', color: t.textGhost }}>{radarMods.filter(m => (settings?.visibleModules || []).includes(m.key)).length}/{radarMods.length} ACTIVE</span>
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>{renderModList(radarMods)}</div>
+              </div>
             </>
           );
         })()}
 
-        {/* ── PAY SCHEDULE ── */}
-        <section style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pay Schedule</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
-            {['WEEKLY', 'BIWEEKLY'].map(opt => {
-              const isActive = payFrequency === opt;
-              return (
-                <button key={opt} onClick={() => onSetPayFrequency?.(opt)} style={{ padding: '10px', background: isActive ? t.accentMuted : t.surface, border: `1px solid ${isActive ? t.accent : t.borderDim}`, color: isActive ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {opt === 'BIWEEKLY' ? 'Bi-Weekly' : 'Weekly'}
-                </button>
-              );
-            })}
+        {/* ── PAY SCHEDULE — SUBSYSTEM: PAY_CYCLE_CONTROLLER ── */}
+        <div className="sys-module">
+          <div className="sys-module-header" style={{ color: t.textDim }}>
+            <span style={{ color: t.accent }}>MODULE:</span>
+            <span style={{ marginLeft: 6, letterSpacing: '0.12em' }}>PAY_CYCLE_CONTROLLER</span>
+            <span style={{ marginLeft: 'auto', color: t.textGhost }}>FREQ: {payFrequency}</span>
           </div>
-          <div style={{ fontSize: 15, color: t.textGhost }}>Applies to payday timeline and planner calculations.</div>
-        </section>
+          <div className="sys-module-body">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 8 }}>
+              {['WEEKLY', 'BIWEEKLY'].map(opt => {
+                const isActive = payFrequency === opt;
+                return (
+                  <button key={opt} onClick={() => onSetPayFrequency?.(opt)} style={{ padding: '8px', background: isActive ? t.accentMuted : 'transparent', border: `1px solid ${isActive ? t.accent : t.borderDim}`, color: isActive ? t.accent : t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: isActive ? 700 : 400 }}>
+                    {opt === 'BIWEEKLY' ? 'BI-WEEKLY' : 'WEEKLY'}
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{ fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>APPLIES TO: PAYDAY TIMELINE // PLANNER CALCULATIONS</div>
+          </div>
+        </div>
 
-        {/* ── DATA ── */}
-        <section>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Data</div>
-          <button onClick={onImport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
-            onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
-            <Upload size={12} /> Import Statements / Snapshots
-          </button>
-          <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 16 }}>Open the sync/import flow for CSVs, PDFs, screenshots, or JSON snapshots.</div>
-          <button onClick={onExport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
-            onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
-            <Download size={12} /> Export All Snapshots
-          </button>
-          <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 16 }}>Downloads all snapshots and settings as a JSON backup file.</div>
-          <div style={{ border: `1px solid ${t.danger}30`, padding: '16px', background: t.danger + '08' }}>
-            <div style={{ fontSize: 15, color: t.danger, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>⚠ Danger Zone</div>
-            <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='Type CONFIRM to clear all data' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, padding: '8px 10px', width: '100%', outline: 'none', marginBottom: 8, boxSizing: 'border-box' }} />
-            <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: '10px', background: confirm === 'CONFIRM' ? t.danger + '20' : t.elevated, border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', textTransform: 'uppercase' }}>
-              <Trash2 size={12} /> Clear All History
+        {/* ── DATA OPERATIONS — SUBSYSTEM: DATA_INTERFACE ── */}
+        <div className="sys-module">
+          <div className="sys-module-header" style={{ color: t.textDim }}>
+            <span style={{ color: t.accent }}>MODULE:</span>
+            <span style={{ marginLeft: 6, letterSpacing: '0.12em' }}>DATA_INTERFACE</span>
+          </div>
+          <div className="sys-module-body" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <button onClick={onImport} style={{ width: '100%', padding: '9px 14px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
+              onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
+              <Upload size={11} /> INGEST STATEMENTS // CSV · PDF · JSON
+            </button>
+            <button onClick={onExport} style={{ width: '100%', padding: '9px 14px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
+              onMouseLeave={e => e.currentTarget.style.borderColor = t.borderDim}>
+              <Download size={11} /> EXPORT FULL SNAPSHOT ARCHIVE
             </button>
           </div>
-        </section>
+        </div>
+
+        {/* ── DANGER ZONE — SUBSYSTEM: SYSTEM_PURGE ── */}
+        <div className="sys-module" style={{ borderColor: `${t.danger}55` }}>
+          <div className="sys-module-header" style={{ borderBottomColor: `${t.danger}40`, background: isDark ? `${t.danger}08` : `${t.danger}05` }}>
+            <span style={{ color: t.danger }}>MODULE:</span>
+            <span style={{ marginLeft: 6, letterSpacing: '0.12em', color: t.danger }}>SYSTEM_PURGE // DESTRUCTIVE</span>
+            <span style={{ marginLeft: 'auto', fontSize: 8, color: t.danger, letterSpacing: '0.14em' }}>IRREVERSIBLE OPERATION</span>
+          </div>
+          <div className="danger-zone" style={{ borderColor: `${t.danger}40`, border: 'none' }}>
+            <div className="danger-zone-inner" style={{ color: t.danger }}>
+              <div style={{ fontSize: 10, color: t.danger, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace", marginBottom: 10 }}>
+                WARNING // ALL LOCAL DATA WILL BE PERMANENTLY DESTROYED
+              </div>
+              <div style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.06em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>
+                SNAPSHOTS · SETTINGS · HISTORY · ENCRYPTION KEYS — TYPE "CONFIRM" TO AUTHORIZE
+              </div>
+              <input value={confirm} onChange={e => setConfirm(e.target.value)} placeholder='CONFIRM' style={{ background: t.input, border: `1px solid ${t.borderDim}`, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, padding: '8px 10px', width: '100%', outline: 'none', marginBottom: 8, boxSizing: 'border-box', letterSpacing: '0.1em', textTransform: 'uppercase' }} />
+              <button onClick={() => { if (confirm === 'CONFIRM') { onClear(); setConfirm(''); } }} disabled={confirm !== 'CONFIRM'} style={{ width: '100%', padding: '9px', background: confirm === 'CONFIRM' ? `${t.danger}18` : 'transparent', border: `1px solid ${confirm === 'CONFIRM' ? t.danger : t.borderDim}`, color: confirm === 'CONFIRM' ? t.danger : t.textDim, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, cursor: confirm === 'CONFIRM' ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
+                <Trash2 size={11} /> EXECUTE PURGE — CLEAR ALL HISTORY
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Architecture Map */}
+        <div className="sys-module">
+          <div className="sys-module-header" style={{ color: t.textDim }}>
+            <span style={{ color: t.accent }}>MODULE:</span>
+            <span style={{ marginLeft: 6, letterSpacing: '0.12em' }}>SYSTEM_ARCHITECTURE_MAP</span>
+          </div>
+          <div className="sys-module-body">
+            <div className="arch-map">
+              <div className="arch-layer" style={{ borderColor: t.borderDim }}>
+                <div className="arch-layer-icon" style={{ borderColor: `${t.accent}44`, color: t.accent, background: isDark ? `${t.accent}08` : `${t.accent}06` }}>C1</div>
+                <div>
+                  <div className="arch-layer-name" style={{ color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>CLOUD LAYER // LOGIC ONLY</div>
+                  <div className="arch-layer-desc" style={{ fontFamily: "'JetBrains Mono', monospace" }}>20 protocol files in Claude.ai project. Enforcement rules, doctrine, calculation logic. Zero financial data.</div>
+                </div>
+              </div>
+              <div className="arch-layer" style={{ borderColor: t.borderDim }}>
+                <div className="arch-layer-icon" style={{ borderColor: `${t.warn}44`, color: t.warn, background: isDark ? `${t.warn}08` : `${t.warn}06` }}>L2</div>
+                <div>
+                  <div className="arch-layer-name" style={{ color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>LOCAL STORAGE // ALL PERSONAL DATA</div>
+                  <div className="arch-layer-desc" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Snapshots, balances, transactions, settings — encrypted at rest in this browser. Never leaves your device.</div>
+                </div>
+              </div>
+              <div className="arch-layer" style={{ borderColor: t.borderDim }}>
+                <div className="arch-layer-icon" style={{ borderColor: `${t.textDim}44`, color: t.textDim }}>S3</div>
+                <div>
+                  <div className="arch-layer-name" style={{ color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>SESSION STATE // LIVE ONLY</div>
+                  <div className="arch-layer-desc" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Active session data, macro feeds, intel refresh state. Cleared on session end.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );
