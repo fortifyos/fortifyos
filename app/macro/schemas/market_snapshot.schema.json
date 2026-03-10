@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "market_snapshot",
+  "title": "MarketSnapshot",
+  "description": "Point-in-time cross-asset market data produced by the FORTIFYOS Macro Intel Engine for a single session checkpoint.",
+  "type": "object",
+  "required": ["session", "timestamp", "assets"],
+  "properties": {
+    "session": {
+      "type": "string",
+      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"],
+      "description": "Session key for this snapshot."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp with timezone offset (America/New_York) at the moment this snapshot was built."
+    },
+    "assets": {
+      "type": "array",
+      "description": "Ordered array of AssetSnapshot objects. One entry per tracked asset.",
+      "items": {
+        "$ref": "#/definitions/AssetSnapshot"
+      },
+      "minItems": 0
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "AssetSnapshot": {
+      "type": "object",
+      "description": "Price and delta data for a single tracked asset at this checkpoint.",
+      "required": ["key", "label", "value", "changeSinceLast", "pctSinceLast", "changeVsClose", "pctVsClose", "impactTag", "meta"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Machine identifier, e.g. 'spx', 'btc', 'vix', 'gold', 'wti', 'dxy', 'tnx'."
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable asset name, e.g. 'S&P 500'."
+        },
+        "value": {
+          "type": ["number", "null"],
+          "description": "Current numeric value. Null when data is unavailable."
+        },
+        "changeSinceLast": {
+          "type": ["number", "null"],
+          "description": "Absolute change from the prior engine run's snapshot. Null when no prior run exists."
+        },
+        "pctSinceLast": {
+          "type": ["number", "null"],
+          "description": "Percentage change from the prior engine run's snapshot. Null when no prior run exists."
+        },
+        "changeVsClose": {
+          "type": ["number", "null"],
+          "description": "Absolute change from the prior session close stored in macro.json. Null when unavailable."
+        },
+        "pctVsClose": {
+          "type": ["number", "null"],
+          "description": "Percentage change from the prior session close. Null when unavailable."
+        },
+        "impactTag": {
+          "type": "string",
+          "enum": [
+            "strongly_bullish",
+            "bullish",
+            "neutral",
+            "bearish",
+            "strongly_bearish"
+          ],
+          "description": "Qualitative impact classification based on pctVsClose thresholds."
+        },
+        "meta": {
+          "type": "object",
+          "description": "Additional raw fields from macro.json not mapped to top-level fields.",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
