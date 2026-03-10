@@ -1753,6 +1753,29 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     if (isDanger) return { bg: 'rgba(124,58,237,0.55)', shadow: 'none', opacity: 0.75 };
     return { bg: `${base}66`, shadow: 'none', opacity: 0.52 };
   };
+  const topoWidth = 420;
+  const topoHeight = 240;
+  const topoLeft = 18;
+  const topoRight = topoWidth - 22;
+  const topoBottom = topoHeight - 36;
+  const topoTop = 26;
+  const topoPeakSpan = topoBottom - topoTop - 18;
+  const topoPoints = stages.map((s, index) => {
+    const progress = Math.log(index + 1) / Math.log(stages.length);
+    const x = topoLeft + (index / (stages.length - 1)) * (topoRight - topoLeft);
+    const y = topoBottom - progress * topoPeakSpan;
+    return { ...s, x, y };
+  });
+  const topoLine = topoPoints.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(' ');
+  const topoFill = `${topoLine} L ${topoRight} ${topoBottom} L ${topoLeft} ${topoBottom} Z`;
+  const activeTopoPoint = topoPoints[Math.max(0, Math.min(currentStage, topoPoints.length - 1))] || topoPoints[0];
+  const stageWindowEnd = Math.min(stages.length - 1, currentStage + 1);
+  const lowerWavePath = Array.from({ length: 28 }).map((_, index) => {
+    const x = 18 + (index / 27) * 188;
+    const amplitude = 9 + Math.max(0, 0.22 - velocity) * 28;
+    const y = 42 + Math.sin((index / 27) * Math.PI * 2.3 + heatStage * 0.8) * amplitude * 0.35;
+    return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(' ');
 
   const faqs = [
     { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FORTIFY OS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
@@ -1844,47 +1867,102 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
                 </div>
 
                 <div className="fo-hero-ops" style={{ display: 'grid', gap: 10, alignContent: 'start' }}>
-                  <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 12 }}>
-                    <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: 10 }}>Live Readout</div>
-                    <div className="fo-hero-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
-                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
-                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Current Stage</div>
-                        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1, color: accent, fontWeight: 700 }}>{currentStage}</div>
-                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>{stages[currentStage]?.name || 'Chaos'}</div>
-                      </div>
-                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
-                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Velocity</div>
-                        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1, color: velocity < 0.1 ? t.danger : accent, fontWeight: 700 }}>{velocity.toFixed(2)}</div>
-                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>{velocity < 0.1 ? 'Threat state' : 'Nominal flow'}</div>
-                      </div>
-                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
-                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Runway</div>
-                        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1, color: runway != null && runway < 30 ? t.danger : t.textPrimary, fontWeight: 700 }}>{runway != null ? `${runway}d` : '—'}</div>
-                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>Survival buffer</div>
-                      </div>
-                      <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 10px 12px' }}>
-                        <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Investment Gate</div>
-                        <div style={{ marginTop: 6, fontSize: 20, lineHeight: 1.1, color: currentStage >= 3 ? '#00ffff' : t.warn, fontWeight: 700 }}>{currentStage >= 3 ? 'Unlocked' : 'Locked'}</div>
-                        <div style={{ marginTop: 6, fontSize: 12, color: t.textSecondary }}>{currentStage >= 3 ? 'Protocols active' : 'Stage 3 required'}</div>
-                      </div>
+                  <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 12, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+                      <div style={{ fontSize: 10, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Strategic Altitude Schematic</div>
+                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Operator altitude // stage {currentStage}</div>
                     </div>
-                  </div>
-
-                  <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 12 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 10, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                      <span>Stage Pressure</span>
-                      <span>{stages[currentStage]?.name || 'Chaos'}</span>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4 }}>
-                      {stages.map((s) => {
-                        const active = currentStage === s.n;
-                        const passed = currentStage > s.n;
+                    <svg viewBox={`0 0 ${topoWidth} ${topoHeight}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} aria-label="Stage altitude schematic">
+                      <defs>
+                        <linearGradient id="heroTopoStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#ff9900" />
+                          <stop offset="50%" stopColor="#00ffff" />
+                          <stop offset="100%" stopColor="#7c3aed" />
+                        </linearGradient>
+                        <linearGradient id="heroTopoFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor={isDark ? 'rgba(255,153,0,0.24)' : 'rgba(232,133,15,0.22)'} />
+                          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+                        </linearGradient>
+                      </defs>
+                      {Array.from({ length: 7 }).map((_, index) => (
+                        <line key={`v-grid-${index}`} x1={topoLeft + (index / 6) * (topoRight - topoLeft)} y1={14} x2={topoLeft + (index / 6) * (topoRight - topoLeft)} y2={topoBottom + 8} stroke={isDark ? 'rgba(255,153,0,0.08)' : 'rgba(232,133,15,0.10)'} strokeWidth="1" />
+                      ))}
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <line key={`h-grid-${index}`} x1={topoLeft} y1={28 + index * 38} x2={topoRight} y2={28 + index * 38} stroke={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'} strokeWidth="1" />
+                      ))}
+                      <path d={topoFill} fill="url(#heroTopoFill)" opacity="0.9" />
+                      <path d={topoLine} fill="none" stroke="url(#heroTopoStroke)" strokeWidth="2.2" />
+                      {topoPoints.map((point) => {
+                        const locked = blueprintLocks.includes(point.n);
+                        const active = currentStage === point.n;
                         return (
-                          <div key={`hero-stage-${s.n}`} style={{ height: 44, border: `1px solid ${active ? s.color : t.borderDim}`, background: active ? `${s.color}18` : passed ? `${accent}0F` : 'transparent', color: active ? s.color : passed ? t.textPrimary : t.textGhost, display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 700, transition: 'all 0.35s ease' }}>
-                            {s.n}
-                          </div>
+                          <g key={`topo-point-${point.n}`}>
+                            <line x1={point.x - 6} y1={point.y} x2={point.x + 6} y2={point.y} stroke={active ? '#ff9900' : locked ? '#ff0000' : '#00ffff'} strokeWidth="1.2" />
+                            <line x1={point.x} y1={point.y - 6} x2={point.x} y2={point.y + 6} stroke={active ? '#ff9900' : locked ? '#ff0000' : '#00ffff'} strokeWidth="1.2" />
+                            <circle cx={point.x} cy={point.y} r="2.5" fill={active ? '#ff9900' : locked ? '#ff0000' : '#00ffff'} />
+                            <text x={point.x} y={topoBottom + 18} textAnchor="middle" fill={active ? '#ff9900' : t.textGhost} style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>{point.n}</text>
+                          </g>
                         );
                       })}
+                      <rect x={activeTopoPoint.x - 16} y={activeTopoPoint.y - 16} width="32" height="32" fill="none" stroke="#ff9900" strokeWidth="1.3" opacity="0.9" />
+                      <rect x={activeTopoPoint.x - 22} y={activeTopoPoint.y - 22} width="44" height="44" fill="none" stroke={isDark ? 'rgba(255,153,0,0.35)' : 'rgba(232,133,15,0.32)'} strokeWidth="1" strokeDasharray="4 4" opacity="0.85" />
+                      <text x={activeTopoPoint.x + 18} y={Math.max(18, activeTopoPoint.y - 10)} fill="#ff9900" style={{ fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+                        STAGE {currentStage}
+                      </text>
+                      <text x={topoLeft} y={18} fill={t.textGhost} style={{ fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+                        CHAOS
+                      </text>
+                      <text x={topoRight - 34} y={18} fill={t.textGhost} style={{ fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+                        LEGACY
+                      </text>
+                      <text x={topoLeft} y={topoBottom + 32} fill={t.textGhost} style={{ fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+                        ENFORCEMENT GATE: STAGE {currentStage < 3 ? '03' : `0${Math.min(7, stageWindowEnd)}`}
+                      </text>
+                    </svg>
+                  </div>
+
+                  <div className="fo-hero-telemetry" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 112px', gap: 10 }}>
+                    <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 8, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                        <span>Sub-Link 311</span>
+                        <span>{velocity < 0.1 ? 'Erratic' : 'Nominal'}</span>
+                      </div>
+                      <svg viewBox="0 0 210 58" style={{ width: '100%', height: 58, display: 'block' }} aria-label="Velocity telemetry">
+                        {Array.from({ length: 9 }).map((_, index) => (
+                          <line key={`telemetry-grid-${index}`} x1="0" y1={8 + index * 6} x2="210" y2={8 + index * 6} stroke={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'} strokeWidth="1" />
+                        ))}
+                        <path d={lowerWavePath} fill="none" stroke={velocity < 0.1 ? '#ff9900' : '#00ffff'} strokeWidth="1.6" />
+                      </svg>
+                      <div className="fo-hero-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 6 }}>
+                        {[
+                          { label: 'Stage', value: currentStage, tone: accent },
+                          { label: 'Velocity', value: velocity.toFixed(2), tone: velocity < 0.1 ? t.danger : accent },
+                          { label: 'Runway', value: runway != null ? `${runway}d` : '—', tone: runway != null && runway < 30 ? t.danger : t.textPrimary },
+                          { label: 'Gate', value: currentStage >= 3 ? 'Open' : 'Locked', tone: currentStage >= 3 ? '#00ffff' : t.warn },
+                        ].map((item) => (
+                          <div key={item.label} style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8 }}>
+                            <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{item.label}</div>
+                            <div style={{ marginTop: 5, fontSize: 14, color: item.tone, fontWeight: 700 }}>{item.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 12, display: 'grid', alignContent: 'space-between' }}>
+                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Altitude Ruler</div>
+                      <div style={{ position: 'relative', height: 124, borderLeft: `1px solid ${t.borderMid}`, margin: '0 auto', width: 38 }}>
+                        {stages.map((s, index) => {
+                          const top = (1 - (Math.log(index + 1) / Math.log(stages.length))) * 100;
+                          const active = currentStage === s.n;
+                          return (
+                            <div key={`ruler-${s.n}`} style={{ position: 'absolute', left: 0, right: 0, top: `${top}%`, transform: 'translateY(-50%)' }}>
+                              <div style={{ width: active ? 22 : 14, height: 1, background: active ? '#ff9900' : t.borderMid, marginLeft: 0 }} />
+                              <div style={{ position: 'absolute', left: 18, top: -6, fontSize: 9, color: active ? '#ff9900' : t.textGhost }}>{s.n}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em', textAlign: 'center' }}>Sub-Link 296</div>
                     </div>
                   </div>
                 </div>
@@ -8662,11 +8740,13 @@ function FortifyOSApp() {
   .fo-modgrid { grid-template-columns: 1fr !important; }
   .fo-command-grid { grid-template-columns: minmax(0, 1fr) !important; }
   .fo-hero-shell { grid-template-columns: minmax(0, 1fr) !important; }
+  .fo-hero-telemetry { grid-template-columns: minmax(0, 1fr) !important; }
   .fo-blueprint-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
   .fo-blueprint-meta { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 520px) {
   .fo-main { padding-left: 10px; padding-right: 10px; }
+  .fo-hero-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .fo-blueprint-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 
