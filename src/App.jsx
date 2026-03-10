@@ -1673,7 +1673,7 @@ function RefusalOverlay({ enforcement, onRoute }) {
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
-function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onBitcoin, onSettings, latest }) {
+function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onMacroIntel, onBitcoin, onSettings, latest }) {
   const [boot, setBoot] = useState(0);
   const [bootComplete, setBootComplete] = useState(false);
   const [heatStage, setHeatStage] = useState(0);
@@ -2225,7 +2225,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 // ═══════════════════════════════════════════════════
 // DOCUMENTATION VIEW
 // ═══════════════════════════════════════════════════
-function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onBitcoin, onSettings }) {
+function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onMacroIntel, onBitcoin, onSettings }) {
   const [activeSection, setActiveSection] = useState(null);
   const [expandedTier, setExpandedTier] = useState({ start: true, core: true, data: false, advanced: false, why: false });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -7041,7 +7041,6 @@ function TransactionsMod({ latest, visible, t, onImport }) {
 function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onMacroIntel, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
-  const [now, setNow] = useState(() => new Date());
   const quickMenuRef = useRef(null);
   useMenuDismiss(quickMenuOpen, setQuickMenuOpen, quickMenuRef);
   const vis = settings.visibleModules;
@@ -7068,22 +7067,6 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   const _urgentOpts = _opts.filter(o => { if (!o.expDate) return false; const d = Math.floor((new Date(o.expDate) - new Date()) / 86400000); return d >= 0 && d <= 7; });
   if (_urgentOpts.length > 0) ac.red += _urgentOpts.length;
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 30000);
-    return () => clearInterval(id);
-  }, []);
-
-  // ── Net Worth banner computations ──
-  const _nw = latest?.netWorth || {};
-  const _nwAssets = _nw.assets || {};
-  const _cryptoV = (latest?.portfolio?.crypto || []).reduce((s, c) => s + (Number(c.amount) || 0) * (Number(c.lastPrice) || 0), 0);
-  const _eqV = (latest?.portfolio?.equities || []).reduce((s, e) => s + (Number(e.shares) || 0) * (Number(e.lastPrice) || 0), 0);
-  const _tA = (_nwAssets.checking || 0) + (_nwAssets.savings || 0) + (_nwAssets.eFund || 0) + (_nwAssets.other || 0) + _eqV + _cryptoV;
-  const _tL = Object.values(_nw.liabilities || {}).reduce((s, v) => s + (v || 0), 0);
-  const _nwTotal = _nw.total || (_tA - _tL);
-  const _prevNW = snapshots.length > 1 ? (snapshots[snapshots.length - 2]?.netWorth?.total || 0) : 0;
-  const _nwDelta = _nwTotal - _prevNW;
-  const _equityPct = _tA > 0 ? Math.round((_nwTotal / _tA) * 100) : 0;
   const navItems = [
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: null, current: true },
@@ -7097,40 +7080,6 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <AppTopbar t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
     <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 12px 52px' }}>
-      <div style={{ marginBottom: 8, border: `1px solid ${t.borderDim}`, background: t.surface, padding: '12px 16px' }}>
-        {/* Row 1 — greeting (left) + net worth number (right) */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: (_nwTotal !== 0 || _tA > 0) ? 10 : 0 }}>
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.01em' }}>{timeGreeting(now)}</div>
-            <div style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-            </div>
-          </div>
-          {(_nwTotal !== 0 || _tA > 0) && (
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: 12, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Net Worth</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'flex-end' }}>
-                <span style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}><AnimNum value={_nwTotal} /></span>
-                {snapshots.length > 1 && <span style={{ fontSize: 13, padding: '1px 7px', background: _nwDelta >= 0 ? t.accentMuted : `${t.danger}25`, color: _nwDelta >= 0 ? t.accent : t.danger }}>{_nwDelta >= 0 ? '↑' : '↓'} {fmt(Math.abs(_nwDelta))}</span>}
-              </div>
-            </div>
-          )}
-        </div>
-        {/* Row 2 — full-width equity bar + labels */}
-        {_tA > 0 && (
-          <div>
-            <div style={{ display: 'flex', height: 6, overflow: 'hidden', marginBottom: 5, gap: 2 }}>
-              <div style={{ width: `${_equityPct}%`, background: t.accent, opacity: 0.85, transition: 'width 0.8s ease', minWidth: 2 }} />
-              <div style={{ flex: 1, background: `${t.danger}50` }} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, letterSpacing: '0.04em' }}>
-              <span style={{ color: t.accent }}>{_equityPct}% Equity Owned</span>
-              <span style={{ color: t.textGhost }}>Assets {fmt(_tA)} · Debt {fmt(_tL)}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* ═══ DAILY LAW HERO — Right below greeting, above all modules ═══ */}
       <div style={{ marginBottom: 12 }}>
         <DailyLawHero t={t} />
@@ -7262,7 +7211,7 @@ const FED_DAILY_BRIEFS = [
 
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
-function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onBitcoin, onSettings, onDocs }) {
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onMacroIntel, onBitcoin, onSettings, onDocs }) {
   const [intel, setIntel] = useState(null);
   const [macro, setMacro] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -8233,7 +8182,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 // ═══════════════════════════════════════════════════
 // SETTINGS VIEW — Full-page, consistent with Docs/Radar
 // ═══════════════════════════════════════════════════
-function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onBitcoin, onDocs }) {
+function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onMacroIntel, onBitcoin, onDocs }) {
   const [confirm, setConfirm] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -8881,11 +8830,11 @@ function FortifyOSApp() {
       {/* Global CRT scanline overlay — applied to all pages */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFY OS initializing...</div></div>}
-      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
-      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
+      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
+      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
-      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
+      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
       {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
