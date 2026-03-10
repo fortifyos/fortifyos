@@ -2,9 +2,9 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "daily_log",
   "title": "DailyLog",
-  "description": "The full cumulative log for a single calendar day (today-log.json).",
+  "description": "The full cumulative rolling log for a single calendar day (today-log.json). Entries are appended chronologically across the four daily session checkpoints.",
   "type": "object",
-  "required": ["date", "status", "timezone", "regimeMode", "lastUpdated", "entries"],
+  "required": ["date", "status", "entries", "entryCount", "lastUpdated"],
   "properties": {
     "date": {
       "type": "string",
@@ -13,25 +13,31 @@
     },
     "status": {
       "type": "string",
-      "enum": ["active", "finalized"]
-    },
-    "timezone": {
-      "type": "string",
-      "const": "America/New_York"
-    },
-    "regimeMode": {
-      "type": "string"
-    },
-    "lastUpdated": {
-      "type": "string",
-      "format": "date-time"
+      "enum": ["active", "archived"],
+      "description": "'active' while the day is in progress; 'archived' after finalize_day() runs."
     },
     "entries": {
       "type": "array",
-      "description": "NarrativeEntry array, newest entry first.",
+      "description": "Array of NarrativeEntry objects in chronological order (oldest first, newest last).",
       "items": {
         "$ref": "narrative_entry.schema.json"
       }
+    },
+    "entryCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Convenience count matching entries.length."
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the most recent write to this log."
+    },
+    "archivedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this log was archived. Null while status is 'active'."
     }
-  }
+  },
+  "additionalProperties": false
 }

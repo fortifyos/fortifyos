@@ -2,40 +2,99 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "regime_state",
   "title": "RegimeState",
-  "description": "Current macro regime classification and dimensional scores.",
+  "description": "Full macro regime classification, scores, and rule-generated contextual strings for a single session checkpoint.",
   "type": "object",
-  "required": ["timestamp", "regimeMode", "confidence", "scores", "dominantDrivers"],
+  "required": [
+    "session",
+    "sessionLabel",
+    "timestamp",
+    "regimeMode",
+    "regimeDescription",
+    "confidence",
+    "scores",
+    "dominantDrivers",
+    "supportingEvidence",
+    "watchLevels",
+    "invalidationConditions"
+  ],
   "properties": {
+    "session": {
+      "type": "string",
+      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"],
+      "description": "Session key for this regime state."
+    },
+    "sessionLabel": {
+      "type": "string",
+      "description": "Human-readable session label, e.g. 'Pre-Market (08:00 ET)'."
+    },
     "timestamp": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this regime state was computed."
     },
     "regimeMode": {
       "type": "string",
-      "enum": ["risk_on", "risk_off", "mixed", "inflation_shock", "deflation_shock", "liquidity_crisis", "vol_squeeze"]
+      "enum": [
+        "risk_on",
+        "risk_off",
+        "inflation_shock",
+        "dollar_stress",
+        "liquidity_expansion",
+        "crypto_speculation",
+        "growth_scare",
+        "mixed"
+      ],
+      "description": "Classified macro regime mode string."
+    },
+    "regimeDescription": {
+      "type": "string",
+      "description": "Human-readable description of the active regime mode."
     },
     "confidence": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
-      "description": "Regime classification confidence as a decimal (0.0–1.0)."
+      "description": "Regime classification confidence as a decimal 0.0–1.0."
     },
     "scores": {
       "$ref": "#/definitions/RegimeScores"
     },
+    "priorRegimeMode": {
+      "type": ["string", "null"],
+      "description": "Regime mode from the previous engine run. Null on first run."
+    },
+    "regimeChanged": {
+      "type": "boolean",
+      "description": "True if regimeMode differs from priorRegimeMode."
+    },
     "dominantDrivers": {
       "type": "array",
+      "description": "Rule-generated strings naming the top 1–3 dimension drivers.",
+      "items": { "type": "string" },
+      "maxItems": 3
+    },
+    "supportingEvidence": {
+      "type": "array",
+      "description": "Rule-generated strings describing supporting evidence across dimensions.",
+      "items": { "type": "string" }
+    },
+    "watchLevels": {
+      "type": "array",
+      "description": "Rule-generated critical price/level thresholds to monitor. Max 5.",
       "items": { "type": "string" },
       "maxItems": 5
     },
-    "uncertaintyFlags": {
+    "invalidationConditions": {
       "type": "array",
+      "description": "Rule-generated strings naming conditions that would break the current regime thesis.",
       "items": { "type": "string" }
     }
   },
+  "additionalProperties": false,
   "definitions": {
     "RegimeScores": {
       "type": "object",
+      "description": "Dimension scores on an integer scale -2 (strongly negative) to +2 (strongly positive).",
       "required": [
         "liquidity",
         "inflationPressure",
@@ -46,13 +105,48 @@
         "cryptoRiskAppetite"
       ],
       "properties": {
-        "liquidity":           { "type": "integer", "minimum": -2, "maximum": 2 },
-        "inflationPressure":   { "type": "integer", "minimum": -2, "maximum": 2 },
-        "growthHealth":        { "type": "integer", "minimum": -2, "maximum": 2 },
-        "volatilityStress":    { "type": "integer", "minimum": -2, "maximum": 2 },
-        "dollarPressure":      { "type": "integer", "minimum": -2, "maximum": 2 },
-        "breadthQuality":      { "type": "integer", "minimum": -2, "maximum": 2 },
-        "cryptoRiskAppetite":  { "type": "integer", "minimum": -2, "maximum": 2 }
+        "liquidity": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Net Fed liquidity direction score."
+        },
+        "inflationPressure": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Inflationary pressure score from commodities and yields."
+        },
+        "growthHealth": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Growth health proxy from SPX trend and VIX level."
+        },
+        "volatilityStress": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Volatility stress score from VIX level and change."
+        },
+        "dollarPressure": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Dollar direction score from DXY movement."
+        },
+        "breadthQuality": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Market breadth quality proxy from SPX/BTC divergence and VIX."
+        },
+        "cryptoRiskAppetite": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2,
+          "description": "Crypto risk appetite score from BTC trend relative to SPX."
+        }
       },
       "additionalProperties": false
     }

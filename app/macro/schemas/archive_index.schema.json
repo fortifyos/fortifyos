@@ -2,37 +2,72 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "archive_index",
   "title": "ArchiveIndex",
-  "description": "Rolling index of archived macro intel days (archive-index.json).",
+  "description": "Rolling index of archived FORTIFYOS Macro Intel daily logs (archive-index.json). Ordered most-recent first. Maximum 90 entries.",
   "type": "array",
   "items": {
-    "$ref": "#/definitions/ArchiveEntry"
+    "$ref": "#/definitions/ArchiveIndexItem"
   },
+  "maxItems": 90,
   "definitions": {
-    "ArchiveEntry": {
+    "ArchiveIndexItem": {
       "type": "object",
-      "required": ["date", "regimeMode", "dominantDrivers", "entryCount", "tags"],
+      "description": "Summary metadata for a single archived day.",
+      "required": [
+        "date",
+        "regimeMode",
+        "dominantDrivers",
+        "entryCount",
+        "archivePath",
+        "archivedAt",
+        "status"
+      ],
       "properties": {
         "date": {
           "type": "string",
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "ISO date string for the archived day."
         },
         "regimeMode": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "risk_on",
+            "risk_off",
+            "inflation_shock",
+            "dollar_stress",
+            "liquidity_expansion",
+            "crypto_speculation",
+            "growth_scare",
+            "mixed"
+          ],
+          "description": "Most common regime mode for the day (derived from all entries in the day's log)."
         },
         "dominantDrivers": {
           "type": "array",
+          "description": "De-duplicated list of dominant driver strings from all entries (max 5).",
           "items": { "type": "string" },
           "maxItems": 5
         },
         "entryCount": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Number of NarrativeEntry records in the archived daily log."
         },
-        "tags": {
-          "type": "array",
-          "items": { "type": "string" }
+        "archivePath": {
+          "type": "string",
+          "description": "Absolute file system path to the archived YYYY-MM-DD.json file."
+        },
+        "archivedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when finalize_day() ran for this date."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["archived"],
+          "description": "Always 'archived' for index entries."
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }

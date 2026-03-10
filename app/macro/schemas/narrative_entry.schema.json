@@ -2,12 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "narrative_entry",
   "title": "NarrativeEntry",
-  "description": "A single timed macro intelligence update entry.",
+  "description": "A single timed macro intelligence update produced by the FORTIFYOS Macro Intel Engine narrator (AI or rule-based).",
   "type": "object",
   "required": [
-    "timestamp",
-    "runTime",
     "session",
+    "sessionLabel",
+    "timestamp",
+    "regimeMode",
+    "confidence",
+    "source",
     "headline",
     "dominantStory",
     "crossAssetConnections",
@@ -15,59 +18,92 @@
     "operatorPosture",
     "watchNext",
     "confidenceCommentary",
-    "signalScores",
-    "drivers"
+    "uncertaintyFlags"
   ],
   "properties": {
-    "timestamp": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "runTime": {
-      "type": "string",
-      "description": "Human-readable run time, e.g. '08:00 AM ET'."
-    },
     "session": {
       "type": "string",
-      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"]
+      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"],
+      "description": "Session key for this entry."
+    },
+    "sessionLabel": {
+      "type": "string",
+      "description": "Human-readable session label, e.g. 'Pre-Market (08:00 ET)'."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this entry was generated."
+    },
+    "regimeMode": {
+      "type": "string",
+      "enum": [
+        "risk_on",
+        "risk_off",
+        "inflation_shock",
+        "dollar_stress",
+        "liquidity_expansion",
+        "crypto_speculation",
+        "growth_scare",
+        "mixed"
+      ],
+      "description": "Regime mode active at the time of this entry."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Regime confidence at the time of this entry (0.0–1.0)."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["ai", "rule_based", "rule_based_fallback"],
+      "description": "Narration source: 'ai' = Anthropic API, 'rule_based' = deterministic fallback, 'rule_based_fallback' = emergency fallback when prompt payload parsing fails."
     },
     "headline": {
       "type": "string",
-      "maxLength": 120
+      "maxLength": 200,
+      "description": "One-sentence summary specific to this checkpoint. No generic phrasing."
     },
     "dominantStory": {
-      "type": "string"
+      "type": "string",
+      "description": "2–4 sentence structural narrative explaining the regime mechanism, not just asset prices."
     },
     "crossAssetConnections": {
       "type": "array",
+      "description": "Specific cross-asset relationship observations. Each item must reference at least two assets.",
       "items": { "type": "string" },
-      "minItems": 2,
-      "maxItems": 8
+      "minItems": 1,
+      "maxItems": 6
     },
     "whatChangedSinceLastReport": {
       "type": "array",
-      "items": { "type": "string" }
+      "description": "Specific deltas vs the prior checkpoint (not vs yesterday close).",
+      "items": { "type": "string" },
+      "minItems": 1
     },
     "operatorPosture": {
-      "type": "string"
+      "type": "string",
+      "description": "Concrete directional stance for the operator. No vague hedging phrases."
     },
     "watchNext": {
       "type": "array",
-      "items": { "type": "string" }
+      "description": "Specific levels, events, or relationships to monitor at the next checkpoint.",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 6
     },
     "confidenceCommentary": {
-      "type": "string"
+      "type": "string",
+      "description": "1–2 sentences on regime confidence and primary source of uncertainty."
     },
     "uncertaintyFlags": {
       "type": "array",
-      "items": { "type": "string" }
-    },
-    "signalScores": {
-      "$ref": "regime_state.schema.json#/definitions/RegimeScores"
-    },
-    "drivers": {
-      "type": "array",
-      "items": { "type": "string" }
+      "description": "Specific conditions that would invalidate the current regime read.",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 5
     }
-  }
+  },
+  "additionalProperties": true
 }

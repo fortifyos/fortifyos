@@ -2,54 +2,82 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "market_snapshot",
   "title": "MarketSnapshot",
-  "description": "Point-in-time cross-asset market data used by the Macro Intel Engine.",
+  "description": "Point-in-time cross-asset market data produced by the FORTIFYOS Macro Intel Engine for a single session checkpoint.",
   "type": "object",
-  "required": ["timestamp", "timezone", "session", "assets"],
+  "required": ["session", "timestamp", "assets"],
   "properties": {
+    "session": {
+      "type": "string",
+      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"],
+      "description": "Session key for this snapshot."
+    },
     "timestamp": {
       "type": "string",
       "format": "date-time",
-      "description": "ISO 8601 timestamp with timezone offset (America/New_York)."
-    },
-    "timezone": {
-      "type": "string",
-      "const": "America/New_York"
-    },
-    "session": {
-      "type": "string",
-      "enum": ["global_markets", "pre_market", "mid_session", "evening_wrap"]
+      "description": "ISO 8601 timestamp with timezone offset (America/New_York) at the moment this snapshot was built."
     },
     "assets": {
-      "type": "object",
-      "description": "Map of asset key → AssetData.",
-      "additionalProperties": {
-        "$ref": "#/definitions/AssetData"
-      }
+      "type": "array",
+      "description": "Ordered array of AssetSnapshot objects. One entry per tracked asset.",
+      "items": {
+        "$ref": "#/definitions/AssetSnapshot"
+      },
+      "minItems": 0
     }
   },
+  "additionalProperties": false,
   "definitions": {
-    "AssetData": {
+    "AssetSnapshot": {
       "type": "object",
-      "required": ["key", "label", "value", "changeSinceLast", "pctSinceLast", "changeVsClose", "pctVsClose", "impactTag"],
+      "description": "Price and delta data for a single tracked asset at this checkpoint.",
+      "required": ["key", "label", "value", "changeSinceLast", "pctSinceLast", "changeVsClose", "pctVsClose", "impactTag", "meta"],
       "properties": {
-        "key": { "type": "string" },
-        "label": { "type": "string" },
-        "value": { "type": "number" },
-        "changeSinceLast": { "type": "number" },
-        "pctSinceLast": { "type": "number" },
-        "changeVsClose": { "type": "number" },
-        "pctVsClose": { "type": "number" },
+        "key": {
+          "type": "string",
+          "description": "Machine identifier, e.g. 'spx', 'btc', 'vix', 'gold', 'wti', 'dxy', 'tnx'."
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable asset name, e.g. 'S&P 500'."
+        },
+        "value": {
+          "type": ["number", "null"],
+          "description": "Current numeric value. Null when data is unavailable."
+        },
+        "changeSinceLast": {
+          "type": ["number", "null"],
+          "description": "Absolute change from the prior engine run's snapshot. Null when no prior run exists."
+        },
+        "pctSinceLast": {
+          "type": ["number", "null"],
+          "description": "Percentage change from the prior engine run's snapshot. Null when no prior run exists."
+        },
+        "changeVsClose": {
+          "type": ["number", "null"],
+          "description": "Absolute change from the prior session close stored in macro.json. Null when unavailable."
+        },
+        "pctVsClose": {
+          "type": ["number", "null"],
+          "description": "Percentage change from the prior session close. Null when unavailable."
+        },
         "impactTag": {
           "type": "string",
-          "enum": ["risk_positive", "risk_negative", "inflationary", "deflationary", "dollar_stress", "defensive", "neutral"]
+          "enum": [
+            "strongly_bullish",
+            "bullish",
+            "neutral",
+            "bearish",
+            "strongly_bearish"
+          ],
+          "description": "Qualitative impact classification based on pctVsClose thresholds."
         },
-        "sparkline": {
-          "type": "array",
-          "items": { "type": "number" },
-          "minItems": 2,
-          "maxItems": 20
+        "meta": {
+          "type": "object",
+          "description": "Additional raw fields from macro.json not mapped to top-level fields.",
+          "additionalProperties": true
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }
