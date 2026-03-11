@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 import "./macro-intel.css";
 
 /* ══════════════════════════════════════════════════════════════
-   MACRO INTEL — FORTIFYOS Operator Intelligence Interface
+   MACRO INTEL — FORTIFY OS Operator Intelligence Interface
    Reads from public/macro-intel/ JSON data files.
-   Follows FORTIFYOS design system: terminal-grade, JetBrains Mono.
+   Follows FORTIFY OS design system: terminal-grade, JetBrains Mono.
    ══════════════════════════════════════════════════════════════ */
 
 const BASE = import.meta.env.BASE_URL;

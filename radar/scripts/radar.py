@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ 
-FortifyOS Pre-Market Intelligence Radar generator.
+FORTIFY OS Pre-Market Intelligence Radar generator.
 Outputs:
   - PreMarket_Radar_PREVIEW_YYYY-MM-DD.html (self-contained, charts embedded)
   - latest.json (signals + series data for React-native Macro Sentinel dashboard)
@@ -648,7 +648,7 @@ def render_html(date: dt.date, reports: List[TickerReport], portfolio_risk_img: 
       <div class="stamp">
         DATE: {date.isoformat()}<br/>
         MODE: Macro Sentinel<br/>
-        BUILD: FortifyOS
+        BUILD: FORTIFY OS
       </div>
     </div>
 
@@ -669,7 +669,7 @@ def render_html(date: dt.date, reports: List[TickerReport], portfolio_risk_img: 
       {''.join(blocks)}
     </div>
 
-    <div class="footer">FORTIFYOS • KNOX Macro Sentinel • Output is intentionally terse and scannable.</div>
+    <div class="footer">FORTIFY OS • KNOX Macro Sentinel • Output is intentionally terse and scannable.</div>
   </div>
 </body>
 </html>
@@ -808,7 +808,7 @@ if __name__ == "__main__":
     main()
 
 
-# ---- FORTIFYOS Macro Sentinel metadata (Plus) ----
+# ---- FORTIFY OS Macro Sentinel metadata (Plus) ----
 try:
     RADAR_TZ = os.environ.get("RADAR_TZ", "America/New_York")
 except Exception:

@@ -14,7 +14,7 @@ export default defineConfig(() => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'logo192.png', 'logo512.png', 'robots.txt'],
         manifest: {
-          name: 'FortifyOS: Sovereign Terminal',
+          name: 'FORTIFY OS: Sovereign Terminal',
           short_name: 'Knox v3.0',
           description: 'Architecting an Everlasting Foundation.',
           theme_color: '#000000',

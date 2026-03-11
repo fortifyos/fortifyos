@@ -21,7 +21,7 @@ export async function prfSupported() {
   return !!window.PublicKeyCredential && !!navigator.credentials;
 }
 
-export async function createPasskey({ rpName = 'FortifyOS', userName = 'Primary', userId = 'primary' }) {
+export async function createPasskey({ rpName = 'FORTIFY OS', userName = 'Primary', userId = 'primary' }) {
   const challenge = crypto.getRandomValues(new Uint8Array(32));
   const uid = enc.encode(userId);
 

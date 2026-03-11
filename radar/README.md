@@ -1,4 +1,4 @@
-# FortifyOS Pre-Market Intelligence Radar (Macro Sentinel)
+# FORTIFY OS Pre-Market Intelligence Radar (Macro Sentinel)
 
 This module generates a concise, 2-page max HTML pre-market radar with embedded charts and sends a 6-line Telegram summary + the HTML file.
 

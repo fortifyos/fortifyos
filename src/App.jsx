@@ -17,7 +17,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 /* ═══════════════════════════════════════════════════════════════
-   FortifyOS — UNIFIED v2.3
+   FORTIFY OS — UNIFIED v2.3
    Landing · Universal Sync Engine · Live Dashboard
    Enforcement Layer · Liberation Countdown · Never List
    "Protect first, grow second. Every dollar has a job."
@@ -62,7 +62,7 @@ class AppErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error) {
-    console.error('FortifyOS runtime error:', error);
+    console.error('FORTIFY OS runtime error:', error);
   }
 
   render() {
@@ -1712,7 +1712,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             Your finances.<br />Structured.<br /><span style={{ color: accent }}>Enforced.</span>
           </h1>
           <p style={{ fontSize: 17, color: t.textSecondary, maxWidth: 560, lineHeight: 1.75, marginBottom: 36, fontFamily: mono }}>
-            Drop your bank statement. FortifyOS maps your debt, BNPL, bills, and cash flow — then tells you exactly what to do next. No accounts. No cloud sync. Your data stays on your machine.
+            Drop your bank statement. FORTIFY OS maps your debt, BNPL, bills, and cash flow — then tells you exactly what to do next. No accounts. No cloud sync. Your data stays on your machine.
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             {hasData ? (
@@ -1727,7 +1727,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
             ) : (
               <>
                 <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#fff', fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Launch FortifyOS <ArrowRight size={15} />
+                  Launch FORTIFY OS <ArrowRight size={15} />
                 </button>
                 <a href="https://github.com/fortifyos/fortifyos" target="_blank" rel="noopener noreferrer" style={{ fontFamily: mono, fontSize: 13, color: t.textSecondary, textDecoration: 'none', padding: '14px 0', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: `1px solid ${t.borderDim}` }}>
                   Advanced? Download the repo →
@@ -1745,7 +1745,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Three steps. No setup required.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
             {[
-              { num: '01', title: 'DROP YOUR CSV', desc: 'Export a statement from any bank. Drag it in. FortifyOS reads it — nothing is uploaded anywhere.', Icon: Upload },
+              { num: '01', title: 'DROP YOUR CSV', desc: 'Export a statement from any bank. Drag it in. FORTIFY OS reads it — nothing is uploaded anywhere.', Icon: Upload },
               { num: '02', title: 'FILL THE GAPS', desc: 'Add debts, BNPL installments, and recurring bills manually. Takes five minutes. Full picture complete.', Icon: FileText },
               { num: '03', title: 'EXPORT YOUR SNAPSHOT', desc: 'Download your JSON snapshot. Lives on your machine. Bring it back any session. Nothing stored on our servers.', Icon: Lock },
             ].map((s, i) => (
@@ -1906,9 +1906,9 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'gs', num: '01', label: 'Getting Started',
       content: () => (
         <>
-          <p style={sty.p}>FortifyOS requires no installation and no account. Everything runs in this browser session. Your data never leaves your machine — the only artifact you produce is a JSON snapshot you explicitly export.</p>
+          <p style={sty.p}>FORTIFY OS requires no installation and no account. Everything runs in this browser session. Your data never leaves your machine — the only artifact you produce is a JSON snapshot you explicitly export.</p>
           <div style={sty.h3}>Step 1 — Import your CSV</div>
-          <p style={sty.p}>Export a bank statement from your financial institution as a CSV file. Most major banks support this. Click <strong>Import Statements / Snapshots</strong> from the Settings panel or the sync button on the dashboard. FortifyOS auto-detects the bank format by reading the column headers.</p>
+          <p style={sty.p}>Export a bank statement from your financial institution as a CSV file. Most major banks support this. Click <strong>Import Statements / Snapshots</strong> from the Settings panel or the sync button on the dashboard. FORTIFY OS auto-detects the bank format by reading the column headers.</p>
           <div style={sty.note(accent)}>Supported formats: Chase, BofA, Amex, Capital One, Wells Fargo, Citi. Any other CSV with date/description/amount columns will also parse.</div>
           <div style={sty.h3}>Step 2 — Fill in the gaps manually</div>
           <p style={sty.p}>CSV imports handle transactions. Debts, BNPL installments, and recurring bills need to be added manually. Navigate to each module on the dashboard and enter your current balances, APR, due dates, and payment amounts. This takes approximately five minutes for a typical financial picture.</p>
@@ -1922,7 +1922,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'stages', num: '02', label: 'The 7 Stages',
       content: () => (
         <>
-          <p style={sty.p}>FortifyOS maps your entire financial life onto a 7-stage journey — from chaos to generational wealth. Your current stage is calculated from live data, not assigned as a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
+          <p style={sty.p}>FORTIFY OS maps your entire financial life onto a 7-stage journey — from chaos to generational wealth. Your current stage is calculated from live data, not assigned as a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
           <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
             <thead>
               <tr>
@@ -2013,7 +2013,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'enforcement', num: '06', label: 'Enforcement Engine',
       content: () => (
         <>
-          <p style={sty.p}>This is the core differentiator. Other tools track what happened. FortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
+          <p style={sty.p}>This is the core differentiator. Other tools track what happened. FORTIFY OS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
           <div style={sty.h3}>Financial Velocity</div>
           <div style={sty.formula}>V = (Monthly Savings + Debt Principal Paid) / Total Net Income</div>
           <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
@@ -2046,7 +2046,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'privacy', num: '07', label: 'Privacy',
       content: () => (
         <>
-          <p style={sty.p}>FortifyOS is built on a single privacy principle: your financial data never leaves your machine unless you explicitly export it. This is not a marketing claim — it is the architecture.</p>
+          <p style={sty.p}>FORTIFY OS is built on a single privacy principle: your financial data never leaves your machine unless you explicitly export it. This is not a marketing claim — it is the architecture.</p>
           <div style={sty.h3}>What lives where</div>
           <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
             <thead><tr>
@@ -2063,7 +2063,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
             </tbody>
           </table>
           <div style={sty.h3}>Sentinel auto-redaction</div>
-          <p style={sty.p}>All data processed through FortifyOS passes through the Sentinel filter first. Card numbers are masked to last 4 digits. SSNs are fully masked. Routing numbers are fully redacted. Physical addresses are fully redacted. This is automatic — you do not need to remember to redact anything.</p>
+          <p style={sty.p}>All data processed through FORTIFY OS passes through the Sentinel filter first. Card numbers are masked to last 4 digits. SSNs are fully masked. Routing numbers are fully redacted. Physical addresses are fully redacted. This is automatic — you do not need to remember to redact anything.</p>
           <div style={sty.note(accent)}>Your JSON snapshot contains real financial data after export. Store it in a secure location on your device. Do not sync it to cloud storage without reviewing its contents.</div>
         </>
       )
@@ -2077,7 +2077,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
           <p style={sty.p}>Net Liquidity (WALCL − TGA − RRP), FedWatch rate cut probabilities, yield curve status, and real-time signal board with six macro indicators. Each indicator is scored and assigned a direction. The system synthesizes these into an Operator Posture: Defensive, Neutral, or Aggressive.</p>
           <div style={sty.h3}>Fed Flight School</div>
           <p style={sty.p}>An educational layer that explains how Federal Reserve balance sheet movements, liquidity cycles, and rate decisions affect asset prices and personal financial risk. Understanding why the system says "reduce duration exposure" requires understanding how the Fed operates. Fed Flight School provides that context without requiring a finance degree.</p>
-          <div style={sty.note(t.warn)}>Macro data is for educational context only. FortifyOS is not providing investment, tax, or legal advice. All investment logic remains locked until Stage 3 regardless of macro conditions.</div>
+          <div style={sty.note(t.warn)}>Macro data is for educational context only. FORTIFY OS is not providing investment, tax, or legal advice. All investment logic remains locked until Stage 3 regardless of macro conditions.</div>
         </>
       )
     },
@@ -2088,7 +2088,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'install', num: '09', label: 'Installation',
       content: () => (
         <>
-          <p style={sty.p}>The self-hosted installation runs FortifyOS locally as a Vite/React app. Today, the public repo is a frontend-first install: local browser storage, local static assets, and optional private access layered on later if you choose to add it.</p>
+          <p style={sty.p}>The self-hosted installation runs FORTIFY OS locally as a Vite/React app. Today, the public repo is a frontend-first install: local browser storage, local static assets, and optional private access layered on later if you choose to add it.</p>
           <div style={sty.h3}>Prerequisites</div>
           {['Node.js (v18+)', 'Git'].map((item, i) => (
             <div key={i} style={{ display: 'flex', gap: 10, padding: '5px 0', fontSize: 14, color: t.textSecondary }}>
@@ -2120,8 +2120,8 @@ git clone https://github.com/fortifyos/fortifyos.git
 cd fortifyos
 npm install
 npm run dev`}</pre>
-          <div style={sty.note(t.warn)}>Reality check: the public repo does not currently require Python, Claude Code, or a custom ~/FORTIFY directory to boot. Private remote access such as Tailscale is optional deployment infrastructure, not part of the base install.</div>
-          <div style={sty.note(accent)}>Advanced users can also run FortifyOS as the frontend shell on top of a separate local backend such as <span style={{ fontFamily: mono }}>treasury-system</span>. In that model, Fortify stays the UI while a local engine owns the database, data/ directories, imports, exports, and optional local LLM helpers.</div>
+          <div style={sty.note(t.warn)}>Reality check: the public repo does not currently require Python, Claude Code, or any custom machine-specific folder structure to boot. Private remote access such as Tailscale is optional deployment infrastructure, not part of the base install.</div>
+          <div style={sty.note(accent)}>Advanced users can also run FORTIFY OS as the frontend shell on top of a separate local backend such as <span style={{ fontFamily: mono }}>treasury-system</span>. In that model, Fortify stays the UI while a local engine owns the database, data/ directories, imports, exports, and optional local LLM helpers.</div>
         </>
       )
     },
@@ -2208,7 +2208,7 @@ npm run dev`}</pre>
         <>
           <p style={sty.p}>The self-hosted installation supports three ingestion paths for financial data, prioritized by fidelity.</p>
           <div style={sty.h3}>CSV import (primary)</div>
-          <p style={sty.p}>Drop a .csv bank export. FortifyOS auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting. Any CSV with recognizable date/description/amount columns will parse. The fingerprinting matches column header patterns — no account numbers or routing data used for identification.</p>
+          <p style={sty.p}>Drop a .csv bank export. FORTIFY OS auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting. Any CSV with recognizable date/description/amount columns will parse. The fingerprinting matches column header patterns — no account numbers or routing data used for identification.</p>
           <div style={sty.h3}>Document risk tiers</div>
           <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
             <thead><tr>
@@ -2266,7 +2266,7 @@ npm run dev`}</pre>
       id: 'bitcoin', num: '15', label: 'Bitcoin Layer',
       content: () => (
         <>
-          <p style={sty.p}>Bitcoin is part of the FortifyOS long-term framework, but it is not the entry point. The system's philosophy explicitly rejects premature investing when the financial foundation is weak. Bitcoin belongs in the appropriate stage of the journey.</p>
+          <p style={sty.p}>Bitcoin is part of the FORTIFY OS long-term framework, but it is not the entry point. The system's philosophy explicitly rejects premature investing when the financial foundation is weak. Bitcoin belongs in the appropriate stage of the journey.</p>
           <div style={sty.note(t.danger)}>Bitcoin content and the Sovereign Standard are locked until Stage 3 (Debt Liberation). If you are carrying consumer debt, you are in the wrong section. Return when Stage 3 is mathematically verified.</div>
           <div style={sty.h3}>The Sovereign Standard</div>
           <p style={sty.p}>1 BTC = 1 / 21,000,000th of future global wealth. The Sovereign Standard module presents Bitcoin as a rules-based savings technology with a hard supply cap enforced by global consensus — not as speculation. The Conviction Engine within the module tracks cycle position using the 500-day halving window.</p>
@@ -2301,10 +2301,10 @@ npm run dev`}</pre>
           <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 10 }}>
             {track === 'web' ? 'Web User Track — No setup required' : 'Advanced Track — Self-hosted installation'}
           </div>
-          <h1 style={{ fontFamily: mono, fontSize: 28, fontWeight: 700, color: t.textPrimary, marginBottom: 12 }}>FortifyOS Field Manual</h1>
+          <h1 style={{ fontFamily: mono, fontSize: 28, fontWeight: 700, color: t.textPrimary, marginBottom: 12 }}>FORTIFY OS Field Manual</h1>
           <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 580 }}>
             {track === 'web'
-              ? 'Everything you need to operate FortifyOS through the browser. No installation. No terminal commands. Drop your data, run the system, export your snapshot.'
+              ? 'Everything you need to operate FORTIFY OS through the browser. No installation. No terminal commands. Drop your data, run the system, export your snapshot.'
               : 'Full technical documentation for the self-hosted installation. Covers the complete KNOX stack, file architecture, data ingestion, Sentinel redaction, and remote access setup.'}
           </p>
           {track === 'web' && (

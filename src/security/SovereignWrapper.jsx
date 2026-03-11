@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { db } from '../db/sovereignDB';
-import { isNativeRuntime } from '../platform/isNative';
 import { initSovereignKey, encryptJSON, decryptJSON, hmacB64 } from '../crypto/sovereignCrypto';
 import { setSecureLog } from '../agents/secureLogRef';
 import { computeEventHash, verifyAuditChain } from './auditChain';
 import { passkeysSupported, createPasskey, authenticatePasskey, newPrfSalt } from './passkeys';
 import { ensureSigningKeys, signExport, verifyExportSignature, sha256B64 } from './vaultSigning';
 import { issueAgentToken, verifyAgentToken } from '../agents/leaseTokens';
-import { verifyBiometric } from '../platform/biometrics';
 
 const SovereignContext = createContext(null);
 const UNLOCK_PROBE_MARKER = 'FORTIFYOS_UNLOCK_PROBE_V1';
@@ -63,7 +61,7 @@ export function SovereignProvider({ children }) {
     const sup = await passkeysSupported();
     if (!sup.supported) throw new Error('Passkeys not supported on this device/browser.');
 
-    const { credentialIdB64u } = await createPasskey({ rpName: 'FortifyOS', userName: 'Primary', userId: 'primary' });
+    const { credentialIdB64u } = await createPasskey({ rpName: 'FORTIFY OS', userName: 'Primary', userId: 'primary' });
     // Create PRF salt for platforms that support it
     const prfSaltB64u = newPrfSalt();
 
@@ -102,26 +100,9 @@ export function SovereignProvider({ children }) {
     await refreshPasskeyState();
   };
 
-  const setRequireBiometricNative = async (value) => {
-    const existing = await db.cryptoMeta.get('primary');
-    await db.cryptoMeta.put({
-      id: 'primary',
-      ...(existing || {}),
-      requireBiometricNative: !!value
-    });
-  };
-
   const unlock = async (passphrase) => {
-    // Web requires passphrase; native uses device secret by default.
-    const native = isNativeRuntime();
-    // If require passkey, enforce verification first (fallback path)
+    // Web requires passphrase.
     const meta = await db.cryptoMeta.get('primary');
-
-    // Native: require biometric prompt (default ON) before loading device secret.
-    if (native && (meta?.requireBiometricNative ?? true)) {
-      const bio = await verifyBiometric({ reason: 'Unlock FortifyOS Vault' });
-      if (!bio.ok) throw new Error('Biometric verification required.');
-    }
 
     if (meta?.requirePasskey && meta?.passkeyCredentialIdB64u && !passkeyVerified) {
       throw new Error('Passkey verification required.');
@@ -676,11 +657,6 @@ useEffect(() => {
       registerPasskey,
       verifyPasskey,
       setRequirePasskey,
-      setRequireBiometricNative,
-      getRequireBiometricNative: async () => {
-        const meta = await db.cryptoMeta.get('primary');
-        return meta?.requireBiometricNative ?? true;
-      },
       observation,
       setObservationDays,
       acknowledgeObservation,

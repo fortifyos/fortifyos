@@ -1,8 +1,8 @@
-# FORTIFYOS
+# FORTIFY OS
 
 Local-first financial operating shell built with React and Vite.
 
-FORTIFYOS is the product-facing command center. It can run as a standalone local web app,
+FORTIFY OS is the product-facing command center. It can run as a standalone local web app,
 or advanced users can pair it with a separate local finance engine such as
 `treasury-system` for SQLite-backed data, imports, exports, and optional local LLM helpers.
 
@@ -18,8 +18,9 @@ npm install
 npm run dev
 ```
 
-Default local dev server:
-- `http://127.0.0.1:5173`
+Local dev server:
+- open the local address printed by Vite after `npm run dev`
+- this is often `http://localhost:5173` or a similar local address on your machine
 
 ## Build
 ```bash
@@ -52,8 +53,8 @@ fortifyos/
 ```
 
 ## Optional hybrid local stack
-Advanced users can run FORTIFYOS as the frontend shell on top of a separate local backend
-such as `treasury-system`. In that model, FORTIFYOS remains the UI while the backend owns:
+Advanced users can run FORTIFY OS as the frontend shell on top of a separate local backend
+such as `treasury-system`. In that model, FORTIFY OS remains the UI while the backend owns:
 - `data/raw/` for CSV and PDF statements
 - `data/manual_snapshot/` and `data/manual_bnpl/`
 - `database/` for SQLite
@@ -78,40 +79,5 @@ runtime documentation.
   - window.FORTIFY.agentRequest(req)
 
 ## Notes
-- A PWA cannot guarantee hardware Secure Enclave binding. Passkeys/WebAuthn can be added later as an unlock gate.
-
-
-## Native Secure-Keystore Mode (Dual Runtime)
-
-This project supports:
-- **Web Sovereign Mode (PWA):** GitHub Pages deploy, passphrase unlock.
-- **Native Sovereign Mode (Capacitor):** iOS/Android shell, device-secret stored in OS secure storage.
-
-### Build Native
-1. Install deps
-2. Initialize and add platforms:
-
-```bash
-npm install
-npm run cap:add:ios
-npm run cap:add:android
-```
-
-3. Sync and open:
-
-```bash
-npm run cap:sync
-npm run cap:open:ios
-# or
-npm run cap:open:android
-```
-
-**Note:** Native mode uses `@capacitor-community/secure-storage` to store a device secret. This secret is used to derive encryption keys via HKDF. On platforms where the plugin is backed by Keychain/Keystore, keys become device-bound.
-
-### Biometrics (FaceID/TouchID/Fingerprint)
-
-Native mode can require a biometric prompt before loading the device secret.
-This uses `@capgo/capacitor-native-biometric` (pinned to 8.4.2; fixed versions are >= 8.3.6).
-
-Enable in-app:
-- Settings → **Require Biometrics (Native)** → ON
+- The current supported product surface is the local web app and optional local-first hybrid backend model.
+- Passkeys/WebAuthn can be added as an unlock gate without implying a native mobile shell requirement.
