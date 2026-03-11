@@ -1,15 +1,25 @@
-# FORTIFYOS // KNOX v3.0.3 — Obsidian Override
+# FORTIFYOS
 
-Mobile-first PWA with encrypted local-first vault (Dexie + WebCrypto) and capability-based agent handshake.
+Local-first financial operating shell built with React and Vite.
+
+FORTIFYOS is the product-facing command center. It can run as a standalone local web app,
+or advanced users can pair it with a separate local finance engine such as
+`treasury-system` for SQLite-backed data, imports, exports, and optional local LLM helpers.
 
 ## Requirements
 - Node 18+ recommended
+- Git
 
 ## Install
 ```bash
+git clone https://github.com/YOUR_USERNAME/fortifyos.git
+cd fortifyos
 npm install
 npm run dev
 ```
+
+Default local dev server:
+- `http://127.0.0.1:5173`
 
 ## Build
 ```bash
@@ -18,18 +28,46 @@ npm run preview
 ```
 
 ## Deploy to GitHub Pages
-1) Create repo named `fortifyos`
-2) Push this project to `main`
-3) Run:
+1. Push this project to `main`
+2. Run:
 ```bash
-npm run deploy:pages
+npm run deploy
+```
+3. In GitHub, enable Pages on the `gh-pages` branch
+
+Resulting URL pattern:
+`https://YOUR_USERNAME.github.io/fortifyos/`
+
+## Current repo structure
+```text
+fortifyos/
+  src/              React app, views, modules, Field Manual
+  public/           static assets
+  app/macro/        macro and market data logic/assets
+  radar/            radar config and scripts
+  scripts/          build/update helper scripts
+  archive/          legacy reference docs not part of live product docs
+  package.json      npm scripts and dependencies
+  README.md         install + operating notes
 ```
 
-Then enable GitHub Pages:
-- Settings → Pages → Source: `gh-pages` branch `/root`
+## Optional hybrid local stack
+Advanced users can run FORTIFYOS as the frontend shell on top of a separate local backend
+such as `treasury-system`. In that model, FORTIFYOS remains the UI while the backend owns:
+- `data/raw/` for CSV and PDF statements
+- `data/manual_snapshot/` and `data/manual_bnpl/`
+- `database/` for SQLite
+- `exports/` for reports, calendar, sanitized outputs
+- `llm/` for optional local agents and categorization helpers
 
-URL:
-`https://YOUR_USERNAME.github.io/fortifyos/`
+This hybrid model is local-first. It does not require a cloud backend.
+
+## Docs note
+Older Knox concept docs and prototype assets have been moved to:
+- `archive/legacy-docs/`
+
+Those files are historical reference only and should not be treated as current install or
+runtime documentation.
 
 ## Security model (current)
 - Encrypted-at-rest audit log (AES-GCM)

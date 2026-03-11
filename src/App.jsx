@@ -2088,9 +2088,9 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'install', num: '09', label: 'Installation',
       content: () => (
         <>
-          <p style={sty.p}>The self-hosted installation gives you persistent local storage, the full KNOX protocol stack, and optional private remote access via Tailscale. Setup time: 30–45 minutes on Mac, 45–60 minutes on Windows.</p>
+          <p style={sty.p}>The self-hosted installation runs FortifyOS locally as a Vite/React app. Today, the public repo is a frontend-first install: local browser storage, local static assets, and optional private access layered on later if you choose to add it.</p>
           <div style={sty.h3}>Prerequisites</div>
-          {['Node.js (v18+)', 'Python 3.9+', 'Git', 'Anthropic account (Claude subscription)'].map((item, i) => (
+          {['Node.js (v18+)', 'Git'].map((item, i) => (
             <div key={i} style={{ display: 'flex', gap: 10, padding: '5px 0', fontSize: 14, color: t.textSecondary }}>
               <span style={{ color: accent, fontFamily: mono }}>→</span><span>{item}</span>
             </div>
@@ -2100,26 +2100,28 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
 git clone https://github.com/fortifyos/fortifyos.git
 cd fortifyos
 
-# 2. Install frontend dependencies
+# 2. Install dependencies
 npm install
 
-# 3. Install Claude Code (optional — for full local parsing)
-npm install -g @anthropic/claude-code
+# 3. Start the local development server
+npm run dev
 
-# 4. Create your local data directory
-mkdir -p ~/FORTIFY/{statements,reports,exports}
+# 4. Build a production bundle (optional)
+npm run build
 
-# 5. Launch
-npm run dev`}</pre>
+# 5. Preview the production bundle locally (optional)
+npm run preview`}</pre>
           <div style={sty.h3}>Setup (Windows)</div>
           <pre style={sty.pre}>{`# 1. Install Node.js from nodejs.org
-# 2. Install Python from python.org
-# 3. Open PowerShell as Administrator
+# 2. Install Git
+# 3. Open PowerShell
 
 git clone https://github.com/fortifyos/fortifyos.git
 cd fortifyos
 npm install
 npm run dev`}</pre>
+          <div style={sty.note(t.warn)}>Reality check: the public repo does not currently require Python, Claude Code, or a custom ~/FORTIFY directory to boot. Private remote access such as Tailscale is optional deployment infrastructure, not part of the base install.</div>
+          <div style={sty.note(accent)}>Advanced users can also run FortifyOS as the frontend shell on top of a separate local backend such as <span style={{ fontFamily: mono }}>treasury-system</span>. In that model, Fortify stays the UI while a local engine owns the database, data/ directories, imports, exports, and optional local LLM helpers.</div>
         </>
       )
     },
@@ -2127,22 +2129,29 @@ npm run dev`}</pre>
       id: 'architecture', num: '10', label: 'File Architecture',
       content: () => (
         <>
-          <p style={sty.p}>The self-hosted installation uses a three-layer architecture that strictly separates instructions from data. This is the core privacy guarantee — the two never mix.</p>
-          <pre style={sty.pre}>{`~/FORTIFY/
-├── knox/                    ← KNOX skill package (uploaded to Claude Project)
-│   ├── SKILL.md             CLOUD — instruction files
-│   ├── references/
-│   │   ├── fortify-core.md  CLOUD
-│   │   ├── wealth-roadmap.md CLOUD
-│   │   └── ... (20 .md files total)
-│   ├── bills-registry.csv   LOCAL ONLY — never upload
-│   ├── bnpl-tracker.csv     LOCAL ONLY — never upload
-│   ├── debt-avalanche.csv   LOCAL ONLY — never upload
-│   └── payment-log.csv      LOCAL ONLY — never upload
-├── statements/              ← Drop bank exports here
-└── reports/                 ← Monthly PDFs save here`}</pre>
+          <p style={sty.p}>The public repo is currently organized as a web application plus supporting assets, docs, and scripts. The privacy boundary today is simpler than the older doctrine docs: source code lives in the repo, runtime state lives in the browser, and any future local data directories or backend services are optional layers you add deliberately.</p>
+          <pre style={sty.pre}>{`fortifyos/
+├── src/                     ← React application source
+│   ├── App.jsx              ← Main shell, landing, dashboard, docs, routing
+│   ├── pages/               ← Large top-level views (Bitcoin, Macro Intel)
+│   ├── components/          ← Shared UI components
+│   ├── db/                  ← Local browser vault / state logic
+│   ├── security/            ← Sovereign wrapper and access controls
+│   ├── crypto/              ← Local crypto helpers
+│   └── agents/              ← Agent-facing interfaces
+├── public/                  ← Static assets and publishable data
+│   ├── macro-intel/
+│   ├── macro-sentinel/
+│   ├── radar/
+│   └── tessdata/
+├── app/macro/               ← Macro engine content and jobs
+├── docs/                    ← Product and support documents
+├── scripts/                 ← Utility and maintenance scripts
+├── FORTIFY/knox/            ← Limited Knox-related assets, not a full install layer
+├── package.json             ← Install, dev, build, deploy commands
+└── README.md                ← Generic setup and deployment guidance`}</pre>
           <div style={{ ...sty.note(accent), marginTop: 16 }}>
-            <strong>Rule:</strong> 20 .md files → Claude Project (cloud). 4 .csv files → local machine only. They never mix.
+            <strong>Reality check:</strong> do not document a 20-file cloud KNOX package or 4 generated local CSV registries unless those files are actually shipped and supported in the repo a user clones.
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
             <thead><tr>
@@ -2150,14 +2159,25 @@ npm run dev`}</pre>
             </tr></thead>
             <tbody>
               {[
-                ['Layer 1', 'Claude.ai Project (Cloud)', '20 protocol files — rules, logic, enforcement. Zero real financial data.'],
-                ['Layer 2', 'Local Machine', '4 CSV files — bills, BNPL tracker, debt avalanche, payment log. Your actual numbers.'],
-                ['Layer 3', 'Session Memory', 'Live data submitted per session, processed in real time, written to local CSVs.'],
+                ['Layer 1', 'GitHub Repo / Local Clone', 'Application code, static assets, docs, scripts, and optional Knox-related assets.'],
+                ['Layer 2', 'Browser Storage', 'Session state, local vault data, snapshots, and client-side settings.'],
+                ['Layer 3', 'Optional Extensions', 'Private remote access, backend integrations, or future local data pipelines you choose to add.'],
               ].map(([l, loc, c]) => (
                 <tr key={l}><td style={{ ...sty.td, fontFamily: mono, fontWeight: 700 }}>{l}</td><td style={sty.td}>{loc}</td><td style={sty.td}>{c}</td></tr>
               ))}
             </tbody>
           </table>
+          <div style={sty.h3}>Optional hybrid local stack</div>
+          <pre style={sty.pre}>{`treasury-system/
+├── data/
+│   ├── raw/                 ← bank CSVs, credit card files, PDFs
+│   ├── manual_snapshot/     ← seed finance snapshot
+│   ├── manual_bnpl/         ← hand-maintained BNPL records
+│   └── processed/           ← normalized transaction outputs
+├── database/                ← local SQLite source of truth
+├── exports/                 ← calendar, reports, sanitized outputs
+└── llm/                     ← local-only AI helpers for categorization/explanations`}</pre>
+          <div style={sty.note(t.warn)}>If you document the advanced setup, make it clear that this hybrid model is optional. A user can run the public Fortify frontend by itself, or pair it with a separate local finance engine that owns structured data folders, SQLite, and local LLM helpers.</div>
         </>
       )
     },
