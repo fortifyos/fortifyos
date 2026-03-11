@@ -1674,137 +1674,16 @@ function RefusalOverlay({ enforcement, onRoute }) {
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
 function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onMacroIntel, onBitcoin, onSettings, latest }) {
-  const [boot, setBoot] = useState(0);
-  const [bootComplete, setBootComplete] = useState(false);
-  const [heatStage, setHeatStage] = useState(0);
-  const [faqOpen, setFaqOpen] = useState(null);
-  const [dailyBurn, setDailyBurn] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const accent = t.accent;
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
-  useEffect(() => {
-    setBoot(0);
-    setBootComplete(false);
-    const totalSteps = 10;
-    const stepMs = 600;
-    const id = setInterval(() => {
-      setBoot((p) => {
-        const next = p < totalSteps ? p + 1 : totalSteps;
-        if (next === totalSteps) {
-          clearInterval(id);
-          setBootComplete(true);
-        }
-        return next;
-      });
-    }, stepMs);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    const id = setInterval(() => setHeatStage((prev) => (prev + 1) % 8), 1300);
-    return () => clearInterval(id);
-  }, []);
-
-  // Animated daily burn counter
-  useEffect(() => {
-    const target = 6.05;
-    const duration = 1800;
-    const start = Date.now();
-    const tick = () => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setDailyBurn(eased * target);
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    const delay = setTimeout(tick, 2600);
-    return () => clearTimeout(delay);
-  }, []);
-
-  const ln = (s) => ({ opacity: boot >= s ? 1 : 0, transition: 'opacity 0.35s', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' });
   const currentStage = calcStage(latest || {});
-  const velocity = calcVelocity(latest || {});
-  const runway = runwayDaysFromLatest(latest);
-  const enforcement = deriveEnforcementState(latest);
-  const blueprintLocks = [3, 4, 5, 6, 7];
-  const bootLogs = [
-    'INITIALIZING FORTIFY_OS KERNEL V3.0',
-    'LOADING KNOX SKILL PACKAGE [24 FILES DETECTED]',
-    'SYNCING CLOUD_LAYER PROTOCOLS',
-    'MOUNTING LOCAL_BROWSER_PROFILE',
-    'SENTINEL REDACTION SYSTEM: ONLINE',
-    'BANK FINGERPRINTING SIGNATURES: LOADED',
-    'ENFORCEMENT ENGINE: ACTIVE',
-    'SAFETY RAILS: IMMUTABLE',
-    'PRIVACY CONTAINMENT FIELD: VERIFIED',
-    'OPERATOR CHANNEL: OPEN',
-  ];
-
   const stages = [
-    { n: 0, name: 'Chaos', color: t.danger },
-    { n: 1, name: 'Stable', color: t.warn },
-    { n: 2, name: 'Safe', color: t.warn },
-    { n: 3, name: 'Free', color: accent },
-    { n: 4, name: 'Secure', color: accent },
-    { n: 5, name: 'Independent', color: accent },
-    { n: 6, name: 'Freedom', color: accent },
-    { n: 7, name: 'Legacy', color: accent },
-  ];
-  const stageHeatTone = (index) => {
-    const distance = Math.abs(index - heatStage);
-    if (distance === 0) return { border: '#ff0000', bg: 'rgba(255,0,0,0.12)', glow: '0 0 22px rgba(255,0,0,0.24)' };
-    if (distance === 1) return { border: '#ff9900', bg: 'rgba(255,153,0,0.12)', glow: '0 0 16px rgba(255,153,0,0.18)' };
-    if (distance === 2) return { border: '#c989ff', bg: 'rgba(124,58,237,0.10)', glow: '0 0 10px rgba(124,58,237,0.12)' };
-    return { border: t.borderDim, bg: t.panel, glow: 'none' };
-  };
-  const blueprintBands = [
-    { key: 'defense', code: '00', label: 'Defense', hue: '#52d7d0' },
-    { key: 'liberation', code: '01', label: 'Liberation', hue: '#4aa9d7' },
-    { key: 'wealth', code: '02', label: 'Wealth', hue: '#9147d7' },
-  ];
-  const blueprintSegments = 24;
-  const segmentTone = (bandIndex, segmentIndex) => {
-    const stagePos = (segmentIndex / (blueprintSegments - 1)) * 7;
-    const dist = Math.abs(stagePos - heatStage);
-    const isDanger = stagePos >= 5.5;
-    const base = blueprintBands[bandIndex].hue;
-    if (dist < 0.45) return { bg: '#ff9900', shadow: '0 0 10px rgba(255,153,0,0.45)', opacity: 1 };
-    if (dist < 0.9) return { bg: base, shadow: `0 0 8px ${base}55`, opacity: 0.95 };
-    if (isDanger) return { bg: 'rgba(124,58,237,0.55)', shadow: 'none', opacity: 0.75 };
-    return { bg: `${base}66`, shadow: 'none', opacity: 0.52 };
-  };
-  const topoWidth = 420;
-  const topoHeight = 240;
-  const topoLeft = 18;
-  const topoRight = topoWidth - 22;
-  const topoBottom = topoHeight - 36;
-  const topoTop = 26;
-  const topoPeakSpan = topoBottom - topoTop - 18;
-  const topoPoints = stages.map((s, index) => {
-    const progress = Math.log(index + 1) / Math.log(stages.length);
-    const x = topoLeft + (index / (stages.length - 1)) * (topoRight - topoLeft);
-    const y = topoBottom - progress * topoPeakSpan;
-    return { ...s, x, y };
-  });
-  const topoLine = topoPoints.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(' ');
-  const topoFill = `${topoLine} L ${topoRight} ${topoBottom} L ${topoLeft} ${topoBottom} Z`;
-  const activeTopoPoint = topoPoints[Math.max(0, Math.min(currentStage, topoPoints.length - 1))] || topoPoints[0];
-  const stageWindowEnd = Math.min(stages.length - 1, currentStage + 1);
-  const lowerWavePath = Array.from({ length: 28 }).map((_, index) => {
-    const x = 18 + (index / 27) * 188;
-    const amplitude = 9 + Math.max(0, 0.22 - velocity) * 28;
-    const y = 42 + Math.sin((index / 27) * Math.PI * 2.3 + heatStage * 0.8) * amplitude * 0.35;
-    return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
-  }).join(' ');
-
-  const faqs = [
-    { q: 'Is this a budgeting app?', a: 'No. Budgeting apps track what happened. FORTIFY OS enforces what should happen — and blocks what shouldn\'t. It calculates your debt order, gates investment timing, and fires enforcement protocols when you drift off course.' },
-    { q: 'Is my financial data safe?', a: 'Your data is stored locally in this browser profile. The 20 instruction files in the cloud contain zero financial data. Your actual numbers live in 4 local CSV files and local snapshots—disable browser sync if you want single-device isolation. Sensitive fields (SSNs, account/card numbers, emails, phones) are auto-redacted before any processing or display.' },
-    { q: 'How is this different from YNAB or Mint?', a: 'YNAB asks you to categorize. FORTIFY OS auto-parses your bank exports (CSV/PDF) and screenshots, tells you exactly which debt to pay, how much interest is leaking daily, and blocks investment activity until you\'re debt-free. It enforces a 7-stage wealth journey — they give you a pie chart.' },
-    { q: 'What do I need to get started?', a: 'A Claude subscription ($20/mo) and at least one statement export (CSV, PDF, or screenshot). Setup is ~30–45 minutes on desktop. After that, daily use is 2–5 minutes — upload new statements when needed and run your morning snapshot.' },
-    { q: 'Can I use it on my phone?', a: 'Yes. You can run FORTIFY OS on mobile for daily briefings and dashboard review. Statement ingestion supports CSV, PDF, and screenshot OCR directly in-app.' },
+    { n: 0, name: 'Chaos' }, { n: 1, name: 'Stable' }, { n: 2, name: 'Safe' },
+    { n: 3, name: 'Free' }, { n: 4, name: 'Secure' }, { n: 5, name: 'Independent' },
+    { n: 6, name: 'Freedom' }, { n: 7, name: 'Legacy' },
   ];
 
   const navItems = [
@@ -1813,320 +1692,93 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
     { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
-    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
+  const mono = "'JetBrains Mono', monospace";
+
   return (
-    <div className="fo-home-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
-      {!bootComplete ? (
-        <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
-          <div className="fo-panel-corner" style={{ width: 'min(100%, 860px)', border: `1px solid ${t.borderDim}`, background: t.surface, padding: '20px 18px' }}>
-            <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.22em', marginBottom: 14 }}>
-              System Boot // Privacy Handshake
-            </div>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? '#050505' : '#efefef', padding: '14px 12px', minHeight: 240 }}>
-              {bootLogs.map((line, idx) => (
-                <div key={line} style={{ ...ln(idx + 1), color: idx === 4 || idx === 6 ? accent : t.textSecondary, marginBottom: 8 }}>
-                  &gt; {line}
-                </div>
-              ))}
-              <div style={{ ...ln(8), color: t.textSecondary }}>
-                &gt; AWAITING OPERATOR INPUT<span style={{ animation: 'blink 1s infinite' }}>_</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <>
-      {/* Nav */}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
-      <section style={{ padding: '30px 24px 36px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div className="fo-command-grid" style={{ maxWidth: 1180, margin: '0 auto', display: 'grid', gap: 14, alignItems: 'start' }}>
-            <div className="fo-panel-corner fo-hero-card" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
-              <div className="fo-hero-shell" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)', gap: 18, alignItems: 'stretch' }}>
-                <div>
-                  <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '7px 12px', marginBottom: 18, fontSize: 12, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                    Daily interest burn <strong style={{ color: t.danger, marginLeft: 8 }}>${dailyBurn.toFixed(2)}</strong>
-                  </div>
-                  <h1 className="fo-terror-head" style={{ fontFamily: "'Times New Roman', 'Georgia', serif", fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.88, letterSpacing: '-0.06em', marginBottom: 16, color: t.textPrimary }}>
-                    Strategic
-                    <br />
-                    Command
-                  </h1>
-                  <p style={{ color: t.textSecondary, maxWidth: 620, lineHeight: 1.7, marginBottom: 18 }} className="hero-sub">
-                    FORTIFY OS is a financial operating system. It calculates the stage, verifies the gate, redacts the data locally, and enforces the next lawful move before capital leaks into chaos.
-                  </p>
-                  <div className="hero-buttons" style={{ display: 'flex', gap: 12, justifyContent: 'flex-start', maxWidth: 520, marginBottom: 18 }}>
-                    {hasData ? (
-                      <>
-                        <button onClick={onDashboard} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Open Dashboard <ArrowRight size={16} /></button>
-                        <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Sync New Data</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={onInitialize} style={{ background: '#ff9900', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, padding: '14px 20px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Initiate Sovereign Transition <ArrowRight size={16} /></button>
-                        <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, padding: '14px 20px', cursor: 'pointer', color: t.textSecondary, width: '100%', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Field Manual</button>
-                      </>
-                    )}
-                  </div>
-                  <div style={{ fontSize: 11, color: enforcement ? t.danger : '#00ffff', textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'JetBrains Mono', monospace" }}>
-                    {enforcement ? `System alert // ${enforcement.code}` : bootComplete ? `System status // nominal` : `System status // booting`}
-                  </div>
-                </div>
-
-                <div className="fo-hero-ops" style={{ display: 'grid', gap: 10, alignContent: 'start' }}>
-                  <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 12, minWidth: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-                      <div style={{ fontSize: 10, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Strategic Altitude Schematic</div>
-                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Operator altitude // stage {currentStage}</div>
-                    </div>
-                    <svg viewBox={`0 0 ${topoWidth} ${topoHeight}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }} aria-label="Stage altitude schematic">
-                      <defs>
-                        <linearGradient id="heroTopoStroke" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#ff9900" />
-                          <stop offset="50%" stopColor="#00ffff" />
-                          <stop offset="100%" stopColor="#7c3aed" />
-                        </linearGradient>
-                        <linearGradient id="heroTopoFill" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor={isDark ? 'rgba(255,153,0,0.24)' : 'rgba(232,133,15,0.22)'} />
-                          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-                        </linearGradient>
-                      </defs>
-                      {Array.from({ length: 7 }).map((_, index) => (
-                        <line key={`v-grid-${index}`} x1={topoLeft + (index / 6) * (topoRight - topoLeft)} y1={14} x2={topoLeft + (index / 6) * (topoRight - topoLeft)} y2={topoBottom + 8} stroke={isDark ? 'rgba(255,153,0,0.08)' : 'rgba(232,133,15,0.10)'} strokeWidth="1" />
-                      ))}
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <line key={`h-grid-${index}`} x1={topoLeft} y1={28 + index * 38} x2={topoRight} y2={28 + index * 38} stroke={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'} strokeWidth="1" />
-                      ))}
-                      <path d={topoFill} fill="url(#heroTopoFill)" opacity="0.9" />
-                      <path d={topoLine} fill="none" stroke="url(#heroTopoStroke)" strokeWidth="2.2" />
-                      {topoPoints.map((point) => {
-                        const locked = blueprintLocks.includes(point.n);
-                        const active = currentStage === point.n;
-                        return (
-                          <g key={`topo-point-${point.n}`}>
-                            <line x1={point.x - 6} y1={point.y} x2={point.x + 6} y2={point.y} stroke={active ? '#ff9900' : locked ? '#ff0000' : '#00ffff'} strokeWidth="1.2" />
-                            <line x1={point.x} y1={point.y - 6} x2={point.x} y2={point.y + 6} stroke={active ? '#ff9900' : locked ? '#ff0000' : '#00ffff'} strokeWidth="1.2" />
-                            <circle cx={point.x} cy={point.y} r="2.5" fill={active ? '#ff9900' : locked ? '#ff0000' : '#00ffff'} />
-                            <text x={point.x} y={topoBottom + 18} textAnchor="middle" fill={active ? '#ff9900' : t.textGhost} style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>{point.n}</text>
-                          </g>
-                        );
-                      })}
-                      <rect x={activeTopoPoint.x - 16} y={activeTopoPoint.y - 16} width="32" height="32" fill="none" stroke="#ff9900" strokeWidth="1.3" opacity="0.9" />
-                      <rect x={activeTopoPoint.x - 22} y={activeTopoPoint.y - 22} width="44" height="44" fill="none" stroke={isDark ? 'rgba(255,153,0,0.35)' : 'rgba(232,133,15,0.32)'} strokeWidth="1" strokeDasharray="4 4" opacity="0.85" />
-                      <text x={activeTopoPoint.x + 18} y={Math.max(18, activeTopoPoint.y - 10)} fill="#ff9900" style={{ fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
-                        STAGE {currentStage}
-                      </text>
-                      <text x={topoLeft} y={18} fill={t.textGhost} style={{ fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
-                        CHAOS
-                      </text>
-                      <text x={topoRight - 34} y={18} fill={t.textGhost} style={{ fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
-                        LEGACY
-                      </text>
-                      <text x={topoLeft} y={topoBottom + 32} fill={t.textGhost} style={{ fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
-                        ENFORCEMENT GATE: STAGE {currentStage < 3 ? '03' : `0${Math.min(7, stageWindowEnd)}`}
-                      </text>
-                    </svg>
-                  </div>
-
-                  <div className="fo-hero-telemetry" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 112px', gap: 10 }}>
-                    <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 8, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                        <span>Sub-Link 311</span>
-                        <span>{velocity < 0.1 ? 'Erratic' : 'Nominal'}</span>
-                      </div>
-                      <svg viewBox="0 0 210 58" style={{ width: '100%', height: 58, display: 'block' }} aria-label="Velocity telemetry">
-                        {Array.from({ length: 9 }).map((_, index) => (
-                          <line key={`telemetry-grid-${index}`} x1="0" y1={8 + index * 6} x2="210" y2={8 + index * 6} stroke={isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'} strokeWidth="1" />
-                        ))}
-                        <path d={lowerWavePath} fill="none" stroke={velocity < 0.1 ? '#ff9900' : '#00ffff'} strokeWidth="1.6" />
-                      </svg>
-                      <div className="fo-hero-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 6 }}>
-                        {[
-                          { label: 'Stage', value: currentStage, tone: accent },
-                          { label: 'Velocity', value: velocity.toFixed(2), tone: velocity < 0.1 ? t.danger : accent },
-                          { label: 'Runway', value: runway != null ? `${runway}d` : '—', tone: runway != null && runway < 30 ? t.danger : t.textPrimary },
-                          { label: 'Gate', value: currentStage >= 3 ? 'Open' : 'Locked', tone: currentStage >= 3 ? '#00ffff' : t.warn },
-                        ].map((item) => (
-                          <div key={item.label} style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 8 }}>
-                            <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{item.label}</div>
-                            <div style={{ marginTop: 5, fontSize: 14, color: item.tone, fontWeight: 700 }}>{item.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 12, display: 'grid', alignContent: 'space-between' }}>
-                      <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Altitude Ruler</div>
-                      <div style={{ position: 'relative', height: 124, borderLeft: `1px solid ${t.borderMid}`, margin: '0 auto', width: 38 }}>
-                        {stages.map((s, index) => {
-                          const top = (1 - (Math.log(index + 1) / Math.log(stages.length))) * 100;
-                          const active = currentStage === s.n;
-                          return (
-                            <div key={`ruler-${s.n}`} style={{ position: 'absolute', left: 0, right: 0, top: `${top}%`, transform: 'translateY(-50%)' }}>
-                              <div style={{ width: active ? 22 : 14, height: 1, background: active ? '#ff9900' : t.borderMid, marginLeft: 0 }} />
-                              <div style={{ position: 'absolute', left: 18, top: -6, fontSize: 9, color: active ? '#ff9900' : t.textGhost }}>{s.n}</div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div style={{ fontSize: 9, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em', textAlign: 'center' }}>Sub-Link 296</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="fo-panel-corner" style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
-                <div style={{ fontSize: 12, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.18em' }}>Sovereignty Blueprint</div>
-                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Investment logic gated until stage 3</div>
-              </div>
-              <div className="fo-blueprint-spectrum" style={{ display: 'grid', gap: 12, marginBottom: 14 }}>
-                {blueprintBands.map((band, bandIndex) => (
-                  <div key={band.key} style={{ display: 'grid', gridTemplateColumns: '68px minmax(0,1fr)', gap: 14, alignItems: 'start' }}>
-                    <div style={{ display: 'grid', gap: 4 }}>
-                      <div style={{ fontSize: 18, color: '#ff5b18', fontWeight: 800, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{band.code}</div>
-                      <div style={{ fontSize: 11, color: '#ff8a4c', textTransform: 'uppercase', letterSpacing: '0.14em' }}>{band.label}</div>
-                    </div>
-                    <div>
-                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${blueprintSegments}, minmax(0, 1fr))`, gap: 4, marginBottom: 6 }}>
-                        {Array.from({ length: blueprintSegments }).map((_, segmentIndex) => {
-                          const tone = segmentTone(bandIndex, segmentIndex);
-                          return (
-                            <div
-                              key={`${band.key}-${segmentIndex}`}
-                              style={{
-                                height: 28,
-                                background: tone.bg,
-                                boxShadow: tone.shadow,
-                                opacity: tone.opacity,
-                                border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                                transition: 'all 0.35s ease',
-                              }}
-                            />
-                          );
-                        })}
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                        <span>-100.0</span>
-                        <span>+0</span>
-                        <span>+10.0</span>
-                        <span>+15.0</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="fo-blueprint-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: 4, marginBottom: 10 }}>
-                {stages.map((s) => {
-                  const locked = blueprintLocks.includes(s.n);
-                  const active = currentStage === s.n;
-                  const heat = stageHeatTone(s.n);
-                  return (
-                    <div key={s.n} style={{ position: 'relative', border: `1px solid ${active ? s.color : heat.border}`, background: active ? `${s.color}16` : heat.bg, boxShadow: active ? `0 0 24px ${s.color}26` : heat.glow, padding: '10px 4px', minHeight: 90, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', transition: 'all 0.45s ease' }}>
-                      <div style={{ fontSize: 11, color: active ? s.color : heat.border === t.borderDim ? t.textGhost : heat.border, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.n}</div>
-                      <div style={{ fontSize: 13, color: active ? t.textPrimary : t.textSecondary, fontWeight: 700, lineHeight: 1.2 }}>{s.name}</div>
-                      {locked && <div style={{ fontSize: 10, color: '#ff0000', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Locked</div>}
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="fo-blueprint-meta" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8 }}>
-                <div style={{ borderLeft: `2px solid ${accent}`, paddingLeft: 10 }}>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Gate</div>
-                  <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Stage 3 clears the debt liberation protocol and unlocks investment systems.</div>
-                </div>
-                <div style={{ borderLeft: `2px solid #00ffff`, paddingLeft: 10 }}>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Sentinel</div>
-                  <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Sensitive fields are black-barred before parsing or display.</div>
-                </div>
-                <div style={{ borderLeft: `2px solid ${t.danger}`, paddingLeft: 10 }}>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Authority</div>
-                  <div style={{ marginTop: 4, fontSize: 13, color: t.textPrimary, lineHeight: 1.5 }}>Never List violations halt the operator before capital can misfire.</div>
-                </div>
-              </div>
-            </div>
-        </div>
-      </section>
-
-      {/* ═══ VALUE PROP — 3 COLUMNS ═══ */}
-      <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div className="sync-row-3" style={{ display: 'grid', gap: 16, maxWidth: 780, margin: '0 auto' }}>
-          {[
-            { Icon: ShieldAlert, title: 'Enforces, Not Just Tracks', desc: 'Hard safety rails block financial mistakes before they happen. The Never List halts on violations. Budget Slash fires automatically when you drift.' },
-            { Icon: TrendingUp, title: '7-Stage Gated Journey', desc: 'From chaos to generational wealth — mathematically verified. Investment logic stays locked until Stage 3 (debt = $0). No skipping ahead.' },
-            { Icon: Lock, title: 'Your Data Stays Local', desc: 'Instructions in the cloud. Data stored locally in your browser profile. Disable browser sync for single-device isolation. Sensitive fields are auto-redacted before processing or display.' },
-          ].map((c, i) => (
-            <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 20 }}>
-              <c.Icon size={20} style={{ color: accent, marginBottom: 12 }} />
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, marginBottom: 8, color: t.textPrimary }}>{c.title}</div>
-              <div style={{ fontSize: 14, color: t.textDim, lineHeight: 1.65 }}>{c.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══ HOW IT WORKS — 3 STEPS ═══ */}
-      <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+      {/* ═══ SECTION 01 — HERO ═══ */}
+      <section style={{ padding: '72px 24px 64px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>How It Works</div>
-          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Three steps. Five minutes a day.</h2>
+          <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '6px 12px', marginBottom: 28, fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: mono }}>
+            Local-first · Privacy-enforced · Debt-elimination protocol
+          </div>
+          <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.88, letterSpacing: '-0.05em', marginBottom: 24, color: t.textPrimary, fontSize: 'clamp(44px, 9vw, 88px)' }}>
+            Your finances.<br />Structured.<br /><span style={{ color: accent }}>Enforced.</span>
+          </h1>
+          <p style={{ fontSize: 17, color: t.textSecondary, maxWidth: 560, lineHeight: 1.75, marginBottom: 36, fontFamily: mono }}>
+            Drop your bank statement. FortifyOS maps your debt, BNPL, bills, and cash flow — then tells you exactly what to do next. No accounts. No cloud sync. Your data stays on your machine.
+          </p>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            {hasData ? (
+              <>
+                <button onClick={onDashboard} style={{ background: accent, color: isDark ? '#000' : '#fff', fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Open Dashboard <ArrowRight size={15} />
+                </button>
+                <button onClick={onInitialize} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: mono, fontSize: 13, padding: '14px 28px', cursor: 'pointer', color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Sync New Data
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#fff', fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '14px 28px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Launch FortifyOS <ArrowRight size={15} />
+                </button>
+                <a href="https://github.com/fortifyos/fortifyos" target="_blank" rel="noopener noreferrer" style={{ fontFamily: mono, fontSize: 13, color: t.textSecondary, textDecoration: 'none', padding: '14px 0', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: `1px solid ${t.borderDim}` }}>
+                  Advanced? Download the repo →
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
 
-          <div className="sync-row-3" style={{ display: 'grid', gap: 2 }}>
+      {/* ═══ SECTION 02 — HOW IT WORKS ═══ */}
+      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+        <div style={{ maxWidth: 780, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>How It Works</div>
+          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Three steps. No setup required.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
             {[
-              { num: '01', title: 'SYNC', desc: 'Upload a statement PDF/screenshot, drop a bank CSV, or paste a JSON snapshot. Sentinel auto-redacts sensitive data. The system fingerprints your bank and parses transactions automatically.', Icon: Upload },
-              { num: '02', title: 'CALCULATE', desc: 'KNOX determines your stage, ranks debts by APR, projects daily interest burn, and checks every action against safety rails. All math shown, no black boxes.', Icon: Cpu },
-              { num: '03', title: 'EXECUTE', desc: 'Say "Good morning" — the Morning Pulse tells you exactly what to do today. Which debt to hit. How much is leaking. What\'s due in 48 hours.', Icon: Zap },
+              { num: '01', title: 'DROP YOUR CSV', desc: 'Export a statement from any bank. Drag it in. FortifyOS reads it — nothing is uploaded anywhere.', Icon: Upload },
+              { num: '02', title: 'FILL THE GAPS', desc: 'Add debts, BNPL installments, and recurring bills manually. Takes five minutes. Full picture complete.', Icon: FileText },
+              { num: '03', title: 'EXPORT YOUR SNAPSHOT', desc: 'Download your JSON snapshot. Lives on your machine. Bring it back any session. Nothing stored on our servers.', Icon: Lock },
             ].map((s, i) => (
-              <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 20, position: 'relative' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 24, fontWeight: 700, color: accent }}>{s.num}</span>
-                  <s.Icon size={16} style={{ color: t.textDim }} />
+              <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 22 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <span style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, color: accent }}>{s.num}</span>
+                  <s.Icon size={15} style={{ color: t.textDim }} />
                 </div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, marginBottom: 6, color: t.textPrimary, letterSpacing: '0.04em' }}>{s.title}</div>
-                <div style={{ fontSize: 15, color: t.textDim, lineHeight: 1.65 }}>{s.desc}</div>
+                <div style={{ fontFamily: mono, fontSize: 13, fontWeight: 700, marginBottom: 8, color: t.textPrimary, letterSpacing: '0.06em' }}>{s.title}</div>
+                <div style={{ fontSize: 14, color: t.textDim, lineHeight: 1.7 }}>{s.desc}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ THE 7 STAGES ═══ */}
-      <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+      {/* ═══ SECTION 03 — WHAT YOU GET ═══ */}
+      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>The Journey</div>
-          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 6, color: t.textPrimary }}>7 Stages. Mathematically Gated.</h2>
-          <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24, maxWidth: 560 }}>Every user enters at their current stage. The system moves you forward — and blocks you from skipping ahead. Your stage is calculated from real data, never a static label.</p>
-
-          {/* Stage progress bar */}
-          <div style={{ display: 'flex', gap: 3, marginBottom: 6 }}>
-            {stages.map((s, i) => (
-              <div key={i} style={{ flex: 1, height: 8, background: i <= 1 ? s.color : t.elevated, transition: 'all 0.4s', position: 'relative' }}>
-                {i === 1 && <div style={{ position: 'absolute', inset: 0, boxShadow: `0 0 8px ${accent}55`, pointerEvents: 'none' }} />}
-              </div>
-            ))}
-          </div>
-          <div className="stage-labels" style={{ display: 'flex', gap: 3, marginBottom: 20 }}>
-            {stages.map((s, i) => (
-              <span key={i} style={{ flex: 1, fontSize: 15, color: i <= 1 ? s.color : t.textDim, textTransform: 'uppercase', textAlign: 'center', fontFamily: "'JetBrains Mono', monospace" }}>{s.n}</span>
-            ))}
-          </div>
-
-          {/* Stage detail rows */}
-          <div style={{ display: 'grid', gap: 2 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>What You Get</div>
+          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Four outcomes. Not a feature list.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 2 }}>
             {[
-              { stage: '0–2', label: 'DEFENSE MODE', detail: 'Stabilize cash flow, build emergency buffer, stop the bleed. All investment logic locked.', color: t.warn },
-              { stage: '3', label: 'DEBT LIBERATION', detail: 'Consumer debt hits $0. Investment strategies unlock. The gate that changes everything.', color: accent },
-              { stage: '4–7', label: 'WEALTH BUILDING', detail: 'Passive income grows from covering needs → current life → dream life → generational impact.', color: accent },
-            ].map((r, i) => (
-              <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'center', background: t.surface, border: `1px solid ${t.borderDim}`, padding: '12px 16px' }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: r.color, minWidth: 36 }}>{r.stage}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: t.textPrimary, letterSpacing: '0.04em', marginBottom: 2 }}>{r.label}</div>
-                  <div style={{ fontSize: 15, color: t.textDim, lineHeight: 1.5 }}>{r.detail}</div>
+              { label: 'CLARITY', desc: 'Every obligation visible in one place. Debt, BNPL countdowns, recurring bills, emergency runway — mapped and ranked.', Icon: LayoutGrid },
+              { label: 'ENFORCEMENT', desc: "The system doesn't just track what happened. It tells you what should happen — and flags when you're off course.", Icon: ShieldAlert },
+              { label: 'PRIVACY', desc: 'Your data never leaves your machine. No login. No account. No cloud sync. A JSON snapshot is the only thing that travels — and only when you export it.', Icon: Lock },
+              { label: 'DIRECTION', desc: 'The 7 Stages framework shows exactly where you are in your financial journey and what actions are appropriate right now.', Icon: TrendingUp },
+            ].map((c, i) => (
+              <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 22, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <c.Icon size={18} style={{ color: accent, flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <div style={{ fontFamily: mono, fontSize: 13, fontWeight: 700, marginBottom: 8, color: t.textPrimary, letterSpacing: '0.08em' }}>{c.label}</div>
+                  <div style={{ fontSize: 14, color: t.textDim, lineHeight: 1.7 }}>{c.desc}</div>
                 </div>
               </div>
             ))}
@@ -2134,90 +1786,74 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
         </div>
       </section>
 
-      {/* ═══ PRIVACY CALLOUT ═══ */}
-      <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <Lock size={24} style={{ color: accent, marginBottom: 16 }} />
-          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, marginBottom: 10, color: t.textPrimary }}>Instructions in the cloud. Data on your machine.</h2>
-          <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 520, marginBottom: 20 }}>The 20 protocol files that power KNOX contain zero financial data. Your actual numbers — balances, transactions, debts — live in 4 local CSV files that never upload. SSNs and account numbers are auto-redacted before any processing.</p>
-          <div className="sync-row-3" style={{ display: 'grid', gap: 12, width: '100%' }}>
-            {[
-              { label: 'Cloud layer', val: 'Rules & logic only', sub: '20 .md files, 0 financial data' },
-              { label: 'Local layer', val: 'Your real numbers', sub: '4 CSVs that never leave your machine' },
-              { label: 'Redaction', val: 'Automatic (Sentinel)', sub: 'SSNs, card numbers, routing numbers' },
-            ].map((c, i) => (
-              <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 14, textAlign: 'center' }}>
-                <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>{c.label}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: t.textPrimary, marginBottom: 2 }}>{c.val}</div>
-                <div style={{ fontSize: 14, color: t.textDim }}>{c.sub}</div>
+      {/* ═══ SECTION 04 — TWO PATHS ═══ */}
+      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+        <div style={{ maxWidth: 780, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Two Paths</div>
+          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Start now or go deep.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
+            {/* Web User */}
+            <div style={{ background: t.surface, border: `1px solid ${accent}40`, padding: 28 }}>
+              <div style={{ fontFamily: mono, fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Web User — Start Now</div>
+              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.8, marginBottom: 24 }}>
+                No setup. No install. No account.<br />
+                Drop a CSV, fill in your data,<br />
+                export your snapshot. Done.
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ BOOT SEQUENCE (Brand Moment) ═══ */}
-      <section style={{ padding: '36px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <div style={{ textAlign: 'left', background: t.surface, border: `1px solid ${t.borderDim}`, padding: 16, borderRadius: 4 }}>
-            <p style={ln(1)}>[ SYSTEM ] : INITIALIZING COMMAND LAYER...</p>
-            <p style={ln(2)}>[ KERNEL ] : LOADING PHASE_AWARE_EXECUTION_v2.0</p>
-            <p style={ln(3)}>[ STATUS ] : <span style={{ color: accent }}>PHASE-AWARE EXECUTION ACTIVE</span></p>
-            <p style={ln(4)}>[ READY&nbsp; ] : AWAITING OPERATOR INPUT<span style={{ animation: 'blink 1s infinite' }}>_</span></p>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ FAQ ═══ */}
-      <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>FAQ</div>
-          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 24, color: t.textPrimary }}>Common Questions</h2>
-
-          {faqs.map((f, i) => (
-            <div key={i} style={{ borderBottom: `1px solid ${t.borderDim}` }}>
-              <button
-                onClick={() => setFaqOpen(faqOpen === i ? null : i)}
-                style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", fontSize: 15 }}
-              >
-                {f.q}
-                <ChevronDown size={14} style={{ color: t.textDim, transform: faqOpen === i ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', flexShrink: 0, marginLeft: 12 }} />
+              <div style={{ fontSize: 12, color: t.textDim, fontFamily: mono, marginBottom: 24, borderLeft: `2px solid ${accent}`, paddingLeft: 12 }}>
+                Your financial state lives in a JSON file on your machine. Nothing is stored here.
+              </div>
+              <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#fff', fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '12px 24px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em', width: '100%', justifyContent: 'center' }}>
+                Launch App <ArrowRight size={14} />
               </button>
-              {faqOpen === i && (
-                <div style={{ padding: '0 0 14px', fontSize: 14, color: t.textSecondary, lineHeight: 1.7 }}>{f.a}</div>
-              )}
             </div>
-          ))}
+            {/* Advanced */}
+            <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 28 }}>
+              <div style={{ fontFamily: mono, fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Advanced — Self-Hosted</div>
+              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.8, marginBottom: 24 }}>
+                Full local install. Persistent storage.<br />
+                Complete KNOX protocol stack.<br />
+                Private remote access via Tailscale.
+              </div>
+              <div style={{ fontSize: 12, color: t.textDim, fontFamily: mono, marginBottom: 24, borderLeft: `2px solid ${t.borderDim}`, paddingLeft: 12 }}>
+                Clone the repo. Your data directory stays on your machine. Full Field Manual in the docs.
+              </div>
+              <a href="https://github.com/fortifyos/fortifyos" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: mono, fontSize: 13, padding: '12px 24px', cursor: 'pointer', color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'none', boxSizing: 'border-box' }}>
+                View on GitHub <ArrowRight size={14} />
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ═══ FINAL CTA ═══ */}
-      <section style={{ padding: '48px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <div style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, marginBottom: 10, color: t.textPrimary }}>
-            Ready to stop leaking <span style={{ color: t.danger }}>$6.05/day</span>?
-          </h2>
-          <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.6, marginBottom: 24 }}>Sync your first bank statement. The system does the rest.</p>
-          <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#FFF', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, padding: '14px 36px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>GET STARTED <ArrowRight size={16} /></button>
+      {/* ═══ SECTION 05 — FIELD MANUAL CTA ═══ */}
+      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+        <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 16, fontFamily: mono }}>Field Manual</div>
+          <h2 style={{ fontFamily: mono, fontSize: 20, fontWeight: 700, marginBottom: 14, color: t.textPrimary }}>Want to understand the full system?</h2>
+          <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 480, marginBottom: 28 }}>
+            The Field Manual covers every module, the 7 Stages framework, enforcement logic, privacy architecture, and the macro education layer.
+          </p>
+          <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '13px 28px', cursor: 'pointer', color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            Read the Field Manual <ArrowRight size={14} />
+          </button>
         </div>
       </section>
 
-      {/* ═══ FOOTER STATS ═══ */}
-      <section className="footer-stats" style={{ display: 'grid', borderTop: `1px solid ${t.borderDim}` }}>
+      {/* ═══ FOOTER ═══ */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderTop: `1px solid ${t.borderDim}` }}>
         {[
-          { label: 'PRIVACY', val: 'LOCAL BROWSER STORAGE', Icon: Lock },
-          { label: 'DAILY TIME', val: '2–5 MINUTES', Icon: Clock },
-          { label: 'SETUP', val: '30 MIN TO LIVE', Icon: Zap },
+          { label: 'Privacy', val: 'Local browser storage', Icon: Lock },
+          { label: 'Daily time', val: '2–5 minutes', Icon: Clock },
+          { label: 'Setup', val: 'Zero install required', Icon: Zap },
         ].map((s, i) => (
-          <div key={i} className="footer-stat-cell" style={{ padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            <s.Icon size={20} style={{ color: accent, marginBottom: 4 }} />
-            <span style={{ fontSize: 15, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{s.label}</span>
-            <span style={{ fontSize: 14, fontWeight: 700 }}>{s.val}</span>
+          <div key={i} style={{ padding: 28, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, borderRight: i < 2 ? `1px solid ${t.borderDim}` : 'none' }}>
+            <s.Icon size={18} style={{ color: accent, marginBottom: 4 }} />
+            <span style={{ fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: mono }}>{s.label}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: t.textPrimary, fontFamily: mono }}>{s.val}</span>
           </div>
         ))}
       </section>
-      </>
-      )}
     </div>
   );
 }
@@ -2225,772 +1861,464 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 // ═══════════════════════════════════════════════════
 // DOCUMENTATION VIEW
 // ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// DOCUMENTATION VIEW — TWO-TRACK FIELD MANUAL
+// ═══════════════════════════════════════════════════
 function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onMacroIntel, onBitcoin, onSettings }) {
+  const [track, setTrack] = useState(() => localStorage.getItem('fm_track') || 'web');
   const [activeSection, setActiveSection] = useState(null);
-  const [expandedTier, setExpandedTier] = useState({ start: true, core: true, data: false, advanced: false, why: false });
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const accent = t.accent;
-  const sectionRefs = useRef({});
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
+  const setTrackPersist = (v) => { setTrack(v); localStorage.setItem('fm_track', v); setActiveSection(null); };
+
+  const mono = "'JetBrains Mono', monospace";
+
   const sty = {
-    nav: { position: 'sticky', top: 0, zIndex: 50, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.surface, borderBottom: `1px solid ${t.borderDim}`, backdropFilter: 'blur(8px)' },
-    container: { maxWidth: 780, margin: '0 auto', padding: '24px 24px 80px' },
-    h2: { fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.01em', color: accent, marginTop: 48, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${t.borderDim}` },
-    h3: { fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary, marginTop: 20, marginBottom: 8 },
-    p: { fontSize: 15, color: t.textSecondary, marginBottom: 14, lineHeight: 1.7 },
-    code: { background: t.surface, color: accent, padding: '2px 6px', border: `1px solid ${t.borderDim}`, fontSize: 14 },
-    pre: { background: t.surface, padding: '14px 18px', border: `1px solid ${t.borderDim}`, overflow: 'auto', color: t.accentDim || accent, fontSize: 14, lineHeight: 1.6, margin: '14px 0' },
-    note: (c) => ({ borderLeft: `2px solid ${c || accent}`, padding: '10px 14px', color: t.textSecondary, margin: '16px 0', background: t.surface, fontSize: 14 }),
-    formula: { background: t.surface, border: `1px solid ${t.borderDim}`, padding: '14px 18px', margin: '14px 0', textAlign: 'center', fontSize: 14, color: accent },
-    th: { border: `1px solid ${t.borderDim}`, padding: '8px 12px', textAlign: 'left', fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', background: t.surface },
+    container: { maxWidth: 780, margin: '0 auto', padding: '32px 24px 80px' },
+    h2: { fontFamily: mono, fontSize: 15, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: accent, marginTop: 48, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${t.borderDim}` },
+    h3: { fontFamily: mono, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.08em', color: t.textPrimary, marginTop: 24, marginBottom: 8 },
+    p: { fontSize: 15, color: t.textSecondary, marginBottom: 14, lineHeight: 1.75 },
+    note: (c) => ({ borderLeft: `2px solid ${c || accent}`, padding: '10px 14px', color: t.textSecondary, margin: '16px 0', background: t.surface, fontSize: 14, lineHeight: 1.7 }),
+    formula: { background: t.surface, border: `1px solid ${t.borderDim}`, padding: '14px 18px', margin: '14px 0', textAlign: 'center', fontSize: 14, color: accent, fontFamily: mono },
+    th: { border: `1px solid ${t.borderDim}`, padding: '8px 12px', textAlign: 'left', fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em', background: t.surface, fontFamily: mono },
     td: { border: `1px solid ${t.borderDim}`, padding: '8px 12px', fontSize: 14, color: t.textSecondary },
-    card: { background: t.surface, border: `1px solid ${t.borderDim}`, padding: 14 },
-    rail: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 14, color: t.textSecondary },
-    cmd: { display: 'flex', gap: 16, padding: '6px 0', borderBottom: `1px solid ${t.borderDim}`, alignItems: 'baseline', flexWrap: 'wrap' },
-    tierHead: (open) => ({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', cursor: 'pointer', userSelect: 'none', borderBottom: open ? 'none' : `1px solid ${t.borderDim}`, marginBottom: open ? 0 : 4 }),
-    tierLabel: { fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700 },
+    code: { background: t.surface, color: accent, padding: '2px 6px', border: `1px solid ${t.borderDim}`, fontSize: 13, fontFamily: mono },
+    pre: { background: t.surface, padding: '14px 18px', border: `1px solid ${t.borderDim}`, overflow: 'auto', color: accent, fontSize: 13, lineHeight: 1.6, margin: '14px 0', fontFamily: mono },
   };
-  const Code = ({ children }) => <code style={sty.code}>{children}</code>;
-  const Lbl = ({ children }) => <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{children}</div>;
 
-  // Tiered TOC structure
-  const TOC_TIERS = [
-    {
-      key: 'start', label: 'Getting Started', items: [
-        { id: 'stages', num: '01', label: 'The 7 Stages' },
-        { id: 'how-it-works', num: '02', label: 'How It Works' },
-        { id: 'installation', num: '03', label: 'Installation' },
-      ]
-    },
-    {
-      key: 'core', label: 'Core System', items: [
-        { id: 'enforcement', num: '04', label: 'The Enforcement Engine' },
-        { id: 'budget', num: '05', label: 'Budget Allocation' },
-        { id: 'efund', num: '06', label: 'Emergency Fund Phases' },
-        { id: 'safety', num: '07', label: 'Safety Rails' },
-      ]
-    },
-    {
-      key: 'data', label: 'Data & Privacy', items: [
-        { id: 'ingestion', num: '08', label: 'Data Ingestion' },
-        { id: 'schema', num: '09', label: 'Snapshot Schema' },
-        { id: 'sentinel', num: '10', label: 'Sentinel Redaction' },
-      ]
-    },
-    {
-      key: 'advanced', label: 'Advanced', items: [
-        { id: 'calculations', num: '11', label: 'Core Calculations' },
-        { id: 'commands', num: '12', label: 'Command Reference' },
-        { id: 'claude-code', num: '13', label: 'Desktop Parsing (Claude Code)' },
-      ]
-    },
-    {
-      key: 'why', label: 'Why FORTIFY OS', items: [
-        { id: 'comparison', num: '15', label: 'Competitive Comparison' },
-      ]
-    },
-  ];
-
-  const scrollTo = (id) => { setActiveSection(id); document.getElementById(`doc-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
-
-  // Scroll-spy via IntersectionObserver
-  useEffect(() => {
-    const allIds = TOC_TIERS.flatMap(tier => tier.items.map(i => i.id));
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          const id = entry.target.id?.replace('doc-', '');
-          if (id) setActiveSection(id);
-        }
-      }
-    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0.1 });
-
-    const timer = setTimeout(() => {
-      allIds.forEach(id => {
-        const el = document.getElementById(`doc-${id}`);
-        if (el) observer.observe(el);
-      });
-    }, 100);
-
-    return () => { clearTimeout(timer); observer.disconnect(); };
-  }, []);
-
-  const toggleTier = (key) => setExpandedTier(prev => ({ ...prev, [key]: !prev[key] }));
   const navItems = [
     { key: 'home', label: 'Home', icon: Home, onClick: onBack },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
     { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
-    { key: 'docs', label: 'Docs', icon: FileText, onClick: null, current: true },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: null, current: true },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
-  return (
-    <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
-      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
+  const Code = ({ children }) => <code style={sty.code}>{children}</code>;
 
-      <div style={sty.container}>
-        {/* Hero */}
-        <div style={{ padding: '32px 0 24px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 32 }}>
-          <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 28, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: 8 }}>
-            FORTIFY OS <span style={{ color: accent }}>// Docs</span>
-          </h1>
-          <p style={{ color: t.textSecondary, fontSize: 15, maxWidth: 560, lineHeight: 1.7 }}>System field manual. From first sync to financial independence — the architecture, enforcement logic, and methodology behind every calculation.</p>
-          <span style={{ display: 'inline-block', marginTop: 10, fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${t.borderDim}`, padding: '3px 8px' }}>KNOX v2.1 — FORTIFY OS v2.2</span>
-        </div>
-
-        {/* Tiered TOC */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '16px 20px', marginBottom: 32 }}>
-          <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Navigation</div>
-          {TOC_TIERS.map(tier => (
-            <div key={tier.key} style={{ marginBottom: 4 }}>
-              <div style={sty.tierHead(expandedTier[tier.key])} onClick={() => toggleTier(tier.key)}>
-                <span style={sty.tierLabel}>{tier.label}</span>
-                <ChevronRight size={12} style={{ color: t.textDim, transform: expandedTier[tier.key] ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
-              </div>
-              {expandedTier[tier.key] && tier.items.map(s => (
-                <div key={s.id} onClick={() => scrollTo(s.id)} style={{ padding: '4px 0 4px 16px', fontSize: 14, color: activeSection === s.id ? accent : t.textSecondary, cursor: 'pointer', borderLeft: `2px solid ${activeSection === s.id ? accent : 'transparent'}`, transition: 'all 0.2s' }}>
-                  <span style={{ color: t.textDim, marginRight: 8 }}>{s.num}</span>{s.label}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════
-           TIER 1: GETTING STARTED
-           ══════════════════════════════════════════════════════════ */}
-
-        {/* 01 THE 7 STAGES */}
-        <h2 id="doc-stages" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>01</span> The 7 Stages</h2>
-        <p style={sty.p}>FORTIFY OS maps your entire financial life onto a <strong style={{ color: t.textPrimary }}>7-stage journey</strong> — from chaos to generational wealth. Your current stage is calculated from live data, not a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
-
-        {/* Stage progress visualization */}
-        <div style={{ display: 'flex', gap: 2, margin: '18px 0 6px' }}>
-          {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-            <div key={i} style={{ flex: 1, height: 6, background: i <= 1 ? accent : t.elevated, boxShadow: i === 1 ? `0 0 8px ${accent}44` : 'none', transition: 'all 0.3s' }} />
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
-          {['0: Chaos', '1: Stable', '2: Safe', '3: Free', '4: Secure', '5: Indep.', '6: Freedom', '7: Legacy'].map((l, i) => (
-            <span key={i} style={{ flex: 1, fontSize: 14, color: i <= 1 ? accent : t.textDim, textTransform: 'uppercase', textAlign: 'center' }}>{l}</span>
-          ))}
-        </div>
-
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Stage</th><th style={sty.th}>Name</th><th style={sty.th}>Gate (How You Advance)</th></tr></thead>
-          <tbody>
-            {[
-              ['0', 'Financial Chaos', 'Expenses exceed income — stabilize cash flow'],
-              ['1', 'Financial Stability', '1-month expense buffer built'],
-              ['2', 'Financial Safety', '6-month buffer, fully liquid'],
-              ['3', 'Debt Liberation', 'Consumer debt = $0 (investment strategies unlock here)'],
-              ['4', 'Financial Security', 'Passive income covers basic needs'],
-              ['5', 'Financial Independence', 'Passive income covers current lifestyle'],
-              ['6', 'Financial Freedom', 'Passive income covers dream lifestyle'],
-              ['7', 'Legacy Wealth', 'Generational impact / philanthropy'],
-            ].map(([stage, name, gate]) => (
-              <tr key={stage}>
-                <td style={{ ...sty.td, color: accent, fontWeight: 700, textAlign: 'center' }}>{stage}</td>
-                <td style={{ ...sty.td, color: t.textPrimary }}>{name}</td>
-                <td style={sty.td}>{gate}</td>
+  const WEB_SECTIONS = [
+    {
+      id: 'gs', num: '01', label: 'Getting Started',
+      content: () => (
+        <>
+          <p style={sty.p}>FortifyOS requires no installation and no account. Everything runs in this browser session. Your data never leaves your machine — the only artifact you produce is a JSON snapshot you explicitly export.</p>
+          <div style={sty.h3}>Step 1 — Import your CSV</div>
+          <p style={sty.p}>Export a bank statement from your financial institution as a CSV file. Most major banks support this. Click <strong>Import Statements / Snapshots</strong> from the Settings panel or the sync button on the dashboard. FortifyOS auto-detects the bank format by reading the column headers.</p>
+          <div style={sty.note(accent)}>Supported formats: Chase, BofA, Amex, Capital One, Wells Fargo, Citi. Any other CSV with date/description/amount columns will also parse.</div>
+          <div style={sty.h3}>Step 2 — Fill in the gaps manually</div>
+          <p style={sty.p}>CSV imports handle transactions. Debts, BNPL installments, and recurring bills need to be added manually. Navigate to each module on the dashboard and enter your current balances, APR, due dates, and payment amounts. This takes approximately five minutes for a typical financial picture.</p>
+          <div style={sty.h3}>Step 3 — Export your snapshot</div>
+          <p style={sty.p}>When your session is complete, use <strong>Export All Snapshots</strong> in Settings to download a JSON file. This file contains your complete financial state. On your next session, import it to restore everything exactly where you left it. The file lives on your machine — not on any server.</p>
+          <div style={sty.note(t.warn)}>Privacy note: Your JSON snapshot contains real financial data. Store it in a secure location on your device. Do not upload it to cloud storage without reviewing its contents first.</div>
+        </>
+      )
+    },
+    {
+      id: 'stages', num: '02', label: 'The 7 Stages',
+      content: () => (
+        <>
+          <p style={sty.p}>FortifyOS maps your entire financial life onto a 7-stage journey — from chaos to generational wealth. Your current stage is calculated from live data, not assigned as a static label. The system gates what actions are available at each stage, which prevents the most common wealth-building mistake: investing while carrying high-interest debt.</p>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead>
+              <tr>
+                <th style={sty.th}>Stage</th>
+                <th style={sty.th}>Name</th>
+                <th style={sty.th}>Gate — How You Advance</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Defense Mode:</strong> Most users enter at Stage 0 or 1. The system enforces Defense Mode (Stages 0–3) — all investment logic is locked until Stage 3 is mathematically verified from your live data. This is a feature, not a limitation.
-        </div>
-        <div style={sty.note(t.warn)}>
-          <strong style={{ color: t.textPrimary }}>BNPL Alert:</strong> Buy Now Pay Later platforms fragment debt across apps, making it invisible to your budget. FORTIFY OS tracks BNPL installments remaining — not just balances — and categorizes untracked outflow as Lifestyle by default. Nothing hides.
-        </div>
-
-        {/* 02 HOW IT WORKS */}
-        <h2 id="doc-how-it-works" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>02</span> How It Works</h2>
-        <p style={sty.p}>FORTIFY OS runs inside Claude AI through a skill package called <strong style={{ color: t.textPrimary }}>KNOX</strong> (Knowledge Nexus Operations eXecution) — 24 files that give Claude a persistent financial identity, enforcement logic, and data processing capability. Three layers keep your data safe and the system operational.</p>
-
-        <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
-          {[
-            { num: '1', title: 'SYNC YOUR DATA', desc: 'Drop a bank CSV or upload a text-based statement PDF. FORTIFY OS extracts transactions locally, runs Sentinel redaction first, then maps entries into the dashboard. JSON + manual entry are still supported.' },
-            { num: '2', title: 'SYSTEM CALCULATES', desc: 'KNOX determines your stage, ranks debts by APR, calculates daily interest burn, projects cash flow, and checks every action against safety rails — in real time.' },
-            { num: '3', title: 'EXECUTE WITH CONFIDENCE', desc: 'Get a Morning Pulse with exactly what to do today. Weekly HUD tracks direction. Monthly reports show the math. The system enforces — you decide.' },
-          ].map((c, i) => (
-            <div key={i} style={sty.card}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: accent }}>{c.num}</span>
-                <span style={{ fontSize: 15, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{c.title}</span>
-              </div>
-              <div style={{ fontSize: 15, color: t.textDim, lineHeight: 1.6 }}>{c.desc}</div>
+            </thead>
+            <tbody>
+              {[
+                ['0', 'Financial Chaos', 'Expenses exceed income — stabilize cash flow'],
+                ['1', 'Financial Stability', '1-month expense buffer built'],
+                ['2', 'Financial Safety', '6-month buffer, fully liquid'],
+                ['3', 'Debt Liberation', 'Consumer debt = $0 (investment strategies unlock here)'],
+                ['4', 'Financial Security', 'Passive income covers basic needs'],
+                ['5', 'Financial Independence', 'Passive income covers current lifestyle'],
+                ['6', 'Financial Freedom', 'Passive income covers dream lifestyle'],
+                ['7', 'Legacy Wealth', 'Generational impact / philanthropy'],
+              ].map(([s, n, g]) => (
+                <tr key={s}>
+                  <td style={{ ...sty.td, fontFamily: mono, fontWeight: 700, color: Number(s) < 3 ? t.warn : accent }}>{s}</td>
+                  <td style={{ ...sty.td, fontWeight: 700 }}>{n}</td>
+                  <td style={sty.td}>{g}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={sty.note(t.danger)}>Defense Mode: Most users enter at Stage 0 or 1. The system enforces Defense Mode (Stages 0–3) — all investment logic is locked until Stage 3 is mathematically verified from your live data. This is a feature, not a limitation.</div>
+        </>
+      )
+    },
+    {
+      id: 'dashboard', num: '03', label: 'Your Dashboard',
+      content: () => (
+        <>
+          <p style={sty.p}>The dashboard is your financial command center. Every module is togglable from Settings — enable only what's relevant to your current situation. Modules feed each other: debt data informs the Daily Directive, emergency fund status informs runway, BNPL countdowns surface in the Bill Calendar.</p>
+          <div style={sty.h3}>Daily Directive</div>
+          <p style={sty.p}>Your single highest-priority action, calculated fresh each session from live data. Not a generic tip — a specific instruction based on your actual stage, velocity, and outstanding obligations.</p>
+          <div style={sty.h3}>Agent KNOX Terminal</div>
+          <p style={sty.p}>KNOX monitors your financial behavior against protocol rules. It generates a mission briefing each session, flags Never List violations, and issues enforcement alerts when your behavior drifts off-protocol. KNOX does not make decisions — it surfaces information and flags problems before they compound.</p>
+          <div style={sty.h3}>Net Worth</div>
+          <p style={sty.p}>Total assets minus total liabilities, tracked over time. The direction of movement matters more than the absolute number. A net worth trending toward zero is an emergency signal; a net worth trending upward — even slowly — confirms the system is working.</p>
+          <div style={sty.h3}>Bills & Payday Planner</div>
+          <p style={sty.p}>Every recurring obligation mapped against your pay cycle. Shows what is due before your next paycheck, what can wait, and what is at risk of being missed. Feeds into the monthly Bill Calendar view.</p>
+        </>
+      )
+    },
+    {
+      id: 'debt', num: '04', label: 'Debt + BNPL',
+      content: () => (
+        <>
+          <p style={sty.p}>Debt and BNPL (Buy Now Pay Later) are tracked separately because they behave differently. Traditional debt has APR and compounds. BNPL has installments and deadlines. Both create obligations — the system treats them with different logic.</p>
+          <div style={sty.h3}>Debt Destruction module</div>
+          <p style={sty.p}>All debts ranked by APR — highest first. This is the avalanche method: eliminate the highest-cost debt first to minimize total interest paid. The module shows daily interest burn on each debt so the cost of inaction is always visible.</p>
+          <div style={sty.formula}>Daily Interest = (Balance × APR) / 365</div>
+          <div style={sty.h3}>BNPL tracking</div>
+          <p style={sty.p}>BNPL installments are entered manually with the remaining payment count and due dates. The system tracks countdown to payoff, total remaining obligation, and surfaces BNPL payments in the Bill Calendar so they don't get missed. BNPL used for consumables or depreciating assets is a Never List violation.</p>
+          <div style={sty.note(t.danger)}>Never List violation: BNPL for consumables (food, gas, subscriptions) triggers an immediate enforcement alert. This is a hard stop, not a soft warning.</div>
+        </>
+      )
+    },
+    {
+      id: 'efund', num: '05', label: 'Emergency Fund',
+      content: () => (
+        <>
+          <p style={sty.p}>The emergency fund is measured in days of survival, not raw dollars. This forces evaluation through the lens of time: not "I have $3,000 saved" but "I have 30 days before system failure."</p>
+          <div style={sty.formula}>Runway Days = (E-Fund Balance / Monthly Expenses) × 30</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead><tr>
+              <th style={sty.th}>Phase</th><th style={sty.th}>Target</th><th style={sty.th}>Purpose</th>
+            </tr></thead>
+            <tbody>
+              {[
+                ['1', '$1,000', 'Initial containment — prevents debt spiral from minor emergencies'],
+                ['2', '1× Monthly', 'Baseline shield — one month of breathing room'],
+                ['3', '3× Monthly', 'Stability buffer — covers job loss or medical event'],
+                ['4', '6× Monthly', 'Full fortress — complete financial resilience'],
+              ].map(([p, t2, d]) => (
+                <tr key={p}><td style={{ ...sty.td, fontFamily: mono, fontWeight: 700 }}>{p}</td><td style={sty.td}>{t2}</td><td style={sty.td}>{d}</td></tr>
+              ))}
+            </tbody>
+          </table>
+          <p style={sty.p}>Runway color thresholds: Red (below 30 days) · Amber (30–59 days) · Green (60+ days). The dashboard E-Fund module displays your current runway status and phase progress.</p>
+        </>
+      )
+    },
+    {
+      id: 'enforcement', num: '06', label: 'Enforcement Engine',
+      content: () => (
+        <>
+          <p style={sty.p}>This is the core differentiator. Other tools track what happened. FortifyOS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
+          <div style={sty.h3}>Financial Velocity</div>
+          <div style={sty.formula}>V = (Monthly Savings + Debt Principal Paid) / Total Net Income</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead><tr>
+              <th style={sty.th}>Velocity</th><th style={sty.th}>Status</th><th style={sty.th}>System Response</th>
+            </tr></thead>
+            <tbody>
+              {[
+                ['V ≥ 0.25', 'On Track', '25+ cents of every dollar moving you forward'],
+                ['V 0.10–0.20', 'Alert', 'Diagnosis before enforcement — identify root cause'],
+                ['V < 0.10', 'Crisis', 'Emergency protocols activate, Budget Slash fires'],
+              ].map(([v, s, r]) => (
+                <tr key={v}><td style={{ ...sty.td, fontFamily: mono }}>{v}</td><td style={sty.td}>{s}</td><td style={sty.td}>{r}</td></tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={sty.h3}>The Never List</div>
+          <p style={sty.p}>Hard stops. These trigger an immediate halt if detected:</p>
+          {['BNPL used for consumables or depreciating assets', 'Minimum-only payments on high-APR debt', 'Subscriptions exceeding 2% of monthly net income', 'Purchases over $200 without 24-hour cooling-off period', 'Investment activity while consumer debt exists', 'Untracked Cash App outflow (categorized Lifestyle by default)'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: `1px solid ${t.borderDim}`, fontSize: 14, color: t.textSecondary }}>
+              <span style={{ color: t.danger, fontFamily: mono, flexShrink: 0 }}>✗</span>
+              <span>{item}</span>
             </div>
           ))}
-        </div>
+          <div style={{ ...sty.note(t.warn), marginTop: 16 }}>Budget Slash targets Lifestyle spending only. Essential and Medical categories are permanently exempt. No override authority.</div>
+        </>
+      )
+    },
+    {
+      id: 'privacy', num: '07', label: 'Privacy',
+      content: () => (
+        <>
+          <p style={sty.p}>FortifyOS is built on a single privacy principle: your financial data never leaves your machine unless you explicitly export it. This is not a marketing claim — it is the architecture.</p>
+          <div style={sty.h3}>What lives where</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead><tr>
+              <th style={sty.th}>Layer</th><th style={sty.th}>Location</th><th style={sty.th}>Contains</th>
+            </tr></thead>
+            <tbody>
+              {[
+                ['Layer 1', 'This web app (session)', 'Processing logic, enforcement rules — zero financial data stored'],
+                ['Layer 2', 'Your browser session', 'Live data you input this session — cleared when session ends'],
+                ['Layer 3', 'Your machine (exported)', 'JSON snapshot — only exists after you explicitly export it'],
+              ].map(([l, loc, c]) => (
+                <tr key={l}><td style={{ ...sty.td, fontFamily: mono, fontWeight: 700 }}>{l}</td><td style={sty.td}>{loc}</td><td style={sty.td}>{c}</td></tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={sty.h3}>Sentinel auto-redaction</div>
+          <p style={sty.p}>All data processed through FortifyOS passes through the Sentinel filter first. Card numbers are masked to last 4 digits. SSNs are fully masked. Routing numbers are fully redacted. Physical addresses are fully redacted. This is automatic — you do not need to remember to redact anything.</p>
+          <div style={sty.note(accent)}>Your JSON snapshot contains real financial data after export. Store it in a secure location on your device. Do not sync it to cloud storage without reviewing its contents.</div>
+        </>
+      )
+    },
+    {
+      id: 'macro', num: '08', label: 'Macro Layer',
+      content: () => (
+        <>
+          <p style={sty.p}>The Macro Intelligence layer exists to connect your personal financial decisions to the broader economic environment. This is not entertainment. It is behavioral context — understanding why discipline matters more during certain market conditions.</p>
+          <div style={sty.h3}>What the Macro Intel module shows</div>
+          <p style={sty.p}>Net Liquidity (WALCL − TGA − RRP), FedWatch rate cut probabilities, yield curve status, and real-time signal board with six macro indicators. Each indicator is scored and assigned a direction. The system synthesizes these into an Operator Posture: Defensive, Neutral, or Aggressive.</p>
+          <div style={sty.h3}>Fed Flight School</div>
+          <p style={sty.p}>An educational layer that explains how Federal Reserve balance sheet movements, liquidity cycles, and rate decisions affect asset prices and personal financial risk. Understanding why the system says "reduce duration exposure" requires understanding how the Fed operates. Fed Flight School provides that context without requiring a finance degree.</p>
+          <div style={sty.note(t.warn)}>Macro data is for educational context only. FortifyOS is not providing investment, tax, or legal advice. All investment logic remains locked until Stage 3 regardless of macro conditions.</div>
+        </>
+      )
+    },
+  ];
 
-        <h3 style={sty.h3}>Three-Layer Architecture</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Layer</th><th style={sty.th}>Location</th><th style={sty.th}>Contains</th></tr></thead>
-          <tbody>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Layer 1</td><td style={sty.td}>Claude.ai Project (Cloud)</td><td style={sty.td}>20 protocol files — rules, logic, enforcement. Zero real financial data.</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Layer 2</td><td style={sty.td}>Local Browser Profile</td><td style={sty.td}>4 CSV files — bills, BNPL tracker, debt avalanche, payment log. Your actual numbers.</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Layer 3</td><td style={sty.td}>Session Memory</td><td style={sty.td}>Live data submitted per session, processed in real time, written to local CSVs.</td></tr>
-          </tbody>
-        </table>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>The core principle:</strong> Instructions live in the cloud. Data lives on your machine. They never mix.
-        </div>
+  const ADVANCED_EXTRA_SECTIONS = [
+    {
+      id: 'install', num: '09', label: 'Installation',
+      content: () => (
+        <>
+          <p style={sty.p}>The self-hosted installation gives you persistent local storage, the full KNOX protocol stack, and optional private remote access via Tailscale. Setup time: 30–45 minutes on Mac, 45–60 minutes on Windows.</p>
+          <div style={sty.h3}>Prerequisites</div>
+          {['Node.js (v18+)', 'Python 3.9+', 'Git', 'Anthropic account (Claude subscription)'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', gap: 10, padding: '5px 0', fontSize: 14, color: t.textSecondary }}>
+              <span style={{ color: accent, fontFamily: mono }}>→</span><span>{item}</span>
+            </div>
+          ))}
+          <div style={sty.h3}>Setup (Mac / Linux)</div>
+          <pre style={sty.pre}>{`# 1. Clone the repository
+git clone https://github.com/fortifyos/fortifyos.git
+cd fortifyos
 
-        {/* 03 INSTALLATION */}
-        <h2 id="doc-installation" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>03</span> Installation</h2>
-        <p style={sty.p}>Three paths depending on your platform. Desktop gives you maximum privacy with local file processing. Mobile gives you daily access on the go.</p>
+# 2. Install frontend dependencies
+npm install
 
-        <h3 style={sty.h3}>Mac (Full Local Workflow) — 30–45 min</h3>
-        <pre style={sty.pre}>{`# 1. Create folder structure
-mkdir -p ~/FORTIFY/knox/references ~/FORTIFY/knox/assets
-
-# 2. Place 24 KNOX files in correct locations
-
-# 3. Create Claude.ai Project → upload 20 .md files only (never CSVs)
-
-# 4. Install Claude Code
+# 3. Install Claude Code (optional — for full local parsing)
 npm install -g @anthropic/claude-code
+
+# 4. Create your local data directory
+mkdir -p ~/FORTIFY/{statements,reports,exports}
 
 # 5. Launch
-cd ~/FORTIFY && claude
+npm run dev`}</pre>
+          <div style={sty.h3}>Setup (Windows)</div>
+          <pre style={sty.pre}>{`# 1. Install Node.js from nodejs.org
+# 2. Install Python from python.org
+# 3. Open PowerShell as Administrator
 
-# 6. Authenticate with Anthropic account
-# 7. Submit first statement → CSVs populate → system operational`}</pre>
-
-        <h3 style={sty.h3}>Windows (Full Local Workflow) — 45–60 min</h3>
-        <pre style={sty.pre}>{`# 1. Create folder structure (PowerShell, CMD, or File Explorer)
-
-# 2. Install Node.js from nodejs.org
-# 3. Install Python from python.org (check "Add to PATH")
-
-# 4. Install Claude Code
-npm install -g @anthropic/claude-code
-
-# 5. Place 24 KNOX files in correct locations
-# 6. Create Claude.ai Project → upload 20 .md files only
-
-# 7. Launch
-cd %USERPROFILE%\\FORTIFY && claude
-
-# 8. Submit first statement → system operational`}</pre>
-
-        <h3 style={sty.h3}>Mobile (Daily Interface) — 5 min</h3>
-        <p style={sty.p}>Download the Claude app (iOS or Android), sign in with the same Anthropic account, and open the FORTIFY OS Project. KNOX loads automatically. You get full daily briefings, payment checks, market updates, and emergency commands. Desktop is required for CSV data processing — mobile is your daily command line.</p>
-
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Daily time investment:</strong> 2–5 minutes. Say "Good morning" and the system tells you exactly what to do today.
-        </div>
-
-        <h3 style={sty.h3}>File Architecture</h3>
-        <p style={sty.p}>After installation, your local FORTIFY directory contains 3 layers: the KNOX skill package (uploaded to Claude), local-only CSV data (never uploaded), and working folders for statements and reports.</p>
-
-        {/* Interactive folder tree infographic */}
-        <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: '16px 0', margin: '16px 0', overflow: 'hidden' }}>
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: 16, padding: '0 18px 12px', borderBottom: `1px solid ${t.borderDim}`, marginBottom: 8, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14 }}>
-              <div style={{ width: 8, height: 8, background: accent, flexShrink: 0 }} />
-              <span style={{ color: t.textSecondary }}>Uploaded to Claude Project</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14 }}>
-              <div style={{ width: 8, height: 8, background: t.danger, flexShrink: 0 }} />
-              <span style={{ color: t.textSecondary }}>LOCAL ONLY — Never upload</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14 }}>
-              <div style={{ width: 8, height: 8, background: t.textDim, flexShrink: 0 }} />
-              <span style={{ color: t.textSecondary }}>Working directory</span>
-            </div>
+git clone https://github.com/fortifyos/fortifyos.git
+cd fortifyos
+npm install
+npm run dev`}</pre>
+        </>
+      )
+    },
+    {
+      id: 'architecture', num: '10', label: 'File Architecture',
+      content: () => (
+        <>
+          <p style={sty.p}>The self-hosted installation uses a three-layer architecture that strictly separates instructions from data. This is the core privacy guarantee — the two never mix.</p>
+          <pre style={sty.pre}>{`~/FORTIFY/
+├── knox/                    ← KNOX skill package (uploaded to Claude Project)
+│   ├── SKILL.md             CLOUD — instruction files
+│   ├── references/
+│   │   ├── fortify-core.md  CLOUD
+│   │   ├── wealth-roadmap.md CLOUD
+│   │   └── ... (20 .md files total)
+│   ├── bills-registry.csv   LOCAL ONLY — never upload
+│   ├── bnpl-tracker.csv     LOCAL ONLY — never upload
+│   ├── debt-avalanche.csv   LOCAL ONLY — never upload
+│   └── payment-log.csv      LOCAL ONLY — never upload
+├── statements/              ← Drop bank exports here
+└── reports/                 ← Monthly PDFs save here`}</pre>
+          <div style={{ ...sty.note(accent), marginTop: 16 }}>
+            <strong>Rule:</strong> 20 .md files → Claude Project (cloud). 4 .csv files → local machine only. They never mix.
           </div>
-
-          {/* Tree */}
-          {(() => {
-            const treeStyle = { fontFamily: "'JetBrains Mono', monospace", fontSize: 15, lineHeight: 2.0, padding: '0 18px' };
-            const line = (indent, connector, name, tag, color) => (
-              <div style={{ ...treeStyle, paddingLeft: indent * 18, display: 'flex', alignItems: 'center', gap: 0 }}>
-                <span style={{ color: t.textDim, whiteSpace: 'pre' }}>{connector} </span>
-                <span style={{ color: color || t.textSecondary }}>{name}</span>
-                {tag && <span style={{ fontSize: 15, color: tag.color || t.textDim, marginLeft: 8, textTransform: 'uppercase', letterSpacing: '0.06em', border: `1px solid ${(tag.color || t.textDim)}40`, padding: '1px 5px', whiteSpace: 'nowrap' }}>{tag.text}</span>}
-              </div>
-            );
-            return (<div>
-              {line(0, '📁', '~/FORTIFY/', null, t.textPrimary)}
-
-              {/* knox/ */}
-              {line(0, '├── 📁', 'knox/', null, accent)}
-              {line(1, '├──', 'SKILL.md', { text: 'Cloud', color: accent }, accent)}
-
-              {/* knox/references/ */}
-              {line(1, '├── 📁', 'references/', null, accent)}
-              {line(2, '├──', 'fortify-core.md', { text: 'Cloud', color: accent }, accent)}
-              {line(2, '├──', 'wealth-roadmap.md', { text: 'Cloud', color: accent }, accent)}
-              {line(2, '├──', 'parse-protocols.md', { text: 'Cloud', color: accent }, accent)}
-              {line(2, '├──', 'monthly-report.md', { text: 'Cloud', color: accent }, accent)}
-              {line(2, '├──', 'sloan-protocols.md', { text: 'Cloud', color: accent }, accent)}
-              {line(2, '├──', 'trade-framework.md', { text: 'Cloud', color: accent }, accent)}
-
-              {/* Skill files */}
-              <div style={{ ...treeStyle, paddingLeft: 2 * 18, color: t.textDim, fontSize: 15, lineHeight: 1.4, padding: '2px 0 2px 54px' }}>
-                ├── sk01–sk13 skill files (.md) <span style={{ border: `1px solid ${accent}40`, padding: '1px 5px', marginLeft: 4, fontSize: 15, color: accent }}>Cloud</span>
-              </div>
-
-              {/* Local CSVs */}
-              <div style={{ ...treeStyle, paddingLeft: 2 * 18, borderTop: `1px dashed ${t.borderDim}`, marginTop: 4, paddingTop: 4 }} />
-              {line(2, '├──', 'bills-registry.csv', { text: 'Local Only', color: t.danger }, t.danger)}
-              {line(2, '├──', 'bnpl-tracker.csv', { text: 'Local Only', color: t.danger }, t.danger)}
-              {line(2, '├──', 'debt-avalanche.csv', { text: 'Local Only', color: t.danger }, t.danger)}
-              {line(2, '└──', 'payment-log.csv', { text: 'Local Only', color: t.danger }, t.danger)}
-
-              {/* knox/assets/ */}
-              {line(1, '└── 📁', 'assets/', null, accent)}
-              {line(2, '└──', 'hud-template.md', { text: 'Cloud', color: accent }, accent)}
-
-              {/* Top-level working dirs */}
-              <div style={{ borderTop: `1px solid ${t.borderDim}`, marginTop: 6, paddingTop: 6 }} />
-              {line(0, '├── 📁', 'statements/', { text: 'Drop bank files here (CSV, PDF, PNG/JPG)', color: t.textDim }, t.textDim)}
-              {line(0, '└── 📁', 'reports/', { text: 'Monthly PDFs save here', color: t.textDim }, t.textDim)}
-            </div>);
-          })()}
-
-          {/* Counts */}
-          <div style={{ display: 'flex', gap: 2, padding: '12px 18px 0', borderTop: `1px solid ${t.borderDim}`, marginTop: 12 }}>
-            {[
-              { n: '20', label: '.md files → Cloud', color: accent },
-              { n: '4', label: '.csv files → Local', color: t.danger },
-              { n: '2', label: 'Working dirs', color: t.textDim },
-            ].map((c, i) => (
-              <div key={i} style={{ flex: 1, textAlign: 'center', padding: '8px 4px' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: c.color, fontFamily: "'JetBrains Mono', monospace" }}>{c.n}</div>
-                <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={sty.note(t.danger)}>
-          <strong style={{ color: t.textPrimary }}>The 4 CSV files contain your real financial data.</strong> They are generated by KNOX during your first sync and live exclusively on your local machine. They are never uploaded to the Claude Project. The 20 .md files uploaded to Claude contain rules, formulas, and protocols — zero personal financial data.
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════
-           TIER 2: CORE SYSTEM
-           ══════════════════════════════════════════════════════════ */}
-
-        {/* 04 THE ENFORCEMENT ENGINE */}
-        <h2 id="doc-enforcement" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>04</span> The Enforcement Engine</h2>
-        <p style={sty.p}>This is the core differentiator. Other tools track what happened. FORTIFY OS enforces what should happen — and blocks what shouldn't. Three enforcement layers work together to prevent financial mistakes before they occur.</p>
-
-        <h3 style={sty.h3}>Layer 1: Validation Loop (Pre-Execution)</h3>
-        <p style={sty.p}>Before any action, KNOX runs three checks. If any fails, the system halts and explains why before proceeding.</p>
-        <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead><tr>
+              <th style={sty.th}>Layer</th><th style={sty.th}>Location</th><th style={sty.th}>Contains</th>
+            </tr></thead>
+            <tbody>
+              {[
+                ['Layer 1', 'Claude.ai Project (Cloud)', '20 protocol files — rules, logic, enforcement. Zero real financial data.'],
+                ['Layer 2', 'Local Machine', '4 CSV files — bills, BNPL tracker, debt avalanche, payment log. Your actual numbers.'],
+                ['Layer 3', 'Session Memory', 'Live data submitted per session, processed in real time, written to local CSVs.'],
+              ].map(([l, loc, c]) => (
+                <tr key={l}><td style={{ ...sty.td, fontFamily: mono, fontWeight: 700 }}>{l}</td><td style={sty.td}>{loc}</td><td style={sty.td}>{c}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )
+    },
+    {
+      id: 'knox', num: '11', label: 'KNOX Protocol Stack',
+      content: () => (
+        <>
+          <p style={sty.p}>KNOX (Knowledge Nexus Operations eXecution) is the 24-file skill package that gives the system a persistent financial identity, enforcement logic, and data processing capability. It runs inside the Claude AI environment through the Claude Project.</p>
+          <div style={sty.h3}>How KNOX works</div>
+          <p style={sty.p}>When you open the FORTIFY OS Claude Project, KNOX loads automatically from the 20 .md files you have uploaded. These files contain rules, formulas, enforcement protocols, and behavioral logic — but zero personal financial data. Your data is submitted per session through the CSV import or manual entry flows and processed in real time.</p>
+          <div style={sty.h3}>Enforcement layers</div>
           {[
-            { num: '1', q: 'What stage is the user in?', detail: 'Calculated from live CSV data — never a static label' },
-            { num: '2', q: 'Does this align with current stage?', detail: 'Investment requests during Defense Mode → blocked' },
-            { num: '3', q: 'Does this decrease DRAG or increase VELOCITY?', detail: 'If NO → system halts and explains before proceeding' },
-          ].map((c, i) => (
-            <div key={i} style={{ ...sty.card, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: accent, flexShrink: 0 }}>{c.num}</span>
-              <div>
-                <div style={{ fontSize: 14, color: t.textPrimary, marginBottom: 4 }}>{c.q}</div>
-                <div style={{ fontSize: 14, color: t.textDim }}>{c.detail}</div>
-              </div>
+            ['Pre-execution validation', 'Stage check → alignment check → velocity check. All three must pass before any action proceeds.'],
+            ['The Never List', 'Hard stops for six categories of financial behavior. Immediate halt on detection — no override.'],
+            ['Budget Slash Protocol', 'Fires automatically when Velocity < 0.20 or cash flow projects a deficit. Targets Lifestyle only.'],
+          ].map(([title, desc], i) => (
+            <div key={i} style={{ borderLeft: `2px solid ${accent}`, paddingLeft: 14, marginBottom: 14 }}>
+              <div style={{ fontFamily: mono, fontSize: 13, fontWeight: 700, color: t.textPrimary, marginBottom: 4 }}>{title}</div>
+              <div style={{ fontSize: 14, color: t.textSecondary }}>{desc}</div>
             </div>
           ))}
-        </div>
+        </>
+      )
+    },
+    {
+      id: 'ingestion', num: '12', label: 'Data Ingestion',
+      content: () => (
+        <>
+          <p style={sty.p}>The self-hosted installation supports three ingestion paths for financial data, prioritized by fidelity.</p>
+          <div style={sty.h3}>CSV import (primary)</div>
+          <p style={sty.p}>Drop a .csv bank export. FortifyOS auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting. Any CSV with recognizable date/description/amount columns will parse. The fingerprinting matches column header patterns — no account numbers or routing data used for identification.</p>
+          <div style={sty.h3}>Document risk tiers</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead><tr>
+              <th style={sty.th}>Document</th><th style={sty.th}>Sensitivity</th><th style={sty.th}>Recommended Method</th>
+            </tr></thead>
+            <tbody>
+              {[
+                ['Bank screenshots', 'Low', 'Browser or Claude Code'],
+                ['Credit card statements', 'Medium', 'Claude Code recommended'],
+                ['Pay stubs', 'High (contains SSN)', 'Claude Code only'],
+                ['Tax documents (W-2, 1099)', 'Critical', 'Claude Code only — never cloud'],
+              ].map(([d, s, r]) => (
+                <tr key={d}><td style={sty.td}>{d}</td><td style={{ ...sty.td, color: s === 'Critical' ? t.danger : s === 'High (contains SSN)' ? t.warn : t.textSecondary }}>{s}</td><td style={sty.td}>{r}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )
+    },
+    {
+      id: 'sentinel', num: '13', label: 'Sentinel Redaction',
+      content: () => (
+        <>
+          <p style={sty.p}>All data ingested via CSV or file import passes through the Sentinel filter before processing. This is automatic — you do not need to remember to redact anything. Sentinel fires first, every time.</p>
+          <table style={{ width: '100%', borderCollapse: 'collapse', margin: '16px 0' }}>
+            <thead><tr>
+              <th style={sty.th}>Pattern</th><th style={sty.th}>Action</th><th style={sty.th}>Example</th>
+            </tr></thead>
+            <tbody>
+              {[
+                ['Card numbers', 'Mask to last 4', 'XXXX-XXXX-XXXX-1234'],
+                ['SSNs', 'Full mask', 'XXX-XX-****'],
+                ['Routing numbers', 'Full redact', '[REDACTED]'],
+                ['Physical address', 'Full redact', '[REDACTED]'],
+              ].map(([p, a, e]) => (
+                <tr key={p}><td style={sty.td}>{p}</td><td style={{ ...sty.td, fontFamily: mono }}>{a}</td><td style={{ ...sty.td, fontFamily: mono, color: accent }}>{e}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )
+    },
+    {
+      id: 'remote', num: '14', label: 'Remote Access',
+      content: () => (
+        <>
+          <p style={sty.p}>The self-hosted installation can be accessed privately from your phone through a secure private networking layer such as Tailscale. This does not expose the system to the public internet — it creates an encrypted tunnel between your devices on a private network.</p>
+          <div style={sty.h3}>What this enables</div>
+          <p style={sty.p}>Full dashboard access from your phone. Morning Pulse checks without being at your desk. KNOX briefings on the go. Bill Calendar review at any time. Everything runs from your local machine — your phone is just a remote display.</p>
+          <div style={sty.note(t.warn)}>Tailscale remote access is optional. The system operates fully without it. Setup instructions are in the GitHub repository README.</div>
+        </>
+      )
+    },
+    {
+      id: 'bitcoin', num: '15', label: 'Bitcoin Layer',
+      content: () => (
+        <>
+          <p style={sty.p}>Bitcoin is part of the FortifyOS long-term framework, but it is not the entry point. The system's philosophy explicitly rejects premature investing when the financial foundation is weak. Bitcoin belongs in the appropriate stage of the journey.</p>
+          <div style={sty.note(t.danger)}>Bitcoin content and the Sovereign Standard are locked until Stage 3 (Debt Liberation). If you are carrying consumer debt, you are in the wrong section. Return when Stage 3 is mathematically verified.</div>
+          <div style={sty.h3}>The Sovereign Standard</div>
+          <p style={sty.p}>1 BTC = 1 / 21,000,000th of future global wealth. The Sovereign Standard module presents Bitcoin as a rules-based savings technology with a hard supply cap enforced by global consensus — not as speculation. The Conviction Engine within the module tracks cycle position using the 500-day halving window.</p>
+          <div style={sty.h3}>Correct positioning</div>
+          <p style={sty.p}>Bitcoin is not used to avoid debt cleanup. Bitcoin is not the first move. Bitcoin belongs in the advanced strategic layer after foundational stages are met. The Citadel Protocol covers exit counterparties, hardware vault setup, and independent verification — for operators who have earned the right to be here.</p>
+        </>
+      )
+    },
+  ];
 
-        <h3 style={sty.h3}>Layer 2: The Never List (Hard Stops)</h3>
-        <p style={sty.p}>Critical violations that trigger an immediate halt if detected:</p>
-        {[
-          'BNPL used for consumables or depreciating assets',
-          'Minimum-only payments on high-APR debt',
-          'Subscriptions exceeding 2% of monthly net income',
-          'Purchases over $200 without 24-hour cooling-off period',
-          'Investment activity while consumer debt exists',
-          'Untracked Cash App outflow (categorized Lifestyle by default)',
-        ].map((r, i) => (
-          <div key={i} style={sty.rail}><span style={{ color: t.danger, fontSize: 14, flexShrink: 0 }}>✗</span> {r}</div>
-        ))}
+  const allSections = track === 'web' ? WEB_SECTIONS : [...WEB_SECTIONS, ...ADVANCED_EXTRA_SECTIONS];
 
-        <h3 style={sty.h3}>Layer 3: Budget Slash Protocol (Active Enforcement)</h3>
-        <p style={sty.p}>Triggers automatically when Velocity drops below 0.20 or when cash flow projects a deficit. The protocol freezes Lifestyle transactions, audits every non-Essential recurring charge, generates a ranked slash list by impact, and presents it for authorization. Nothing executes without your confirmation. Recovered dollars route to the Debt Avalanche alpha target.</p>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Budget Slash targets Lifestyle only.</strong> Essential and Medical categories are permanently exempt. No override authority.
-        </div>
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
-        <h3 style={sty.h3}>The Velocity Formula</h3>
-        <div style={sty.formula}><Lbl>Financial Velocity</Lbl>V = (Monthly Savings + Debt Principal Paid) / Total Net Income</div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Velocity</th><th style={sty.th}>Status</th><th style={sty.th}>System Response</th></tr></thead>
-          <tbody>
-            <tr><td style={{ ...sty.td, color: accent }}>V ≥ 0.25</td><td style={sty.td}>On Track</td><td style={sty.td}>25+ cents of every dollar moving you forward</td></tr>
-            <tr><td style={{ ...sty.td, color: t.warn }}>V 0.10–0.20</td><td style={sty.td}>Alert</td><td style={sty.td}>Diagnosis before enforcement — identify root cause</td></tr>
-            <tr><td style={{ ...sty.td, color: t.danger }}>V &lt; 0.10</td><td style={sty.td}>Crisis</td><td style={sty.td}>Emergency protocols activate, Budget Slash fires</td></tr>
-          </tbody>
-        </table>
-
-        <h3 style={sty.h3}>Stage 0 Velocity Diagnosis</h3>
-        <p style={sty.p}>Before Budget Slash fires, KNOX identifies <em>why</em> Velocity is low — because the wrong treatment makes things worse. If minimums are consuming the Wealth allocation, it's a debt restructuring audit. If it's lifestyle overspend, Budget Slash fires. If both, lifestyle gets slashed first, then debt restructure.</p>
-
-        {/* 05 BUDGET ALLOCATION */}
-        <h2 id="doc-budget" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>05</span> Budget Allocation</h2>
-        <p style={sty.p}>Each category has a target (budgeted) and actual spend, with utilization percentage calculated live. Every dollar is assigned a job. Unallocated cash is treated as wasted potential.</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Category</th><th style={sty.th}>Scope</th><th style={sty.th}>Priority</th></tr></thead>
-          <tbody>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Essential</td><td style={sty.td}>Rent, groceries, utilities, insurance, gas</td><td style={sty.td}>Non-negotiable</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Medical</td><td style={sty.td}>Prescriptions, appointments, adaptive equipment</td><td style={{ ...sty.td, color: t.danger }}>Priority #1 always</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Debt Service</td><td style={sty.td}>Minimum payments + extra principal</td><td style={sty.td}>Active paydown</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Savings</td><td style={sty.td}>Emergency fund contributions</td><td style={sty.td}>Parallel with debt</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textPrimary }}>Discretionary</td><td style={sty.td}>Dining, entertainment, subscriptions</td><td style={sty.td}>Minimize (slash target)</td></tr>
-          </tbody>
-        </table>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Utilization thresholds:</strong> <span style={{ color: accent }}>0–74%</span> On track · <span style={{ color: t.warn }}>75–99%</span> Watch · <span style={{ color: t.danger }}>100%+</span> Blown — the system flags blown categories in your Morning Pulse.
-        </div>
-
-        {/* 06 EMERGENCY FUND */}
-        <h2 id="doc-efund" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>06</span> Emergency Fund Phases</h2>
-        <p style={sty.p}>The emergency fund is measured in <strong style={{ color: t.textPrimary }}>days of survival</strong>, not raw dollars. This forces evaluation through the lens of time: not "I have $3,000 saved" but "I have 30 days before system failure."</p>
-        <div style={sty.formula}><Lbl>Runway Calculation</Lbl>Runway Days = (E-Fund Balance / Monthly Expenses) × 30</div>
-
-        {/* Phase bar */}
-        <div style={{ display: 'flex', gap: 3, margin: '14px 0' }}>
-          <div style={{ flex: 1, height: 8, background: accent }} />
-          <div style={{ flex: 1, height: 8, background: accent, boxShadow: `0 0 6px ${accent}66` }} />
-          <div style={{ flex: 1, height: 8, background: t.elevated }} />
-          <div style={{ flex: 1, height: 8, background: t.elevated }} />
-        </div>
-        <div style={{ display: 'flex', gap: 3, marginBottom: 14 }}>
-          {['Phase 1: $1K ✓', 'Phase 2: 1 Month', 'Phase 3: 3 Months', 'Phase 4: 6 Months'].map((l, i) => (
-            <span key={i} style={{ flex: 1, fontSize: 15, color: t.textDim, textTransform: 'uppercase' }}>{l}</span>
+      {/* Track switcher */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 40, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Field Manual</div>
+        <div style={{ display: 'flex', gap: 2 }}>
+          {[{ key: 'web', label: 'Web User' }, { key: 'advanced', label: 'Advanced / Self-Hosted' }].map(opt => (
+            <button key={opt.key} onClick={() => setTrackPersist(opt.key)} style={{ fontFamily: mono, fontSize: 12, fontWeight: 700, padding: '7px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', border: `1px solid ${track === opt.key ? accent : t.borderDim}`, background: track === opt.key ? `${accent}18` : 'none', color: track === opt.key ? accent : t.textDim, transition: 'all 0.18s' }}>
+              {opt.label}
+            </button>
           ))}
         </div>
+      </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Phase</th><th style={sty.th}>Target</th><th style={sty.th}>Purpose</th></tr></thead>
-          <tbody>
-            <tr><td style={sty.td}>Phase 1</td><td style={sty.td}>$1,000</td><td style={sty.td}>Initial containment — prevents debt spiral from minor emergencies</td></tr>
-            <tr><td style={sty.td}>Phase 2</td><td style={sty.td}>1× Monthly</td><td style={sty.td}>Baseline shield — one month of breathing room</td></tr>
-            <tr><td style={sty.td}>Phase 3</td><td style={sty.td}>3× Monthly</td><td style={sty.td}>Stability buffer — covers job loss or medical event</td></tr>
-            <tr><td style={sty.td}>Phase 4</td><td style={sty.td}>6× Monthly</td><td style={sty.td}>Full fortress — complete financial resilience</td></tr>
-          </tbody>
-        </table>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Runway color thresholds:</strong> <span style={{ color: t.danger }}>Red (&lt;30 days)</span> · <span style={{ color: t.warn }}>Amber (30–59 days)</span> · <span style={{ color: accent }}>Green (60+ days)</span>
+      <div style={sty.container}>
+        {/* Header */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 10 }}>
+            {track === 'web' ? 'Web User Track — No setup required' : 'Advanced Track — Self-hosted installation'}
+          </div>
+          <h1 style={{ fontFamily: mono, fontSize: 28, fontWeight: 700, color: t.textPrimary, marginBottom: 12 }}>FortifyOS Field Manual</h1>
+          <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 580 }}>
+            {track === 'web'
+              ? 'Everything you need to operate FortifyOS through the browser. No installation. No terminal commands. Drop your data, run the system, export your snapshot.'
+              : 'Full technical documentation for the self-hosted installation. Covers the complete KNOX stack, file architecture, data ingestion, Sentinel redaction, and remote access setup.'}
+          </p>
+          {track === 'web' && (
+            <div style={{ marginTop: 14, fontSize: 13, color: t.textDim, fontFamily: mono }}>
+              Advanced user? <button onClick={() => setTrackPersist('advanced')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: accent, fontFamily: mono, fontSize: 13, textDecoration: 'underline', padding: 0 }}>Switch to the Advanced track →</button>
+            </div>
+          )}
         </div>
 
-        {/* 07 SAFETY RAILS */}
-        <h2 id="doc-safety" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>07</span> Safety Rails</h2>
-        <p style={sty.p}>Hard safety rails are immutable. They cannot be overridden by the operator, by KNOX, or by any system logic. These exist because financial ruin is not an option.</p>
-        {[
-          'Never invest emergency fund money',
-          'Never recommend positions that could create debt',
-          'Never skip minimum debt payments for investments',
-          'Never suggest leverage or margin during Fortify phase',
-          'Medical expenses = ALWAYS Priority #1, no cap, no slash',
-          'Investment strategies locked until Stage 3 mathematically verified',
-          'Stage calculated from live CSV data only — never a static label',
-          'Budget Slash targets Lifestyle only — Essential and Medical exempt',
-          'Family stability check: if this goes to zero, does family survive?',
-        ].map((r, i) => (
-          <div key={i} style={sty.rail}><span style={{ color: t.danger, fontSize: 14, flexShrink: 0 }}>✗</span> {r}</div>
-        ))}
-        <h3 style={sty.h3}>Soft Limits</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Limit</th><th style={sty.th}>Override Requires</th></tr></thead>
-          <tbody>
-            <tr><td style={sty.td}>Side income reinvestment &gt;50% of side earnings</td><td style={sty.td}>Explicit approval</td></tr>
-            <tr><td style={sty.td}>Any single position &gt;5% of investable capital</td><td style={sty.td}>Explicit approval</td></tr>
-            <tr><td style={sty.td}>Any investment requiring &gt;$500 upfront</td><td style={sty.td}>Explicit approval during Fortify</td></tr>
-          </tbody>
-        </table>
-
-        {/* ══════════════════════════════════════════════════════════
-           TIER 3: DATA & PRIVACY
-           ══════════════════════════════════════════════════════════ */}
-
-        {/* 08 DATA INGESTION */}
-        <h2 id="doc-ingestion" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>08</span> Data Ingestion</h2>
-        <p style={sty.p}><strong style={{ color: t.textPrimary }}>Offline-First.</strong> No data leaves the device. The system accepts financial data through three ingestion paths, prioritized by fidelity.</p>
-        <div className="sync-row-3" style={{ display: 'grid', gap: 10, margin: '16px 0' }}>
-          {[
-            { title: 'FILE IMPORT (PRIMARY)', desc: 'Drop a .csv bank export. Auto-detects Chase, BofA, Amex, Capital One, Wells Fargo, and Citi via header fingerprinting.' },
-            { title: 'JSON PASTE (SECONDARY)', desc: 'Paste a structured JSON snapshot from CLI tools, any AI/tool output, or export scripts. Schema validated before commit.' },
-            { title: 'MANUAL ENTRY (FALLBACK)', desc: 'Guided form for assets, debts, monthly expenses, and budget categories. Live calculations update as you type.' },
-          ].map((c, i) => (
-            <div key={i} style={sty.card}><div style={{ fontSize: 15, color: accent, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{c.title}</div><div style={{ fontSize: 15, color: t.textDim }}>{c.desc}</div></div>
-          ))}
-        </div>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Bank Fingerprinting:</strong> The system identifies your bank by matching CSV column headers against known signatures. No account numbers or routing data is used for identification.
-        </div>
-
-        <h3 style={sty.h3}>Document Risk Tiers</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Document</th><th style={sty.th}>Sensitivity</th><th style={sty.th}>Recommended Method</th></tr></thead>
-          <tbody>
-            <tr><td style={sty.td}>Bank screenshots</td><td style={sty.td}>Low</td><td style={sty.td}>Browser or Claude Code</td></tr>
-            <tr><td style={sty.td}>Credit card statements</td><td style={sty.td}>Medium</td><td style={sty.td}>Claude Code recommended</td></tr>
-            <tr><td style={sty.td}>Pay stubs</td><td style={{ ...sty.td, color: t.warn }}>High (contains SSN)</td><td style={sty.td}>Claude Code only</td></tr>
-            <tr><td style={sty.td}>Tax documents (W-2, 1099)</td><td style={{ ...sty.td, color: t.danger }}>Critical</td><td style={sty.td}>Claude Code only — never cloud</td></tr>
-          </tbody>
-        </table>
-
-        {/* 09 SNAPSHOT SCHEMA */}
-        <h2 id="doc-schema" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>09</span> Snapshot Schema</h2>
-        <p style={sty.p}>Every sync produces a snapshot — a single JSON object representing your complete financial state at a point in time. Snapshots are stored locally and power the dashboard's trend charts.</p>
-        <pre style={sty.pre}>{`{
-  "date": "2026-02-21",
-  "netWorth": {
-    "assets": { "checking": 2400, "eFund": 2000, "other": 0 },
-    "liabilities": { "Chase CC": 3200, "USAA": 5000 },
-    "total": -3800
-  },
-  "debts": [
-    { "name": "Chase CC", "apr": 29.99, "balance": 3200, "minPayment": 95 },
-    { "name": "USAA", "apr": 24.99, "balance": 5000, "minPayment": 250 }
-  ],
-  "eFund": { "balance": 2000, "monthlyExpenses": 3000, "phase": 2 },
-  "budget": {
-    "categories": [
-      { "name": "Essential", "budgeted": 2000, "actual": 1850 },
-      { "name": "Discretionary", "budgeted": 300, "actual": 220 },
-      { "name": "Medical", "budgeted": 300, "actual": 175 },
-      { "name": "Debt Service", "budgeted": 500, "actual": 500 },
-      { "name": "Savings", "budgeted": 300, "actual": 300 }
-    ]
-  },
-  "macro": { "netLiquidity": 6.24, "btcPrice": 97000, ... }
-}`}</pre>
-
-        {/* 10 SENTINEL */}
-        <h2 id="doc-sentinel" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>10</span> Sentinel Redaction</h2>
-        <p style={sty.p}>All data ingested via CSV or file import passes through the Sentinel filter before processing. This is automatic — you don't have to remember to redact.</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Pattern</th><th style={sty.th}>Action</th><th style={sty.th}>Example</th></tr></thead>
-          <tbody>
-            <tr><td style={sty.td}>Card numbers</td><td style={sty.td}>Mask to last 4</td><td style={sty.td}><Code>XXXX-XXXX-XXXX-1234</Code></td></tr>
-            <tr><td style={sty.td}>SSNs</td><td style={sty.td}>Full mask</td><td style={sty.td}><Code>XXX-XX-****</Code></td></tr>
-            <tr><td style={sty.td}>Routing numbers</td><td style={sty.td}>Full redact</td><td style={sty.td}><Code>[REDACTED]</Code></td></tr>
-            <tr><td style={sty.td}>Physical address</td><td style={sty.td}>Full redact</td><td style={sty.td}><Code>[REDACTED]</Code></td></tr>
-            <tr><td style={sty.td}>Date of birth</td><td style={sty.td}>Full redact</td><td style={sty.td}><Code>[REDACTED]</Code></td></tr>
-          </tbody>
-        </table>
-        <div style={sty.note(t.danger)}>
-          <strong style={{ color: t.textPrimary }}>Privacy Wall:</strong> Tax documents and detailed financial ledgers are local-only. Never cloud-synced. No override authority. This is absolute.
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════
-           TIER 4: ADVANCED
-           ══════════════════════════════════════════════════════════ */}
-
-        {/* 11 CORE CALCULATIONS */}
-        <h2 id="doc-calculations" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>11</span> Core Calculations</h2>
-
-        <h3 style={sty.h3}>Net Worth</h3>
-        <div style={sty.formula}><Lbl>Net Worth Formula</Lbl>Net Worth = Σ Assets − Σ Liabilities</div>
-        <p style={sty.p}>Assets include checking, emergency fund, and other holdings. Liabilities are the sum of all tracked debt balances. Even a $10 increase is tracked as a directional win.</p>
-
-        <h3 style={sty.h3}>Daily Interest Burn</h3>
-        <div style={sty.formula}><Lbl>Per-Debt Daily Interest</Lbl>Daily Interest = (Balance × APR / 100) / 365</div>
-        <p style={sty.p}>Converts an abstract balance into a visceral daily cost — money evaporating every 24 hours.</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Balance</th><th style={sty.th}>APR</th><th style={sty.th}>Daily Burn</th><th style={sty.th}>Monthly Waste</th></tr></thead>
-          <tbody>
-            <tr><td style={sty.td}>$5,000</td><td style={sty.td}>24.99%</td><td style={sty.td}>$3.42</td><td style={sty.td}>$104.13</td></tr>
-            <tr><td style={sty.td}>$3,200</td><td style={sty.td}>29.99%</td><td style={sty.td}>$2.63</td><td style={sty.td}>$79.97</td></tr>
-            <tr><td style={{ ...sty.td, textAlign: 'right' }} colSpan={2}>TOTAL</td><td style={{ ...sty.td, color: t.danger }}>$6.05/day</td><td style={{ ...sty.td, color: t.danger }}>$184.10/mo</td></tr>
-          </tbody>
-        </table>
-
-        <h3 style={sty.h3}>Avalanche Method</h3>
-        <p style={sty.p}>Debts are automatically sorted by APR descending. The highest-APR debt (the "alpha target") receives all extra payments above minimums. When zeroed, the system re-targets the next highest. KNOX tracks interest saved vs. minimum-only scenario so you can see the real dollar impact of every extra payment.</p>
-
-        <h3 style={sty.h3}>Savings Rate</h3>
-        <div style={sty.formula}><Lbl>Monthly Savings Rate</Lbl>Savings Rate = ((Income − Total Spent) / Income) × 100</div>
-
-        {/* 12 MACRO */}
-        <h2 id="doc-macro" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>12</span> Macro Intelligence & Benner Cycle</h2>
-        <div style={sty.note(t.warn)}>
-          <strong style={{ color: t.textPrimary }}>Phase Note:</strong> This module provides contextual awareness for long-term positioning. During Defense Mode (Stages 0–3), macro intelligence is informational only — no trade execution is permitted. Investment logic unlocks at Stage 3.
-        </div>
-        <p style={sty.p}>Tracks Federal Reserve liquidity conditions, Bitcoin cycle positioning, and yield curve dynamics. Used as a macro posture filter for phase-level decisions — not trading signals.</p>
-
-        <h3 style={sty.h3}>Net Liquidity Formula</h3>
-        <div style={sty.formula}><Lbl>Fed Net Liquidity</Lbl>Net Liquidity = WALCL − TGA − RRP</div>
-
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Component</th><th style={sty.th}>Source</th><th style={sty.th}>What It Means</th></tr></thead>
-          <tbody>
-            <tr><td style={sty.td}><Code>WALCL</Code></td><td style={sty.td}>Fed Balance Sheet</td><td style={sty.td}>Total assets held by the Fed</td></tr>
-            <tr><td style={sty.td}><Code>TGA</Code></td><td style={sty.td}>Treasury General Account</td><td style={sty.td}>Cash the Treasury holds (drains liquidity)</td></tr>
-            <tr><td style={sty.td}><Code>RRP</Code></td><td style={sty.td}>Reverse Repo Facility</td><td style={sty.td}>Cash parked at Fed overnight (drains liquidity)</td></tr>
-          </tbody>
-        </table>
-
-        <h3 style={sty.h3}>Trigger Alert System</h3>
-        <p style={sty.p}>If <strong style={{ color: t.textPrimary }}>any 2</strong> of these 5 triggers activate simultaneously, the dashboard escalates to high-priority alert:</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>#</th><th style={sty.th}>Trigger</th><th style={sty.th}>Threshold</th></tr></thead>
-          <tbody>
-            {[['1', 'FedWatch rate cut probability spike', '>15% in 24hrs'], ['2', 'Yield curve un-inversion', '10Y-2Y >10bps'], ['3', 'Net Liquidity surge during dip', '>$50B in 1 week'], ['4', 'RRP single-day drain', '>$30B in one session'], ['5', 'TGA drawdown', '>$40B in 1 week']].map(([n, t2, th]) => (
-              <tr key={n}><td style={sty.td}>{n}</td><td style={sty.td}>{t2}</td><td style={sty.td}>{th}</td></tr>
-            ))}
-          </tbody>
-        </table>
-
-        <h3 style={sty.h3}>Benner Cycle Positioning</h3>
-        <p style={sty.p}>A long-wave economic timing framework used as a <strong style={{ color: t.textPrimary }}>macro posture filter</strong> — not a trading signal — to determine defensive, neutral, or accumulation mode.</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Year Type</th><th style={sty.th}>Posture</th><th style={sty.th}>Action</th></tr></thead>
-          <tbody>
-            <tr><td style={{ ...sty.td, color: accent }}>A-Year (Buy)</td><td style={sty.td}>Accumulation</td><td style={sty.td}>Deploy capital. DCA into long-term positions.</td></tr>
-            <tr><td style={{ ...sty.td, color: t.warn }}>B-Year (Sell)</td><td style={sty.td}>Defensive</td><td style={sty.td}>Sell into strength. Short-term setups only.</td></tr>
-            <tr><td style={{ ...sty.td, color: t.textSecondary }}>C-Year (Panic)</td><td style={sty.td}>Opportunistic</td><td style={sty.td}>Distressed assets. Deep value. High conviction only.</td></tr>
-          </tbody>
-        </table>
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Integration:</strong> Every trade blueprint checks Benner compatibility as a required filter. The dashboard phase indicator is cycle-derived, not hardcoded.
-        </div>
-
-        {/* 13 COMMANDS */}
-        <h2 id="doc-commands" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>13</span> Command Reference</h2>
-        <p style={sty.p}>Slash commands for direct access. Natural language triggers for conversational use. Both produce the same output.</p>
-        {[
-          ['/cfo', 'Morning Pulse — CFO snapshot + macro intel. Also triggered by "Good morning".'],
-          ['/macro', 'Liquidity snapshot — Net Liquidity, FedWatch, yield curve, BTC phase.'],
-          ['/sloan', 'TCG/Pokemon market intelligence — set trends, sealed product, pop reports.'],
-          ['/avalanche', 'Debt re-rank + alpha target identification + interest saved.'],
-          ['/cashflow', 'Day-by-day cash flow projection for the current period.'],
-          ['/liberation', 'Countdown to debt freedom at current pace + acceleration scenarios.'],
-          ['/sync [JSON]', 'Weekly HUD generation from imported snapshot data.'],
-          ['/audit', 'Full financial health check — net worth, debt, budget, e-fund, projections.'],
-          ['/monthly', 'Generate downloadable PDF progress report.'],
-          ['/panic', 'Emergency protocol — immediate triage of financial situation.'],
-          ['/protocol_reset', 'Architect First violation recovery — restart from questionnaire.'],
-        ].map(([k, d], i) => (
-          <div key={i} style={sty.cmd}>
-            <span style={{ color: accent, fontSize: 14, minWidth: 130 }}>{k}</span>
-            <span style={{ color: t.textDim, fontSize: 15 }}>{d}</span>
+        {/* Section list */}
+        {allSections.map((section) => (
+          <div key={section.id} id={`doc-${section.id}`} style={{ marginBottom: 8 }}>
+            <button
+              onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
+              style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', background: t.surface, border: `1px solid ${activeSection === section.id ? accent : t.borderDim}`, cursor: 'pointer', textAlign: 'left', fontFamily: mono, transition: 'all 0.18s' }}
+            >
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                <span style={{ fontSize: 11, color: accent, letterSpacing: '0.12em' }}>{section.num}</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{section.label}</span>
+              </div>
+              <ChevronDown size={14} style={{ color: t.textDim, transform: activeSection === section.id ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', flexShrink: 0 }} />
+            </button>
+            {activeSection === section.id && (
+              <div style={{ padding: '24px 18px 28px', background: t.panel, border: `1px solid ${accent}`, borderTop: 'none' }}>
+                {section.content()}
+              </div>
+            )}
           </div>
         ))}
-        <h3 style={{ ...sty.h3, marginTop: 20 }}>Natural Language</h3>
-        {[
-          ['"Good morning"', '→ Morning Pulse with progress bars'],
-          ['"What\'s my net worth?"', '→ Latest calculation + trend'],
-          ['"Can I afford [X]?"', '→ Budget check + opportunity cost'],
-          ['"I\'m about to pay [X]"', '→ Pre-payment sanity check'],
-          ['"Extra $XXX this week"', '→ Avalanche routing + Time Saved report'],
-          ['"Debt payoff plan"', '→ Current pace + acceleration scenarios'],
-          ['"Pokemon market"', '→ SLOAN market intel'],
-          ['"What should I focus on?"', '→ Prioritized action items'],
-        ].map(([k, d], i) => (
-          <div key={i} style={sty.cmd}>
-            <span style={{ color: accent, fontSize: 14, minWidth: 200 }}>{k}</span>
-            <span style={{ color: t.textDim, fontSize: 15 }}>{d}</span>
-          </div>
-        ))}
-
-        {/* 14 CLAUDE CODE */}
-        <h2 id="doc-claude-code" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>14</span> Desktop Parsing (Claude Code)</h2>
-        <p style={sty.p}>Screenshots and PDFs can't be parsed in the browser artifact. Claude Code on desktop fills this gap with full filesystem and library access.</p>
-
-        <h3 style={sty.h3}>Setup</h3>
-        <pre style={sty.pre}>{`# Optional desktop OCR pipeline for image statements
-npm install pdfjs-dist     # PDF text extraction
-npm install papaparse      # CSV parsing`}</pre>
-
-        <h3 style={sty.h3}>Usage</h3>
-        <pre style={sty.pre}>{`# Parse a bank PDF statement
-node fortify-parse.js ~/Downloads/Chase_Feb.pdf > snapshot.json
-
-# Parse a screenshot
-node fortify-parse.js ~/Desktop/balance.png > snapshot.json
-
-# Copy to clipboard and paste into dashboard
-cat snapshot.json | pbcopy`}</pre>
-
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>All parsing runs locally.</strong> The script never sends data to external APIs. Sentinel redaction is applied before JSON output.
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════
-           TIER 5: WHY FORTIFY OS
-           ══════════════════════════════════════════════════════════ */}
-
-        {/* 15 COMPETITIVE COMPARISON */}
-        <h2 id="doc-comparison" style={sty.h2}><span style={{ color: t.textDim, marginRight: 6 }}>15</span> Competitive Comparison</h2>
-        <p style={sty.p}>FORTIFY OS is not a budgeting app, a chatbot, or a dashboard. Here's how it compares to the alternatives.</p>
-
-        <h3 style={sty.h3}>vs. Budgeting Apps (Mint, YNAB, Copilot, Monarch)</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Budgeting Apps</th><th style={{ ...sty.th, color: accent }}>FORTIFY OS</th></tr></thead>
-          <tbody>
-            {[
-              ['Approach', 'Track what happened', 'Enforce what should happen'],
-              ['Debt strategy', 'Manual categorization', 'Auto-ranked Avalanche with alpha target'],
-              ['Wealth roadmap', 'None', '7-stage gated journey'],
-              ['SSN redaction', 'No', 'Automatic (Sentinel)'],
-              ['Daily guidance', 'No', 'Morning Pulse — what to do today'],
-              ['BNPL tracking', 'Basic balance', 'Installments remaining + invisible debt alert'],
-            ].map(([cap, them, us], i) => (
-              <tr key={i}><td style={{ ...sty.td, color: t.textPrimary }}>{cap}</td><td style={sty.td}>{them}</td><td style={{ ...sty.td, color: accent }}>{us}</td></tr>
-            ))}
-          </tbody>
-        </table>
-
-        <h3 style={sty.h3}>vs. Financial Advisors</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Advisors</th><th style={{ ...sty.th, color: accent }}>FORTIFY OS</th></tr></thead>
-          <tbody>
-            {[
-              ['Approach', 'Give advice', 'Run calculations and show the math'],
-              ['Availability', 'Office hours', '6am on your phone'],
-              ['Daily cash position', 'Don\'t track', 'Calculated every session'],
-              ['Cost', '$150–300/hour', 'Claude subscription'],
-            ].map(([cap, them, us], i) => (
-              <tr key={i}><td style={{ ...sty.td, color: t.textPrimary }}>{cap}</td><td style={sty.td}>{them}</td><td style={{ ...sty.td, color: accent }}>{us}</td></tr>
-            ))}
-          </tbody>
-        </table>
-
-        <h3 style={sty.h3}>vs. Generic AI (ChatGPT, Gemini, Generic Claude)</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', margin: '14px 0' }}>
-          <thead><tr><th style={sty.th}>Capability</th><th style={sty.th}>Generic AI</th><th style={{ ...sty.th, color: accent }}>FORTIFY OS</th></tr></thead>
-          <tbody>
-            {[
-              ['Approach', 'Answer questions', 'Enforce a system'],
-              ['Financial memory', 'None', 'Knows your debts, bills, stage, alpha target'],
-              ['Investment timing', 'Suggests anytime', 'Locked until Stage 3 verified'],
-              ['SSN handling', 'No redaction', 'Auto-redact before processing'],
-              ['Hard stops', 'None', 'Never List halts on violations'],
-            ].map(([cap, them, us], i) => (
-              <tr key={i}><td style={{ ...sty.td, color: t.textPrimary }}>{cap}</td><td style={sty.td}>{them}</td><td style={{ ...sty.td, color: accent }}>{us}</td></tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div style={sty.note()}>
-          <strong style={{ color: t.textPrimary }}>Important:</strong> FORTIFY OS does not replace a licensed financial advisor for legal or tax advice. It is a system that enforces financial discipline through math, not a source of regulated financial guidance.
-        </div>
-
-        {/* Footer */}
-        <div style={{ textAlign: 'center', color: t.textDim, marginTop: 60, paddingTop: 16, borderTop: `1px solid ${t.borderDim}`, fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-          <p>No data is sent to external servers.</p>
-          <p style={{ marginTop: 6 }}>Protect first, grow second. Every dollar has a job.</p>
-          <p style={{ marginTop: 12, color: t.textGhost }}>KNOX v2.1 — FORTIFY OS v2.2</p>
-        </div>
       </div>
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════
-// UNIVERSAL SYNC ENGINE
-// ═══════════════════════════════════════════════════
 function UniversalSync({ open, onClose, onSync, t }) {
   const [tab, setTab] = useState('statement');
   const [logs, setLogs] = useState([]);
@@ -8189,15 +7517,15 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
   useMenuDismiss(menuOpen, setMenuOpen, menuRef);
 
   const dashMods = [
-    { key: 'directive', label: 'Daily Directive', desc: 'Top-priority action each session' },
-    { key: 'netWorth', label: 'Net Worth', desc: 'Balance sheet + history chart' },
-    { key: 'debt', label: 'Debt Destruction', desc: 'APR-ranked avalanche payoff plan' },
-    { key: 'planner', label: 'Bills & Payday Planner', desc: 'Upcoming bills and pay schedule' },
-    { key: 'eFund', label: 'Emergency Fund', desc: '4-phase e-fund build tracker' },
-    { key: 'budget', label: 'Budget Status', desc: 'Spending by category with enforcement' },
-    { key: 'knox', label: 'Agent KNOX Terminal', desc: 'AI policy enforcement — NL violation alerts' },
-    { key: 'transactions', label: 'Transactions', desc: 'Parsed statement transaction history' },
-    { key: 'protection', label: 'Protection Layer', desc: 'Life insurance and funeral buffer' },
+    { key: 'directive', label: 'Daily Directive', desc: 'Your single most important action right now — calculated from live data, not guesswork.' },
+    { key: 'netWorth', label: 'Net Worth', desc: 'Total assets minus total liabilities. Tracks direction, not just balance. Updated each session.' },
+    { key: 'debt', label: 'Debt Destruction', desc: 'Debts ranked by interest cost. Shows daily burn rate. Enforces avalanche payoff sequence.' },
+    { key: 'planner', label: 'Bills & Payday Planner', desc: 'Every recurring obligation mapped to your pay cycle. Nothing due should surprise you.' },
+    { key: 'eFund', label: 'Emergency Fund', desc: 'Measured in days of survival, not dollars. Phases 1–4 from starter buffer to full fortress.' },
+    { key: 'budget', label: 'Budget Status', desc: 'Category utilization with enforcement thresholds. Blown categories flagged in your Morning Pulse.' },
+    { key: 'knox', label: 'Agent KNOX Terminal', desc: 'KNOX monitors your financial behavior against protocol rules and flags violations before they compound.' },
+    { key: 'transactions', label: 'Transactions', desc: 'Imported and categorized transaction ledger. Untracked outflow flagged as Lifestyle by default.' },
+    { key: 'protection', label: 'Protection Layer', desc: 'Coverage status for life insurance and final expense protection. Flags gaps in your financial defense perimeter.' },
   ];
   const radarMods = [
     { key: 'macroBanner', label: 'Price Banner', desc: 'Scrolling live prices strip' },
