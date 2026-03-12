@@ -63,6 +63,38 @@ such as `treasury-system`. In that model, FORTIFY OS remains the UI while the ba
 
 This hybrid model is local-first. It does not require a cloud backend.
 
+## TCG Radar MVP
+FORTIFY OS now includes a first-pass `TCG Radar` track for structured collector-market intelligence.
+
+Current MVP shape:
+- sample Python engine under `app/tcg/`
+- deterministic scoring and entity resolution
+- file-backed outputs written to:
+  - `data/tcg/latest.json`
+  - `data/tcg/archive/`
+  - `data/tcg/signal_log.jsonl`
+  - `data/tcg/source_receipts/`
+- mirrored frontend-readable payloads under:
+  - `public/tcg/latest.json`
+  - `public/tcg/archive/`
+  - `public/tcg/source_receipts/`
+- Fortify UI page available as `TCG Radar`
+
+Generate the current sample snapshot:
+```bash
+python3 app/tcg/jobs/run_cycle.py
+```
+
+Planned upgrade path:
+- live source credentials
+- FastAPI routes from `app/tcg/api/`
+- JP source expansion
+- better sealed-product analytics
+- archive replay / backtesting
+
+Optional backend dependencies for the TCG API scaffold are listed in:
+- `app/tcg/requirements.txt`
+
 ## Docs note
 Older Knox concept docs and prototype assets have been moved to:
 - `archive/legacy-docs/`

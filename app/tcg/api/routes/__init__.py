@@ -1,0 +1,2 @@
+"""TCG Radar API routes."""
+
