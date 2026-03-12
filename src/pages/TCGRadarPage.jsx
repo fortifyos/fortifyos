@@ -151,7 +151,7 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
     { key: "macroIntel", label: "Macro Intel", icon: Activity, onClick: onMacroIntel },
     { key: "bitcoin", label: "Bitcoin", icon: null, onClick: onBitcoin },
     { key: "tcg", label: "TCG Radar", icon: Zap, onClick: null, current: true },
-    { key: "docs", label: "Docs", icon: FileText, onClick: onDocs },
+    { key: "docs", label: "Field Manual", icon: FileText, onClick: onDocs },
     { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
   ];
 

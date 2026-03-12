@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, FileText, Home, LayoutGrid, Menu, Moon, Settings, Shield, Sun, X, Activity } from "lucide-react";
+import { Eye, FileText, Home, LayoutGrid, Settings, Shield, Activity, Zap } from "lucide-react";
+import SpecialistShell from "../components/SpecialistShell";
 import "./bitcoin-mastery.css";
 
 const SATS_PER_BTC = 100_000_000;
@@ -214,9 +215,6 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     lastUpdatedIso: null,
     status: "OFFLINE",
   });
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-
   const { ref: pulseRef, trigger: pulse } = usePulseOverlay();
   const convictionPct = 85;
 
@@ -298,93 +296,29 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     };
   }, [pulse]);
 
-  useEffect(() => {
-    if (!menuOpen) return undefined;
-    const onPointerDown = (event) => {
-      if (!menuRef.current?.contains(event.target)) setMenuOpen(false);
-    };
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("touchstart", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("touchstart", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [menuOpen]);
-
   const navItems = [
     { key: "home", label: "Home", icon: Home, onClick: onHome },
     { key: "dashboard", label: "Dashboard", icon: LayoutGrid, onClick: onDashboard || onBack },
     { key: "radar", label: "Radar", icon: Eye, onClick: onMacroSentinel },
     { key: "macroIntel", label: "Macro Intel", icon: Activity, onClick: onMacroIntel },
     { key: "bitcoin", label: "Bitcoin", icon: null, onClick: null, current: true },
-    { key: "docs", label: "Docs", icon: FileText, onClick: onDocs },
+    { key: "tcg", label: "TCG Radar", icon: Zap, onClick: null },
+    { key: "docs", label: "Field Manual", icon: FileText, onClick: onDocs },
     { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
   ];
 
   const lastSync = net.lastUpdatedIso == null ? "—" : new Date(net.lastUpdatedIso).toLocaleString();
 
   return (
+    <SpecialistShell
+      isDark={isDark}
+      onToggleTheme={onToggleTheme}
+      navItems={navItems}
+      centerLabel="FORTIFY OS"
+      statusLabel={`Last Sync ${lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}`}
+    >
     <div className={`bm-root ${isDark ? "bm-dark" : "bm-light"}`}>
       <div ref={pulseRef} className="bm-pulse-overlay" aria-hidden="true" />
-
-      <div className="bm-topbar">
-        <div className="bm-topbar-left">
-          <div ref={menuRef} className="bm-menu-shell">
-            <button
-              className="bm-menu-btn"
-              type="button"
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-label={menuOpen ? "Close page menu" : "Open page menu"}
-              aria-expanded={menuOpen}
-            >
-              {menuOpen ? <X size={14} /> : <Menu size={14} />}
-            </button>
-            {menuOpen && (
-              <div className="bm-menu-pop" role="menu" aria-label="Page navigation">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      className={`bm-menu-item${item.current ? " is-current" : ""}`}
-                      onClick={() => {
-                        setMenuOpen(false);
-                        item.onClick?.();
-                      }}
-                      disabled={!item.onClick}
-                    >
-                      {Icon ? <Icon size={15} /> : <span className="bm-menu-btc">₿</span>}
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <div className="bm-brand">
-            <span>FORTIFY OS</span>
-          </div>
-        </div>
-        <div className="bm-topbar-title">FORTIFY OS</div>
-        <div className="bm-topbar-actions">
-          <div className="bm-topbar-status">LAST SYNC {lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}</div>
-          <button
-            className="bm-theme-btn"
-            type="button"
-            onClick={onToggleTheme}
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {isDark ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
-        </div>
-      </div>
 
       <header className="bm-hero">
         <div className="bm-statusbar" role="group" aria-label="Network status">
@@ -654,5 +588,6 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
         <span>LAST SYNC: {lastSync}</span>
       </footer>
     </div>
+    </SpecialistShell>
   );
 }

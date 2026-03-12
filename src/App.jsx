@@ -6425,7 +6425,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'tcg', label: 'TCG Radar', icon: Zap, onClick: onTCGRadar },
-    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
@@ -7020,7 +7020,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'tcg', label: 'TCG Radar', icon: Zap, onClick: onTCGRadar },
-    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
@@ -7567,7 +7567,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
     { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'tcg', label: 'TCG Radar', icon: Zap, onClick: onTCGRadar },
-    { key: 'docs', label: 'Docs', icon: FileText, onClick: onDocs },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: null, current: true },
   ];
 
@@ -8190,7 +8190,7 @@ function FortifyOSApp() {
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onTCGRadar={() => setView('tcgRadar')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onTCGRadar={() => setView('tcgRadar')} onDocs={() => setView('docs')} />}
       {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
-      {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} />}
+      {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {view === 'tcgRadar' && <TCGRadarPage onBack={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} />

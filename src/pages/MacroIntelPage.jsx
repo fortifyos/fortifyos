@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { Activity, Eye, FileText, Home, LayoutGrid, Settings, Zap } from "lucide-react";
+import SpecialistShell from "../components/SpecialistShell";
 import "./macro-intel.css";
 
 /* ══════════════════════════════════════════════════════════════
@@ -448,7 +450,7 @@ function MacroArchiveRail({ items }) {
               <div>
                 <div className="mi-archive-date macro-mono">{item.date}</div>
                 {item.dominantDrivers?.length > 0 && (
-                  <div style={{ fontSize: 10, color: "rgba(255,255,255,.38)", marginTop: 2, letterSpacing: ".04em" }}>
+                  <div style={{ fontSize: 10, color: "var(--mi-ghost)", marginTop: 2, letterSpacing: ".04em" }}>
                     {item.dominantDrivers.slice(0, 2).map(d => d.replace(/_/g, " ")).join(" · ")}
                   </div>
                 )}
@@ -470,7 +472,7 @@ function MacroArchiveRail({ items }) {
 /* ══════════════════════════════════════════════════════════════
    ROOT COMPONENT
    ══════════════════════════════════════════════════════════════ */
-export default function MacroIntelPage({ onBack }) {
+export default function MacroIntelPage({ onBack, onHome, onDashboard, onMacroSentinel, onBitcoin, onDocs, onSettings, isDark = true, onToggleTheme }) {
   const [regime, setRegime]     = useState(null);
   const [market, setMarket]     = useState(null);
   const [todayLog, setTodayLog] = useState(null);
@@ -518,7 +520,7 @@ export default function MacroIntelPage({ onBack }) {
 
   if (loading) {
     return (
-      <div className="mi-root">
+      <div className={`mi-root ${isDark ? "mi-dark" : "mi-light"}`}>
         <div className="mi-loading">MACRO INTEL INITIALIZING...</div>
       </div>
     );
@@ -526,16 +528,27 @@ export default function MacroIntelPage({ onBack }) {
 
   const entries = todayLog?.entries ?? [];
   const todayDate = todayLog?.date ?? new Date().toISOString().slice(0, 10);
+  const lastSyncLabel = regime?.timestamp ? new Date(regime.timestamp).toLocaleTimeString() : "—";
+  const navItems = [
+    { key: "home", label: "Home", icon: Home, onClick: onHome },
+    { key: "dashboard", label: "Dashboard", icon: LayoutGrid, onClick: onDashboard || onBack },
+    { key: "radar", label: "Radar", icon: Eye, onClick: onMacroSentinel },
+    { key: "macroIntel", label: "Macro Intel", icon: Activity, onClick: null, current: true },
+    { key: "bitcoin", label: "Bitcoin", icon: null, onClick: onBitcoin },
+    { key: "tcg", label: "TCG Radar", icon: Zap, onClick: null },
+    { key: "docs", label: "Field Manual", icon: FileText, onClick: onDocs },
+    { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
+  ];
 
   return (
-    <div className="mi-root">
-      {/* Back */}
-      {onBack && (
-        <div className="mi-back-bar">
-          <button className="mi-back-btn" onClick={onBack}>← Dashboard</button>
-        </div>
-      )}
-
+    <SpecialistShell
+      isDark={isDark}
+      onToggleTheme={onToggleTheme}
+      navItems={navItems}
+      centerLabel="FORTIFY OS"
+      statusLabel={`Last Sync ${lastSyncLabel}`}
+    >
+    <div className={`mi-root ${isDark ? "mi-dark" : "mi-light"}`}>
       {/* Header */}
       <MacroHeader
         regime={regime}
@@ -585,5 +598,6 @@ export default function MacroIntelPage({ onBack }) {
         </span>
       </footer>
     </div>
+    </SpecialistShell>
   );
 }

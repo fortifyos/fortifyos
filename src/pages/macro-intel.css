@@ -23,6 +23,23 @@
   --mi-radius:   4px;
 }
 
+.mi-root.mi-light {
+  --mi-bg: #ffffff;
+  --mi-surface: #f7f7f7;
+  --mi-elevated: #f2f2f2;
+  --mi-border: #cecece;
+  --mi-border-mid: #b9b9b9;
+  --mi-text: #121212;
+  --mi-dim: #444444;
+  --mi-ghost: #888888;
+  --mi-green: #1D7A3A;
+  --mi-red: #C42B1C;
+  --mi-amber: #D48A00;
+  --mi-purple: #8B5CF6;
+  --mi-orange: #E8850F;
+  --mi-crypto: #E8850F;
+}
+
 /* ── Root ── */
 .mi-root {
   min-height: 100vh;
