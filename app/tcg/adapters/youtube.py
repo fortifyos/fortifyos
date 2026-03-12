@@ -37,8 +37,27 @@ class YouTubeAdapter:
                 published_at=now - timedelta(hours=1, minutes=20),
                 metadata={"mention_velocity": 2.4, "creator_acceleration": 2.1, "signal_hints": ["creator_acceleration", "emerging_franchise"]},
             ),
+            RawEvent(
+                external_id="yt_union_arena_hxh_001",
+                source=self.source_name,
+                source_type="video",
+                url="https://youtube.example/union-arena-hxh-launch-watch",
+                title="Union Arena Hunter x Hunter launch boxes are getting early collector attention",
+                text="Coverage is spreading beyond Bandai-only channels as preorder chatter and event kit discussion accelerate.",
+                language="en",
+                region="JP",
+                author="Emerging TCG Desk",
+                published_at=now - timedelta(hours=1, minutes=5),
+                metadata={
+                    "mention_velocity": 2.9,
+                    "creator_acceleration": 2.4,
+                    "publisher_credibility": 0.92,
+                    "organized_play_support": 0.76,
+                    "distribution_strength": 0.71,
+                    "signal_hints": ["emerging_franchise", "release_catalyst"],
+                },
+            ),
         ]
 
     def healthcheck(self) -> dict:
         return {"source": self.source_name, "status": "sample-live"}
-

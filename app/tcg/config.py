@@ -15,6 +15,7 @@ class TCGConfig:
     app_port: int = int(os.getenv("APP_PORT", "8080"))
     data_root: Path = REPO_ROOT / "data" / "tcg"
     public_root: Path = REPO_ROOT / "public" / "tcg"
+    database_path: Path = REPO_ROOT / "data" / "tcg" / "tcg_radar.db"
     enable_jp_sources: bool = os.getenv("ENABLE_JP_SOURCES", "false").lower() == "true"
     enable_translation: bool = os.getenv("ENABLE_TRANSLATION", "true").lower() == "true"
     enable_ai_narration: bool = os.getenv("ENABLE_AI_NARRATION", "false").lower() == "true"
@@ -27,9 +28,9 @@ class TCGConfig:
             self.public_root,
             self.public_root / "archive",
             self.public_root / "source_receipts",
+            self.database_path.parent,
         ):
             path.mkdir(parents=True, exist_ok=True)
 
 
 CONFIG = TCGConfig()
-

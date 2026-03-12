@@ -7,7 +7,16 @@ export default defineConfig(() => {
 
   return {
     base: isPages ? '/fortifyos/' : '/',
-    server: { host: '127.0.0.1' },
+    server: {
+      host: '127.0.0.1',
+      proxy: {
+        '/tcg-api': {
+          target: 'http://127.0.0.1:8080',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/tcg-api/, ''),
+        },
+      },
+    },
     plugins: [
       react(),
       VitePWA({

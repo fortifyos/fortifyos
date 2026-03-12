@@ -1,0 +1,541 @@
+{
+  "run_id": "2026-03-12T22:33:24Z",
+  "events": [
+    {
+      "event_id": "23ce8f4cc51bf507",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T20:23:24.530047+00:00",
+      "source": "youtube",
+      "source_type": "video",
+      "source_weight": 0.92,
+      "url": "https://youtube.example/gengar-master-ball-supply-thinning",
+      "title": "Master Ball Gengar supply is vanishing in Japan",
+      "text": "Collector attention is rising fast and JP listings are drying up before US comps move.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_151_mb_gengar"
+      ],
+      "signal_hints": [
+        "mention_spike",
+        "jp_divergence"
+      ],
+      "metrics": {
+        "mention_velocity": 3.1,
+        "creator_acceleration": 2.6
+      },
+      "metadata": {
+        "mention_velocity": 3.1,
+        "creator_acceleration": 2.6,
+        "signal_hints": [
+          "mention_spike",
+          "jp_divergence"
+        ]
+      }
+    },
+    {
+      "event_id": "8eceaf6e0ab1c219",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:13:24.530047+00:00",
+      "source": "youtube",
+      "source_type": "video",
+      "source_weight": 0.92,
+      "url": "https://youtube.example/prb-nami-alt-watch",
+      "title": "PRB-01 Nami Alt is getting picked clean",
+      "text": "One Piece creator chatter is rotating toward PRB alt arts ahead of broader repricing.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "op_prb01_nami_alt"
+      ],
+      "signal_hints": [
+        "creator_acceleration",
+        "emerging_franchise"
+      ],
+      "metrics": {
+        "mention_velocity": 2.4,
+        "creator_acceleration": 2.1
+      },
+      "metadata": {
+        "mention_velocity": 2.4,
+        "creator_acceleration": 2.1,
+        "signal_hints": [
+          "creator_acceleration",
+          "emerging_franchise"
+        ]
+      }
+    },
+    {
+      "event_id": "6f45d0c119d59483",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:28:24.530047+00:00",
+      "source": "youtube",
+      "source_type": "video",
+      "source_weight": 0.92,
+      "url": "https://youtube.example/union-arena-hxh-launch-watch",
+      "title": "Union Arena Hunter x Hunter launch boxes are getting early collector attention",
+      "text": "Coverage is spreading beyond Bandai-only channels as preorder chatter and event kit discussion accelerate.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "ua_hxh_union_arena_launch_box",
+        "pkm_promo_pikachu_stampbox"
+      ],
+      "signal_hints": [
+        "emerging_franchise",
+        "release_catalyst"
+      ],
+      "metrics": {
+        "mention_velocity": 2.9,
+        "creator_acceleration": 2.4,
+        "publisher_credibility": 0.92,
+        "organized_play_support": 0.76,
+        "distribution_strength": 0.71
+      },
+      "metadata": {
+        "mention_velocity": 2.9,
+        "creator_acceleration": 2.4,
+        "publisher_credibility": 0.92,
+        "organized_play_support": 0.76,
+        "distribution_strength": 0.71,
+        "signal_hints": [
+          "emerging_franchise",
+          "release_catalyst"
+        ]
+      }
+    },
+    {
+      "event_id": "51e8b1a39975be17",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T19:48:24.530064+00:00",
+      "source": "reddit",
+      "source_type": "post",
+      "source_weight": 0.58,
+      "url": "https://reddit.example/r/pokeinvesting/master-ball-gengar",
+      "title": "Master Ball Gengar listings feel lighter this week",
+      "text": "Seeing fewer clean copies under my buy line. JP sellers are pulling inventory fast.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_151_mb_gengar"
+      ],
+      "signal_hints": [
+        "listing_depletion"
+      ],
+      "metrics": {
+        "mention_velocity": 1.8,
+        "cross_source_confirmation": 1.0
+      },
+      "metadata": {
+        "mention_velocity": 1.8,
+        "cross_source_confirmation": 1.0,
+        "signal_hints": [
+          "listing_depletion"
+        ]
+      }
+    },
+    {
+      "event_id": "457c8f57eccfe46b",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:28:24.530064+00:00",
+      "source": "reddit",
+      "source_type": "post",
+      "source_weight": 0.58,
+      "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu",
+      "title": "Stamp Box Pikachu still feels underfollowed",
+      "text": "Japan sellers are firming prices but US attention is still muted.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_promo_pikachu_stampbox",
+        "ua_hxh_union_arena_launch_box"
+      ],
+      "signal_hints": [
+        "promo_catalyst",
+        "jp_divergence"
+      ],
+      "metrics": {
+        "mention_velocity": 1.6,
+        "jp_divergence": 2.8
+      },
+      "metadata": {
+        "mention_velocity": 1.6,
+        "jp_divergence": 2.8,
+        "signal_hints": [
+          "promo_catalyst",
+          "jp_divergence"
+        ]
+      }
+    },
+    {
+      "event_id": "870aba2aa6eb7976",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:43:24.530064+00:00",
+      "source": "reddit",
+      "source_type": "post",
+      "source_weight": 0.58,
+      "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch",
+      "title": "Union Arena HxH launch already showing sealed interest",
+      "text": "Stores are discussing event kits, product allocations, and early resale premiums for first wave boxes.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "ua_hxh_union_arena_launch_box",
+        "pkm_promo_pikachu_stampbox"
+      ],
+      "signal_hints": [
+        "emerging_franchise",
+        "listing_depletion"
+      ],
+      "metrics": {
+        "mention_velocity": 1.9,
+        "secondary_market_formation": 0.66,
+        "distribution_strength": 0.68
+      },
+      "metadata": {
+        "mention_velocity": 1.9,
+        "secondary_market_formation": 0.66,
+        "distribution_strength": 0.68,
+        "signal_hints": [
+          "emerging_franchise",
+          "listing_depletion"
+        ]
+      }
+    },
+    {
+      "event_id": "02b13803c9d3122d",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:53:24.530072+00:00",
+      "source": "ebay",
+      "source_type": "marketplace",
+      "source_weight": 0.94,
+      "url": "https://ebay.example/itm/gengar-master-ball-151",
+      "title": "Pokemon 151 Master Ball Gengar listings",
+      "text": "Observed active listings down 28 percent, sold comps up 14 percent.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_151_mb_gengar",
+        "pkm_japan_classic_collection_charizard"
+      ],
+      "signal_hints": [
+        "listing_depletion",
+        "sold_velocity",
+        "jp_divergence"
+      ],
+      "metrics": {
+        "listing_count": 11,
+        "listing_count_delta": -28.0,
+        "sold_count": 14,
+        "sold_count_delta": 18.0,
+        "median_sold_price": 272.0,
+        "median_sold_price_delta": 14.0,
+        "price_velocity": 0.14,
+        "jp_price": 272.0
+      },
+      "metadata": {
+        "listing_count": 11,
+        "listing_count_delta": -28.0,
+        "sold_count": 14,
+        "sold_count_delta": 18.0,
+        "median_sold_price": 272.0,
+        "median_sold_price_delta": 14.0,
+        "price_velocity": 0.14,
+        "jp_price": 272.0,
+        "signal_hints": [
+          "listing_depletion",
+          "sold_velocity",
+          "jp_divergence"
+        ]
+      }
+    },
+    {
+      "event_id": "c0383032e4699fa3",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:23:24.530072+00:00",
+      "source": "ebay",
+      "source_type": "marketplace",
+      "source_weight": 0.94,
+      "url": "https://ebay.example/itm/pokemon-classic-charizard-deck",
+      "title": "Pokemon Classic Collection Charizard Deck supply gap",
+      "text": "Sealed inventory has narrowed while buyer watchlists are climbing.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_japan_classic_collection_charizard",
+        "pkm_151_mb_gengar"
+      ],
+      "signal_hints": [
+        "listing_depletion",
+        "sealed_dislocation"
+      ],
+      "metrics": {
+        "listing_count": 8,
+        "listing_count_delta": -19.0,
+        "sold_count": 9,
+        "sold_count_delta": 12.0,
+        "median_sold_price": 438.0,
+        "median_sold_price_delta": 9.0,
+        "price_velocity": 0.09
+      },
+      "metadata": {
+        "listing_count": 8,
+        "listing_count_delta": -19.0,
+        "sold_count": 9,
+        "sold_count_delta": 12.0,
+        "median_sold_price": 438.0,
+        "median_sold_price_delta": 9.0,
+        "price_velocity": 0.09,
+        "signal_hints": [
+          "listing_depletion",
+          "sealed_dislocation"
+        ]
+      }
+    },
+    {
+      "event_id": "7436d0374ea1f84c",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:38:24.530072+00:00",
+      "source": "ebay",
+      "source_type": "marketplace",
+      "source_weight": 0.94,
+      "url": "https://ebay.example/itm/pikachu-stamp-box-promo",
+      "title": "Pikachu Stamp Box Promo listings remain thin",
+      "text": "Active listings are sparse while sold results continue to clear above guide references.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_promo_pikachu_stampbox",
+        "ua_hxh_union_arena_launch_box"
+      ],
+      "signal_hints": [
+        "listing_depletion",
+        "promo_catalyst",
+        "scarcity_pressure"
+      ],
+      "metrics": {
+        "listing_count": 6,
+        "listing_count_delta": -17.0,
+        "sold_count": 7,
+        "sold_count_delta": 10.0,
+        "median_sold_price": 298.0,
+        "median_sold_price_delta": 11.0,
+        "price_velocity": 0.11,
+        "jp_price": 298.0,
+        "scarcity_pressure": 1.8
+      },
+      "metadata": {
+        "listing_count": 6,
+        "listing_count_delta": -17.0,
+        "sold_count": 7,
+        "sold_count_delta": 10.0,
+        "median_sold_price": 298.0,
+        "median_sold_price_delta": 11.0,
+        "price_velocity": 0.11,
+        "jp_price": 298.0,
+        "scarcity_pressure": 1.8,
+        "signal_hints": [
+          "listing_depletion",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ]
+      }
+    },
+    {
+      "event_id": "76e82441ee33a75f",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:58:24.530072+00:00",
+      "source": "ebay",
+      "source_type": "marketplace",
+      "source_weight": 0.94,
+      "url": "https://ebay.example/itm/union-arena-hxh-launch-box",
+      "title": "Union Arena Hunter x Hunter launch box preorder premium",
+      "text": "Early sealed listings are thinning and resale premiums are appearing ahead of wider release.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "ua_hxh_union_arena_launch_box",
+        "pkm_promo_pikachu_stampbox"
+      ],
+      "signal_hints": [
+        "emerging_franchise",
+        "listing_depletion",
+        "release_catalyst"
+      ],
+      "metrics": {
+        "listing_count": 13,
+        "listing_count_delta": -14.0,
+        "sold_count": 5,
+        "sold_count_delta": 8.0,
+        "median_sold_price": 118.0,
+        "median_sold_price_delta": 7.0,
+        "price_velocity": 0.07,
+        "secondary_market_formation": 0.72
+      },
+      "metadata": {
+        "listing_count": 13,
+        "listing_count_delta": -14.0,
+        "sold_count": 5,
+        "sold_count_delta": 8.0,
+        "median_sold_price": 118.0,
+        "median_sold_price_delta": 7.0,
+        "price_velocity": 0.07,
+        "secondary_market_formation": 0.72,
+        "signal_hints": [
+          "emerging_franchise",
+          "listing_depletion",
+          "release_catalyst"
+        ]
+      }
+    },
+    {
+      "event_id": "1a03b98de3f671a9",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:28:24.530081+00:00",
+      "source": "pricecharting",
+      "source_type": "price-guide",
+      "source_weight": 0.78,
+      "url": "https://pricecharting.example/pokemon-151-master-ball-gengar",
+      "title": "Pokemon 151 Master Ball Gengar guide lag",
+      "text": "Guide price remains below the recent sold market while the 30 day trend is climbing.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_151_mb_gengar",
+        "pkm_japan_classic_collection_charizard"
+      ],
+      "signal_hints": [
+        "guide_dislocation",
+        "jp_divergence"
+      ],
+      "metrics": {
+        "pricecharting_price": 228.0,
+        "guide_dislocation": 0.19,
+        "price_velocity": 0.13
+      },
+      "metadata": {
+        "pricecharting_price": 228.0,
+        "guide_dislocation": 0.19,
+        "price_velocity": 0.13,
+        "signal_hints": [
+          "guide_dislocation",
+          "jp_divergence"
+        ]
+      }
+    },
+    {
+      "event_id": "d935232f71ec3e1c",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:13:24.530081+00:00",
+      "source": "pricecharting",
+      "source_type": "price-guide",
+      "source_weight": 0.78,
+      "url": "https://pricecharting.example/pikachu-stamp-box-promo",
+      "title": "Pikachu Stamp Box promo repricing context",
+      "text": "Longer trend remains constructive while live supply stays thin relative to guide history.",
+      "language": "en",
+      "region": "JP",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_promo_pikachu_stampbox",
+        "ua_hxh_union_arena_launch_box"
+      ],
+      "signal_hints": [
+        "promo_catalyst",
+        "guide_dislocation"
+      ],
+      "metrics": {
+        "pricecharting_price": 268.0,
+        "guide_dislocation": 0.11,
+        "price_velocity": 0.08
+      },
+      "metadata": {
+        "pricecharting_price": 268.0,
+        "guide_dislocation": 0.11,
+        "price_velocity": 0.08,
+        "signal_hints": [
+          "promo_catalyst",
+          "guide_dislocation"
+        ]
+      }
+    },
+    {
+      "event_id": "495e9576502ead67",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T21:38:24.530086+00:00",
+      "source": "tcgplayer",
+      "source_type": "marketplace",
+      "source_weight": 0.96,
+      "url": "https://tcgplayer.example/product/stamp-box-pikachu",
+      "title": "Pikachu Stamp Box Promo market depth",
+      "text": "Median sold price up 11 percent on shrinking float, low relist behavior.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_promo_pikachu_stampbox",
+        "ua_hxh_union_arena_launch_box"
+      ],
+      "signal_hints": [
+        "scarcity_pressure",
+        "promo_catalyst"
+      ],
+      "metrics": {
+        "sold_count_delta": 15.0,
+        "median_sold_price_delta": 11.0,
+        "scarcity_pressure": 2.4
+      },
+      "metadata": {
+        "sold_count_delta": 15.0,
+        "median_sold_price_delta": 11.0,
+        "scarcity_pressure": 2.4,
+        "signal_hints": [
+          "scarcity_pressure",
+          "promo_catalyst"
+        ]
+      }
+    },
+    {
+      "event_id": "c6798e29f7e24aba",
+      "run_id": "2026-03-12T22:33:24Z",
+      "timestamp": "2026-03-12T20:33:24.530088+00:00",
+      "source": "psa",
+      "source_type": "population",
+      "source_weight": 0.9,
+      "url": "https://psa.example/pop/gengar-master-ball",
+      "title": "PSA pop update: Master Ball Gengar",
+      "text": "Population growth remains modest versus rising demand chatter.",
+      "language": "en",
+      "region": "US",
+      "translated_text": null,
+      "entity_candidates": [
+        "pkm_151_mb_gengar"
+      ],
+      "signal_hints": [
+        "scarcity_pressure"
+      ],
+      "metrics": {
+        "psa_pop_growth_rate": 3.0,
+        "scarcity_pressure": 2.0
+      },
+      "metadata": {
+        "psa_pop_growth_rate": 3.0,
+        "scarcity_pressure": 2.0,
+        "signal_hints": [
+          "scarcity_pressure"
+        ]
+      }
+    }
+  ]
+}

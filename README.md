@@ -67,8 +67,9 @@ This hybrid model is local-first. It does not require a cloud backend.
 FORTIFY OS now includes a first-pass `TCG Radar` track for structured collector-market intelligence.
 
 Current MVP shape:
-- sample Python engine under `app/tcg/`
-- deterministic scoring and entity resolution
+- Python radar engine under `app/tcg/`
+- local SQLite persistence at `data/tcg/tcg_radar.db`
+- deterministic scoring, action states, and entity resolution
 - file-backed outputs written to:
   - `data/tcg/latest.json`
   - `data/tcg/archive/`
@@ -79,15 +80,31 @@ Current MVP shape:
   - `public/tcg/archive/`
   - `public/tcg/source_receipts/`
 - Fortify UI page available as `TCG Radar`
+- FastAPI scaffold available under `app/tcg/api/`
 
 Generate the current sample snapshot:
 ```bash
 python3 app/tcg/jobs/run_cycle.py
 ```
 
+Run the scheduled 3-hour local cycle:
+```bash
+python3 app/tcg/jobs/schedule.py
+```
+
+Run the local TCG API:
+```bash
+uvicorn app.tcg.api.main:app --reload --host 127.0.0.1 --port 8080
+```
+
+Current radar behavior:
+- Alpha Board is split into `Act`, `Prepare`, `Observe`, and `Emerging Franchise Momentum`
+- emerging franchises use an incubator model with lifecycle states and viability gates
+- established franchises stay in the standard opportunity model
+
 Planned upgrade path:
 - live source credentials
-- FastAPI routes from `app/tcg/api/`
+- frontend/API integration against live routes
 - JP source expansion
 - better sealed-product analytics
 - archive replay / backtesting

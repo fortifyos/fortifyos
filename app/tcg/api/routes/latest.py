@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import json
-
 from fastapi import APIRouter
 
-from app.tcg.config import CONFIG
+from app.tcg.api.store import load_latest_payload
 
 
 router = APIRouter()
@@ -12,5 +10,4 @@ router = APIRouter()
 
 @router.get("/latest")
 def get_latest():
-    return json.loads((CONFIG.data_root / "latest.json").read_text())
-
+    return load_latest_payload()

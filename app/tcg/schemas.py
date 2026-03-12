@@ -58,6 +58,10 @@ class Entity:
     aliases: list[str]
     franchise: str | None = None
     set_name: str | None = None
+    rarity: str | None = None
+    language: str | None = None
+    grading: str | None = None
+    release_date: str | None = None
     identifiers: dict[str, Any] = field(default_factory=dict)
     region_priority: list[str] = field(default_factory=list)
 
@@ -69,8 +73,11 @@ class Entity:
 class ScoredSignal:
     entity: Entity
     alpha_score: float
+    opportunity_score: float
     confidence_score: float
     risk_score: float
+    urgency_score: float
+    action_state: str
     time_horizon: str
     signal_types: list[str]
     region_lead: str | None
@@ -78,8 +85,10 @@ class ScoredSignal:
     drivers: list[str]
     flags: list[str]
     sources: list[dict[str, str]]
+    generated_at: str
     query_tags: list[str] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
+    narrative: dict[str, Any] = field(default_factory=dict)
 
     def to_latest_dict(self) -> dict[str, Any]:
         return {
@@ -89,8 +98,11 @@ class ScoredSignal:
             "franchise": self.entity.franchise,
             "set_name": self.entity.set_name,
             "alpha_score": self.alpha_score,
+            "opportunity_score": self.opportunity_score,
             "confidence_score": self.confidence_score,
             "risk_score": self.risk_score,
+            "urgency_score": self.urgency_score,
+            "action_state": self.action_state,
             "signal_types": self.signal_types,
             "region_lead": self.region_lead,
             "time_horizon": self.time_horizon,
@@ -100,5 +112,5 @@ class ScoredSignal:
             "sources": self.sources,
             "query_tags": self.query_tags,
             "metrics": self.metrics,
+            "narrative": self.narrative,
         }
-

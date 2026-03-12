@@ -231,6 +231,73 @@
 
 .tcg-panel__body { padding: 14px; }
 .tcg-card-list { display: grid; gap: 12px; }
+.tcg-alpha-section + .tcg-alpha-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.tcg-alpha-section__head {
+  margin-bottom: 12px;
+}
+.tcg-alpha-section__title {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.tcg-franchise-board {
+  display: grid;
+  gap: 12px;
+}
+.tcg-franchise-card {
+  border: 1px solid #232323;
+  background: rgba(255,255,255,.02);
+  padding: 14px;
+}
+.tcg-franchise-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+.tcg-franchise-card__title {
+  margin: 5px 0 0;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+.tcg-franchise-card__score {
+  display: grid;
+  gap: 3px;
+  justify-items: end;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.56);
+}
+.tcg-franchise-card__score strong {
+  font-size: 20px;
+  color: #00ff41;
+}
+.tcg-franchise-card__gates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.tcg-franchise-card__gates li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: rgba(255,255,255,.72);
+  text-transform: capitalize;
+}
+.tcg-franchise-card__gates .is-pass {
+  color: #00ff41;
+}
+.tcg-franchise-card__gates .is-watch {
+  color: #ffb700;
+}
 
 .tcg-signal-card {
   text-align: left;
@@ -293,6 +360,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.tcg-detail__history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: rgba(255,255,255,.72);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .1em;
