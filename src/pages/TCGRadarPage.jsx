@@ -160,6 +160,71 @@ function WatchlistStatusPanel({ watchlist, sourceHealth, apiMode }) {
   );
 }
 
+function WatchlistManagementPanel({ data }) {
+  const entries = data?.entries || [];
+  return (
+    <div className="tcg-watchlist-manager">
+      <div className="tcg-watchlist-manager__meta">
+        <span>{data?.count || 0} entities</span>
+        <span>{data?.generated_at ? new Date(data.generated_at).toLocaleString() : "pending sync"}</span>
+      </div>
+      <div className="tcg-watchlist-manager__list">
+        {entries.map((entry) => (
+          <article key={entry.entity_id} className="tcg-watchlist-entry">
+            <div className="tcg-watchlist-entry__top">
+              <div>
+                <div className="tcg-signal-card__franchise">{entry.franchise || "Unknown Franchise"}</div>
+                <h4 className="tcg-watchlist-entry__name">{entry.canonical_name}</h4>
+                <div className="tcg-watchlist-entry__meta">
+                  <span>{entry.entity_type || "entity"}</span>
+                  {entry.set_name ? <span>{entry.set_name}</span> : null}
+                  {entry.region_lead ? <span>lead {entry.region_lead}</span> : null}
+                </div>
+              </div>
+              <div className="tcg-watchlist-entry__badges">
+                <span className="tcg-chip">P{entry.priority}</span>
+                {entry.action_state ? <span className="tcg-chip">{entry.action_state}</span> : null}
+                {entry.has_live_signal ? <span className="tcg-chip">live</span> : <span className="tcg-chip">staged</span>}
+              </div>
+            </div>
+            <p className="tcg-signal-card__summary">{entry.thesis || entry.notes}</p>
+            <div className="tcg-watchlist-entry__grid">
+              <div className="tcg-detail__section">
+                <div className="tcg-detail__label">Source Coverage</div>
+                <ul className="tcg-watchlist-entry__sources">
+                  {(entry.enabled_sources || []).map((source) => (
+                    <li key={source}>
+                      <span>{source}</span>
+                      <strong>{entry.source_readiness?.[source] ?? 0} events</strong>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="tcg-detail__section">
+                <div className="tcg-detail__label">Query Map</div>
+                <ul className="tcg-watchlist-entry__queries">
+                  {Object.entries(entry.source_queries || {}).map(([source, queries]) => (
+                    <li key={source}>
+                      <span>{source}</span>
+                      <em>{Array.isArray(queries) ? queries.join(" · ") : ""}</em>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            {entry.notes ? (
+              <div className="tcg-watchlist-entry__notes">
+                <span className="tcg-detail__label">Operator Note</span>
+                <p>{entry.notes}</p>
+              </div>
+            ) : null}
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Panel({ title, eyebrow, tone = "green", children, right = null }) {
   return (
     <section className={`tcg-panel tcg-panel--${tone}`}>
@@ -232,6 +297,7 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(null);
   const [selectedDetail, setSelectedDetail] = useState(null);
+  const [watchlistDetail, setWatchlistDetail] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -255,6 +321,7 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
       setPayload(next);
       setResults(next?.top_signals || []);
       setSelected(next?.alpha_board?.act?.[0] || next?.top_signals?.[0] || null);
+      setWatchlistDetail(null);
     } catch {
       setPayload(null);
       setApiMode(false);
@@ -297,6 +364,47 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
       cancelled = true;
     };
   }, [selected, apiMode]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fallback = {
+      generated_at: payload?.generated_at || null,
+      count: watchlist?.entities_tracked || 0,
+      entries: (watchlist?.priorities || []).map((item) => ({
+        entity_id: item.entity_id,
+        canonical_name: item.entity_id,
+        priority: item.priority,
+        enabled_sources: [],
+        source_queries: {},
+        notes: "",
+        thesis: "",
+        source_readiness: {},
+      })),
+    };
+
+    if (!apiMode) {
+      setWatchlistDetail(fallback);
+      return undefined;
+    }
+
+    const loadWatchlist = async () => {
+      try {
+        const response = await fetch(`${TCG_API_BASE}/watchlist`, { cache: "no-store" });
+        const detail = response.ok ? await response.json() : fallback;
+        if (!cancelled) {
+          setWatchlistDetail(detail);
+        }
+      } catch {
+        if (!cancelled) {
+          setWatchlistDetail(fallback);
+        }
+      }
+    };
+    loadWatchlist();
+    return () => {
+      cancelled = true;
+    };
+  }, [apiMode, payload]);
 
   const navItems = [
     { key: "home", label: "Home", icon: Home, onClick: onHome },
@@ -404,6 +512,9 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
                 </div>
                 <FranchiseMomentumBoard items={alphaBoard.franchise_momentum} />
               </div>
+            </Panel>
+            <Panel title="Watchlist Control" eyebrow="Entity and Franchise Coverage" tone="green" right={apiMode ? "api enriched" : "snapshot derived"}>
+              <WatchlistManagementPanel data={watchlistDetail} />
             </Panel>
           </div>
 

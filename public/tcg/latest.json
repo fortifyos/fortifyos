@@ -1,149 +1,36 @@
 {
-  "generated_at": "2026-03-12T23:08:24+00:00",
-  "run_id": "2026-03-12T23:08:24Z",
+  "generated_at": "2026-03-13T01:59:50+00:00",
+  "run_id": "2026-03-13T01:59:50Z",
   "freshness_hours": 3,
   "top_signals": [
-    {
-      "entity_id": "ua_hxh_union_arena_launch_box",
-      "entity_name": "Union Arena Hunter x Hunter Launch Box",
-      "entity_type": "sealed",
-      "franchise": "Union Arena",
-      "set_name": "Hunter x Hunter Vol.1",
-      "alpha_score": 39.9,
-      "opportunity_score": 39.9,
-      "confidence_score": 100.0,
-      "risk_score": 18.0,
-      "urgency_score": 32.17,
-      "action_state": "observe",
-      "signal_types": [
-        "emerging_franchise",
-        "guide_dislocation",
-        "jp_divergence",
-        "listing_depletion",
-        "promo_catalyst",
-        "release_catalyst",
-        "scarcity_pressure"
-      ],
-      "region_lead": "JP",
-      "time_horizon": "7-30d",
-      "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-      "drivers": [
-        "Listings down 16%",
-        "Sold velocity up 5%",
-        "Price velocity 4%",
-        "Guide lag 2%",
-        "JP lead 40%"
-      ],
-      "flags": [
-        "thin market"
-      ],
-      "sources": [
-        {
-          "source": "youtube",
-          "url": "https://youtube.example/union-arena-hxh-launch-watch"
-        },
-        {
-          "source": "reddit",
-          "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-        },
-        {
-          "source": "reddit",
-          "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
-        },
-        {
-          "source": "ebay",
-          "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
-        },
-        {
-          "source": "ebay",
-          "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-        },
-        {
-          "source": "pricecharting",
-          "url": "https://pricecharting.example/pikachu-stamp-box-promo"
-        }
-      ],
-      "query_tags": [
-        "emerging_franchise",
-        "guide_dislocation",
-        "jp_divergence",
-        "lead:jp",
-        "listing_depletion",
-        "observe",
-        "promo_catalyst",
-        "release_catalyst",
-        "scarcity_pressure",
-        "sealed",
-        "union arena"
-      ],
-      "metrics": {
-        "price_velocity_score": 14.857142857142858,
-        "sold_velocity_score": 23.57142857142857,
-        "listing_depletion_score": 51.66666666666667,
-        "attention_velocity_score": 26.122448979591837,
-        "creator_acceleration_score": 11.428571428571429,
-        "guide_dislocation_score": 6.2857142857142865,
-        "jp_divergence_score": 100.0,
-        "scarcity_pressure_score": 20.0,
-        "catalyst_score": 88.0,
-        "cross_source_confirmation_score": 90.0,
-        "novelty_score": 35.0,
-        "ebay_sold_median": 208.0,
-        "tcgplayer_market": 0.0,
-        "pricecharting_price": 268.0,
-        "price_velocity_raw": 0.0371,
-        "sold_velocity_raw": 4.71,
-        "listing_depletion_raw": 15.5,
-        "attention_velocity_raw": 0.91,
-        "creator_acceleration_raw": 0.34,
-        "guide_dislocation_raw": 0.0157,
-        "jp_divergence_raw": 0.4,
-        "scarcity_pressure_raw": 0.6
-      },
-      "narrative": {
-        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-        "thesis": "Japan appears to be leading the move while US pricing still lags.",
-        "watch_for": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%"
-        ],
-        "risks": [
-          "thin market"
-        ],
-        "horizon": "7-30d"
-      }
-    },
     {
       "entity_id": "pkm_promo_pikachu_stampbox",
       "entity_name": "Pikachu Stamp Box Promo",
       "entity_type": "promo",
       "franchise": "Pokemon",
       "set_name": "Japan Post Stamp Box",
-      "alpha_score": 39.9,
-      "opportunity_score": 39.9,
-      "confidence_score": 100.0,
+      "alpha_score": 43.61,
+      "opportunity_score": 43.61,
+      "confidence_score": 97.28,
       "risk_score": 27.0,
-      "urgency_score": 32.17,
+      "urgency_score": 33.73,
       "action_state": "observe",
       "signal_types": [
-        "emerging_franchise",
         "guide_dislocation",
         "jp_divergence",
         "listing_depletion",
         "promo_catalyst",
-        "release_catalyst",
         "scarcity_pressure"
       ],
       "region_lead": "JP",
       "time_horizon": "7-30d",
-      "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+      "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
       "drivers": [
-        "Listings down 16%",
-        "Sold velocity up 5%",
-        "Price velocity 4%",
-        "Guide lag 2%",
-        "JP lead 40%"
+        "Listings down 17%",
+        "Sold velocity up 6%",
+        "Price velocity 5%",
+        "Guide lag 3%",
+        "JP lead 70%"
       ],
       "flags": [
         "thin market",
@@ -151,32 +38,23 @@
       ],
       "sources": [
         {
-          "source": "youtube",
-          "url": "https://youtube.example/union-arena-hxh-launch-watch"
-        },
-        {
           "source": "reddit",
           "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-        },
-        {
-          "source": "reddit",
-          "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
         },
         {
           "source": "ebay",
           "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
         },
         {
-          "source": "ebay",
-          "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-        },
-        {
           "source": "pricecharting",
           "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+        },
+        {
+          "source": "tcgplayer",
+          "url": "https://tcgplayer.example/product/stamp-box-pikachu"
         }
       ],
       "query_tags": [
-        "emerging_franchise",
         "guide_dislocation",
         "jp_divergence",
         "lead:jp",
@@ -185,40 +63,150 @@
         "pokemon",
         "promo",
         "promo_catalyst",
-        "release_catalyst",
         "scarcity_pressure"
       ],
       "metrics": {
-        "price_velocity_score": 14.857142857142858,
-        "sold_velocity_score": 23.57142857142857,
-        "listing_depletion_score": 51.66666666666667,
-        "attention_velocity_score": 26.122448979591837,
-        "creator_acceleration_score": 11.428571428571429,
-        "guide_dislocation_score": 6.2857142857142865,
+        "price_velocity_score": 19.0,
+        "sold_velocity_score": 31.25,
+        "listing_depletion_score": 56.666666666666664,
+        "attention_velocity_score": 11.428571428571429,
+        "creator_acceleration_score": 0.0,
+        "guide_dislocation_score": 11.0,
         "jp_divergence_score": 100.0,
-        "scarcity_pressure_score": 20.0,
+        "scarcity_pressure_score": 35.0,
         "catalyst_score": 88.0,
-        "cross_source_confirmation_score": 90.0,
-        "novelty_score": 35.0,
-        "ebay_sold_median": 208.0,
+        "cross_source_confirmation_score": 72.0,
+        "novelty_score": 55.0,
+        "ebay_sold_median": 298.0,
         "tcgplayer_market": 0.0,
         "pricecharting_price": 268.0,
-        "price_velocity_raw": 0.0371,
-        "sold_velocity_raw": 4.71,
-        "listing_depletion_raw": 15.5,
-        "attention_velocity_raw": 0.91,
-        "creator_acceleration_raw": 0.34,
-        "guide_dislocation_raw": 0.0157,
-        "jp_divergence_raw": 0.4,
-        "scarcity_pressure_raw": 0.6
+        "price_velocity_raw": 0.0475,
+        "sold_velocity_raw": 6.25,
+        "listing_depletion_raw": 17.0,
+        "attention_velocity_raw": 0.4,
+        "creator_acceleration_raw": 0.0,
+        "guide_dislocation_raw": 0.0275,
+        "jp_divergence_raw": 0.7,
+        "scarcity_pressure_raw": 1.05
       },
       "narrative": {
-        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
         "thesis": "Japan appears to be leading the move while US pricing still lags.",
         "watch_for": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%"
+          "Listings down 17%",
+          "Sold velocity up 6%",
+          "Price velocity 5%"
+        ],
+        "risks": [
+          "thin market",
+          "limited float"
+        ],
+        "horizon": "7-30d"
+      }
+    },
+    {
+      "entity_id": "pkm_van_gogh_pikachu",
+      "entity_name": "Van Gogh Pikachu Promo",
+      "entity_type": "promo",
+      "franchise": "Pokemon",
+      "set_name": "Van Gogh Museum Promo",
+      "alpha_score": 41.92,
+      "opportunity_score": 41.92,
+      "confidence_score": 100.0,
+      "risk_score": 27.0,
+      "urgency_score": 32.05,
+      "action_state": "observe",
+      "signal_types": [
+        "guide_dislocation",
+        "jp_divergence",
+        "listing_depletion",
+        "mention_spike",
+        "promo_catalyst",
+        "scarcity_pressure"
+      ],
+      "region_lead": "JP",
+      "time_horizon": "7-30d",
+      "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+      "drivers": [
+        "Listings down 17%",
+        "Sold velocity up 4%",
+        "Price velocity 3%",
+        "Guide lag 2%",
+        "JP lead 47%"
+      ],
+      "flags": [
+        "thin market",
+        "limited float"
+      ],
+      "sources": [
+        {
+          "source": "youtube",
+          "url": "https://youtube.example/gengar-master-ball-supply-thinning"
+        },
+        {
+          "source": "reddit",
+          "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
+        },
+        {
+          "source": "ebay",
+          "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
+        },
+        {
+          "source": "pricecharting",
+          "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+        },
+        {
+          "source": "tcgplayer",
+          "url": "https://tcgplayer.example/product/stamp-box-pikachu"
+        },
+        {
+          "source": "psa",
+          "url": "https://psa.example/pop/gengar-master-ball"
+        }
+      ],
+      "query_tags": [
+        "guide_dislocation",
+        "jp_divergence",
+        "lead:jp",
+        "listing_depletion",
+        "mention_spike",
+        "observe",
+        "pokemon",
+        "promo",
+        "promo_catalyst",
+        "scarcity_pressure"
+      ],
+      "metrics": {
+        "price_velocity_score": 12.666666666666668,
+        "sold_velocity_score": 20.833333333333336,
+        "listing_depletion_score": 56.666666666666664,
+        "attention_velocity_score": 22.380952380952383,
+        "creator_acceleration_score": 14.444444444444446,
+        "guide_dislocation_score": 7.333333333333333,
+        "jp_divergence_score": 100.0,
+        "scarcity_pressure_score": 34.44444444444445,
+        "catalyst_score": 88.0,
+        "cross_source_confirmation_score": 100.0,
+        "novelty_score": 35.0,
+        "ebay_sold_median": 298.0,
+        "tcgplayer_market": 0.0,
+        "pricecharting_price": 268.0,
+        "price_velocity_raw": 0.0317,
+        "sold_velocity_raw": 4.17,
+        "listing_depletion_raw": 17.0,
+        "attention_velocity_raw": 0.78,
+        "creator_acceleration_raw": 0.43,
+        "guide_dislocation_raw": 0.0183,
+        "jp_divergence_raw": 0.4667,
+        "scarcity_pressure_raw": 1.03
+      },
+      "narrative": {
+        "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+        "thesis": "Japan appears to be leading the move while US pricing still lags.",
+        "watch_for": [
+          "Listings down 17%",
+          "Sold velocity up 4%",
+          "Price velocity 3%"
         ],
         "risks": [
           "thin market",
@@ -433,6 +421,186 @@
       }
     },
     {
+      "entity_id": "ua_hxh_union_arena_launch_box",
+      "entity_name": "Union Arena Hunter x Hunter Launch Box",
+      "entity_type": "sealed",
+      "franchise": "Union Arena",
+      "set_name": "Hunter x Hunter Vol.1",
+      "alpha_score": 20.55,
+      "opportunity_score": 20.55,
+      "confidence_score": 86.48,
+      "risk_score": 18.0,
+      "urgency_score": 30.68,
+      "action_state": "avoid",
+      "signal_types": [
+        "emerging_franchise",
+        "listing_depletion",
+        "release_catalyst"
+      ],
+      "region_lead": "JP",
+      "time_horizon": "7-30d",
+      "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+      "drivers": [
+        "Listings down 14%",
+        "Sold velocity up 3%",
+        "Price velocity 2%",
+        "Creator acceleration 0.8x"
+      ],
+      "flags": [
+        "thin market"
+      ],
+      "sources": [
+        {
+          "source": "youtube",
+          "url": "https://youtube.example/union-arena-hxh-launch-watch"
+        },
+        {
+          "source": "reddit",
+          "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
+        },
+        {
+          "source": "ebay",
+          "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
+        }
+      ],
+      "query_tags": [
+        "avoid",
+        "emerging_franchise",
+        "lead:jp",
+        "listing_depletion",
+        "release_catalyst",
+        "sealed",
+        "union arena"
+      ],
+      "metrics": {
+        "price_velocity_score": 9.333333333333334,
+        "sold_velocity_score": 13.333333333333334,
+        "listing_depletion_score": 46.666666666666664,
+        "attention_velocity_score": 45.714285714285715,
+        "creator_acceleration_score": 26.666666666666668,
+        "guide_dislocation_score": 0.0,
+        "jp_divergence_score": 0.0,
+        "scarcity_pressure_score": 0.0,
+        "catalyst_score": 65.0,
+        "cross_source_confirmation_score": 54.0,
+        "novelty_score": 72.0,
+        "ebay_sold_median": 118.0,
+        "tcgplayer_market": 0.0,
+        "pricecharting_price": 0.0,
+        "price_velocity_raw": 0.0233,
+        "sold_velocity_raw": 2.67,
+        "listing_depletion_raw": 14.0,
+        "attention_velocity_raw": 1.6,
+        "creator_acceleration_raw": 0.8,
+        "guide_dislocation_raw": 0.0,
+        "jp_divergence_raw": 0.0,
+        "scarcity_pressure_raw": 0.0
+      },
+      "narrative": {
+        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+        "thesis": "Cross-source confirmation is building before mainstream repricing.",
+        "watch_for": [
+          "Listings down 14%",
+          "Sold velocity up 3%",
+          "Price velocity 2%"
+        ],
+        "risks": [
+          "thin market"
+        ],
+        "horizon": "7-30d"
+      }
+    },
+    {
+      "entity_id": "gundam_cg_beta_box",
+      "entity_name": "Gundam Card Game Beta Box",
+      "entity_type": "sealed",
+      "franchise": "Gundam Card Game",
+      "set_name": "Beta Launch",
+      "alpha_score": 20.55,
+      "opportunity_score": 20.55,
+      "confidence_score": 86.48,
+      "risk_score": 18.0,
+      "urgency_score": 30.68,
+      "action_state": "avoid",
+      "signal_types": [
+        "emerging_franchise",
+        "listing_depletion",
+        "release_catalyst"
+      ],
+      "region_lead": "JP",
+      "time_horizon": "7-30d",
+      "summary": "Gundam Card Game Beta Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+      "drivers": [
+        "Listings down 14%",
+        "Sold velocity up 3%",
+        "Price velocity 2%",
+        "Creator acceleration 0.8x"
+      ],
+      "flags": [
+        "thin market"
+      ],
+      "sources": [
+        {
+          "source": "youtube",
+          "url": "https://youtube.example/union-arena-hxh-launch-watch"
+        },
+        {
+          "source": "reddit",
+          "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
+        },
+        {
+          "source": "ebay",
+          "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
+        }
+      ],
+      "query_tags": [
+        "avoid",
+        "emerging_franchise",
+        "gundam card game",
+        "lead:jp",
+        "listing_depletion",
+        "release_catalyst",
+        "sealed"
+      ],
+      "metrics": {
+        "price_velocity_score": 9.333333333333334,
+        "sold_velocity_score": 13.333333333333334,
+        "listing_depletion_score": 46.666666666666664,
+        "attention_velocity_score": 45.714285714285715,
+        "creator_acceleration_score": 26.666666666666668,
+        "guide_dislocation_score": 0.0,
+        "jp_divergence_score": 0.0,
+        "scarcity_pressure_score": 0.0,
+        "catalyst_score": 65.0,
+        "cross_source_confirmation_score": 54.0,
+        "novelty_score": 72.0,
+        "ebay_sold_median": 118.0,
+        "tcgplayer_market": 0.0,
+        "pricecharting_price": 0.0,
+        "price_velocity_raw": 0.0233,
+        "sold_velocity_raw": 2.67,
+        "listing_depletion_raw": 14.0,
+        "attention_velocity_raw": 1.6,
+        "creator_acceleration_raw": 0.8,
+        "guide_dislocation_raw": 0.0,
+        "jp_divergence_raw": 0.0,
+        "scarcity_pressure_raw": 0.0
+      },
+      "narrative": {
+        "summary": "Gundam Card Game Beta Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+        "thesis": "Cross-source confirmation is building before mainstream repricing.",
+        "watch_for": [
+          "Listings down 14%",
+          "Sold velocity up 3%",
+          "Price velocity 2%"
+        ],
+        "risks": [
+          "thin market"
+        ],
+        "horizon": "7-30d"
+      }
+    },
+    {
       "entity_id": "op_prb01_nami_alt",
       "entity_name": "One Piece PRB-01 Nami Alt Art",
       "entity_type": "single",
@@ -508,6 +676,83 @@
         ],
         "horizon": "7-30d"
       }
+    },
+    {
+      "entity_id": "pkm_moonbreon_evolving_skies",
+      "entity_name": "Umbreon VMAX Alt Art",
+      "entity_type": "single",
+      "franchise": "Pokemon",
+      "set_name": "Evolving Skies",
+      "alpha_score": 12.72,
+      "opportunity_score": 12.72,
+      "confidence_score": 58.88,
+      "risk_score": 30.0,
+      "urgency_score": 13.71,
+      "action_state": "avoid",
+      "signal_types": [
+        "creator_acceleration",
+        "emerging_franchise"
+      ],
+      "region_lead": "US",
+      "time_horizon": "7-30d",
+      "summary": "Umbreon VMAX Alt Art is showing a tightening collector profile with creator acceleration, emerging franchise.",
+      "drivers": [
+        "Creator acceleration 2.1x"
+      ],
+      "flags": [
+        "thin market",
+        "creator fragility"
+      ],
+      "sources": [
+        {
+          "source": "youtube",
+          "url": "https://youtube.example/prb-nami-alt-watch"
+        }
+      ],
+      "query_tags": [
+        "avoid",
+        "creator_acceleration",
+        "emerging_franchise",
+        "lead:us",
+        "pokemon",
+        "single"
+      ],
+      "metrics": {
+        "price_velocity_score": 0.0,
+        "sold_velocity_score": 0.0,
+        "listing_depletion_score": 0.0,
+        "attention_velocity_score": 68.57142857142857,
+        "creator_acceleration_score": 70.0,
+        "guide_dislocation_score": 0.0,
+        "jp_divergence_score": 0.0,
+        "scarcity_pressure_score": 0.0,
+        "catalyst_score": 65.0,
+        "cross_source_confirmation_score": 18.0,
+        "novelty_score": 72.0,
+        "ebay_sold_median": 0.0,
+        "tcgplayer_market": 0.0,
+        "pricecharting_price": 0.0,
+        "price_velocity_raw": 0.0,
+        "sold_velocity_raw": 0.0,
+        "listing_depletion_raw": 0.0,
+        "attention_velocity_raw": 2.4,
+        "creator_acceleration_raw": 2.1,
+        "guide_dislocation_raw": 0.0,
+        "jp_divergence_raw": 0.0,
+        "scarcity_pressure_raw": 0.0
+      },
+      "narrative": {
+        "summary": "Umbreon VMAX Alt Art is showing a tightening collector profile with creator acceleration, emerging franchise.",
+        "thesis": "Creator attention is accelerating faster than the broader market is pricing in.",
+        "watch_for": [
+          "Creator acceleration 2.1x"
+        ],
+        "risks": [
+          "thin market",
+          "creator fragility"
+        ],
+        "horizon": "7-30d"
+      }
     }
   ],
   "alpha_board": {
@@ -515,146 +760,33 @@
     "prepare": [],
     "observe": [
       {
-        "entity_id": "ua_hxh_union_arena_launch_box",
-        "entity_name": "Union Arena Hunter x Hunter Launch Box",
-        "entity_type": "sealed",
-        "franchise": "Union Arena",
-        "set_name": "Hunter x Hunter Vol.1",
-        "alpha_score": 39.9,
-        "opportunity_score": 39.9,
-        "confidence_score": 100.0,
-        "risk_score": 18.0,
-        "urgency_score": 32.17,
-        "action_state": "observe",
-        "signal_types": [
-          "emerging_franchise",
-          "guide_dislocation",
-          "jp_divergence",
-          "listing_depletion",
-          "promo_catalyst",
-          "release_catalyst",
-          "scarcity_pressure"
-        ],
-        "region_lead": "JP",
-        "time_horizon": "7-30d",
-        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-        "drivers": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%",
-          "Guide lag 2%",
-          "JP lead 40%"
-        ],
-        "flags": [
-          "thin market"
-        ],
-        "sources": [
-          {
-            "source": "youtube",
-            "url": "https://youtube.example/union-arena-hxh-launch-watch"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
-          },
-          {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
-          },
-          {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-          },
-          {
-            "source": "pricecharting",
-            "url": "https://pricecharting.example/pikachu-stamp-box-promo"
-          }
-        ],
-        "query_tags": [
-          "emerging_franchise",
-          "guide_dislocation",
-          "jp_divergence",
-          "lead:jp",
-          "listing_depletion",
-          "observe",
-          "promo_catalyst",
-          "release_catalyst",
-          "scarcity_pressure",
-          "sealed",
-          "union arena"
-        ],
-        "metrics": {
-          "price_velocity_score": 14.857142857142858,
-          "sold_velocity_score": 23.57142857142857,
-          "listing_depletion_score": 51.66666666666667,
-          "attention_velocity_score": 26.122448979591837,
-          "creator_acceleration_score": 11.428571428571429,
-          "guide_dislocation_score": 6.2857142857142865,
-          "jp_divergence_score": 100.0,
-          "scarcity_pressure_score": 20.0,
-          "catalyst_score": 88.0,
-          "cross_source_confirmation_score": 90.0,
-          "novelty_score": 35.0,
-          "ebay_sold_median": 208.0,
-          "tcgplayer_market": 0.0,
-          "pricecharting_price": 268.0,
-          "price_velocity_raw": 0.0371,
-          "sold_velocity_raw": 4.71,
-          "listing_depletion_raw": 15.5,
-          "attention_velocity_raw": 0.91,
-          "creator_acceleration_raw": 0.34,
-          "guide_dislocation_raw": 0.0157,
-          "jp_divergence_raw": 0.4,
-          "scarcity_pressure_raw": 0.6
-        },
-        "narrative": {
-          "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-          "thesis": "Japan appears to be leading the move while US pricing still lags.",
-          "watch_for": [
-            "Listings down 16%",
-            "Sold velocity up 5%",
-            "Price velocity 4%"
-          ],
-          "risks": [
-            "thin market"
-          ],
-          "horizon": "7-30d"
-        }
-      },
-      {
         "entity_id": "pkm_promo_pikachu_stampbox",
         "entity_name": "Pikachu Stamp Box Promo",
         "entity_type": "promo",
         "franchise": "Pokemon",
         "set_name": "Japan Post Stamp Box",
-        "alpha_score": 39.9,
-        "opportunity_score": 39.9,
-        "confidence_score": 100.0,
+        "alpha_score": 43.61,
+        "opportunity_score": 43.61,
+        "confidence_score": 97.28,
         "risk_score": 27.0,
-        "urgency_score": 32.17,
+        "urgency_score": 33.73,
         "action_state": "observe",
         "signal_types": [
-          "emerging_franchise",
           "guide_dislocation",
           "jp_divergence",
           "listing_depletion",
           "promo_catalyst",
-          "release_catalyst",
           "scarcity_pressure"
         ],
         "region_lead": "JP",
         "time_horizon": "7-30d",
-        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
         "drivers": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%",
-          "Guide lag 2%",
-          "JP lead 40%"
+          "Listings down 17%",
+          "Sold velocity up 6%",
+          "Price velocity 5%",
+          "Guide lag 3%",
+          "JP lead 70%"
         ],
         "flags": [
           "thin market",
@@ -662,32 +794,23 @@
         ],
         "sources": [
           {
-            "source": "youtube",
-            "url": "https://youtube.example/union-arena-hxh-launch-watch"
-          },
-          {
             "source": "reddit",
             "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
           },
           {
             "source": "ebay",
             "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
           },
           {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-          },
-          {
             "source": "pricecharting",
             "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "tcgplayer",
+            "url": "https://tcgplayer.example/product/stamp-box-pikachu"
           }
         ],
         "query_tags": [
-          "emerging_franchise",
           "guide_dislocation",
           "jp_divergence",
           "lead:jp",
@@ -696,40 +819,150 @@
           "pokemon",
           "promo",
           "promo_catalyst",
-          "release_catalyst",
           "scarcity_pressure"
         ],
         "metrics": {
-          "price_velocity_score": 14.857142857142858,
-          "sold_velocity_score": 23.57142857142857,
-          "listing_depletion_score": 51.66666666666667,
-          "attention_velocity_score": 26.122448979591837,
-          "creator_acceleration_score": 11.428571428571429,
-          "guide_dislocation_score": 6.2857142857142865,
+          "price_velocity_score": 19.0,
+          "sold_velocity_score": 31.25,
+          "listing_depletion_score": 56.666666666666664,
+          "attention_velocity_score": 11.428571428571429,
+          "creator_acceleration_score": 0.0,
+          "guide_dislocation_score": 11.0,
           "jp_divergence_score": 100.0,
-          "scarcity_pressure_score": 20.0,
+          "scarcity_pressure_score": 35.0,
           "catalyst_score": 88.0,
-          "cross_source_confirmation_score": 90.0,
-          "novelty_score": 35.0,
-          "ebay_sold_median": 208.0,
+          "cross_source_confirmation_score": 72.0,
+          "novelty_score": 55.0,
+          "ebay_sold_median": 298.0,
           "tcgplayer_market": 0.0,
           "pricecharting_price": 268.0,
-          "price_velocity_raw": 0.0371,
-          "sold_velocity_raw": 4.71,
-          "listing_depletion_raw": 15.5,
-          "attention_velocity_raw": 0.91,
-          "creator_acceleration_raw": 0.34,
-          "guide_dislocation_raw": 0.0157,
-          "jp_divergence_raw": 0.4,
-          "scarcity_pressure_raw": 0.6
+          "price_velocity_raw": 0.0475,
+          "sold_velocity_raw": 6.25,
+          "listing_depletion_raw": 17.0,
+          "attention_velocity_raw": 0.4,
+          "creator_acceleration_raw": 0.0,
+          "guide_dislocation_raw": 0.0275,
+          "jp_divergence_raw": 0.7,
+          "scarcity_pressure_raw": 1.05
         },
         "narrative": {
-          "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+          "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
           "thesis": "Japan appears to be leading the move while US pricing still lags.",
           "watch_for": [
-            "Listings down 16%",
-            "Sold velocity up 5%",
-            "Price velocity 4%"
+            "Listings down 17%",
+            "Sold velocity up 6%",
+            "Price velocity 5%"
+          ],
+          "risks": [
+            "thin market",
+            "limited float"
+          ],
+          "horizon": "7-30d"
+        }
+      },
+      {
+        "entity_id": "pkm_van_gogh_pikachu",
+        "entity_name": "Van Gogh Pikachu Promo",
+        "entity_type": "promo",
+        "franchise": "Pokemon",
+        "set_name": "Van Gogh Museum Promo",
+        "alpha_score": 41.92,
+        "opportunity_score": 41.92,
+        "confidence_score": 100.0,
+        "risk_score": 27.0,
+        "urgency_score": 32.05,
+        "action_state": "observe",
+        "signal_types": [
+          "guide_dislocation",
+          "jp_divergence",
+          "listing_depletion",
+          "mention_spike",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ],
+        "region_lead": "JP",
+        "time_horizon": "7-30d",
+        "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+        "drivers": [
+          "Listings down 17%",
+          "Sold velocity up 4%",
+          "Price velocity 3%",
+          "Guide lag 2%",
+          "JP lead 47%"
+        ],
+        "flags": [
+          "thin market",
+          "limited float"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/gengar-master-ball-supply-thinning"
+          },
+          {
+            "source": "reddit",
+            "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
+          },
+          {
+            "source": "ebay",
+            "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "pricecharting",
+            "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "tcgplayer",
+            "url": "https://tcgplayer.example/product/stamp-box-pikachu"
+          },
+          {
+            "source": "psa",
+            "url": "https://psa.example/pop/gengar-master-ball"
+          }
+        ],
+        "query_tags": [
+          "guide_dislocation",
+          "jp_divergence",
+          "lead:jp",
+          "listing_depletion",
+          "mention_spike",
+          "observe",
+          "pokemon",
+          "promo",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ],
+        "metrics": {
+          "price_velocity_score": 12.666666666666668,
+          "sold_velocity_score": 20.833333333333336,
+          "listing_depletion_score": 56.666666666666664,
+          "attention_velocity_score": 22.380952380952383,
+          "creator_acceleration_score": 14.444444444444446,
+          "guide_dislocation_score": 7.333333333333333,
+          "jp_divergence_score": 100.0,
+          "scarcity_pressure_score": 34.44444444444445,
+          "catalyst_score": 88.0,
+          "cross_source_confirmation_score": 100.0,
+          "novelty_score": 35.0,
+          "ebay_sold_median": 298.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 268.0,
+          "price_velocity_raw": 0.0317,
+          "sold_velocity_raw": 4.17,
+          "listing_depletion_raw": 17.0,
+          "attention_velocity_raw": 0.78,
+          "creator_acceleration_raw": 0.43,
+          "guide_dislocation_raw": 0.0183,
+          "jp_divergence_raw": 0.4667,
+          "scarcity_pressure_raw": 1.03
+        },
+        "narrative": {
+          "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+          "thesis": "Japan appears to be leading the move while US pricing still lags.",
+          "watch_for": [
+            "Listings down 17%",
+            "Sold velocity up 4%",
+            "Price velocity 3%"
           ],
           "risks": [
             "thin market",
@@ -997,7 +1230,7 @@
           "Secondary market formation 0%"
         ],
         "headline": "One Piece PRB-01 Nami Alt Art is showing a tightening collector profile with creator acceleration, emerging franchise.",
-        "entity_count": 1
+        "entity_count": 2
       },
       {
         "franchise": "Union Arena",
@@ -1023,7 +1256,7 @@
           "Listing depletion 14%",
           "Secondary market formation 72%"
         ],
-        "headline": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+        "headline": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
         "entity_count": 2
       }
     ]
@@ -1055,7 +1288,7 @@
     }
   ],
   "watchlist": {
-    "entities_tracked": 5,
+    "entities_tracked": 10,
     "enabled_sources": [
       "ebay",
       "pricecharting",
@@ -1074,162 +1307,69 @@
         "priority": 95
       },
       {
+        "entity_id": "pkm_moonbreon_evolving_skies",
+        "priority": 90
+      },
+      {
         "entity_id": "pkm_japan_classic_collection_charizard",
         "priority": 88
+      },
+      {
+        "entity_id": "pkm_van_gogh_pikachu",
+        "priority": 87
+      },
+      {
+        "entity_id": "op_op05_luffy_signed",
+        "priority": 86
       },
       {
         "entity_id": "op_prb01_nami_alt",
         "priority": 84
       },
       {
+        "entity_id": "lorcana_enchanted_elsa",
+        "priority": 83
+      },
+      {
         "entity_id": "ua_hxh_union_arena_launch_box",
         "priority": 82
+      },
+      {
+        "entity_id": "gundam_cg_beta_box",
+        "priority": 79
       }
     ]
   },
   "panels": {
     "japan_lead": [
       {
-        "entity_id": "ua_hxh_union_arena_launch_box",
-        "entity_name": "Union Arena Hunter x Hunter Launch Box",
-        "entity_type": "sealed",
-        "franchise": "Union Arena",
-        "set_name": "Hunter x Hunter Vol.1",
-        "alpha_score": 39.9,
-        "opportunity_score": 39.9,
-        "confidence_score": 100.0,
-        "risk_score": 18.0,
-        "urgency_score": 32.17,
-        "action_state": "observe",
-        "signal_types": [
-          "emerging_franchise",
-          "guide_dislocation",
-          "jp_divergence",
-          "listing_depletion",
-          "promo_catalyst",
-          "release_catalyst",
-          "scarcity_pressure"
-        ],
-        "region_lead": "JP",
-        "time_horizon": "7-30d",
-        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-        "drivers": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%",
-          "Guide lag 2%",
-          "JP lead 40%"
-        ],
-        "flags": [
-          "thin market"
-        ],
-        "sources": [
-          {
-            "source": "youtube",
-            "url": "https://youtube.example/union-arena-hxh-launch-watch"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
-          },
-          {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
-          },
-          {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-          },
-          {
-            "source": "pricecharting",
-            "url": "https://pricecharting.example/pikachu-stamp-box-promo"
-          }
-        ],
-        "query_tags": [
-          "emerging_franchise",
-          "guide_dislocation",
-          "jp_divergence",
-          "lead:jp",
-          "listing_depletion",
-          "observe",
-          "promo_catalyst",
-          "release_catalyst",
-          "scarcity_pressure",
-          "sealed",
-          "union arena"
-        ],
-        "metrics": {
-          "price_velocity_score": 14.857142857142858,
-          "sold_velocity_score": 23.57142857142857,
-          "listing_depletion_score": 51.66666666666667,
-          "attention_velocity_score": 26.122448979591837,
-          "creator_acceleration_score": 11.428571428571429,
-          "guide_dislocation_score": 6.2857142857142865,
-          "jp_divergence_score": 100.0,
-          "scarcity_pressure_score": 20.0,
-          "catalyst_score": 88.0,
-          "cross_source_confirmation_score": 90.0,
-          "novelty_score": 35.0,
-          "ebay_sold_median": 208.0,
-          "tcgplayer_market": 0.0,
-          "pricecharting_price": 268.0,
-          "price_velocity_raw": 0.0371,
-          "sold_velocity_raw": 4.71,
-          "listing_depletion_raw": 15.5,
-          "attention_velocity_raw": 0.91,
-          "creator_acceleration_raw": 0.34,
-          "guide_dislocation_raw": 0.0157,
-          "jp_divergence_raw": 0.4,
-          "scarcity_pressure_raw": 0.6
-        },
-        "narrative": {
-          "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-          "thesis": "Japan appears to be leading the move while US pricing still lags.",
-          "watch_for": [
-            "Listings down 16%",
-            "Sold velocity up 5%",
-            "Price velocity 4%"
-          ],
-          "risks": [
-            "thin market"
-          ],
-          "horizon": "7-30d"
-        }
-      },
-      {
         "entity_id": "pkm_promo_pikachu_stampbox",
         "entity_name": "Pikachu Stamp Box Promo",
         "entity_type": "promo",
         "franchise": "Pokemon",
         "set_name": "Japan Post Stamp Box",
-        "alpha_score": 39.9,
-        "opportunity_score": 39.9,
-        "confidence_score": 100.0,
+        "alpha_score": 43.61,
+        "opportunity_score": 43.61,
+        "confidence_score": 97.28,
         "risk_score": 27.0,
-        "urgency_score": 32.17,
+        "urgency_score": 33.73,
         "action_state": "observe",
         "signal_types": [
-          "emerging_franchise",
           "guide_dislocation",
           "jp_divergence",
           "listing_depletion",
           "promo_catalyst",
-          "release_catalyst",
           "scarcity_pressure"
         ],
         "region_lead": "JP",
         "time_horizon": "7-30d",
-        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
         "drivers": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%",
-          "Guide lag 2%",
-          "JP lead 40%"
+          "Listings down 17%",
+          "Sold velocity up 6%",
+          "Price velocity 5%",
+          "Guide lag 3%",
+          "JP lead 70%"
         ],
         "flags": [
           "thin market",
@@ -1237,32 +1377,23 @@
         ],
         "sources": [
           {
-            "source": "youtube",
-            "url": "https://youtube.example/union-arena-hxh-launch-watch"
-          },
-          {
             "source": "reddit",
             "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
           },
           {
             "source": "ebay",
             "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
           },
           {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-          },
-          {
             "source": "pricecharting",
             "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "tcgplayer",
+            "url": "https://tcgplayer.example/product/stamp-box-pikachu"
           }
         ],
         "query_tags": [
-          "emerging_franchise",
           "guide_dislocation",
           "jp_divergence",
           "lead:jp",
@@ -1271,40 +1402,39 @@
           "pokemon",
           "promo",
           "promo_catalyst",
-          "release_catalyst",
           "scarcity_pressure"
         ],
         "metrics": {
-          "price_velocity_score": 14.857142857142858,
-          "sold_velocity_score": 23.57142857142857,
-          "listing_depletion_score": 51.66666666666667,
-          "attention_velocity_score": 26.122448979591837,
-          "creator_acceleration_score": 11.428571428571429,
-          "guide_dislocation_score": 6.2857142857142865,
+          "price_velocity_score": 19.0,
+          "sold_velocity_score": 31.25,
+          "listing_depletion_score": 56.666666666666664,
+          "attention_velocity_score": 11.428571428571429,
+          "creator_acceleration_score": 0.0,
+          "guide_dislocation_score": 11.0,
           "jp_divergence_score": 100.0,
-          "scarcity_pressure_score": 20.0,
+          "scarcity_pressure_score": 35.0,
           "catalyst_score": 88.0,
-          "cross_source_confirmation_score": 90.0,
-          "novelty_score": 35.0,
-          "ebay_sold_median": 208.0,
+          "cross_source_confirmation_score": 72.0,
+          "novelty_score": 55.0,
+          "ebay_sold_median": 298.0,
           "tcgplayer_market": 0.0,
           "pricecharting_price": 268.0,
-          "price_velocity_raw": 0.0371,
-          "sold_velocity_raw": 4.71,
-          "listing_depletion_raw": 15.5,
-          "attention_velocity_raw": 0.91,
-          "creator_acceleration_raw": 0.34,
-          "guide_dislocation_raw": 0.0157,
-          "jp_divergence_raw": 0.4,
-          "scarcity_pressure_raw": 0.6
+          "price_velocity_raw": 0.0475,
+          "sold_velocity_raw": 6.25,
+          "listing_depletion_raw": 17.0,
+          "attention_velocity_raw": 0.4,
+          "creator_acceleration_raw": 0.0,
+          "guide_dislocation_raw": 0.0275,
+          "jp_divergence_raw": 0.7,
+          "scarcity_pressure_raw": 1.05
         },
         "narrative": {
-          "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+          "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
           "thesis": "Japan appears to be leading the move while US pricing still lags.",
           "watch_for": [
-            "Listings down 16%",
-            "Sold velocity up 5%",
-            "Price velocity 4%"
+            "Listings down 17%",
+            "Sold velocity up 6%",
+            "Price velocity 5%"
           ],
           "risks": [
             "thin market",
@@ -1312,39 +1442,143 @@
           ],
           "horizon": "7-30d"
         }
-      }
-    ],
-    "sealed_dislocations": [
+      },
+      {
+        "entity_id": "pkm_van_gogh_pikachu",
+        "entity_name": "Van Gogh Pikachu Promo",
+        "entity_type": "promo",
+        "franchise": "Pokemon",
+        "set_name": "Van Gogh Museum Promo",
+        "alpha_score": 41.92,
+        "opportunity_score": 41.92,
+        "confidence_score": 100.0,
+        "risk_score": 27.0,
+        "urgency_score": 32.05,
+        "action_state": "observe",
+        "signal_types": [
+          "guide_dislocation",
+          "jp_divergence",
+          "listing_depletion",
+          "mention_spike",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ],
+        "region_lead": "JP",
+        "time_horizon": "7-30d",
+        "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+        "drivers": [
+          "Listings down 17%",
+          "Sold velocity up 4%",
+          "Price velocity 3%",
+          "Guide lag 2%",
+          "JP lead 47%"
+        ],
+        "flags": [
+          "thin market",
+          "limited float"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/gengar-master-ball-supply-thinning"
+          },
+          {
+            "source": "reddit",
+            "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
+          },
+          {
+            "source": "ebay",
+            "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "pricecharting",
+            "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "tcgplayer",
+            "url": "https://tcgplayer.example/product/stamp-box-pikachu"
+          },
+          {
+            "source": "psa",
+            "url": "https://psa.example/pop/gengar-master-ball"
+          }
+        ],
+        "query_tags": [
+          "guide_dislocation",
+          "jp_divergence",
+          "lead:jp",
+          "listing_depletion",
+          "mention_spike",
+          "observe",
+          "pokemon",
+          "promo",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ],
+        "metrics": {
+          "price_velocity_score": 12.666666666666668,
+          "sold_velocity_score": 20.833333333333336,
+          "listing_depletion_score": 56.666666666666664,
+          "attention_velocity_score": 22.380952380952383,
+          "creator_acceleration_score": 14.444444444444446,
+          "guide_dislocation_score": 7.333333333333333,
+          "jp_divergence_score": 100.0,
+          "scarcity_pressure_score": 34.44444444444445,
+          "catalyst_score": 88.0,
+          "cross_source_confirmation_score": 100.0,
+          "novelty_score": 35.0,
+          "ebay_sold_median": 298.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 268.0,
+          "price_velocity_raw": 0.0317,
+          "sold_velocity_raw": 4.17,
+          "listing_depletion_raw": 17.0,
+          "attention_velocity_raw": 0.78,
+          "creator_acceleration_raw": 0.43,
+          "guide_dislocation_raw": 0.0183,
+          "jp_divergence_raw": 0.4667,
+          "scarcity_pressure_raw": 1.03
+        },
+        "narrative": {
+          "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+          "thesis": "Japan appears to be leading the move while US pricing still lags.",
+          "watch_for": [
+            "Listings down 17%",
+            "Sold velocity up 4%",
+            "Price velocity 3%"
+          ],
+          "risks": [
+            "thin market",
+            "limited float"
+          ],
+          "horizon": "7-30d"
+        }
+      },
       {
         "entity_id": "ua_hxh_union_arena_launch_box",
         "entity_name": "Union Arena Hunter x Hunter Launch Box",
         "entity_type": "sealed",
         "franchise": "Union Arena",
         "set_name": "Hunter x Hunter Vol.1",
-        "alpha_score": 39.9,
-        "opportunity_score": 39.9,
-        "confidence_score": 100.0,
+        "alpha_score": 20.55,
+        "opportunity_score": 20.55,
+        "confidence_score": 86.48,
         "risk_score": 18.0,
-        "urgency_score": 32.17,
-        "action_state": "observe",
+        "urgency_score": 30.68,
+        "action_state": "avoid",
         "signal_types": [
           "emerging_franchise",
-          "guide_dislocation",
-          "jp_divergence",
           "listing_depletion",
-          "promo_catalyst",
-          "release_catalyst",
-          "scarcity_pressure"
+          "release_catalyst"
         ],
         "region_lead": "JP",
         "time_horizon": "7-30d",
-        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
         "drivers": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%",
-          "Guide lag 2%",
-          "JP lead 40%"
+          "Listings down 14%",
+          "Sold velocity up 3%",
+          "Price velocity 2%",
+          "Creator acceleration 0.8x"
         ],
         "flags": [
           "thin market"
@@ -1356,69 +1590,53 @@
           },
           {
             "source": "reddit",
-            "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-          },
-          {
-            "source": "reddit",
             "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
           },
           {
             "source": "ebay",
-            "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
-          },
-          {
-            "source": "ebay",
             "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-          },
-          {
-            "source": "pricecharting",
-            "url": "https://pricecharting.example/pikachu-stamp-box-promo"
           }
         ],
         "query_tags": [
+          "avoid",
           "emerging_franchise",
-          "guide_dislocation",
-          "jp_divergence",
           "lead:jp",
           "listing_depletion",
-          "observe",
-          "promo_catalyst",
           "release_catalyst",
-          "scarcity_pressure",
           "sealed",
           "union arena"
         ],
         "metrics": {
-          "price_velocity_score": 14.857142857142858,
-          "sold_velocity_score": 23.57142857142857,
-          "listing_depletion_score": 51.66666666666667,
-          "attention_velocity_score": 26.122448979591837,
-          "creator_acceleration_score": 11.428571428571429,
-          "guide_dislocation_score": 6.2857142857142865,
-          "jp_divergence_score": 100.0,
-          "scarcity_pressure_score": 20.0,
-          "catalyst_score": 88.0,
-          "cross_source_confirmation_score": 90.0,
-          "novelty_score": 35.0,
-          "ebay_sold_median": 208.0,
+          "price_velocity_score": 9.333333333333334,
+          "sold_velocity_score": 13.333333333333334,
+          "listing_depletion_score": 46.666666666666664,
+          "attention_velocity_score": 45.714285714285715,
+          "creator_acceleration_score": 26.666666666666668,
+          "guide_dislocation_score": 0.0,
+          "jp_divergence_score": 0.0,
+          "scarcity_pressure_score": 0.0,
+          "catalyst_score": 65.0,
+          "cross_source_confirmation_score": 54.0,
+          "novelty_score": 72.0,
+          "ebay_sold_median": 118.0,
           "tcgplayer_market": 0.0,
-          "pricecharting_price": 268.0,
-          "price_velocity_raw": 0.0371,
-          "sold_velocity_raw": 4.71,
-          "listing_depletion_raw": 15.5,
-          "attention_velocity_raw": 0.91,
-          "creator_acceleration_raw": 0.34,
-          "guide_dislocation_raw": 0.0157,
-          "jp_divergence_raw": 0.4,
-          "scarcity_pressure_raw": 0.6
+          "pricecharting_price": 0.0,
+          "price_velocity_raw": 0.0233,
+          "sold_velocity_raw": 2.67,
+          "listing_depletion_raw": 14.0,
+          "attention_velocity_raw": 1.6,
+          "creator_acceleration_raw": 0.8,
+          "guide_dislocation_raw": 0.0,
+          "jp_divergence_raw": 0.0,
+          "scarcity_pressure_raw": 0.0
         },
         "narrative": {
-          "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
-          "thesis": "Japan appears to be leading the move while US pricing still lags.",
+          "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+          "thesis": "Cross-source confirmation is building before mainstream repricing.",
           "watch_for": [
-            "Listings down 16%",
-            "Sold velocity up 5%",
-            "Price velocity 4%"
+            "Listings down 14%",
+            "Sold velocity up 3%",
+            "Price velocity 2%"
           ],
           "risks": [
             "thin market"
@@ -1426,6 +1644,98 @@
           "horizon": "7-30d"
         }
       },
+      {
+        "entity_id": "gundam_cg_beta_box",
+        "entity_name": "Gundam Card Game Beta Box",
+        "entity_type": "sealed",
+        "franchise": "Gundam Card Game",
+        "set_name": "Beta Launch",
+        "alpha_score": 20.55,
+        "opportunity_score": 20.55,
+        "confidence_score": 86.48,
+        "risk_score": 18.0,
+        "urgency_score": 30.68,
+        "action_state": "avoid",
+        "signal_types": [
+          "emerging_franchise",
+          "listing_depletion",
+          "release_catalyst"
+        ],
+        "region_lead": "JP",
+        "time_horizon": "7-30d",
+        "summary": "Gundam Card Game Beta Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+        "drivers": [
+          "Listings down 14%",
+          "Sold velocity up 3%",
+          "Price velocity 2%",
+          "Creator acceleration 0.8x"
+        ],
+        "flags": [
+          "thin market"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/union-arena-hxh-launch-watch"
+          },
+          {
+            "source": "reddit",
+            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
+          },
+          {
+            "source": "ebay",
+            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
+          }
+        ],
+        "query_tags": [
+          "avoid",
+          "emerging_franchise",
+          "gundam card game",
+          "lead:jp",
+          "listing_depletion",
+          "release_catalyst",
+          "sealed"
+        ],
+        "metrics": {
+          "price_velocity_score": 9.333333333333334,
+          "sold_velocity_score": 13.333333333333334,
+          "listing_depletion_score": 46.666666666666664,
+          "attention_velocity_score": 45.714285714285715,
+          "creator_acceleration_score": 26.666666666666668,
+          "guide_dislocation_score": 0.0,
+          "jp_divergence_score": 0.0,
+          "scarcity_pressure_score": 0.0,
+          "catalyst_score": 65.0,
+          "cross_source_confirmation_score": 54.0,
+          "novelty_score": 72.0,
+          "ebay_sold_median": 118.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 0.0,
+          "price_velocity_raw": 0.0233,
+          "sold_velocity_raw": 2.67,
+          "listing_depletion_raw": 14.0,
+          "attention_velocity_raw": 1.6,
+          "creator_acceleration_raw": 0.8,
+          "guide_dislocation_raw": 0.0,
+          "jp_divergence_raw": 0.0,
+          "scarcity_pressure_raw": 0.0
+        },
+        "narrative": {
+          "summary": "Gundam Card Game Beta Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+          "thesis": "Cross-source confirmation is building before mainstream repricing.",
+          "watch_for": [
+            "Listings down 14%",
+            "Sold velocity up 3%",
+            "Price velocity 2%"
+          ],
+          "risks": [
+            "thin market"
+          ],
+          "horizon": "7-30d"
+        }
+      }
+    ],
+    "sealed_dislocations": [
       {
         "entity_id": "pkm_japan_classic_collection_charizard",
         "entity_name": "Pokemon Classic Collection Charizard Deck",
@@ -1519,6 +1829,186 @@
           ],
           "horizon": "7-30d"
         }
+      },
+      {
+        "entity_id": "ua_hxh_union_arena_launch_box",
+        "entity_name": "Union Arena Hunter x Hunter Launch Box",
+        "entity_type": "sealed",
+        "franchise": "Union Arena",
+        "set_name": "Hunter x Hunter Vol.1",
+        "alpha_score": 20.55,
+        "opportunity_score": 20.55,
+        "confidence_score": 86.48,
+        "risk_score": 18.0,
+        "urgency_score": 30.68,
+        "action_state": "avoid",
+        "signal_types": [
+          "emerging_franchise",
+          "listing_depletion",
+          "release_catalyst"
+        ],
+        "region_lead": "JP",
+        "time_horizon": "7-30d",
+        "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+        "drivers": [
+          "Listings down 14%",
+          "Sold velocity up 3%",
+          "Price velocity 2%",
+          "Creator acceleration 0.8x"
+        ],
+        "flags": [
+          "thin market"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/union-arena-hxh-launch-watch"
+          },
+          {
+            "source": "reddit",
+            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
+          },
+          {
+            "source": "ebay",
+            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
+          }
+        ],
+        "query_tags": [
+          "avoid",
+          "emerging_franchise",
+          "lead:jp",
+          "listing_depletion",
+          "release_catalyst",
+          "sealed",
+          "union arena"
+        ],
+        "metrics": {
+          "price_velocity_score": 9.333333333333334,
+          "sold_velocity_score": 13.333333333333334,
+          "listing_depletion_score": 46.666666666666664,
+          "attention_velocity_score": 45.714285714285715,
+          "creator_acceleration_score": 26.666666666666668,
+          "guide_dislocation_score": 0.0,
+          "jp_divergence_score": 0.0,
+          "scarcity_pressure_score": 0.0,
+          "catalyst_score": 65.0,
+          "cross_source_confirmation_score": 54.0,
+          "novelty_score": 72.0,
+          "ebay_sold_median": 118.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 0.0,
+          "price_velocity_raw": 0.0233,
+          "sold_velocity_raw": 2.67,
+          "listing_depletion_raw": 14.0,
+          "attention_velocity_raw": 1.6,
+          "creator_acceleration_raw": 0.8,
+          "guide_dislocation_raw": 0.0,
+          "jp_divergence_raw": 0.0,
+          "scarcity_pressure_raw": 0.0
+        },
+        "narrative": {
+          "summary": "Union Arena Hunter x Hunter Launch Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+          "thesis": "Cross-source confirmation is building before mainstream repricing.",
+          "watch_for": [
+            "Listings down 14%",
+            "Sold velocity up 3%",
+            "Price velocity 2%"
+          ],
+          "risks": [
+            "thin market"
+          ],
+          "horizon": "7-30d"
+        }
+      },
+      {
+        "entity_id": "gundam_cg_beta_box",
+        "entity_name": "Gundam Card Game Beta Box",
+        "entity_type": "sealed",
+        "franchise": "Gundam Card Game",
+        "set_name": "Beta Launch",
+        "alpha_score": 20.55,
+        "opportunity_score": 20.55,
+        "confidence_score": 86.48,
+        "risk_score": 18.0,
+        "urgency_score": 30.68,
+        "action_state": "avoid",
+        "signal_types": [
+          "emerging_franchise",
+          "listing_depletion",
+          "release_catalyst"
+        ],
+        "region_lead": "JP",
+        "time_horizon": "7-30d",
+        "summary": "Gundam Card Game Beta Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+        "drivers": [
+          "Listings down 14%",
+          "Sold velocity up 3%",
+          "Price velocity 2%",
+          "Creator acceleration 0.8x"
+        ],
+        "flags": [
+          "thin market"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/union-arena-hxh-launch-watch"
+          },
+          {
+            "source": "reddit",
+            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
+          },
+          {
+            "source": "ebay",
+            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
+          }
+        ],
+        "query_tags": [
+          "avoid",
+          "emerging_franchise",
+          "gundam card game",
+          "lead:jp",
+          "listing_depletion",
+          "release_catalyst",
+          "sealed"
+        ],
+        "metrics": {
+          "price_velocity_score": 9.333333333333334,
+          "sold_velocity_score": 13.333333333333334,
+          "listing_depletion_score": 46.666666666666664,
+          "attention_velocity_score": 45.714285714285715,
+          "creator_acceleration_score": 26.666666666666668,
+          "guide_dislocation_score": 0.0,
+          "jp_divergence_score": 0.0,
+          "scarcity_pressure_score": 0.0,
+          "catalyst_score": 65.0,
+          "cross_source_confirmation_score": 54.0,
+          "novelty_score": 72.0,
+          "ebay_sold_median": 118.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 0.0,
+          "price_velocity_raw": 0.0233,
+          "sold_velocity_raw": 2.67,
+          "listing_depletion_raw": 14.0,
+          "attention_velocity_raw": 1.6,
+          "creator_acceleration_raw": 0.8,
+          "guide_dislocation_raw": 0.0,
+          "jp_divergence_raw": 0.0,
+          "scarcity_pressure_raw": 0.0
+        },
+        "narrative": {
+          "summary": "Gundam Card Game Beta Box is showing a tightening collector profile with emerging franchise, listing depletion, release catalyst.",
+          "thesis": "Cross-source confirmation is building before mainstream repricing.",
+          "watch_for": [
+            "Listings down 14%",
+            "Sold velocity up 3%",
+            "Price velocity 2%"
+          ],
+          "risks": [
+            "thin market"
+          ],
+          "horizon": "7-30d"
+        }
       }
     ],
     "promo_alerts": [
@@ -1528,30 +2018,28 @@
         "entity_type": "promo",
         "franchise": "Pokemon",
         "set_name": "Japan Post Stamp Box",
-        "alpha_score": 39.9,
-        "opportunity_score": 39.9,
-        "confidence_score": 100.0,
+        "alpha_score": 43.61,
+        "opportunity_score": 43.61,
+        "confidence_score": 97.28,
         "risk_score": 27.0,
-        "urgency_score": 32.17,
+        "urgency_score": 33.73,
         "action_state": "observe",
         "signal_types": [
-          "emerging_franchise",
           "guide_dislocation",
           "jp_divergence",
           "listing_depletion",
           "promo_catalyst",
-          "release_catalyst",
           "scarcity_pressure"
         ],
         "region_lead": "JP",
         "time_horizon": "7-30d",
-        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+        "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
         "drivers": [
-          "Listings down 16%",
-          "Sold velocity up 5%",
-          "Price velocity 4%",
-          "Guide lag 2%",
-          "JP lead 40%"
+          "Listings down 17%",
+          "Sold velocity up 6%",
+          "Price velocity 5%",
+          "Guide lag 3%",
+          "JP lead 70%"
         ],
         "flags": [
           "thin market",
@@ -1559,32 +2047,23 @@
         ],
         "sources": [
           {
-            "source": "youtube",
-            "url": "https://youtube.example/union-arena-hxh-launch-watch"
-          },
-          {
             "source": "reddit",
             "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
-          },
-          {
-            "source": "reddit",
-            "url": "https://reddit.example/r/tradingcardcommunity/union-arena-hxh-launch"
           },
           {
             "source": "ebay",
             "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
           },
           {
-            "source": "ebay",
-            "url": "https://ebay.example/itm/union-arena-hxh-launch-box"
-          },
-          {
             "source": "pricecharting",
             "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "tcgplayer",
+            "url": "https://tcgplayer.example/product/stamp-box-pikachu"
           }
         ],
         "query_tags": [
-          "emerging_franchise",
           "guide_dislocation",
           "jp_divergence",
           "lead:jp",
@@ -1593,40 +2072,150 @@
           "pokemon",
           "promo",
           "promo_catalyst",
-          "release_catalyst",
           "scarcity_pressure"
         ],
         "metrics": {
-          "price_velocity_score": 14.857142857142858,
-          "sold_velocity_score": 23.57142857142857,
-          "listing_depletion_score": 51.66666666666667,
-          "attention_velocity_score": 26.122448979591837,
-          "creator_acceleration_score": 11.428571428571429,
-          "guide_dislocation_score": 6.2857142857142865,
+          "price_velocity_score": 19.0,
+          "sold_velocity_score": 31.25,
+          "listing_depletion_score": 56.666666666666664,
+          "attention_velocity_score": 11.428571428571429,
+          "creator_acceleration_score": 0.0,
+          "guide_dislocation_score": 11.0,
           "jp_divergence_score": 100.0,
-          "scarcity_pressure_score": 20.0,
+          "scarcity_pressure_score": 35.0,
           "catalyst_score": 88.0,
-          "cross_source_confirmation_score": 90.0,
-          "novelty_score": 35.0,
-          "ebay_sold_median": 208.0,
+          "cross_source_confirmation_score": 72.0,
+          "novelty_score": 55.0,
+          "ebay_sold_median": 298.0,
           "tcgplayer_market": 0.0,
           "pricecharting_price": 268.0,
-          "price_velocity_raw": 0.0371,
-          "sold_velocity_raw": 4.71,
-          "listing_depletion_raw": 15.5,
-          "attention_velocity_raw": 0.91,
-          "creator_acceleration_raw": 0.34,
-          "guide_dislocation_raw": 0.0157,
-          "jp_divergence_raw": 0.4,
-          "scarcity_pressure_raw": 0.6
+          "price_velocity_raw": 0.0475,
+          "sold_velocity_raw": 6.25,
+          "listing_depletion_raw": 17.0,
+          "attention_velocity_raw": 0.4,
+          "creator_acceleration_raw": 0.0,
+          "guide_dislocation_raw": 0.0275,
+          "jp_divergence_raw": 0.7,
+          "scarcity_pressure_raw": 1.05
         },
         "narrative": {
-          "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with emerging franchise, guide dislocation, jp divergence.",
+          "summary": "Pikachu Stamp Box Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
           "thesis": "Japan appears to be leading the move while US pricing still lags.",
           "watch_for": [
-            "Listings down 16%",
-            "Sold velocity up 5%",
-            "Price velocity 4%"
+            "Listings down 17%",
+            "Sold velocity up 6%",
+            "Price velocity 5%"
+          ],
+          "risks": [
+            "thin market",
+            "limited float"
+          ],
+          "horizon": "7-30d"
+        }
+      },
+      {
+        "entity_id": "pkm_van_gogh_pikachu",
+        "entity_name": "Van Gogh Pikachu Promo",
+        "entity_type": "promo",
+        "franchise": "Pokemon",
+        "set_name": "Van Gogh Museum Promo",
+        "alpha_score": 41.92,
+        "opportunity_score": 41.92,
+        "confidence_score": 100.0,
+        "risk_score": 27.0,
+        "urgency_score": 32.05,
+        "action_state": "observe",
+        "signal_types": [
+          "guide_dislocation",
+          "jp_divergence",
+          "listing_depletion",
+          "mention_spike",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ],
+        "region_lead": "JP",
+        "time_horizon": "7-30d",
+        "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+        "drivers": [
+          "Listings down 17%",
+          "Sold velocity up 4%",
+          "Price velocity 3%",
+          "Guide lag 2%",
+          "JP lead 47%"
+        ],
+        "flags": [
+          "thin market",
+          "limited float"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/gengar-master-ball-supply-thinning"
+          },
+          {
+            "source": "reddit",
+            "url": "https://reddit.example/r/pokeinvesting/stamp-box-pikachu"
+          },
+          {
+            "source": "ebay",
+            "url": "https://ebay.example/itm/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "pricecharting",
+            "url": "https://pricecharting.example/pikachu-stamp-box-promo"
+          },
+          {
+            "source": "tcgplayer",
+            "url": "https://tcgplayer.example/product/stamp-box-pikachu"
+          },
+          {
+            "source": "psa",
+            "url": "https://psa.example/pop/gengar-master-ball"
+          }
+        ],
+        "query_tags": [
+          "guide_dislocation",
+          "jp_divergence",
+          "lead:jp",
+          "listing_depletion",
+          "mention_spike",
+          "observe",
+          "pokemon",
+          "promo",
+          "promo_catalyst",
+          "scarcity_pressure"
+        ],
+        "metrics": {
+          "price_velocity_score": 12.666666666666668,
+          "sold_velocity_score": 20.833333333333336,
+          "listing_depletion_score": 56.666666666666664,
+          "attention_velocity_score": 22.380952380952383,
+          "creator_acceleration_score": 14.444444444444446,
+          "guide_dislocation_score": 7.333333333333333,
+          "jp_divergence_score": 100.0,
+          "scarcity_pressure_score": 34.44444444444445,
+          "catalyst_score": 88.0,
+          "cross_source_confirmation_score": 100.0,
+          "novelty_score": 35.0,
+          "ebay_sold_median": 298.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 268.0,
+          "price_velocity_raw": 0.0317,
+          "sold_velocity_raw": 4.17,
+          "listing_depletion_raw": 17.0,
+          "attention_velocity_raw": 0.78,
+          "creator_acceleration_raw": 0.43,
+          "guide_dislocation_raw": 0.0183,
+          "jp_divergence_raw": 0.4667,
+          "scarcity_pressure_raw": 1.03
+        },
+        "narrative": {
+          "summary": "Van Gogh Pikachu Promo is showing a tightening collector profile with guide dislocation, jp divergence, listing depletion.",
+          "thesis": "Japan appears to be leading the move while US pricing still lags.",
+          "watch_for": [
+            "Listings down 17%",
+            "Sold velocity up 4%",
+            "Price velocity 3%"
           ],
           "risks": [
             "thin market",
@@ -1703,6 +2292,83 @@
         },
         "narrative": {
           "summary": "One Piece PRB-01 Nami Alt Art is showing a tightening collector profile with creator acceleration, emerging franchise.",
+          "thesis": "Creator attention is accelerating faster than the broader market is pricing in.",
+          "watch_for": [
+            "Creator acceleration 2.1x"
+          ],
+          "risks": [
+            "thin market",
+            "creator fragility"
+          ],
+          "horizon": "7-30d"
+        }
+      },
+      {
+        "entity_id": "pkm_moonbreon_evolving_skies",
+        "entity_name": "Umbreon VMAX Alt Art",
+        "entity_type": "single",
+        "franchise": "Pokemon",
+        "set_name": "Evolving Skies",
+        "alpha_score": 12.72,
+        "opportunity_score": 12.72,
+        "confidence_score": 58.88,
+        "risk_score": 30.0,
+        "urgency_score": 13.71,
+        "action_state": "avoid",
+        "signal_types": [
+          "creator_acceleration",
+          "emerging_franchise"
+        ],
+        "region_lead": "US",
+        "time_horizon": "7-30d",
+        "summary": "Umbreon VMAX Alt Art is showing a tightening collector profile with creator acceleration, emerging franchise.",
+        "drivers": [
+          "Creator acceleration 2.1x"
+        ],
+        "flags": [
+          "thin market",
+          "creator fragility"
+        ],
+        "sources": [
+          {
+            "source": "youtube",
+            "url": "https://youtube.example/prb-nami-alt-watch"
+          }
+        ],
+        "query_tags": [
+          "avoid",
+          "creator_acceleration",
+          "emerging_franchise",
+          "lead:us",
+          "pokemon",
+          "single"
+        ],
+        "metrics": {
+          "price_velocity_score": 0.0,
+          "sold_velocity_score": 0.0,
+          "listing_depletion_score": 0.0,
+          "attention_velocity_score": 68.57142857142857,
+          "creator_acceleration_score": 70.0,
+          "guide_dislocation_score": 0.0,
+          "jp_divergence_score": 0.0,
+          "scarcity_pressure_score": 0.0,
+          "catalyst_score": 65.0,
+          "cross_source_confirmation_score": 18.0,
+          "novelty_score": 72.0,
+          "ebay_sold_median": 0.0,
+          "tcgplayer_market": 0.0,
+          "pricecharting_price": 0.0,
+          "price_velocity_raw": 0.0,
+          "sold_velocity_raw": 0.0,
+          "listing_depletion_raw": 0.0,
+          "attention_velocity_raw": 2.4,
+          "creator_acceleration_raw": 2.1,
+          "guide_dislocation_raw": 0.0,
+          "jp_divergence_raw": 0.0,
+          "scarcity_pressure_raw": 0.0
+        },
+        "narrative": {
+          "summary": "Umbreon VMAX Alt Art is showing a tightening collector profile with creator acceleration, emerging franchise.",
           "thesis": "Creator attention is accelerating faster than the broader market is pricing in.",
           "watch_for": [
             "Creator acceleration 2.1x"

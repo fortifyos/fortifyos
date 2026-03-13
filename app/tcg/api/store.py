@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from app.tcg.config import CONFIG
+from app.tcg.entity_catalog import ENTITY_CATALOG
+from app.tcg.watchlist import WATCHLIST
 
 
 def load_latest_payload() -> dict[str, Any]:
@@ -16,6 +18,45 @@ def open_db() -> sqlite3.Connection:
     conn = sqlite3.connect(CONFIG.database_path)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def get_watchlist_overview() -> dict[str, Any]:
+    latest = load_latest_payload()
+    signals_by_entity = {item.get("entity_id"): item for item in latest.get("top_signals", [])}
+    source_health = {item.get("source"): item.get("events", 0) for item in latest.get("source_health", [])}
+    catalog = {entity.entity_id: entity for entity in ENTITY_CATALOG}
+
+    entries = []
+    for item in sorted(WATCHLIST, key=lambda entry: entry.priority, reverse=True):
+        entity = catalog.get(item.entity_id)
+        live_signal = signals_by_entity.get(item.entity_id)
+        entries.append(
+            {
+                "entity_id": item.entity_id,
+                "canonical_name": entity.canonical_name if entity else item.entity_id,
+                "entity_type": entity.entity_type if entity else None,
+                "franchise": entity.franchise if entity else None,
+                "set_name": entity.set_name if entity else None,
+                "priority": item.priority,
+                "enabled_sources": list(item.enabled_sources),
+                "source_queries": item.source_queries,
+                "notes": item.notes,
+                "thesis": item.thesis,
+                "has_live_signal": bool(live_signal),
+                "action_state": live_signal.get("action_state") if live_signal else None,
+                "opportunity_score": live_signal.get("opportunity_score") if live_signal else None,
+                "region_lead": live_signal.get("region_lead") if live_signal else None,
+                "source_readiness": {
+                    source: source_health.get(source, 0) for source in item.enabled_sources
+                },
+            }
+        )
+
+    return {
+        "generated_at": latest.get("generated_at"),
+        "count": len(entries),
+        "entries": entries,
+    }
 
 
 def get_entity_detail(entity_id: str) -> dict[str, Any] | None:
