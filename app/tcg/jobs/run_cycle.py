@@ -27,6 +27,7 @@ from app.tcg.services.dedupe import dedupe_events
 from app.tcg.services.resolver import resolve_entities
 from app.tcg.services.scoring import compute_signal
 from app.tcg.services.translation import attach_translation
+from app.tcg.watchlist import WATCHLIST
 
 
 SOURCE_WEIGHTS = {
@@ -99,6 +100,11 @@ def build_latest_payload(run_id: str, signals: list, events: list[NormalizedEven
         "top_signals": top_signals,
         "alpha_board": alpha_board,
         "source_health": [{"source": source, "events": count} for source, count in source_counts.items()],
+        "watchlist": {
+            "entities_tracked": len(WATCHLIST),
+            "enabled_sources": sorted({source for item in WATCHLIST for source in item.enabled_sources}),
+            "priorities": [{"entity_id": item.entity_id, "priority": item.priority} for item in sorted(WATCHLIST, key=lambda item: item.priority, reverse=True)],
+        },
         "panels": {
             "japan_lead": [signal.to_latest_dict() for signal in top_signals_to_objects(signals, region="JP")],
             "sealed_dislocations": [signal.to_latest_dict() for signal in top_signals_to_objects(signals, entity_type="sealed")],

@@ -298,6 +298,40 @@
 .tcg-franchise-card__gates .is-watch {
   color: #ffb700;
 }
+.tcg-watchlist {
+  display: grid;
+  gap: 10px;
+}
+.tcg-watchlist__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.62);
+}
+.tcg-watchlist__sources,
+.tcg-watchlist__priorities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.tcg-watchlist__sources li,
+.tcg-watchlist__priorities li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255,255,255,.76);
+  font-size: 12px;
+}
+.tcg-watchlist__sources strong,
+.tcg-watchlist__priorities strong {
+  color: #00ff41;
+  font-weight: 700;
+}
 
 .tcg-signal-card {
   text-align: left;

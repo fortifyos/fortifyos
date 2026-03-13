@@ -19,6 +19,10 @@ class TCGConfig:
     enable_jp_sources: bool = os.getenv("ENABLE_JP_SOURCES", "false").lower() == "true"
     enable_translation: bool = os.getenv("ENABLE_TRANSLATION", "true").lower() == "true"
     enable_ai_narration: bool = os.getenv("ENABLE_AI_NARRATION", "false").lower() == "true"
+    ebay_client_id: str = os.getenv("EBAY_CLIENT_ID", "")
+    ebay_client_secret: str = os.getenv("EBAY_CLIENT_SECRET", "")
+    ebay_marketplace_id: str = os.getenv("EBAY_MARKETPLACE_ID", "EBAY_US")
+    pricecharting_api_token: str = os.getenv("PRICECHARTING_API_TOKEN", "")
 
     def ensure_dirs(self) -> None:
         for path in (

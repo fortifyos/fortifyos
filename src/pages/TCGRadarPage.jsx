@@ -125,6 +125,41 @@ function FranchiseMomentumBoard({ items }) {
   );
 }
 
+function WatchlistStatusPanel({ watchlist, sourceHealth, apiMode }) {
+  return (
+    <div className="tcg-watchlist">
+      <div className="tcg-watchlist__meta">
+        <span>{watchlist?.entities_tracked || 0} tracked</span>
+        <span>{apiMode ? "live api" : "snapshot"}</span>
+      </div>
+
+      <div className="tcg-detail__section">
+        <div className="tcg-detail__label">Source Readiness</div>
+        <ul className="tcg-watchlist__sources">
+          {(sourceHealth || []).map((item) => (
+            <li key={item.source}>
+              <span>{item.source}</span>
+              <strong>{item.events} events</strong>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="tcg-detail__section">
+        <div className="tcg-detail__label">Priority Watchlist</div>
+        <ul className="tcg-watchlist__priorities">
+          {(watchlist?.priorities || []).slice(0, 5).map((item) => (
+            <li key={item.entity_id}>
+              <span>{item.entity_id}</span>
+              <strong>P{item.priority}</strong>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 function Panel({ title, eyebrow, tone = "green", children, right = null }) {
   return (
     <section className={`tcg-panel tcg-panel--${tone}`}>
@@ -319,6 +354,8 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
 
   const panels = payload?.panels || {};
   const alphaBoard = payload?.alpha_board || {};
+  const watchlist = payload?.watchlist || {};
+  const sourceHealth = payload?.source_health || [];
 
   return (
     <div className={`tcg-root ${isDark ? "tcg-dark" : "tcg-light"}`}>
@@ -425,6 +462,9 @@ export default function TCGRadarPage({ onBack, onHome, onMacroSentinel, onMacroI
             </Panel>
             <Panel title="Creator Momentum" eyebrow="Attention Rotation" tone="green">
               <ul className="tcg-mini-list">{panels.creator_momentum?.slice(0, 5).map((signal) => <li key={signal.entity_id}>{signal.entity_name} <span>{signal.alpha_score}</span></li>)}</ul>
+            </Panel>
+            <Panel title="Radar Coverage" eyebrow="Watchlist Status" tone="green">
+              <WatchlistStatusPanel watchlist={watchlist} sourceHealth={sourceHealth} apiMode={apiMode} />
             </Panel>
           </aside>
         </div>

@@ -70,6 +70,7 @@ Current MVP shape:
 - Python radar engine under `app/tcg/`
 - local SQLite persistence at `data/tcg/tcg_radar.db`
 - deterministic scoring, action states, and entity resolution
+- live-ready collector paths for eBay Browse API and PriceCharting when credentials are provided
 - file-backed outputs written to:
   - `data/tcg/latest.json`
   - `data/tcg/archive/`
@@ -97,10 +98,32 @@ Run the local TCG API:
 uvicorn app.tcg.api.main:app --reload --host 127.0.0.1 --port 8080
 ```
 
+Optional live collector environment variables:
+```bash
+export EBAY_CLIENT_ID=your-ebay-client-id
+export EBAY_CLIENT_SECRET=your-ebay-client-secret
+export EBAY_MARKETPLACE_ID=EBAY_US
+export PRICECHARTING_API_TOKEN=your-pricecharting-token
+```
+
+If those values are not set, the radar stays in deterministic sample mode and continues to work locally.
+
 Current radar behavior:
 - Alpha Board is split into `Act`, `Prepare`, `Observe`, and `Emerging Franchise Momentum`
 - emerging franchises use an incubator model with lifecycle states and viability gates
 - established franchises stay in the standard opportunity model
+- live-capable collectors now use a curated watchlist/config layer instead of broad uncontrolled searching
+
+Watchlist/config layer:
+- defined in `app/tcg/watchlist.py`
+- controls:
+  - tracked entities
+  - source eligibility per entity
+  - source-specific search queries
+  - watchlist priority
+- current live-capable sources using this layer:
+  - `ebay`
+  - `pricecharting`
 
 Planned upgrade path:
 - live source credentials

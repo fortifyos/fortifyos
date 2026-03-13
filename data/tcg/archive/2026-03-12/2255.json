@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-12T23:08:24+00:00",
-  "run_id": "2026-03-12T23:08:24Z",
+  "generated_at": "2026-03-12T22:55:37+00:00",
+  "run_id": "2026-03-12T22:55:37Z",
   "freshness_hours": 3,
   "top_signals": [
     {
@@ -1054,39 +1054,6 @@
       "events": 1
     }
   ],
-  "watchlist": {
-    "entities_tracked": 5,
-    "enabled_sources": [
-      "ebay",
-      "pricecharting",
-      "psa",
-      "reddit",
-      "tcgplayer",
-      "youtube"
-    ],
-    "priorities": [
-      {
-        "entity_id": "pkm_151_mb_gengar",
-        "priority": 100
-      },
-      {
-        "entity_id": "pkm_promo_pikachu_stampbox",
-        "priority": 95
-      },
-      {
-        "entity_id": "pkm_japan_classic_collection_charizard",
-        "priority": 88
-      },
-      {
-        "entity_id": "op_prb01_nami_alt",
-        "priority": 84
-      },
-      {
-        "entity_id": "ua_hxh_union_arena_launch_box",
-        "priority": 82
-      }
-    ]
-  },
   "panels": {
     "japan_lead": [
       {
