@@ -7118,8 +7118,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
-        <MacroRadarPanels isDark={isDark} />
-
         <div style={{ marginTop: 12, border: `1px solid ${confColor}55`, background: t.panel, padding: '22px 26px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: confColor, opacity: 0.55 }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
@@ -7147,6 +7145,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
             Fed Lens · {fedBrief.lens} · Objective · {radarTheme.objective}
           </div>
         </div>
+
+        <MacroRadarPanels isDark={isDark} />
 
         <div style={{ marginTop: 12, border: `2px solid ${primaryPressure.tone}`, background: t.panel, padding: '18px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
