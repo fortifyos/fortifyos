@@ -6421,63 +6421,147 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
+  const dashboardSectionStyle = {
+    gridColumn: '1 / -1',
+    position: 'relative',
+    border: `1px solid ${t.borderDim}`,
+    background: isDark
+      ? `linear-gradient(180deg, ${t.panel2} 0%, ${t.panel} 100%)`
+      : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`,
+    padding: '14px 14px 16px',
+    overflow: 'hidden',
+    boxShadow: isDark ? `0 12px 28px rgba(0,0,0,0.28)` : `0 10px 24px rgba(0,0,0,0.06)`,
+  };
+
+  const dashboardSectionAccent = (color) => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: 2,
+    background: color,
+    opacity: 0.9,
+  });
+
+  const DashboardSection = ({ title, subtitle, tone = t.borderBright, children, compact = false }) => (
+    <section style={{ ...dashboardSectionStyle, padding: compact ? '10px 10px 12px' : dashboardSectionStyle.padding }}>
+      <div style={dashboardSectionAccent(tone)} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: compact ? 10 : 14 }}>
+        <div>
+          <div style={{ fontSize: 11, color: tone, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 5 }}>
+            {title}
+          </div>
+          {subtitle && (
+            <div style={{ fontSize: 12, color: t.textGhost, maxWidth: 720, lineHeight: 1.5 }}>
+              {subtitle}
+            </div>
+          )}
+        </div>
+      </div>
+      {children}
+    </section>
+  );
+
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <AppTopbar t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
-    <main className="dashboard-main" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 12px 52px' }}>
+    <main className="dashboard-main" style={{ maxWidth: 1240, margin: '0 auto', padding: '22px 14px 64px' }}>
       {/* ═══ DAILY LAW HERO — Right below greeting, above all modules ═══ */}
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ marginBottom: 16 }}>
         <DailyLawHero t={t} />
       </div>
 
-      <div className="main-grid" style={{ display: 'grid', gap: 12 }}>
+      <div className="main-grid" style={{ display: 'grid', gap: 14 }}>
 
         {/* Row 1 — CFO Daily Pulse: full width */}
         {vis.includes('directive') && (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <DashboardSection
+            title="Command Pulse"
+            subtitle="Start here. This is the dashboard’s operating brief: pressure, posture, and what deserves attention first."
+            tone={t.accent}
+          >
             <DirectiveMod visible latest={latest} t={t} />
-          </div>
+          </DashboardSection>
         )}
 
         {/* Row 2 — Money Map strip: full width, compact */}
         {vis.includes('netWorth') && (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <DashboardSection
+            title="Balance Map"
+            subtitle="See where cash is protected, where liabilities are concentrated, and how the system is actually shaped."
+            tone={t.textSecondary}
+            compact
+          >
             <NetWorthMod snapshots={snapshots} latest={latest} visible t={t} />
-          </div>
+          </DashboardSection>
         )}
 
         {/* Row 3 — Budget: full width, checked near-daily "Am I on track this month?" */}
         {vis.includes('budget') && (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <DashboardSection
+            title="Budget Reality"
+            subtitle="Not a plan on paper. This is the live read on whether spending is obeying the system."
+            tone={t.warn}
+          >
             <BudgetMod latest={latest} visible t={t} />
-          </div>
+          </DashboardSection>
         )}
 
         {/* Row 3b — KNOX Terminal: policy enforcement AI */}
         {vis.includes('knox') && (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <DashboardSection
+            title="Protocol Enforcement"
+            subtitle="KNOX is here to challenge drift, catch violations, and force clarity before small mistakes compound."
+            tone={t.danger}
+          >
             <KnoxTerminalMod latest={latest} visible t={t} />
-          </div>
+          </DashboardSection>
         )}
 
         {/* Row 4 — Calendar · Bills · E-Fund: time-sensitive triple */}
         {(vis.includes('planner') || vis.includes('eFund')) && (
-          <div className="bill-cal-row" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
-            <BillCalendarMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
-            <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
-            <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
-          </div>
+          <DashboardSection
+            title="Near-Term Pressure"
+            subtitle="Calendar, bills, and emergency coverage belong together because this is where short-term mistakes usually begin."
+            tone={t.purple}
+          >
+            <div className="bill-cal-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
+              <BillCalendarMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
+              <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
+              <EFundMod latest={latest} visible={vis.includes('eFund')} t={t} />
+            </div>
+          </DashboardSection>
         )}
 
         {/* Row 4 — Debt: full width, strategic/monthly "What's my payoff plan?" */}
         {vis.includes('debt') && (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <DashboardSection
+            title="Debt Battlefield"
+            subtitle="Interest drag, payoff order, and liability concentration should read like a campaign board, not a passive list."
+            tone={t.danger}
+          >
             <DebtMod latest={latest} visible t={t} onUpdateDebt={onUpdateDebt} />
-          </div>
+          </DashboardSection>
         )}
 
         {/* Row 5 — Review + Coverage: historical lookup and protection check */}
-        <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} onImport={() => setSyncOpen(true)} />
-        <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
+        {vis.includes('transactions') && (
+          <section style={{ ...dashboardSectionStyle, gridColumn: 'span 1' }}>
+            <div style={dashboardSectionAccent(t.textSecondary)} />
+            <div style={{ fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 10 }}>
+              Historical Review
+            </div>
+            <TransactionsMod latest={latest} visible={vis.includes('transactions')} t={t} onImport={() => setSyncOpen(true)} />
+          </section>
+        )}
+        {vis.includes('protection') && (
+          <section style={{ ...dashboardSectionStyle, gridColumn: 'span 1' }}>
+            <div style={dashboardSectionAccent(t.purple)} />
+            <div style={{ fontSize: 11, color: t.purple, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 10 }}>
+              Coverage & Protection
+            </div>
+            <ProtectionMod latest={latest} visible={vis.includes('protection')} t={t} />
+          </section>
+        )}
 
       </div>
     </main>
