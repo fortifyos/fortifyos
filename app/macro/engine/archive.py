@@ -1,7 +1,7 @@
 """
 archive.py — Archive rotation for the FORTIFYOS Macro Intel Engine.
 
-Runs at 2:59 AM ET (before the 03:00 global_markets checkpoint) to:
+Runs on the first cycle after an ET date rollover to:
 1. Archive the previous day's log to data/archive/YYYY-MM-DD.json.
 2. Update archive-index.json.
 3. Reset today-log.json for the new day (empty entries, new date, status: "active").
@@ -34,12 +34,8 @@ logger = logging.getLogger(__name__)
 # Live output dir — relative to project root; callers may override.
 DATA_DIR = "public/macro-intel"
 
-# Internal engine data dir for archives (next to this file's package).
-_ENGINE_DATA_DIR = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "data")
-)
-_ARCHIVE_SUBDIR = os.path.join(_ENGINE_DATA_DIR, "archive")
-_ARCHIVE_INDEX_PATH = os.path.join(_ENGINE_DATA_DIR, "archive-index.json")
+_ARCHIVE_SUBDIR_NAME = "archive"
+_ARCHIVE_INDEX_FILE = "archive-index.json"
 
 # Maximum items retained in the rolling archive index.
 ARCHIVE_INDEX_MAX = 90
@@ -58,8 +54,8 @@ def finalize_day(data_dir: str = DATA_DIR) -> dict:
 
     Steps:
       1. Read today-log.json.
-      2. Validate it has entries and that its ``date`` field matches the prior
-         calendar day (i.e. this function was called after midnight ET).
+    2. Validate it has entries and that its ``date`` field is older than the
+         current ET day.
       3. Write archived copy to ``data/archive/YYYY-MM-DD.json``
          with ``status: "archived"``.
       4. Update ``data/archive-index.json`` with a new ArchiveIndexItem.
@@ -96,15 +92,14 @@ def finalize_day(data_dir: str = DATA_DIR) -> dict:
     entries: list = existing_log.get("entries", [])
     log_date_str: str = existing_log.get("date", "")
 
-    # The prior calendar day (the day we intend to archive)
+    # The log must represent a day that is older than the current ET day.
     today = today_et()
-    prior_day = today - timedelta(days=1)
-    prior_day_str = prior_day.isoformat()
+    today_str = today.isoformat()
 
-    if log_date_str != prior_day_str:
+    if not log_date_str or log_date_str >= today_str:
         raise ArchiveError(
-            f"finalize_day: log date {log_date_str!r} does not match expected "
-            f"prior day {prior_day_str!r}. Refusing to archive to avoid data loss."
+            f"finalize_day: log date {log_date_str!r} is not older than current "
+            f"day {today_str!r}. Refusing to archive to avoid data loss."
         )
 
     if not entries:
@@ -114,8 +109,9 @@ def finalize_day(data_dir: str = DATA_DIR) -> dict:
         )
 
     # --- Step 3: Write archived copy ---
-    os.makedirs(_ARCHIVE_SUBDIR, exist_ok=True)
-    archive_path = os.path.join(_ARCHIVE_SUBDIR, f"{log_date_str}.json")
+    archive_dir, archive_index_path = _public_archive_paths(data_dir)
+    os.makedirs(archive_dir, exist_ok=True)
+    archive_path = os.path.join(archive_dir, f"{log_date_str}.json")
 
     archived_log = dict(existing_log)
     archived_log["status"] = "archived"
@@ -133,6 +129,7 @@ def finalize_day(data_dir: str = DATA_DIR) -> dict:
         archived_log=archived_log,
         date_str_val=log_date_str,
         archive_path=archive_path,
+        archive_index_path=archive_index_path,
     )
 
     # --- Step 5: Reset today-log.json for the new day ---
@@ -168,6 +165,7 @@ def _update_archive_index(
     archived_log: dict,
     date_str_val: str,
     archive_path: str,
+    archive_index_path: str,
 ) -> None:
     """
     Add or refresh an ArchiveIndexItem in archive-index.json.
@@ -181,7 +179,7 @@ def _update_archive_index(
     archive_path:
         Absolute path to the archived JSON file.
     """
-    index: list = load_json(_ARCHIVE_INDEX_PATH, default=[])
+    index: list = load_json(archive_index_path, default=[])
     if not isinstance(index, list):
         logger.warning("_update_archive_index: index was not a list; resetting to []")
         index = []
@@ -213,7 +211,7 @@ def _update_archive_index(
         "regimeMode": day_regime,
         "dominantDrivers": unique_drivers[:5],
         "entryCount": len(entries),
-        "archivePath": archive_path,
+        "archivePath": os.path.relpath(archive_path, os.path.dirname(archive_index_path)),
         "archivedAt": to_iso(now_et()),
         "status": "archived",
     }
@@ -227,7 +225,7 @@ def _update_archive_index(
     if len(index) > ARCHIVE_INDEX_MAX:
         index = index[:ARCHIVE_INDEX_MAX]
 
-    ok = save_json(_ARCHIVE_INDEX_PATH, index)
+    ok = save_json(archive_index_path, index)
     if ok:
         logger.info(
             "_update_archive_index: updated index — %s (%d entries), index size %d",
@@ -235,21 +233,22 @@ def _update_archive_index(
         )
     else:
         logger.error(
-            "_update_archive_index: failed to write index at %s", _ARCHIVE_INDEX_PATH
+            "_update_archive_index: failed to write index at %s", archive_index_path
         )
 
 
-def load_archive_index() -> list:
+def load_archive_index(data_dir: str = DATA_DIR) -> list:
     """
     Return the archive index list, most-recent first.
 
     Returns an empty list if the index file does not exist.
     """
-    index = load_json(_ARCHIVE_INDEX_PATH, default=[])
+    _archive_dir, archive_index_path = _public_archive_paths(data_dir)
+    index = load_json(archive_index_path, default=[])
     return index if isinstance(index, list) else []
 
 
-def load_archived_day(date_str_val: str) -> Optional[dict]:
+def load_archived_day(date_str_val: str, data_dir: str = DATA_DIR) -> Optional[dict]:
     """
     Load a specific archived DailyLog.
 
@@ -263,7 +262,8 @@ def load_archived_day(date_str_val: str) -> Optional[dict]:
     dict or None
         The archived DailyLog, or None if not found.
     """
-    path = os.path.join(_ARCHIVE_SUBDIR, f"{date_str_val}.json")
+    archive_dir, _archive_index_path = _public_archive_paths(data_dir)
+    path = os.path.join(archive_dir, f"{date_str_val}.json")
     return load_json(path, default=None)
 
 
@@ -304,3 +304,9 @@ class ArchiveError(RuntimeError):
     Callers MUST catch this and NOT reset the live log file.
     """
     pass
+
+
+def _public_archive_paths(data_dir: str) -> tuple[str, str]:
+    archive_dir = os.path.join(data_dir, _ARCHIVE_SUBDIR_NAME)
+    archive_index_path = os.path.join(data_dir, _ARCHIVE_INDEX_FILE)
+    return archive_dir, archive_index_path

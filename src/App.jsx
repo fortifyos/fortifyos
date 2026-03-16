@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import IntelFreshness from './components/IntelFreshness.jsx';
+import MacroRadarPanels from './components/MacroRadarPanels.jsx';
 import BitcoinMastery from './pages/BitcoinMastery.jsx';
-import MacroIntelPage from './pages/MacroIntelPage.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, BarChart, Bar, CartesianGrid, Legend
@@ -1672,7 +1672,7 @@ function RefusalOverlay({ enforcement, onRoute }) {
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
-function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onMacroIntel, onBitcoin, onSettings, latest }) {
+function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onBitcoin, onSettings, latest }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const accent = t.accent;
@@ -1689,7 +1689,6 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     { key: 'home', label: 'Home', icon: Home, onClick: null, current: true },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
-    { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
@@ -1863,7 +1862,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 // ═══════════════════════════════════════════════════
 // DOCUMENTATION VIEW — TWO-TRACK FIELD MANUAL
 // ═══════════════════════════════════════════════════
-function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onMacroIntel, onBitcoin, onSettings }) {
+function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onBitcoin, onSettings }) {
   const [track, setTrack] = useState(() => localStorage.getItem('fm_track') || 'web');
   const [activeSection, setActiveSection] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1892,7 +1891,6 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
     { key: 'home', label: 'Home', icon: Home, onClick: onBack },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
-    { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: null, current: true },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
@@ -2071,8 +2069,8 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
       id: 'macro', num: '08', label: 'Macro Layer',
       content: () => (
         <>
-          <p style={sty.p}>The Macro Intelligence layer exists to connect your personal financial decisions to the broader economic environment. This is not entertainment. It is behavioral context — understanding why discipline matters more during certain market conditions.</p>
-          <div style={sty.h3}>What the Macro Intel module shows</div>
+          <p style={sty.p}>The Radar intelligence layer exists to connect your personal financial decisions to the broader economic environment. This is not entertainment. It is behavioral context — understanding why discipline matters more during certain market conditions.</p>
+          <div style={sty.h3}>What the Radar market feed shows</div>
           <p style={sty.p}>Net Liquidity (WALCL − TGA − RRP), FedWatch rate cut probabilities, yield curve status, and real-time signal board with six macro indicators. Each indicator is scored and assigned a direction. The system synthesizes these into an Operator Posture: Defensive, Neutral, or Aggressive.</p>
           <div style={sty.h3}>Fed Flight School</div>
           <p style={sty.p}>An educational layer that explains how Federal Reserve balance sheet movements, liquidity cycles, and rate decisions affect asset prices and personal financial risk. Understanding why the system says "reduce duration exposure" requires understanding how the Fed operates. Fed Flight School provides that context without requiring a finance degree.</p>
@@ -2132,14 +2130,14 @@ npm run dev`}</pre>
           <pre style={sty.pre}>{`fortifyos/
 ├── src/                     ← React application source
 │   ├── App.jsx              ← Main shell, landing, dashboard, docs, routing
-│   ├── pages/               ← Large top-level views (Bitcoin, Macro Intel)
+│   ├── pages/               ← Large top-level views (Bitcoin)
 │   ├── components/          ← Shared UI components
 │   ├── db/                  ← Local browser vault / state logic
 │   ├── security/            ← Sovereign wrapper and access controls
 │   ├── crypto/              ← Local crypto helpers
 │   └── agents/              ← Agent-facing interfaces
 ├── public/                  ← Static assets and publishable data
-│   ├── macro-intel/
+│   ├── macro-intel/        ← Generated macro feed data used by Radar
 │   ├── macro-sentinel/
 │   ├── radar/
 │   └── tessdata/
@@ -6385,7 +6383,7 @@ function TransactionsMod({ latest, visible, t, onImport }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onMacroIntel, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const quickMenuRef = useRef(null);
@@ -6418,7 +6416,6 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: null, current: true },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
-    { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
@@ -6558,8 +6555,7 @@ const FED_DAILY_BRIEFS = [
 
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
-function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onMacroIntel, onBitcoin, onSettings, onDocs }) {
-  const [intel, setIntel] = useState(null);
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onBitcoin, onSettings, onDocs }) {
   const [macro, setMacro] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [warFocus, setWarFocus] = useState('policy');
@@ -6577,14 +6573,9 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     try {
       const bust = Date.now();
       const base = import.meta.env.BASE_URL || '/';
-      const [r1, r2] = await Promise.all([
-        fetch(`${base}macro-sentinel/latest.json?v=${bust}`, { cache: 'no-store' }),
-        fetch(`${base}macro.json?v=${bust}`, { cache: 'no-store' }),
-      ]);
-      setIntel(r1.ok ? await r1.json() : null);
-      setMacro(r2.ok ? await r2.json() : null);
+      const response = await fetch(`${base}macro.json?v=${bust}`, { cache: 'no-store' });
+      setMacro(response.ok ? await response.json() : null);
     } catch (_) {
-      setIntel(null);
       setMacro(null);
     }
   }, []);
@@ -7012,7 +7003,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: null, current: true },
-    { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
@@ -7043,6 +7033,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         </div>
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
+
+        <MacroRadarPanels isDark={isDark} />
 
         <div style={{ marginTop: 12, border: `1px solid ${confColor}55`, background: t.panel, padding: '22px 26px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: confColor, opacity: 0.55 }} />
@@ -7529,7 +7521,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 // ═══════════════════════════════════════════════════
 // SETTINGS VIEW — Full-page, consistent with Docs/Radar
 // ═══════════════════════════════════════════════════
-function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onMacroIntel, onBitcoin, onDocs }) {
+function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onBitcoin, onDocs }) {
   const [confirm, setConfirm] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -7558,7 +7550,6 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
-    { key: 'macroIntel', label: 'Macro Intel', icon: Activity, onClick: onMacroIntel },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
     { key: 'settings', label: 'Settings', icon: Settings, onClick: null, current: true },
@@ -8177,13 +8168,12 @@ function FortifyOSApp() {
       {/* Global CRT scanline overlay — applied to all pages */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFY OS initializing...</div></div>}
-      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
-      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
-      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
-      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onMacroIntel={() => setView('macroIntel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
-      {view === 'macroIntel' && <MacroIntelPage onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
+      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
+      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
+      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} />
     </div>

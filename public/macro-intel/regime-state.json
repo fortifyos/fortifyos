@@ -1,33 +1,34 @@
 {
-  "timestamp": "2026-03-10T08:00:00-04:00",
-  "timezone": "America/New_York",
-  "regimeMode": "risk_off",
-  "confidence": 0.78,
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-03-16T18:59:02.779718-04:00",
+  "regimeMode": "mixed",
+  "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+  "confidence": 0.5,
   "scores": {
-    "liquidity": -1,
-    "inflationPressure": 2,
-    "growthHealth": -1,
-    "volatilityStress": 2,
-    "dollarPressure": 1,
-    "breadthQuality": -1,
+    "liquidity": 0,
+    "inflationPressure": 0,
+    "growthHealth": 0,
+    "volatilityStress": 0,
+    "dollarPressure": 0,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
-  "dominantDrivers": ["inflation_shock", "dollar_strength", "breadth_weakness"],
+  "priorRegimeMode": "mixed",
+  "regimeChanged": false,
+  "dominantDrivers": [
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)",
+    "Growth Health neutral (score: +0)"
+  ],
   "supportingEvidence": [
-    "VIX elevated above 25 — breadth not confirming index recovery",
-    "Dollar strengthening against key EM currencies — DXY approaching 104",
-    "Oil remains above $87 — inflation pressure floor intact",
-    "Fed pause signals still absent from futures market"
+    "Mixed signals across dimensions — no strong directional confirmation"
   ],
   "watchLevels": [
-    "VIX > 28 — stress escalation trigger",
-    "10Y yield > 4.55% — duration pressure breakout",
-    "WTI > $90 — inflation re-acceleration signal",
-    "DXY > 105 — EM tightening risk threshold"
+    "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
-    "VIX collapses below 18 while breadth confirms",
-    "Fed signals pivot — futures reprice more than 2 cuts",
-    "Oil drops below $75 on demand destruction data"
+    "Any two dimensions align strongly in one direction — regime will clarify",
+    "VIX spikes above 30 — even mixed regime becomes risk-off if vol escalates"
   ]
 }

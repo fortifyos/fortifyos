@@ -1,56 +1,83 @@
 {
-  "timestamp": "2026-03-10T08:00:00-04:00",
-  "timezone": "America/New_York",
-  "session": "pre_market",
-  "assets": {
-    "spx": {
-      "key": "spx", "label": "S&P 500",
-      "value": 5780.2, "changeSinceLast": -18.4, "pctSinceLast": -0.32,
-      "changeVsClose": -22.1, "pctVsClose": -0.38,
-      "impactTag": "risk_negative",
-      "sparkline": [5820.1, 5812.3, 5798.7, 5788.4, 5780.2]
+  "session": "mid_session",
+  "timestamp": "2026-03-16T18:59:02.778993-04:00",
+  "assets": [
+    {
+      "key": "spx",
+      "label": "S&P 500",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     },
-    "btc": {
-      "key": "btc", "label": "BTC/USD",
-      "value": 82440, "changeSinceLast": -1240, "pctSinceLast": -1.48,
-      "changeVsClose": -1880, "pctVsClose": -2.23,
-      "impactTag": "risk_negative",
-      "sparkline": [84800, 84200, 83600, 82900, 82440]
+    {
+      "key": "btc",
+      "label": "Bitcoin",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     },
-    "vix": {
-      "key": "vix", "label": "VIX",
-      "value": 26.8, "changeSinceLast": 1.2, "pctSinceLast": 4.69,
-      "changeVsClose": 2.1, "pctVsClose": 8.51,
-      "impactTag": "risk_negative",
-      "sparkline": [22.1, 23.4, 24.8, 25.6, 26.8]
+    {
+      "key": "vix",
+      "label": "CBOE VIX",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     },
-    "wti": {
-      "key": "wti", "label": "WTI Crude",
-      "value": 87.3, "changeSinceLast": 0.8, "pctSinceLast": 0.93,
-      "changeVsClose": 1.2, "pctVsClose": 1.39,
-      "impactTag": "inflationary",
-      "sparkline": [84.1, 85.2, 85.9, 86.5, 87.3]
+    {
+      "key": "gold",
+      "label": "Gold (XAU/USD)",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     },
-    "dxy": {
-      "key": "dxy", "label": "DXY",
-      "value": 104.2, "changeSinceLast": 0.3, "pctSinceLast": 0.29,
-      "changeVsClose": 0.5, "pctVsClose": 0.48,
-      "impactTag": "dollar_stress",
-      "sparkline": [103.4, 103.7, 103.9, 104.0, 104.2]
+    {
+      "key": "wti",
+      "label": "WTI Crude Oil",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     },
-    "tnx": {
-      "key": "tnx", "label": "10Y Yield",
-      "value": 4.52, "changeSinceLast": 0.04, "pctSinceLast": 0.89,
-      "changeVsClose": 0.06, "pctVsClose": 1.35,
-      "impactTag": "risk_negative",
-      "sparkline": [4.41, 4.44, 4.47, 4.49, 4.52]
+    {
+      "key": "dxy",
+      "label": "US Dollar Index",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     },
-    "gold": {
-      "key": "gold", "label": "Gold",
-      "value": 3180.5, "changeSinceLast": 12.4, "pctSinceLast": 0.39,
-      "changeVsClose": 18.2, "pctVsClose": 0.58,
-      "impactTag": "defensive",
-      "sparkline": [3148.2, 3155.0, 3162.8, 3172.1, 3180.5]
+    {
+      "key": "tnx",
+      "label": "10Y Treasury Yield",
+      "value": null,
+      "changeSinceLast": null,
+      "pctSinceLast": null,
+      "changeVsClose": null,
+      "pctVsClose": null,
+      "impactTag": "neutral",
+      "meta": {}
     }
-  }
+  ]
 }

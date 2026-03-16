@@ -39,7 +39,8 @@ _REPO_ROOT = os.path.abspath(
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
-from app.macro.engine.utils import now_et, to_iso, date_str
+from app.macro.engine.utils import now_et, to_iso, date_str, load_json
+from app.macro.engine.archive import finalize_day, ArchiveError
 from app.macro.engine.sessions import (
     SESSIONS,
     resolve_session,
@@ -215,6 +216,9 @@ def run(
 
     logger.info("Timestamp: %s", timestamp)
 
+    if not dry_run:
+        _maybe_rollover_previous_day(data_dir)
+
     # --- Step 2: Load prior state ---
     prior_snapshot: Optional[dict] = load_market_snapshot(data_dir)
     prior_regime: Optional[dict] = load_regime_state(data_dir)
@@ -369,6 +373,33 @@ def run(
 
     _print_summary(result)
     return result
+
+
+def _maybe_rollover_previous_day(data_dir: str) -> None:
+    log_path = os.path.join(data_dir, "today-log.json")
+    existing_log = load_json(log_path, default=None)
+    if not existing_log:
+        return
+
+    log_date = existing_log.get("date")
+    current_date = date_str()
+    if not log_date or log_date == current_date:
+        return
+
+    logger.info(
+        "Detected stale today-log date %s while current ET date is %s; attempting archive rollover.",
+        log_date,
+        current_date,
+    )
+    try:
+        summary = finalize_day(data_dir=data_dir)
+        logger.info(
+            "Archive rollover complete for %s (%d entries).",
+            summary.get("archived_date"),
+            summary.get("entry_count", 0),
+        )
+    except ArchiveError as exc:
+        logger.warning("Archive rollover skipped: %s", exc)
 
 
 # ---------------------------------------------------------------------------

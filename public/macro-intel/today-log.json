@@ -1,87 +1,56 @@
 {
-  "date": "2026-03-10",
+  "date": "2026-03-16",
   "status": "active",
-  "timezone": "America/New_York",
-  "regimeMode": "risk_off",
-  "lastUpdated": "2026-03-10T08:00:00-04:00",
   "entries": [
     {
-      "timestamp": "2026-03-10T08:00:00-04:00",
-      "runTime": "08:00 AM ET",
-      "session": "pre_market",
-      "headline": "Risk-Off Persists Into Pre-Market — Dollar and VIX Both Elevated",
-      "dominantStory": "Equity futures are sliding as the dollar strengthens and VIX holds above 26. The macro backdrop remains unfavorable for risk assets, with inflationary pressure from crude unresolved and breadth failing to confirm the prior session's index bounce. Treasury yields are rising at the front end, suggesting the market is pricing out rate cuts for H1.",
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-03-16T18:58:34.088603-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.5,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 50%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Net Fed Liquidity neutral (score: +0); Inflation Pressure neutral (score: +0).",
       "crossAssetConnections": [
-        "VIX ↑ + breadth weakness → confirms risk-off tone, not sector rotation",
-        "Dollar strength → EM capital outflow risk, commodity import cost pressure",
-        "10Y yield ↑ 6bps → duration assets under pressure, growth stocks most exposed",
-        "WTI > $87 → inflation re-acceleration narrative intact — Fed hawkish hold likely"
+        "Mixed signals across dimensions — no strong directional confirmation"
       ],
       "whatChangedSinceLastReport": [
-        "BTC dropped 1.5% from evening session — crypto risk appetite retreating",
-        "10Y yield pushed to 4.52% — above prior watch level of 4.45%",
-        "SPX futures -0.38% at open — below prior support at 5800"
+        "No significant changes detected since last checkpoint"
       ],
-      "operatorPosture": "DEFENSIVE — reduce duration exposure, hold USD, watch crude for confirmation of sustained inflation pressure above $87 WTI.",
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
       "watchNext": [
-        "CPI print — any upside surprise re-accelerates dollar + yield move",
-        "SPX 5750 support — loss triggers next leg risk-off",
-        "BTC < $80K — confirms crypto risk-off alignment with equities",
-        "Fed speakers: any hawkish tilt hardens risk-off regime"
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
       ],
-      "confidenceCommentary": "Regime confidence 78% — dominant signal is volatility stress + dollar, but growth picture ambiguous. Watch breadth improvement as primary invalidation signal.",
+      "confidenceCommentary": "Rule-based confidence: 50%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
       "uncertaintyFlags": [
-        "Earnings season residual: some beat-driven pockets of strength could mask broad weakness",
-        "Geopolitical tail risk: oil supply disruption premium not fully priced"
-      ],
-      "signalScores": {
-        "liquidity": -1,
-        "inflationPressure": 2,
-        "growthHealth": -1,
-        "volatilityStress": 2,
-        "dollarPressure": 1,
-        "breadthQuality": -1,
-        "cryptoRiskAppetite": 0
-      },
-      "drivers": ["inflation_shock", "dollar_strength", "breadth_weakness"]
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     },
     {
-      "timestamp": "2026-03-10T03:00:00-04:00",
-      "runTime": "03:00 AM ET",
-      "session": "global_markets",
-      "headline": "Asian Session Closes With Broad Selling — Dollar at 3-Week High",
-      "dominantStory": "Asian equities sold off broadly, led by Nikkei -1.2% and Hang Seng -0.9%. Dollar strength is the primary pressure vector, with DXY approaching 104. Oil held firm above $86. European futures are showing early weakness ahead of the NY open.",
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-03-16T18:59:02.780177-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.5,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 50%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Net Fed Liquidity neutral (score: +0); Inflation Pressure neutral (score: +0).",
       "crossAssetConnections": [
-        "Nikkei -1.2% + JPY weakness → BOJ uncertainty adding to regional pressure",
-        "Dollar ↑ → EM FX stress — Asian export currencies under pressure",
-        "Oil holding $86+ → global inflation floor intact",
-        "Gold ↑ $12 → safe haven bid confirming risk-off, not just USD strength"
+        "Mixed signals across dimensions — no strong directional confirmation"
       ],
       "whatChangedSinceLastReport": [
-        "DXY broke above 103.9 resistance during Asian session",
-        "Nikkei erased prior day gains entirely",
-        "BTC held $83K — crypto not yet in full risk-off alignment"
+        "No significant changes detected since last checkpoint"
       ],
-      "operatorPosture": "CAUTIOUS — no new risk exposure. Monitor EU open for risk-off confirmation or reversal.",
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
       "watchNext": [
-        "EU PMI data: miss accelerates risk-off",
-        "DXY 104.5 — next resistance if dollar move continues",
-        "Nikkei close below 38,000 — structural signal"
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
       ],
-      "confidenceCommentary": "Early session with thinner volume. Signals directionally consistent with risk-off but conviction lower at 3AM run. Wait for NY open confirmation.",
+      "confidenceCommentary": "Rule-based confidence: 50%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
       "uncertaintyFlags": [
-        "Asia session volume lower — moves may not hold into NY open"
-      ],
-      "signalScores": {
-        "liquidity": -1,
-        "inflationPressure": 1,
-        "growthHealth": -1,
-        "volatilityStress": 1,
-        "dollarPressure": 2,
-        "breadthQuality": -1,
-        "cryptoRiskAppetite": 0
-      },
-      "drivers": ["dollar_strength", "asian_selloff"]
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
-  ]
+  ],
+  "entryCount": 2,
+  "lastUpdated": "2026-03-16T18:59:02.781858-04:00"
 }
