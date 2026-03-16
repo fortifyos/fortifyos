@@ -544,7 +544,6 @@ export default function MacroIntelPage({ onBack, onHome, onDashboard, onMacroSen
       isDark={isDark}
       onToggleTheme={onToggleTheme}
       navItems={navItems}
-      centerLabel="FORTIFY OS"
       statusLabel={`Last Sync ${lastSyncLabel}`}
     >
     <div className={`mi-root ${isDark ? "mi-dark" : "mi-light"}`}>

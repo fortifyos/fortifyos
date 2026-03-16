@@ -147,7 +147,6 @@ function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onTogg
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
         </div>
       </div>
-      <span className="fo-pagebar-title" style={{ fontSize: 14, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.22em' }}>FORTIFY OS</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
           {isDark ? <Sun size={15} /> : <Moon size={15} />}

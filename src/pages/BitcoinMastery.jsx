@@ -313,7 +313,6 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       isDark={isDark}
       onToggleTheme={onToggleTheme}
       navItems={navItems}
-      centerLabel="FORTIFY OS"
       statusLabel={`Last Sync ${lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}`}
     >
     <div className={`bm-root ${isDark ? "bm-dark" : "bm-light"}`}>

@@ -4,7 +4,7 @@ import { Menu, Moon, Sun, X } from "lucide-react";
 export default function SpecialistShell({
   children,
   brand = "FORTIFY OS",
-  centerLabel = "FORTIFY OS",
+  centerLabel = null,
   statusLabel = null,
   isDark = true,
   onToggleTheme,
@@ -153,12 +153,14 @@ export default function SpecialistShell({
             </span>
           </div>
         </div>
-        <span
-          className="fo-pagebar-title"
-          style={{ fontSize: 14, color: palette.dimColor, textTransform: "uppercase", letterSpacing: "0.22em" }}
-        >
-          {centerLabel}
-        </span>
+        {centerLabel ? (
+          <span
+            className="fo-pagebar-title"
+            style={{ fontSize: 14, color: palette.dimColor, textTransform: "uppercase", letterSpacing: "0.22em" }}
+          >
+            {centerLabel}
+          </span>
+        ) : null}
         <div className="fo-pagebar-right" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {statusLabel ? (
             <div style={{ fontSize: 11, color: palette.dimColor, letterSpacing: ".10em", textTransform: "uppercase" }}>
