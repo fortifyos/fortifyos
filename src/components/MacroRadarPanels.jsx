@@ -350,34 +350,15 @@ export default function MacroRadarPanels({ isDark = true }) {
     return Array.isArray(market.assets) ? market.assets.filter(Boolean) : Object.values(market.assets).filter(Boolean);
   }, [market]);
 
-  const confidenceLabel = regime?.confidence != null ? `${Math.round(regime.confidence * 100)}%` : "—";
-  const sessionKey = todayLog?.entries?.length ? todayLog.entries[todayLog.entries.length - 1]?.session : null;
-  const lastSync = regime?.timestamp
-    ? new Date(regime.timestamp).toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZoneName: "short" })
-    : "—";
-  const freshnessClass = staleClass(regime?.timestamp);
-
   return (
     <section className={`mir-module ${isDark ? "mir-dark" : "mir-light"}`}>
       <header className="mir-header">
-        <div className="mir-hud">
-          <span className={`mir-regime-pill mode-${regime?.regimeMode || "mixed"}`}>{REGIME_LABELS[regime?.regimeMode] ?? "MIXED"}</span>
-          <span className="mir-hud-sep">|</span>
-          <span className="mir-hud-kv"><span className="mir-hud-k">CONF</span><span className="mir-hud-v">{confidenceLabel}</span></span>
-          <span className="mir-hud-sep">|</span>
-          <span className="mir-hud-kv"><span className="mir-hud-k">FRESHNESS</span><span className={freshnessClass}>{regime?.timestamp ? (freshnessClass === "mir-fresh" ? "FRESH" : "STALE") : "PENDING"}</span></span>
-          <span className="mir-hud-sep">|</span>
-          <span className="mir-hud-kv"><span className="mir-hud-k">SESSION</span><span className="mir-hud-v">{SESSION_LABELS[sessionKey] ?? "AWAITING CHECKPOINT"}</span></span>
-          <span className="mir-hud-sep">|</span>
-          <span className="mir-hud-kv"><span className="mir-hud-k">NEXT RUN</span><span className="mir-countdown">{formatCountdown(nextRunAt)}</span></span>
-          <span className="mir-hud-sep mir-hud-sep-right">SYNC</span>
-          <span className="mir-hud-v">{lastSync}</span>
-        </div>
-
         <div className="mir-title-row">
           <div>
             <h2 className="mir-title">RADAR MARKET FEED</h2>
-            <div className="mir-subtitle">GLOBAL MARKETS · PRE-MARKET LOG · ARCHIVE HISTORY</div>
+            <div className="mir-subtitle">
+              PRE-MARKET LOG · ARCHIVE HISTORY · NEXT RUN {formatCountdown(nextRunAt)}
+            </div>
           </div>
           {regime?.dominantDrivers?.length > 0 && (
             <div className="mir-drivers">
@@ -388,26 +369,6 @@ export default function MacroRadarPanels({ isDark = true }) {
           )}
         </div>
       </header>
-
-      {assets.length > 0 && (
-        <div className="mir-pulse-strip">
-          <div className="mir-pulse-scroll">
-            {assets.map((asset) => {
-              const delta = fmtDelta(asset.pctVsClose);
-              const sparkColor = asset.pctVsClose >= 0 ? "#00FF41" : "#FF3B3B";
-              return (
-                <div key={asset.key} className={`mir-asset-card impact-${asset.impactTag ?? "neutral"}`}>
-                  <div className="mir-asset-label">{asset.label}</div>
-                  <div className="mir-asset-value">{fmtValue(asset.value, asset.key)}</div>
-                  <div className={`mir-asset-delta ${delta.cls}`}>{delta.text}</div>
-                  <div className="mir-asset-impact">{(asset.impactTag ?? "").replace(/_/g, " ")}</div>
-                  {asset.sparkline && <MiniSparkline data={asset.sparkline} color={sparkColor} />}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       <div className="mir-body">
         <main className="mir-main">
