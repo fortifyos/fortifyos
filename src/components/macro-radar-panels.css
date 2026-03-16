@@ -39,7 +39,6 @@
 }
 
 .mir-header,
-.mir-pulse-strip,
 .mir-body {
   padding-left: 16px;
   padding-right: 16px;
@@ -138,36 +137,6 @@
   letter-spacing: 0.1em;
 }
 
-.mir-pulse-strip {
-  padding-bottom: 12px;
-}
-
-.mir-pulse-scroll {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-}
-
-.mir-pulse-scroll::-webkit-scrollbar { display: none; }
-
-.mir-asset-card {
-  flex-shrink: 0;
-  min-width: 110px;
-  border: 1px solid var(--mir-border);
-  background: var(--mir-surface);
-  padding: 8px 10px;
-}
-
-.mir-asset-card.impact-risk_negative { border-top: 2px solid var(--mir-red); }
-.mir-asset-card.impact-risk_positive,
-.mir-asset-card.impact-supportive_risk { border-top: 2px solid var(--mir-green); }
-.mir-asset-card.impact-inflationary { border-top: 2px solid var(--mir-orange); }
-.mir-asset-card.impact-dollar_stress { border-top: 2px solid var(--mir-amber); }
-.mir-asset-card.impact-defensive { border-top: 2px solid var(--mir-purple); }
-.mir-asset-card.impact-neutral { border-top: 2px solid var(--mir-border-mid); }
-
 .mir-asset-label,
 .mir-field-label,
 .mir-card-hd,
@@ -178,14 +147,6 @@
   letter-spacing: 0.1em;
 }
 
-.mir-asset-label { font-size: 10px; color: var(--mir-ghost); }
-.mir-asset-value { margin-top: 3px; font-size: 15px; font-weight: 700; }
-.mir-asset-delta { margin-top: 2px; font-size: 11px; }
-.mir-asset-delta.pos { color: var(--mir-green); }
-.mir-asset-delta.neg { color: var(--mir-red); }
-.mir-asset-delta.neu { color: var(--mir-dim); }
-.mir-asset-impact { margin-top: 4px; font-size: 9px; color: var(--mir-ghost); text-transform: uppercase; }
-
 .mir-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
@@ -194,10 +155,28 @@
   padding-bottom: 16px;
 }
 
+.mir-decision-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .mir-card {
   border: 1px solid var(--mir-border);
   background: var(--mir-surface);
 }
+
+.mir-operator-card,
+.mir-directive-card {
+  border-top: 2px solid var(--mir-border-mid);
+}
+
+.mir-operator-card.tone-pressure { border-top-color: var(--mir-amber); }
+.mir-operator-card.tone-fed { border-top-color: var(--mir-green); }
+.mir-operator-card.tone-distortion { border-top-color: var(--mir-purple); }
+.mir-operator-card.tone-impact { border-top-color: var(--mir-red); }
+.mir-directive-card { border-top-color: var(--mir-green); }
 
 .mir-card-hd {
   display: flex;
@@ -220,6 +199,17 @@
 
 .mir-card-body {
   padding: 12px 14px;
+}
+
+.mir-operator-title {
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--mir-text);
+  margin-bottom: 10px;
+}
+
+.mir-operator-block + .mir-operator-block {
+  margin-top: 10px;
 }
 
 .mir-empty {
@@ -287,53 +277,6 @@
   gap: 6px;
 }
 
-.mir-score-row {
-  display: grid;
-  grid-template-columns: 96px 34px 1fr;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.mir-score-label { font-size: 10px; color: var(--mir-ghost); }
-.mir-score-val { font-size: 12px; text-align: right; }
-.mir-score-val.pos2,
-.mir-score-val.pos1 { color: var(--mir-green); }
-.mir-score-val.neg1,
-.mir-score-val.neg2 { color: var(--mir-red); }
-.mir-score-val.zero { color: var(--mir-dim); }
-
-.mir-score-bar-track {
-  position: relative;
-  height: 4px;
-  background: var(--mir-border);
-}
-
-.mir-score-bar-center {
-  position: absolute;
-  left: 50%;
-  top: -2px;
-  width: 1px;
-  height: 8px;
-  background: var(--mir-border-mid);
-}
-
-.mir-score-bar-fill {
-  position: absolute;
-  top: 0;
-  height: 100%;
-}
-
-.mir-score-bar-fill.pos { left: 50%; background: var(--mir-green); }
-.mir-score-bar-fill.neg { right: 50%; background: var(--mir-red); }
-.mir-score-bar-fill.zero { left: calc(50% - 1px); background: var(--mir-border-mid); }
-
-.mir-evidence {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--mir-border);
-}
-
 .mir-section-hd { color: var(--mir-ghost); font-size: 10px; margin-bottom: 8px; }
 .mir-section-gap { margin-top: 12px; }
 
@@ -382,10 +325,12 @@
 .mir-archive-meta { display: grid; gap: 4px; justify-items: end; }
 .mir-archive-count { color: var(--mir-ghost); font-size: 11px; }
 
-.mir-sparkline { display: block; margin-top: 4px; }
-
 @media (max-width: 980px) {
   .mir-body {
+    grid-template-columns: 1fr;
+  }
+
+  .mir-decision-grid {
     grid-template-columns: 1fr;
   }
 }

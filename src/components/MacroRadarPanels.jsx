@@ -25,26 +25,6 @@ const SESSION_LABELS = {
   evening_wrap: "EVENING WRAP",
 };
 
-const SCORE_LABELS = {
-  liquidity: "LIQUIDITY",
-  inflationPressure: "INFLATION",
-  growthHealth: "GROWTH",
-  volatilityStress: "VOLATILITY",
-  dollarPressure: "DOLLAR",
-  breadthQuality: "BREADTH",
-  cryptoRiskAppetite: "CRYPTO RISK",
-};
-
-const SCORE_MEANING = {
-  liquidity: { pos: "Expanding", neg: "Contracting" },
-  inflationPressure: { pos: "Rising Pressure", neg: "Easing" },
-  growthHealth: { pos: "Improving", neg: "Deteriorating" },
-  volatilityStress: { pos: "Stressed", neg: "Suppressed" },
-  dollarPressure: { pos: "Strengthening", neg: "Weakening" },
-  breadthQuality: { pos: "Broad Participation", neg: "Narrow / Weak" },
-  cryptoRiskAppetite: { pos: "Risk Appetite High", neg: "Risk Appetite Low" },
-};
-
 function computeNextRunAt() {
   try {
     const nowEt = new Date(
@@ -75,91 +55,6 @@ function formatCountdown(targetDate) {
   const m = Math.floor((diffMs % 3_600_000) / 60_000);
   const s = Math.floor((diffMs % 60_000) / 1_000);
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-}
-
-function fmtValue(value, key) {
-  if (value == null) return "—";
-  if (key === "btc") return `$${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-  if (key === "vix" || key === "tnx") return Number(value).toFixed(2);
-  if (key === "spx") return Number(value).toLocaleString(undefined, { maximumFractionDigits: 1 });
-  return Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 });
-}
-
-function fmtDelta(pct) {
-  if (pct == null) return { text: "—", cls: "neu" };
-  const sign = pct > 0 ? "+" : "";
-  const cls = pct > 0 ? "pos" : pct < 0 ? "neg" : "neu";
-  return { text: `${sign}${pct.toFixed(2)}%`, cls };
-}
-
-function staleClass(ts) {
-  if (!ts) return "mir-stale";
-  const ageMin = (Date.now() - new Date(ts).getTime()) / 60_000;
-  return ageMin > 180 ? "mir-stale" : "mir-fresh";
-}
-
-function scoreValClass(value) {
-  if (value >= 2) return "pos2";
-  if (value === 1) return "pos1";
-  if (value === 0) return "zero";
-  if (value === -1) return "neg1";
-  return "neg2";
-}
-
-function MiniSparkline({ data, color = "#00FF41" }) {
-  if (!data || data.length < 2) return null;
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = max - min || 1;
-  const w = 60;
-  const h = 18;
-  const points = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * w;
-    const y = h - ((v - min) / range) * h;
-    return `${x},${y}`;
-  }).join(" ");
-  return (
-    <svg className="mir-sparkline" width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true">
-      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function SignalBoard({ scores, evidence }) {
-  if (!scores) return null;
-  return (
-    <section className="mir-card">
-      <div className="mir-card-hd">RADAR SIGNAL BOARD</div>
-      <div className="mir-card-body">
-        {Object.keys(SCORE_LABELS).map((key) => {
-          const value = scores[key] ?? 0;
-          const meaning = value > 0 ? SCORE_MEANING[key]?.pos : value < 0 ? SCORE_MEANING[key]?.neg : "Neutral";
-          const barPct = (Math.abs(value) / 2) * 50;
-          const barCls = value > 0 ? "pos" : value < 0 ? "neg" : "zero";
-          return (
-            <div key={key} className="mir-score-row" title={meaning}>
-              <span className="mir-score-label">{SCORE_LABELS[key]}</span>
-              <span className={`mir-score-val ${scoreValClass(value)}`}>{value > 0 ? `+${value}` : value}</span>
-              <div className="mir-score-bar-track">
-                <div className="mir-score-bar-center" />
-                <div className={`mir-score-bar-fill ${barCls}`} style={{ width: barCls === "zero" ? "2px" : `${barPct}%` }} />
-              </div>
-            </div>
-          );
-        })}
-        {evidence?.length > 0 && (
-          <div className="mir-evidence">
-            <div className="mir-field-label">SUPPORTING EVIDENCE</div>
-            <div className="mir-list">
-              {evidence.map((item, index) => (
-                <div key={`${item}-${index}`} className="mir-list-item">{item}</div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
 }
 
 function WatchPanel({ watchLevels, invalidation }) {
@@ -195,6 +90,184 @@ function WatchPanel({ watchLevels, invalidation }) {
         )}
         {!watchLevels?.length && !invalidation?.length && (
           <div className="mir-empty">No watch data available yet.</div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function cleanLine(text) {
+  return String(text || "")
+    .replace(/\[[^\]]+\]\s*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function firstLine(list, fallback) {
+  return list?.length ? cleanLine(list[0]) : fallback;
+}
+
+function buildOperatorLens(regime, latestEntry, assets) {
+  const scores = regime?.scores || {};
+  const dominantDrivers = regime?.dominantDrivers || [];
+  const supportingEvidence = regime?.supportingEvidence || [];
+  const assetMap = Object.fromEntries((assets || []).map((asset) => [asset.key, asset]));
+
+  const spx = assetMap.spx;
+  const btc = assetMap.btc;
+  const vix = assetMap.vix;
+  const dxy = assetMap.dxy;
+  const tnx = assetMap.tnx;
+  const wti = assetMap.wti;
+
+  let pressureTitle = "Global pressure is mixed";
+  if ((scores.volatilityStress ?? 0) >= 1 || (scores.dollarPressure ?? 0) >= 1) {
+    pressureTitle = "Global pressure is tightening";
+  } else if ((scores.liquidity ?? 0) >= 1 || (scores.growthHealth ?? 0) >= 1) {
+    pressureTitle = "Global pressure is loosening";
+  }
+
+  const globalPressure = {
+    title: pressureTitle,
+    signal: firstLine(
+      dominantDrivers,
+      "Global markets are not giving a clean one-way message yet.",
+    ),
+    connection: [
+      dxy?.value != null ? `Dollar index ${Number(dxy.value).toFixed(2)} tells you whether global financing is tightening.` : null,
+      tnx?.value != null ? `10Y yield ${Number(tnx.value).toFixed(2)} is the transmission channel into mortgages, credit, and duration risk.` : null,
+      vix?.value != null ? `VIX ${Number(vix.value).toFixed(2)} tells you whether stress is becoming the dominant market language.` : null,
+      wti?.value != null ? `WTI ${Number(wti.value).toFixed(2)} is the inflation spillover check on everything else.` : null,
+      firstLine(supportingEvidence, null),
+    ].filter(Boolean).slice(0, 2),
+  };
+
+  let fedTitle = "Fed transmission is unresolved";
+  if ((scores.liquidity ?? 0) >= 1 && (scores.inflationPressure ?? 0) <= 0) {
+    fedTitle = "Fed transmission is easing";
+  } else if ((scores.liquidity ?? 0) <= -1 || (scores.inflationPressure ?? 0) >= 1) {
+    fedTitle = "Fed transmission is still restrictive";
+  }
+
+  const fedTransmission = {
+    title: fedTitle,
+    signal: firstLine(
+      latestEntry?.crossAssetConnections,
+      "Rates, liquidity, and Treasury pressure are still the main levers to watch.",
+    ),
+    connection: [
+      "The question is not whether headlines sound dovish. The question is whether reserves, Treasury pressure, and funding conditions are actually loosening.",
+      firstLine(
+        regime?.watchLevels,
+        "Watch yield, Treasury, and liquidity thresholds before assuming better conditions are real.",
+      ),
+    ].filter(Boolean).slice(0, 2),
+  };
+
+  let aiTitle = "AI leadership needs confirmation";
+  if ((scores.breadthQuality ?? 0) <= -1) {
+    aiTitle = "AI leadership may be masking weak breadth";
+  } else if ((scores.breadthQuality ?? 0) >= 1 && (scores.growthHealth ?? 0) >= 1) {
+    aiTitle = "Leadership is broadening beyond a narrow AI trade";
+  }
+
+  const aiDistortion = {
+    title: aiTitle,
+    signal: btc?.value != null && spx?.value != null
+      ? `Bitcoin ${Math.round(Number(btc.value)).toLocaleString()} and the S&P ${Number(spx.value).toLocaleString(undefined, { maximumFractionDigits: 1 })} can both look strong while the underlying participation is still thin.`
+      : "Do not confuse index strength or AI enthusiasm with broad safety across the economy.",
+    connection: [
+      "If a small leadership cohort is carrying the tape, households still need to operate as if conditions are selective, not universally safe.",
+      "A narrow market can reward optimism right up until financing stress or weak breadth reasserts itself.",
+    ],
+  };
+
+  let householdTitle = "Household conditions still demand discipline";
+  if ((scores.liquidity ?? 0) >= 1 && (scores.growthHealth ?? 0) >= 1 && (scores.volatilityStress ?? 0) <= 0) {
+    householdTitle = "Household conditions are improving, but not permissive";
+  } else if ((scores.dollarPressure ?? 0) >= 1 || (scores.inflationPressure ?? 0) >= 1) {
+    householdTitle = "Household conditions are vulnerable to renewed pressure";
+  }
+
+  const householdImpact = {
+    title: householdTitle,
+    signal: latestEntry?.operatorPosture
+      ? cleanLine(latestEntry.operatorPosture)
+      : "Your spending, debt, and savings posture should follow the regime, not your hopes.",
+    connection: [
+      "When policy, liquidity, or the dollar tighten, your margin for sloppy spending shrinks before the headlines fully admit it.",
+      "Use macro to challenge purchases, debt timing, and risk-taking. If the system is mixed or restrictive, optional spending should feel harder to justify.",
+    ],
+  };
+
+  let directiveTitle = "Operator directive: defend and preserve optionality";
+  let directiveBody = "Stay selective. Protect cash, avoid chasing strong narratives, and make sure your next move improves resilience.";
+  if ((scores.liquidity ?? 0) >= 1 && (scores.growthHealth ?? 0) >= 1 && (scores.volatilityStress ?? 0) <= 0) {
+    directiveTitle = "Operator directive: prepare, do not overextend";
+    directiveBody = "Conditions are improving enough to plan offensive moves, but you still want confirmation before loosening discipline.";
+  } else if ((scores.volatilityStress ?? 0) >= 1 || (scores.dollarPressure ?? 0) >= 1) {
+    directiveTitle = "Operator directive: slow down and tighten standards";
+    directiveBody = "This is not a clean environment for optimism spending or loose balance-sheet decisions. Let the environment prove itself first.";
+  }
+
+  return {
+    globalPressure,
+    fedTransmission,
+    aiDistortion,
+    householdImpact,
+    directive: {
+      title: directiveTitle,
+      body: directiveBody,
+      watch: (regime?.watchLevels || latestEntry?.watchNext || []).slice(0, 3),
+    },
+  };
+}
+
+function OperatorCard({ eyebrow, title, signal, connection, tone = "default" }) {
+  return (
+    <section className={`mir-card mir-operator-card tone-${tone}`}>
+      <div className="mir-card-hd">{eyebrow}</div>
+      <div className="mir-card-body">
+        <div className="mir-operator-title">{title}</div>
+        <div className="mir-operator-block">
+          <div className="mir-field-label">SIGNAL</div>
+          <div className="mir-entry-story">{signal}</div>
+        </div>
+        <div className="mir-operator-block">
+          <div className="mir-field-label">CONNECTION</div>
+          <div className="mir-list">
+            {(Array.isArray(connection) ? connection : [connection]).filter(Boolean).map((item, index) => (
+              <div key={`${item}-${index}`} className="mir-list-item">{item}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DirectiveCard({ directive, latestEntry }) {
+  return (
+    <section className="mir-card mir-directive-card">
+      <div className="mir-card-hd">OPERATOR DIRECTIVE</div>
+      <div className="mir-card-body">
+        <div className="mir-operator-title">{directive.title}</div>
+        <div className="mir-entry-story">{directive.body}</div>
+        {latestEntry?.operatorPosture && (
+          <div className="mir-operator-block">
+            <div className="mir-field-label">CURRENT POSTURE</div>
+            <div className="mir-entry-story">{cleanLine(latestEntry.operatorPosture)}</div>
+          </div>
+        )}
+        {directive.watch?.length > 0 && (
+          <div className="mir-operator-block">
+            <div className="mir-field-label">WATCH NEXT</div>
+            <div className="mir-list">
+              {directive.watch.map((item, index) => (
+                <div key={`${item}-${index}`} className="mir-list-item">{item}</div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </section>
@@ -349,6 +422,14 @@ export default function MacroRadarPanels({ isDark = true }) {
     if (!market?.assets) return [];
     return Array.isArray(market.assets) ? market.assets.filter(Boolean) : Object.values(market.assets).filter(Boolean);
   }, [market]);
+  const latestEntry = useMemo(() => {
+    const entries = todayLog?.entries || [];
+    return entries.length ? entries[entries.length - 1] : null;
+  }, [todayLog]);
+  const operatorLens = useMemo(
+    () => buildOperatorLens(regime, latestEntry, assets),
+    [regime, latestEntry, assets],
+  );
 
   return (
     <section className={`mir-module ${isDark ? "mir-dark" : "mir-light"}`}>
@@ -372,6 +453,37 @@ export default function MacroRadarPanels({ isDark = true }) {
 
       <div className="mir-body">
         <main className="mir-main">
+          <div className="mir-decision-grid">
+            <OperatorCard
+              eyebrow="GLOBAL PRESSURE"
+              title={operatorLens.globalPressure.title}
+              signal={operatorLens.globalPressure.signal}
+              connection={operatorLens.globalPressure.connection}
+              tone="pressure"
+            />
+            <OperatorCard
+              eyebrow="FED TRANSMISSION"
+              title={operatorLens.fedTransmission.title}
+              signal={operatorLens.fedTransmission.signal}
+              connection={operatorLens.fedTransmission.connection}
+              tone="fed"
+            />
+            <OperatorCard
+              eyebrow="AI / MARKET DISTORTION"
+              title={operatorLens.aiDistortion.title}
+              signal={operatorLens.aiDistortion.signal}
+              connection={operatorLens.aiDistortion.connection}
+              tone="distortion"
+            />
+            <OperatorCard
+              eyebrow="HOUSEHOLD IMPACT"
+              title={operatorLens.householdImpact.title}
+              signal={operatorLens.householdImpact.signal}
+              connection={operatorLens.householdImpact.connection}
+              tone="impact"
+            />
+          </div>
+
           <div className="mir-card">
             <div className="mir-card-hd">
               TODAY'S TIMELINE
@@ -387,7 +499,7 @@ export default function MacroRadarPanels({ isDark = true }) {
         </main>
 
         <aside className="mir-aside">
-          <SignalBoard scores={regime?.scores ?? todayLog?.entries?.[0]?.signalScores} evidence={regime?.supportingEvidence} />
+          <DirectiveCard directive={operatorLens.directive} latestEntry={latestEntry} />
           <WatchPanel watchLevels={regime?.watchLevels} invalidation={regime?.invalidationConditions} />
           <ArchiveRail items={archive} />
         </aside>
