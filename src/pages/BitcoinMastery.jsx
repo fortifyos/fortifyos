@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, FileText, Home, LayoutGrid, Settings, Shield, Activity, Zap } from "lucide-react";
+import { Eye, FileText, Home, LayoutGrid, Settings, Shield, Activity } from "lucide-react";
 import SpecialistShell from "../components/SpecialistShell";
 import "./bitcoin-mastery.css";
 
@@ -302,7 +302,6 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     { key: "radar", label: "Radar", icon: Eye, onClick: onMacroSentinel },
     { key: "macroIntel", label: "Macro Intel", icon: Activity, onClick: onMacroIntel },
     { key: "bitcoin", label: "Bitcoin", icon: null, onClick: null, current: true },
-    { key: "tcg", label: "TCG Radar", icon: Zap, onClick: null },
     { key: "docs", label: "Field Manual", icon: FileText, onClick: onDocs },
     { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
   ];

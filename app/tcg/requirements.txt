@@ -1,8 +1,0 @@
-fastapi
-sqlalchemy
-psycopg[binary]
-redis
-apscheduler
-pydantic
-uvicorn
-

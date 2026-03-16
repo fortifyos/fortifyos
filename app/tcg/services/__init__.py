@@ -1,2 +1,0 @@
-"""TCG Radar services."""
-

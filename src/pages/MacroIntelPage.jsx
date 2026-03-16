@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { Activity, Eye, FileText, Home, LayoutGrid, Settings, Zap } from "lucide-react";
+import { Activity, Eye, FileText, Home, LayoutGrid, Settings } from "lucide-react";
 import SpecialistShell from "../components/SpecialistShell";
 import "./macro-intel.css";
 
@@ -535,7 +535,6 @@ export default function MacroIntelPage({ onBack, onHome, onDashboard, onMacroSen
     { key: "radar", label: "Radar", icon: Eye, onClick: onMacroSentinel },
     { key: "macroIntel", label: "Macro Intel", icon: Activity, onClick: null, current: true },
     { key: "bitcoin", label: "Bitcoin", icon: null, onClick: onBitcoin },
-    { key: "tcg", label: "TCG Radar", icon: Zap, onClick: null },
     { key: "docs", label: "Field Manual", icon: FileText, onClick: onDocs },
     { key: "settings", label: "Settings", icon: Settings, onClick: onSettings },
   ];
