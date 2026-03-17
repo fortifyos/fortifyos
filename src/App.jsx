@@ -5737,23 +5737,33 @@ function DailyLawHero({ t }) {
 
   const pool = DIRECTIVES[theme.month] || DIRECTIVES.JAN;
   const directive = pool[(dayOfYear - 1) % pool.length];
+  const caution = t.warn || '#ffb800';
+  const support = t.purple || '#8b5cf6';
+  const darkMode = (t.void || '#ffffff').toLowerCase() === '#000000';
 
   return (
     <div style={{
       border: `1px solid ${t.accent}55`,
-      background: `linear-gradient(135deg, ${t.surface} 0%, ${t.accent}0A 100%)`,
-      padding: '22px 26px',
+      background: `linear-gradient(135deg, ${t.surface} 0%, ${t.accent}10 38%, ${support}08 100%)`,
+      padding: '24px 28px 22px',
       position: 'relative',
       overflow: 'hidden',
+      boxShadow: darkMode
+        ? `0 18px 42px rgba(0,0,0,0.34), inset 0 0 0 1px ${t.borderDim}`
+        : `0 18px 34px rgba(0,0,0,0.06), inset 0 0 0 1px ${t.borderDim}`,
     }}>
-      {/* Top accent bar */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${t.accent}, ${t.accent}00)` }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${t.accent}, ${support} 62%, transparent)` }} />
+      <div style={{ position: 'absolute', top: 0, right: 0, width: 240, height: 240, background: `radial-gradient(circle, ${support}20 0%, transparent 70%)`, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', left: -36, top: 42, transform: 'rotate(-90deg)', transformOrigin: 'left top', fontSize: 10, color: caution, textTransform: 'uppercase', letterSpacing: '0.32em', fontWeight: 700, opacity: 0.85 }}>
+        Cash Reserve Command
+      </div>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: darkMode ? 0.24 : 0.16, backgroundImage: `linear-gradient(${t.borderDim}55 1px, transparent 1px), linear-gradient(90deg, ${t.borderDim}33 1px, transparent 1px)`, backgroundSize: '64px 64px' }} />
 
-      {/* Meta row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14, flexWrap: 'wrap', gap: 6 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.14em', background: `${t.accent}18`, padding: '2px 7px', border: `1px solid ${t.accent}40`, alignSelf: 'flex-start' }}>
-            {directive.pillar}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 800, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.18em', background: `${t.accent}18`, padding: '4px 9px', border: `1px solid ${t.accent}40`, alignSelf: 'flex-start' }}>
+            <span style={{ color: caution }}>SECTOR</span>
+            <span>{directive.pillar}</span>
           </div>
           <div style={{ fontSize: 13, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             {theme.theme}
@@ -5764,34 +5774,45 @@ function DailyLawHero({ t }) {
         </div>
       </div>
 
-      {/* Law title */}
       <div style={{
-        fontSize: 22,
-        fontWeight: 800,
+        fontSize: 34,
+        fontWeight: 900,
         color: t.textPrimary,
-        letterSpacing: '-0.02em',
-        lineHeight: 1.15,
+        letterSpacing: '-0.04em',
+        lineHeight: 1.04,
         marginBottom: 14,
+        textTransform: 'uppercase',
+        maxWidth: 820,
       }}>
         {directive.title}
       </div>
 
-      {/* Tactical wisdom — blockquote style */}
       <div style={{
-        borderLeft: `3px solid ${t.accent}`,
-        paddingLeft: 14,
-        fontSize: 15,
+        display: 'grid',
+        gridTemplateColumns: '4px 1fr',
+        gap: 14,
+        alignItems: 'start',
+        marginBottom: 16,
+      }}>
+        <div style={{ width: 4, alignSelf: 'stretch', background: `linear-gradient(180deg, ${t.accent}, ${support})`, boxShadow: `0 0 16px ${t.accent}55` }} />
+        <div style={{
+        fontSize: 18,
         color: t.textSecondary,
-        lineHeight: 1.75,
-        marginBottom: 14,
+        lineHeight: 1.7,
         fontStyle: 'italic',
       }}>
-        {directive.tactical}
+          {directive.tactical}
+        </div>
       </div>
 
-      {/* Monthly objective */}
-      <div style={{ fontSize: 15, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-        Monthly Objective · {theme.objective}
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+          Monthly Objective · {theme.objective}
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 11, color: caution, textTransform: 'uppercase', letterSpacing: '0.14em', border: `1px solid ${caution}55`, padding: '4px 8px', background: `${caution}0f` }}>
+          <span>Alert State</span>
+          <span style={{ color: t.textPrimary }}>Discipline Required</span>
+        </div>
       </div>
     </div>
   );
@@ -6514,11 +6535,11 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     position: 'relative',
     border: `1px solid ${t.borderDim}`,
     background: isDark
-      ? `linear-gradient(180deg, ${t.panel2} 0%, ${t.panel} 100%)`
+      ? `linear-gradient(180deg, ${t.panel2} 0%, ${t.panel} 72%, ${t.surface} 100%)`
       : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`,
-    padding: '14px 14px 16px',
+    padding: '16px 16px 18px',
     overflow: 'hidden',
-    boxShadow: isDark ? `0 12px 28px rgba(0,0,0,0.28)` : `0 10px 24px rgba(0,0,0,0.06)`,
+    boxShadow: isDark ? `0 14px 36px rgba(0,0,0,0.32)` : `0 10px 24px rgba(0,0,0,0.06)`,
   };
 
   const dashboardSectionAccent = (color) => ({
@@ -6534,13 +6555,18 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
   const DashboardSection = ({ title, subtitle, tone = t.borderBright, children, compact = false }) => (
     <section style={{ ...dashboardSectionStyle, padding: compact ? '10px 10px 12px' : dashboardSectionStyle.padding }}>
       <div style={dashboardSectionAccent(tone)} />
+      <div style={{ position: 'absolute', top: 12, right: -42, transform: 'rotate(90deg)', transformOrigin: 'right top', fontSize: 9, color: `${tone}cc`, textTransform: 'uppercase', letterSpacing: '0.22em', fontWeight: 800, pointerEvents: 'none' }}>
+        Fortify Section
+      </div>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: isDark ? 0.16 : 0.09, backgroundImage: `linear-gradient(${t.borderDim}40 1px, transparent 1px), linear-gradient(90deg, ${t.borderDim}22 1px, transparent 1px)`, backgroundSize: '56px 56px' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: compact ? 10 : 14 }}>
         <div>
-          <div style={{ fontSize: 11, color: tone, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 5 }}>
-            {title}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 11, color: tone, textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 7, padding: '4px 8px', border: `1px solid ${tone}55`, background: `${tone}10`, fontWeight: 800 }}>
+            <span style={{ color: isDark ? t.warn : t.textDim }}>//</span>
+            <span>{title}</span>
           </div>
           {subtitle && (
-            <div style={{ fontSize: 12, color: t.textGhost, maxWidth: 720, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: t.textGhost, maxWidth: 720, lineHeight: 1.6 }}>
               {subtitle}
             </div>
           )}
