@@ -52,16 +52,16 @@ export default function SpecialistShell({
   return (
     <div>
       <nav
-        className="fo-pagebar fo-panel-corner"
+        className="fo-pagebar"
         style={{
           margin: "16px 24px 0",
           padding: "10px 14px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          border: `1px solid ${palette.borderColor}`,
+          border: "none",
           background: isDark ? `linear-gradient(180deg, ${palette.background} 0%, #101010 100%)` : `linear-gradient(180deg, ${palette.background} 0%, #efefef 100%)`,
-          boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32), inset 0 0 0 1px ${palette.borderColor}` : `0 12px 26px rgba(0,0,0,0.06), inset 0 0 0 1px ${palette.borderColor}`,
+          boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32)` : `0 12px 26px rgba(0,0,0,0.06)`,
         }}
       >
         <div className="fo-pagebar-left" style={{ display: "flex", alignItems: "center", gap: 10 }}>

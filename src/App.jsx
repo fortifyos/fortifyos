@@ -141,7 +141,7 @@ class AppErrorBoundary extends React.Component {
 function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onToggleTheme }) {
   const themeIconColor = isDark ? '#FFD84D' : '#8B96AE';
   return (
-    <nav className="fo-pagebar fo-panel-corner" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32), inset 0 0 0 1px ${t.borderDim}` : `0 12px 26px rgba(0,0,0,0.06), inset 0 0 0 1px ${t.borderDim}` }}>
+    <nav className="fo-pagebar" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: 'none', background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32)` : `0 12px 26px rgba(0,0,0,0.06)` }}>
       <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
         <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
@@ -8236,27 +8236,6 @@ function FortifyOSApp() {
         .fo-pagebar {
           position: relative;
         }
-        .fo-pagebar::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 2px;
-          background: linear-gradient(90deg, ${t.accent}, ${isDark ? '#ff9900' : '#d48a00'} 48%, ${t.purple || '#8b5cf6'} 100%);
-          opacity: 0.92;
-        }
-        .fo-pagebar::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          opacity: ${isDark ? 0.16 : 0.08};
-          background-image:
-            linear-gradient(${t.borderDim}44 1px, transparent 1px),
-            linear-gradient(90deg, ${t.borderDim}2a 1px, transparent 1px);
-          background-size: 72px 72px;
-        }
         .fo-page-shell {
           position: relative;
         }
@@ -8448,6 +8427,7 @@ function FortifyOSApp() {
           .dash-menu-pop { width: 180px; }
           .docs-track-switcher {
             padding: 10px 12px !important;
+            width: calc(100% - 20px) !important;
           }
           .docs-track-buttons {
             width: 100%;
@@ -8455,7 +8435,13 @@ function FortifyOSApp() {
             grid-template-columns: 1fr 1fr;
           }
           .dashboard-main {
-            padding: 62px 8px 48px !important;
+            padding: 12px 8px 48px !important;
+          }
+          .fo-page-shell {
+            padding-top: 10px !important;
+          }
+          .ms2-wrap {
+            padding: 10px 8px 24px !important;
           }
           .fortress-hero-shell {
             flex-direction: column !important;

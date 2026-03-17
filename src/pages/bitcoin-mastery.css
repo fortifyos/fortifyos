@@ -987,7 +987,7 @@
 }
 
 @media (max-width: 640px){
-  .bm-root{ padding: 20px 14px 24px; }
+  .bm-root{ padding: 10px 14px 24px; }
   .bm-topbar{ margin-bottom: 12px; }
   .bm-topbar-actions{ gap: 8px; }
   .bm-topbar-status{ font-size: 10px; padding-top: 12px; }
