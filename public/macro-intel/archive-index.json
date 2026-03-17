@@ -1,37 +1,85 @@
 [
   {
+    "date": "2026-03-16",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 2,
+    "archivePath": "archive/2026-03-16.json",
+    "archivedAt": "2026-03-17T01:14:31.374695-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-03-09",
     "regimeMode": "risk_off",
-    "dominantDrivers": ["oil_shock", "dollar_strength", "breadth_weakness"],
+    "dominantDrivers": [
+      "oil_shock",
+      "dollar_strength",
+      "breadth_weakness"
+    ],
     "entryCount": 4,
-    "tags": ["oil_shock", "risk_off", "vix_elevated", "dollar_strength"]
+    "tags": [
+      "oil_shock",
+      "risk_off",
+      "vix_elevated",
+      "dollar_strength"
+    ]
   },
   {
     "date": "2026-03-08",
     "regimeMode": "mixed",
-    "dominantDrivers": ["inflation_shock", "growth_uncertainty"],
+    "dominantDrivers": [
+      "inflation_shock",
+      "growth_uncertainty"
+    ],
     "entryCount": 4,
-    "tags": ["mixed", "inflation", "fomc_watch", "breadth_recovering"]
+    "tags": [
+      "mixed",
+      "inflation",
+      "fomc_watch",
+      "breadth_recovering"
+    ]
   },
   {
     "date": "2026-03-07",
     "regimeMode": "risk_off",
-    "dominantDrivers": ["dollar_strength", "volatility_stress"],
+    "dominantDrivers": [
+      "dollar_strength",
+      "volatility_stress"
+    ],
     "entryCount": 3,
-    "tags": ["risk_off", "dollar", "vix_spike"]
+    "tags": [
+      "risk_off",
+      "dollar",
+      "vix_spike"
+    ]
   },
   {
     "date": "2026-03-06",
     "regimeMode": "mixed",
-    "dominantDrivers": ["liquidity_pressure", "inflation_shock"],
+    "dominantDrivers": [
+      "liquidity_pressure",
+      "inflation_shock"
+    ],
     "entryCount": 4,
-    "tags": ["mixed", "liquidity", "inflation", "fomc_hold"]
+    "tags": [
+      "mixed",
+      "liquidity",
+      "inflation",
+      "fomc_hold"
+    ]
   },
   {
     "date": "2026-03-05",
     "regimeMode": "risk_on",
-    "dominantDrivers": ["liquidity_expansion", "breadth_improvement"],
+    "dominantDrivers": [
+      "liquidity_expansion",
+      "breadth_improvement"
+    ],
     "entryCount": 4,
-    "tags": ["risk_on", "breadth_confirm", "btc_leading"]
+    "tags": [
+      "risk_on",
+      "breadth_confirm",
+      "btc_leading"
+    ]
   }
 ]
