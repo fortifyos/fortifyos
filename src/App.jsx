@@ -2299,7 +2299,7 @@ npm run dev`}</pre>
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       {/* Track switcher */}
-      <div className="docs-track-switcher fo-page-shell-panel" style={{ position: 'sticky', top: 0, zIndex: 40, background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <div className="docs-track-switcher fo-page-shell-panel" style={{ position: 'sticky', top: 0, zIndex: 40, background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, border: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap', maxWidth: 780, width: 'calc(100% - 48px)', margin: '0 auto' }}>
         <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Field Manual</div>
         <div className="docs-track-buttons" style={{ display: 'flex', gap: 2 }}>
           {[{ key: 'web', label: 'Web User' }, { key: 'advanced', label: 'Advanced / Self-Hosted' }].map(opt => (
