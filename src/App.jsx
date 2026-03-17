@@ -7827,14 +7827,14 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
           return (
             <>
               <section style={{ marginBottom: 32 }}>
-                <div className="fo-page-section" style={{ padding: 0, border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <div className="fo-page-section" style={{ padding: '18px 18px 20px', border: 'none', background: 'transparent', boxShadow: 'none' }}>
                 <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Dashboard Modules</div>
                 <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 12 }}>Personal finance sections on your Dashboard</div>
                 {renderModList(dashMods)}
                 </div>
               </section>
               <section style={{ marginBottom: 32 }}>
-                <div className="fo-page-section" style={{ padding: 0, border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <div className="fo-page-section" style={{ padding: '18px 18px 20px', border: 'none', background: 'transparent', boxShadow: 'none' }}>
                 <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Radar Modules</div>
                 <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 12 }}>Sections visible on the Pre-Market Radar page</div>
                 {renderModList(radarMods)}
