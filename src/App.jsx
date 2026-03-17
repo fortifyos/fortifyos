@@ -7237,7 +7237,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
       <div
         className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`}
-        style={{ maxWidth: 1180, margin: '0 auto', padding: '18px 20px 32px', '--primary': confColor }}
+        style={{ maxWidth: 1180, margin: '0 auto', padding: '6px 20px 32px', '--primary': confColor }}
       >
 
         {/* ── TACTICAL HUD BAR ─────────────────────────────────────────────── */}
@@ -8441,7 +8441,7 @@ function FortifyOSApp() {
             padding-top: 10px !important;
           }
           .ms2-wrap {
-            padding: 10px 8px 24px !important;
+            padding: 4px 8px 24px !important;
           }
           .fortress-hero-shell {
             flex-direction: column !important;
