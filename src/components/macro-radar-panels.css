@@ -40,12 +40,12 @@
 
 .mir-header,
 .mir-body {
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .mir-header {
-  padding-top: 16px;
+  padding-top: 18px;
 }
 
 .mir-hud {
@@ -150,16 +150,16 @@
 .mir-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 16px;
+  gap: 18px;
   align-items: start;
-  padding-bottom: 16px;
+  padding-bottom: 20px;
 }
 
 .mir-decision-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .mir-card {
@@ -182,7 +182,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px 8px;
+  padding: 11px 16px 9px;
   border-bottom: 1px solid var(--mir-border);
   color: var(--mir-dim);
   font-size: 10px;
@@ -198,7 +198,7 @@
 }
 
 .mir-card-body {
-  padding: 12px 14px;
+  padding: 14px 16px;
 }
 
 .mir-operator-title {
@@ -260,7 +260,7 @@
 }
 
 .mir-entry-body {
-  padding: 0 14px 14px;
+  padding: 0 16px 16px;
   display: grid;
   gap: 10px;
 }
@@ -326,11 +326,25 @@
 .mir-archive-count { color: var(--mir-ghost); font-size: 11px; }
 
 @media (max-width: 980px) {
+  .mir-header,
+  .mir-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   .mir-body {
     grid-template-columns: 1fr;
   }
 
   .mir-decision-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .mir-header,
+  .mir-body {
+    padding-left: 14px;
+    padding-right: 14px;
   }
 }

@@ -2281,9 +2281,9 @@ npm run dev`}</pre>
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       {/* Track switcher */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 40, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <div className="docs-track-switcher" style={{ position: 'sticky', top: 0, zIndex: 40, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Field Manual</div>
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div className="docs-track-buttons" style={{ display: 'flex', gap: 2 }}>
           {[{ key: 'web', label: 'Web User' }, { key: 'advanced', label: 'Advanced / Self-Hosted' }].map(opt => (
             <button key={opt.key} onClick={() => setTrackPersist(opt.key)} style={{ fontFamily: mono, fontSize: 12, fontWeight: 700, padding: '7px 16px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em', border: `1px solid ${track === opt.key ? accent : t.borderDim}`, background: track === opt.key ? `${accent}18` : 'none', color: track === opt.key ? accent : t.textDim, transition: 'all 0.18s' }}>
               {opt.label}
@@ -4550,7 +4550,7 @@ function EFundMod({ latest, visible, t }) {
     </div>
 
     {/* ── Compact data row ── */}
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+    <div className="efund-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
       <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Balance</div><div style={{ fontSize: 15, fontWeight: 700 }}><AnimNum value={bal} /></div></div>
       <div>
         <div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -4563,6 +4563,94 @@ function EFundMod({ latest, visible, t }) {
       <div><div style={{ color: t.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Next</div><div style={{ fontSize: 11, color: t.accentDim }}>{labels[Math.min(phase, 3)]}</div></div>
     </div>
   </Card>);
+}
+
+function FortressOfCashHero({ latest, t }) {
+  const balance = Number(latest?.eFund?.balance || 0);
+  const monthly = monthlySpendBaseline(latest);
+  const runway = runwayDaysFromLatest(latest);
+  const targets = efundTargets(monthly);
+  const phase = (monthly > 0 && balance >= targets[3]) ? 4 : (monthly > 0 && balance >= targets[2]) ? 3 : (monthly > 0 && balance >= targets[1]) ? 2 : balance >= (targets[0] || 1000) ? 1 : 0;
+  const nextTarget = targets[Math.min(phase, 3)] || 1000;
+  const tone = runway >= 90 ? t.accent : runway >= 30 ? t.warn : t.danger;
+  const elevatedSurface = (t.void || '#ffffff').replace('#', '').slice(0, 2).toLowerCase() === '00' ? t.elevated : t.surface;
+  const toneSoft = runway >= 90 ? `${t.accent}14` : runway >= 30 ? `${t.warn}12` : `${t.danger}12`;
+  const accentAlt = runway >= 90 ? t.purple : t.accent;
+  const targetPct = nextTarget > 0 ? Math.max(0, Math.min(100, (balance / nextTarget) * 100)) : 0;
+  const directive = runway >= 90
+    ? 'Optionality is alive. Protect it.'
+    : runway >= 30
+      ? 'Cash is forming, but not yet fortress-grade.'
+      : 'Every spare dollar should strengthen this wall.';
+
+  return (
+    <div
+      style={{
+        marginBottom: 12,
+        border: `1px solid ${tone}55`,
+        background: `linear-gradient(135deg, ${t.panel} 0%, ${toneSoft} 55%, ${t.panel} 100%)`,
+        position: 'relative',
+        overflow: 'hidden',
+        padding: '20px 22px 18px',
+        boxShadow: `inset 0 0 0 1px ${t.borderDim}, 0 0 0 1px ${tone}12`,
+      }}
+    >
+      <div style={{ position: 'absolute', inset: '0 auto auto 0', width: '100%', height: 2, background: tone, opacity: 0.7 }} />
+      <div style={{ position: 'absolute', top: 0, right: 0, width: 180, height: 180, background: `radial-gradient(circle, ${accentAlt}18 0%, transparent 72%)`, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.28, backgroundImage: `linear-gradient(${t.borderDim}55 1px, transparent 1px), linear-gradient(90deg, ${t.borderDim}33 1px, transparent 1px)`, backgroundSize: '48px 48px' }} />
+      <div className="fortress-hero-shell" style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div className="fortress-hero-copy" style={{ minWidth: 0 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 10px', border: `1px solid ${tone}55`, color: tone, background: toneSoft, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 700 }}>
+            <span style={{ color: accentAlt }}>SECTOR-03</span>
+            <span>Fortress of Cash</span>
+          </div>
+          <div style={{ marginTop: 12, fontSize: 34, lineHeight: 1.02, color: t.textPrimary, fontWeight: 900, letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
+            {directive}
+          </div>
+          <div style={{ marginTop: 8, fontSize: 11, color: accentAlt, textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 700 }}>
+            Liquidity Architecture // Reserve Integrity // Optionality Retention
+          </div>
+          <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.7, color: t.textSecondary, maxWidth: 760 }}>
+            Emergency liquidity is what buys time when policy, income, or markets turn against you. This is the capital reserve that keeps one bad month from becoming a structural mistake.
+          </div>
+          <div style={{ marginTop: 14, display: 'grid', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.14em' }}>Wall Integrity</span>
+              <div style={{ flex: '1 1 220px', minWidth: 140, height: 8, border: `1px solid ${t.borderDim}`, background: elevatedSurface, position: 'relative' }}>
+                <div style={{ height: '100%', width: `${targetPct}%`, background: `linear-gradient(90deg, ${tone}, ${accentAlt})`, boxShadow: `0 0 12px ${tone}55` }} />
+              </div>
+              <span style={{ fontSize: 11, color: tone, fontWeight: 700, minWidth: 48, textAlign: 'right' }}>{Math.round(targetPct)}%</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: t.textGhost }}>
+              <span>Current Phase P{phase}</span>
+              <span style={{ color: tone }}>Target {fmt(nextTarget)}</span>
+              <span>{fmt(balance)} deployed</span>
+            </div>
+          </div>
+        </div>
+        <div className="fortress-hero-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(112px, 1fr))', gap: 10, minWidth: 'min(100%, 360px)', flex: '1 1 360px' }}>
+          <div style={{ border: `1px solid ${tone}55`, background: elevatedSurface, padding: '11px 12px', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '100%', background: tone }} />
+            <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Runway</div>
+            <div style={{ marginTop: 6, fontSize: 24, fontWeight: 900, color: tone }}>{runway}</div>
+            <div style={{ marginTop: 2, fontSize: 11, color: t.textDim }}>days protected</div>
+          </div>
+          <div style={{ border: `1px solid ${accentAlt}55`, background: elevatedSurface, padding: '11px 12px', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '100%', background: accentAlt }} />
+            <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Balance</div>
+            <div style={{ marginTop: 6, fontSize: 24, fontWeight: 900, color: t.textPrimary }}>{fmt(balance)}</div>
+            <div style={{ marginTop: 2, fontSize: 11, color: t.textDim }}>monthly burn {fmt(monthly)}</div>
+          </div>
+          <div style={{ border: `1px solid ${t.accent}55`, background: elevatedSurface, padding: '11px 12px', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '100%', background: t.accent }} />
+            <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Next Wall</div>
+            <div style={{ marginTop: 6, fontSize: 24, fontWeight: 900, color: t.accent }}>P{phase + 1 > 4 ? 4 : phase + 1}</div>
+            <div style={{ marginTop: 2, fontSize: 11, color: t.textDim }}>{fmt(nextTarget)} target</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function KnoxTerminalMod({ latest, visible, t }) {
@@ -6464,7 +6552,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 
   return (<div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: "'JetBrains Mono', monospace", paddingBottom: 40 }}>
     <AppTopbar t={t} isDark={isDark} menuOpen={quickMenuOpen} setMenuOpen={setQuickMenuOpen} menuRef={quickMenuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
-    <main className="dashboard-main" style={{ maxWidth: 1240, margin: '0 auto', padding: '22px 14px 64px' }}>
+    <main className="dashboard-main" style={{ maxWidth: 1180, margin: '0 auto', padding: '18px 20px 64px' }}>
       {/* ═══ DAILY LAW HERO — Right below greeting, above all modules ═══ */}
       <div style={{ marginBottom: 16 }}>
         <DailyLawHero t={t} />
@@ -6524,6 +6612,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
             subtitle="Calendar, bills, and emergency coverage belong together because this is where short-term mistakes usually begin."
             tone={t.purple}
           >
+            {vis.includes('eFund') && <FortressOfCashHero latest={latest} t={t} />}
             <div className="bill-cal-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
               <BillCalendarMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
               <PlannerMod latest={latest} visible={vis.includes('planner')} t={t} payFrequencyOverride={settings?.payFrequency} />
@@ -7096,7 +7185,10 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary }}>
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
-      <div className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`} style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 16px 28px', '--primary': confColor }}>
+      <div
+        className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`}
+        style={{ maxWidth: 1180, margin: '0 auto', padding: '18px 20px 32px', '--primary': confColor }}
+      >
 
         {/* ── TACTICAL HUD BAR ─────────────────────────────────────────────── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: isDark ? '#060c06' : '#f0f7f0', border: `1px solid ${confColor}44`, marginBottom: 8, flexWrap: 'wrap', gap: 8, fontFamily: "'JetBrains Mono', monospace" }}>
@@ -7118,7 +7210,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
-        <div style={{ marginTop: 12, border: `1px solid ${confColor}55`, background: t.panel, padding: '22px 26px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
+        <div style={{ marginTop: 14, border: `1px solid ${confColor}55`, background: t.panel, padding: '24px 28px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.2s both' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: confColor, opacity: 0.55 }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
             <div>
@@ -7129,7 +7221,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                 {radarTheme.theme}
               </div>
             </div>
-            <div style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
+            <div className="radar-brief-meta" style={{ fontSize: 13, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
               Fed Command Brief · Day {dayOfYear}
             </div>
           </div>
@@ -8010,11 +8102,37 @@ function FortifyOSApp() {
     <div className={`fo-os-shell ${isDark ? 'fo-os-dark' : 'fo-os-light'}`} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; }
-        html { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: none; }
-        body { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace; }
-        #root { min-height: 100%; min-height: 100dvh; width: 100%; overflow-x: hidden; }
+        html {
+          height: 100%;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior-y: none;
+          background: ${t.void};
+        }
+        body {
+          min-height: 100%;
+          min-height: 100dvh;
+          width: 100%;
+          overflow-x: hidden;
+          font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+          background: ${t.void};
+          color: ${t.textPrimary};
+        }
+        #root {
+          min-height: 100%;
+          min-height: 100dvh;
+          width: 100%;
+          overflow-x: hidden;
+          background: ${t.void};
+        }
         button, input, select, textarea, option { font-family: 'JetBrains Mono', 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace; }
-        .fo-os-shell { position: relative; isolation: isolate; }
+        .fo-os-shell {
+          position: relative;
+          isolation: isolate;
+          min-height: 100dvh;
+          background: ${t.void};
+          color: ${t.textPrimary};
+        }
         .fo-panel-corner { position: relative; }
         .fo-panel-corner::before, .fo-panel-corner::after {
           content: '+'; position: absolute; font-size: 10px; line-height: 1; color: ${isDark ? 'rgba(255,153,0,0.42)' : 'rgba(232,133,15,0.48)'}; font-family: 'JetBrains Mono', monospace;
@@ -8140,10 +8258,36 @@ function FortifyOSApp() {
         .footer-stat-cell { border-right: 1px solid ${t.borderDim}; }
         .footer-stat-cell:last-child { border-right: none; }
         input, select, textarea { max-width: 100%; }
-        @media (max-width: 768px) {
+@media (max-width: 768px) {
           .dash-menu-pop { width: 180px; }
+          .docs-track-switcher {
+            padding: 10px 12px !important;
+          }
+          .docs-track-buttons {
+            width: 100%;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+          }
           .dashboard-main {
             padding: 62px 8px 48px !important;
+          }
+          .fortress-hero-shell {
+            flex-direction: column !important;
+          }
+          .fortress-hero-copy,
+          .fortress-hero-metrics {
+            width: 100% !important;
+            min-width: 0 !important;
+          }
+          .fortress-hero-metrics {
+            grid-template-columns: 1fr !important;
+          }
+          .efund-stats-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .radar-brief-meta {
+            white-space: normal !important;
+            line-height: 1.35;
           }
           .status-rail {
             flex-direction: column !important;
@@ -8211,6 +8355,7 @@ function FortifyOSApp() {
           .radar-sim-summary,
           .radar-debrief-stats {
             grid-template-columns: minmax(0, 1fr) !important;
+            min-width: 0 !important;
           }
           .radar-pressure-btn {
             grid-template-columns: minmax(0, 1fr) !important;
