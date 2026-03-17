@@ -15,6 +15,7 @@ export default function SpecialistShell({
   dimColor,
   accentColor,
 }) {
+  const themeIconColor = isDark ? "#FFD84D" : "#8B96AE";
   const palette = {
     borderColor: borderColor ?? (isDark ? "#232323" : "#CECECE"),
     background: background ?? (isDark ? "#0a0a0a" : "#F7F7F7"),
@@ -51,7 +52,7 @@ export default function SpecialistShell({
   return (
     <div>
       <nav
-        className="fo-pagebar"
+        className="fo-pagebar fo-panel-corner"
         style={{
           margin: "16px 24px 0",
           padding: "10px 14px",
@@ -59,7 +60,8 @@ export default function SpecialistShell({
           justifyContent: "space-between",
           alignItems: "center",
           border: `1px solid ${palette.borderColor}`,
-          background: palette.background,
+          background: isDark ? `linear-gradient(180deg, ${palette.background} 0%, #101010 100%)` : `linear-gradient(180deg, ${palette.background} 0%, #efefef 100%)`,
+          boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32), inset 0 0 0 1px ${palette.borderColor}` : `0 12px 26px rgba(0,0,0,0.06), inset 0 0 0 1px ${palette.borderColor}`,
         }}
       >
         <div className="fo-pagebar-left" style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -173,19 +175,21 @@ export default function SpecialistShell({
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             style={{
-              background: "none",
-              border: `1px solid ${palette.borderColor}`,
-              borderRadius: 8,
-              width: 36,
-              height: 36,
+              background: "transparent",
+              border: "none",
+              borderRadius: 0,
+              width: 20,
+              height: 20,
+              padding: 0,
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              color: palette.dimColor,
+              color: themeIconColor,
+              flexShrink: 0,
             }}
           >
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+            {isDark ? <Sun size={16} strokeWidth={2.2} fill="currentColor" /> : <Moon size={16} strokeWidth={2.2} fill="currentColor" />}
           </button>
         </div>
       </nav>

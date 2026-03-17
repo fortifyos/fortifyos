@@ -312,6 +312,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       isDark={isDark}
       onToggleTheme={onToggleTheme}
       navItems={navItems}
+      accentColor="#f7931a"
       statusLabel={`Last Sync ${lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}`}
     >
     <div className={`bm-root ${isDark ? "bm-dark" : "bm-light"}`}>

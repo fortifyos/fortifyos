@@ -139,17 +139,35 @@ class AppErrorBoundary extends React.Component {
    GENERIC APP TOPBAR (Unified Header)
    ========================================================================= */
 function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onToggleTheme }) {
+  const themeIconColor = isDark ? '#FFD84D' : '#8B96AE';
   return (
-    <nav className="fo-pagebar" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: t.surface }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <nav className="fo-pagebar fo-panel-corner" style={{ margin: '16px 24px 0', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${t.borderDim}`, background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32), inset 0 0 0 1px ${t.borderDim}` : `0 12px 26px rgba(0,0,0,0.06), inset 0 0 0 1px ${t.borderDim}` }}>
+      <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
         <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button onClick={onToggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} style={{ background: 'none', border: `1px solid ${t.borderDim}`, borderRadius: 8, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: t.textSecondary }}>
-          {isDark ? <Sun size={15} /> : <Moon size={15} />}
+      <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button
+          onClick={onToggleTheme}
+          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            borderRadius: 0,
+            width: 20,
+            height: 20,
+            padding: 0,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: themeIconColor,
+            flexShrink: 0,
+          }}
+        >
+          {isDark ? <Sun size={16} strokeWidth={2.2} fill="currentColor" /> : <Moon size={16} strokeWidth={2.2} fill="currentColor" />}
         </button>
       </div>
     </nav>
@@ -1697,11 +1715,11 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   const mono = "'JetBrains Mono', monospace";
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
+    <div className="fo-home-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       {/* ═══ SECTION 01 — HERO ═══ */}
-      <section style={{ padding: '72px 24px 64px', borderBottom: `1px solid ${t.borderDim}` }}>
+      <section className="fo-shared-section" style={{ padding: '72px 24px 64px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '6px 12px', marginBottom: 28, fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: mono }}>
             Local-first · Privacy-enforced · Debt-elimination protocol
@@ -1737,7 +1755,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       </section>
 
       {/* ═══ SECTION 02 — HOW IT WORKS ═══ */}
-      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+      <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>How It Works</div>
           <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Three steps. No setup required.</h2>
@@ -1761,7 +1779,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       </section>
 
       {/* ═══ SECTION 03 — WHAT YOU GET ═══ */}
-      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+      <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>What You Get</div>
           <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Four outcomes. Not a feature list.</h2>
@@ -1785,7 +1803,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       </section>
 
       {/* ═══ SECTION 04 — TWO PATHS ═══ */}
-      <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
+      <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Two Paths</div>
           <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Start now or go deep.</h2>
@@ -2281,7 +2299,7 @@ npm run dev`}</pre>
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       {/* Track switcher */}
-      <div className="docs-track-switcher" style={{ position: 'sticky', top: 0, zIndex: 40, background: t.surface, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <div className="docs-track-switcher fo-page-shell-panel" style={{ position: 'sticky', top: 0, zIndex: 40, background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Field Manual</div>
         <div className="docs-track-buttons" style={{ display: 'flex', gap: 2 }}>
           {[{ key: 'web', label: 'Web User' }, { key: 'advanced', label: 'Advanced / Self-Hosted' }].map(opt => (
@@ -2292,9 +2310,9 @@ npm run dev`}</pre>
         </div>
       </div>
 
-      <div style={sty.container}>
+      <div className="fo-page-shell" style={sty.container}>
         {/* Header */}
-        <div style={{ marginBottom: 40 }}>
+        <div className="fo-page-hero" style={{ marginBottom: 40 }}>
           <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 10 }}>
             {track === 'web' ? 'Web User Track — No setup required' : 'Advanced Track — Self-hosted installation'}
           </div>
@@ -2313,10 +2331,11 @@ npm run dev`}</pre>
 
         {/* Section list */}
         {allSections.map((section) => (
-          <div key={section.id} id={`doc-${section.id}`} style={{ marginBottom: 8 }}>
+          <div key={section.id} id={`doc-${section.id}`} style={{ marginBottom: 10 }}>
             <button
               onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
-              style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', background: t.surface, border: `1px solid ${activeSection === section.id ? accent : t.borderDim}`, cursor: 'pointer', textAlign: 'left', fontFamily: mono, transition: 'all 0.18s' }}
+              className="fo-page-section-toggle"
+              style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, border: `1px solid ${activeSection === section.id ? accent : t.borderDim}`, cursor: 'pointer', textAlign: 'left', fontFamily: mono, transition: 'all 0.18s' }}
             >
               <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                 <span style={{ fontSize: 11, color: accent, letterSpacing: '0.12em' }}>{section.num}</span>
@@ -2325,7 +2344,7 @@ npm run dev`}</pre>
               <ChevronDown size={14} style={{ color: t.textDim, transform: activeSection === section.id ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', flexShrink: 0 }} />
             </button>
             {activeSection === section.id && (
-              <div style={{ padding: '24px 18px 28px', background: t.panel, border: `1px solid ${accent}`, borderTop: 'none' }}>
+              <div className="fo-page-section-body" style={{ padding: '24px 18px 28px', background: isDark ? `linear-gradient(180deg, ${t.panel} 0%, ${t.surface} 100%)` : `linear-gradient(180deg, ${t.elevated} 0%, ${t.surface} 100%)`, border: `1px solid ${accent}`, borderTop: 'none' }}>
                 {section.content()}
               </div>
             )}
@@ -3047,10 +3066,10 @@ function UniversalSync({ open, onClose, onSync, t }) {
   if (!open) return null;
 
   return (
-    <div className="sync-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }} onClick={onClose}>
-      <div className="sync-shell" style={{ background: t.surface, border: `1px solid ${t.borderMid}`, maxWidth: 1100, width: 'min(98vw, 1100px)', maxHeight: '94vh', overflowY: 'auto', overflowX: 'hidden', borderRadius: 6, boxSizing: 'border-box', minWidth: 0 }} onClick={e => e.stopPropagation()}>
+    <div className="sync-overlay" style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.92)' : 'rgba(18,18,18,0.18)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8, backdropFilter: 'blur(10px)' }} onClick={onClose}>
+      <div className="sync-shell fo-panel-corner" style={{ background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, border: `1px solid ${t.borderMid}`, maxWidth: 1100, width: 'min(98vw, 1100px)', maxHeight: '94vh', overflowY: 'auto', overflowX: 'hidden', borderRadius: 6, boxSizing: 'border-box', minWidth: 0, boxShadow: isDark ? `0 28px 72px rgba(0,0,0,0.55), inset 0 0 0 1px ${t.borderDim}` : `0 18px 42px rgba(0,0,0,0.12), inset 0 0 0 1px ${t.borderDim}`, position: 'relative' }} onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div style={{ padding: '14px 16px', borderBottom: `1px solid ${t.borderDim}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: t.elevated }}>
+        <div className="sync-header" style={{ padding: '14px 16px', borderBottom: `1px solid ${t.borderDim}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isDark ? `linear-gradient(90deg, ${t.elevated} 0%, ${t.panel} 60%, ${t.purple || '#8b5cf6'}10 100%)` : `linear-gradient(90deg, ${t.elevated} 0%, ${t.surface} 100%)`, position: 'relative', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Database size={14} style={{ color: t.accent }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: t.textPrimary }}>Universal Sync Terminal</span>
@@ -3058,7 +3077,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
           <button type="button" aria-label="Close" onClick={onClose} style={{ background: 'transparent', border: 'none', padding: 0, margin: 0, cursor: 'pointer' }}><X size={16} style={{ color: t.textDim }} /></button>
         </div>
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: `1px solid ${t.borderDim}` }}>
+        <div className="sync-tabs" style={{ display: 'flex', borderBottom: `1px solid ${t.borderDim}`, position: 'relative', background: isDark ? `${t.panel}cc` : t.surface }}>
           {[{ k: 'statement', l: 'File Import' }, { k: 'guided', l: 'Manual' }].map(tb => (
             <button key={tb.k} onClick={() => { setTab(tb.k); setError(''); setParsedPreview(null); }} style={{
               flex: 1, padding: 10, background: 'none', border: 'none', cursor: 'pointer',
@@ -3102,6 +3121,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
 
               {/* Drag/drop area */}
               <div
+                className="sync-dropzone"
                 onDrop={e => {
                   e.preventDefault(); setDragOver(false);
                   const fs = Array.from(e.dataTransfer.files || []);
@@ -3120,9 +3140,13 @@ function UniversalSync({ open, onClose, onSync, t }) {
                   border: `2px dashed ${dragOver ? t.accent : t.borderMid}`,
                   borderRadius: 8,
                   padding: 20,
-                  background: dragOver ? t.accentMuted : t.void,
+                  background: dragOver
+                    ? (isDark ? `linear-gradient(135deg, ${t.accent}18 0%, ${t.purple || '#8b5cf6'}10 100%)` : `${t.accent}12`)
+                    : (isDark ? `linear-gradient(135deg, ${t.void} 0%, ${t.panel} 100%)` : `linear-gradient(135deg, ${t.surface} 0%, ${t.elevated} 100%)`),
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   gap: 8, cursor: 'pointer', transition: 'all 0.2s', minHeight: 100,
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
                 {processing
@@ -3137,7 +3161,7 @@ function UniversalSync({ open, onClose, onSync, t }) {
               {/* Logs */}
               <div style={{ display: 'grid', gap: 6 }}>
                 <div style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: t.textDim }}>Parse Log</div>
-                <div style={{
+                <div className="sync-log-panel" style={{
                   padding: 12, borderRadius: 16, border: `1px solid ${t.borderDim}`, background: t.input,
                   fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: t.textDim,
                   overflowX: 'hidden', width: '100%', boxSizing: 'border-box',
@@ -5948,10 +5972,10 @@ function DirectiveMod({ visible, latest, t }) {
       {/* Name row — full width, always truly centered regardless of stage name length */}
       <div style={{ textAlign: 'center', padding: '8px 16px 4px', fontSize: 15, fontWeight: 700, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{meta.name}</div>
       {/* Stage number + mode + dots row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px', borderBottom: `1px solid ${t.borderDim}` }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: stageColor }}>{stage}</span>
-        <div style={{ fontSize: 12, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', padding: '0 16px 8px', borderBottom: `1px solid ${t.borderDim}`, columnGap: 8 }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: stageColor, justifySelf: 'start' }}>{stage}</span>
+        <div style={{ fontSize: 12, color: stageColor, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap', textAlign: 'center' }}>{isDefense ? '🛡 Protecting basics' : stage === 3 ? '🔓 Paying off debt' : '📈 Growing wealth'}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, justifySelf: 'end' }}>
           <span style={{ fontSize: 11, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>{stage} / 7</span>
           <div style={{ width: 80, height: 6, background: t.borderDim, borderRadius: 3, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${(stage / 7) * 100}%`, background: `linear-gradient(90deg, ${t.warn} 0%, ${t.accent} 100%)`, borderRadius: 3, transition: 'width 0.8s ease-out' }} />
@@ -7762,10 +7786,10 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
       <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
 
       {/* Page content */}
-      <main style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 60px' }}>
+      <main className="fo-page-shell" style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 60px' }}>
 
         {/* ── THEME ── */}
-        <section style={{ marginBottom: 32 }}>
+        <section className="fo-page-section" style={{ marginBottom: 32 }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Theme</div>
           <div onClick={onToggleTheme} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: t.surface, border: `1px solid ${t.borderDim}`, cursor: 'pointer' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
@@ -7803,21 +7827,25 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
           return (
             <>
               <section style={{ marginBottom: 32 }}>
+                <div className="fo-page-section" style={{ padding: 0, border: 'none', background: 'transparent', boxShadow: 'none' }}>
                 <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Dashboard Modules</div>
                 <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 12 }}>Personal finance sections on your Dashboard</div>
                 {renderModList(dashMods)}
+                </div>
               </section>
               <section style={{ marginBottom: 32 }}>
+                <div className="fo-page-section" style={{ padding: 0, border: 'none', background: 'transparent', boxShadow: 'none' }}>
                 <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Radar Modules</div>
                 <div style={{ fontSize: 15, color: t.textGhost, marginBottom: 12 }}>Sections visible on the Pre-Market Radar page</div>
                 {renderModList(radarMods)}
+                </div>
               </section>
             </>
           );
         })()}
 
         {/* ── PAY SCHEDULE ── */}
-        <section style={{ marginBottom: 32 }}>
+        <section className="fo-page-section" style={{ marginBottom: 32 }}>
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pay Schedule</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
             {['WEEKLY', 'BIWEEKLY'].map(opt => {
@@ -7833,7 +7861,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
         </section>
 
         {/* ── DATA ── */}
-        <section>
+        <section className="fo-page-section">
           <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Data</div>
           <button onClick={onImport} style={{ width: '100%', padding: '10px 16px', background: 'none', border: `1px solid ${t.borderDim}`, color: t.textSecondary, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = t.borderMid}
@@ -8205,7 +8233,136 @@ function FortifyOSApp() {
         .fo-os-shell .fortify-corner-cross.tl { left: 8px; top: 8px; }
         .fo-os-shell .fortify-corner-cross.br { right: 8px; bottom: 8px; transform: rotate(180deg); }
         .fo-os-shell .fortify-corner-cross.bl { left: 8px; bottom: 8px; transform: rotate(-90deg); }
-        
+        .fo-pagebar {
+          position: relative;
+        }
+        .fo-pagebar::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(90deg, ${t.accent}, ${isDark ? '#ff9900' : '#d48a00'} 48%, ${t.purple || '#8b5cf6'} 100%);
+          opacity: 0.92;
+        }
+        .fo-pagebar::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: ${isDark ? 0.16 : 0.08};
+          background-image:
+            linear-gradient(${t.borderDim}44 1px, transparent 1px),
+            linear-gradient(90deg, ${t.borderDim}2a 1px, transparent 1px);
+          background-size: 72px 72px;
+        }
+        .fo-page-shell {
+          position: relative;
+        }
+        .fo-page-shell::before {
+          content: '';
+          position: absolute;
+          inset: 8px 0 auto 0;
+          height: 1px;
+          opacity: ${isDark ? 0.28 : 0.16};
+          background: linear-gradient(90deg, transparent, ${t.purple || '#8b5cf6'} 25%, ${t.accent} 58%, transparent);
+          pointer-events: none;
+        }
+        .fo-page-hero,
+        .fo-page-section,
+        .fo-shared-section {
+          position: relative;
+          overflow: hidden;
+        }
+        .fo-page-hero::after,
+        .fo-page-section::after,
+        .fo-shared-section::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: ${isDark ? 0.11 : 0.05};
+          background-image:
+            linear-gradient(${t.borderDim}40 1px, transparent 1px),
+            linear-gradient(90deg, ${t.borderDim}22 1px, transparent 1px);
+          background-size: 64px 64px;
+        }
+        .fo-shared-section {
+          background:
+            linear-gradient(180deg, ${isDark ? `${t.surface}55` : `${t.surface}dd`} 0%, transparent 100%);
+          box-shadow: ${isDark ? `inset 0 1px 0 ${t.borderDim}, 0 12px 32px rgba(0,0,0,0.18)` : `inset 0 1px 0 ${t.borderDim}, 0 8px 20px rgba(0,0,0,0.04)`};
+        }
+        .fo-page-hero {
+          padding: 24px 24px 22px;
+          border: 1px solid ${t.borderDim};
+          background: ${isDark ? `linear-gradient(135deg, ${t.surface} 0%, ${t.panel} 55%, ${t.purple || '#8b5cf6'}10 100%)` : `linear-gradient(135deg, ${t.surface} 0%, ${t.elevated} 72%, ${t.warn}08 100%)`};
+          box-shadow: ${isDark ? `0 16px 36px rgba(0,0,0,0.24)` : `0 10px 22px rgba(0,0,0,0.05)`};
+        }
+        .fo-page-hero::before,
+        .fo-page-section::before,
+        .fo-shared-section::before,
+        .docs-track-switcher::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(90deg, ${t.accent}, ${isDark ? '#ff9900' : '#d48a00'} 54%, transparent);
+          opacity: 0.9;
+          pointer-events: none;
+        }
+        .fo-page-section {
+          padding: 18px 18px 20px;
+          border: 1px solid ${t.borderDim};
+          background: ${isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`};
+          box-shadow: ${isDark ? `0 14px 32px rgba(0,0,0,0.18)` : `0 8px 18px rgba(0,0,0,0.04)`};
+        }
+        .fo-page-shell-panel {
+          box-shadow: ${isDark ? `0 12px 28px rgba(0,0,0,0.24)` : `0 8px 18px rgba(0,0,0,0.04)`};
+          position: relative;
+          overflow: hidden;
+        }
+        .fo-page-section-toggle {
+          position: relative;
+          overflow: hidden;
+          box-shadow: ${isDark ? `0 10px 24px rgba(0,0,0,0.16)` : `0 6px 14px rgba(0,0,0,0.03)`};
+        }
+        .fo-page-section-body {
+          position: relative;
+          overflow: hidden;
+          box-shadow: ${isDark ? `0 14px 32px rgba(0,0,0,0.18)` : `0 8px 18px rgba(0,0,0,0.04)`};
+        }
+        .sync-shell::before,
+        .sync-header::before,
+        .sync-tabs::before,
+        .sync-dropzone::before,
+        .sync-log-panel::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(90deg, ${t.accent}, ${isDark ? '#ff9900' : '#d48a00'} 54%, ${t.purple || '#8b5cf6'} 100%);
+          opacity: 0.88;
+          pointer-events: none;
+        }
+        .sync-shell::after,
+        .sync-dropzone::after,
+        .sync-log-panel::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: ${isDark ? 0.12 : 0.05};
+          background-image:
+            linear-gradient(${t.borderDim}38 1px, transparent 1px),
+            linear-gradient(90deg, ${t.borderDim}22 1px, transparent 1px);
+          background-size: 56px 56px;
+        }
+
 /* Responsive layout */
 .fo-main { padding-left: 14px; padding-right: 14px; }
 @media (max-width: 980px) {
@@ -8226,6 +8383,9 @@ function FortifyOSApp() {
 .fo-pagebar-left,
 .fo-pagebar-right,
 .fo-pagebar-title { min-width: 0; }
+.fo-pagebar-left { grid-column: 1; }
+.fo-pagebar-title { grid-column: 2; justify-self: center; text-align: center; }
+.fo-pagebar-right { grid-column: 3; justify-self: end; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
