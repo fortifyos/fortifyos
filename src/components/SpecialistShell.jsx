@@ -54,7 +54,7 @@ export default function SpecialistShell({
       <nav
         className="fo-pagebar"
         style={{
-          margin: "16px 24px 0",
+          margin: "0 24px",
           padding: "10px 14px",
           display: "flex",
           justifyContent: "space-between",
