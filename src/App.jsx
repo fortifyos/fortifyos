@@ -2355,7 +2355,7 @@ npm run dev`}</pre>
   );
 }
 
-function UniversalSync({ open, onClose, onSync, t }) {
+function UniversalSync({ open, onClose, onSync, t, isDark }) {
   const [tab, setTab] = useState('statement');
   const [logs, setLogs] = useState([]);
   const [processing, setProcessing] = useState(false);
@@ -8576,7 +8576,7 @@ function FortifyOSApp() {
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
       {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
-      <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} />
+      <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} isDark={isDark} />
     </div>
   );
 }
