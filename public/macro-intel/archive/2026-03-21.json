@@ -1,11 +1,11 @@
 {
-  "date": "2026-03-23",
-  "status": "active",
+  "date": "2026-03-21",
+  "status": "archived",
   "entries": [
     {
       "session": "evening_wrap",
       "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-03-23T01:48:48.862869-04:00",
+      "timestamp": "2026-03-21T00:54:53.619084-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -29,7 +29,7 @@
     {
       "session": "global_markets",
       "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-03-23T04:39:03.172539-04:00",
+      "timestamp": "2026-03-21T03:46:45.586281-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -53,7 +53,7 @@
     {
       "session": "global_markets",
       "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-03-23T07:33:36.546512-04:00",
+      "timestamp": "2026-03-21T05:56:56.168314-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -77,7 +77,31 @@
     {
       "session": "pre_market",
       "sessionLabel": "Pre-Market (08:00 ET)",
-      "timestamp": "2026-03-23T11:40:23.936257-04:00",
+      "timestamp": "2026-03-21T09:55:05.854636-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.5,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 50%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Net Fed Liquidity neutral (score: +0); Inflation Pressure neutral (score: +0).",
+      "crossAssetConnections": [
+        "Mixed signals across dimensions — no strong directional confirmation"
+      ],
+      "whatChangedSinceLastReport": [
+        "No significant changes detected since last checkpoint"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 50%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-03-21T11:50:30.068076-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -101,7 +125,7 @@
     {
       "session": "mid_session",
       "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-03-23T16:00:45.173708-04:00",
+      "timestamp": "2026-03-21T15:04:13.202518-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -125,7 +149,7 @@
     {
       "session": "mid_session",
       "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-03-23T18:00:59.908635-04:00",
+      "timestamp": "2026-03-21T17:49:08.642011-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -147,6 +171,7 @@
       ]
     }
   ],
-  "entryCount": 6,
-  "lastUpdated": "2026-03-23T18:00:59.909644-04:00"
+  "entryCount": 7,
+  "lastUpdated": "2026-03-21T17:49:08.642948-04:00",
+  "archivedAt": "2026-03-22T01:13:11.065583-04:00"
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { usePINGuard, PINGuardModal } from './security/PINGuard';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
@@ -8,7 +8,7 @@ import About from './pages/About';
 import Menu from './components/Menu';
 import './App.css';
 
-// Protected Route Component
+// Protected Route Component - PIN required for dashboard/settings
 function ProtectedRoute({ children }) {
   const { isVerified, requirePIN, verifyPIN, error, isSetup } = usePINGuard();
   const [showPin, setShowPin] = useState(false);
@@ -48,26 +48,17 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-// App with PIN protection
 function App() {
-  const { isVerified, clearVerification } = usePINGuard();
-  const location = useLocation();
-
-  // Clear verification when app is closed (optional - for stricter security)
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => clearVerification();
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
-  //   return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  // }, [clearVerification]);
+  const { isVerified } = usePINGuard();
 
   return (
     <div className="app">
       <Routes>
-        {/* Public routes - no PIN */}
+        {/* Public routes - no PIN required */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         
-        {/* Protected routes - PIN required */}
+        {/* Protected routes - PIN required for dashboard and settings */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
@@ -80,7 +71,7 @@ function App() {
           </ProtectedRoute>
         } />
         
-        {/* Redirect unknown routes */}
+        {/* Redirect unknown routes to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       

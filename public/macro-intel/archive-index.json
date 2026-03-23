@@ -1,5 +1,50 @@
 [
   {
+    "date": "2026-03-22",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 7,
+    "archivePath": "archive/2026-03-22.json",
+    "archivedAt": "2026-03-23T01:48:48.860939-04:00",
+    "status": "archived"
+  },
+  {
+    "date": "2026-03-21",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 7,
+    "archivePath": "archive/2026-03-21.json",
+    "archivedAt": "2026-03-22T01:13:11.084606-04:00",
+    "status": "archived"
+  },
+  {
+    "date": "2026-03-20",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 7,
+    "archivePath": "archive/2026-03-20.json",
+    "archivedAt": "2026-03-21T00:54:53.617320-04:00",
+    "status": "archived"
+  },
+  {
+    "date": "2026-03-19",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 6,
+    "archivePath": "archive/2026-03-19.json",
+    "archivedAt": "2026-03-20T01:08:46.066653-04:00",
+    "status": "archived"
+  },
+  {
+    "date": "2026-03-18",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 6,
+    "archivePath": "archive/2026-03-18.json",
+    "archivedAt": "2026-03-19T01:17:06.685938-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-03-17",
     "regimeMode": "mixed",
     "dominantDrivers": [],
