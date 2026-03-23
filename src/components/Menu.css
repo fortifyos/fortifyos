@@ -1,0 +1,103 @@
+.menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg2, #111113);
+  border-top: 1px solid var(--border, #27272a);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.menu-brand {
+  flex-shrink: 0;
+}
+
+.menu-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px;
+  color: var(--accent, #d4af6e);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+
+.menu-links {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.menu-link {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text2, #a1a1aa);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.menu-link:hover {
+  color: var(--text, #e4e4e7);
+  background: var(--bg3, #18181b);
+}
+
+.menu-link.protected {
+  border-color: var(--border, #27272a);
+}
+
+.menu-link.protected:hover {
+  border-color: var(--accent, #d4af6e);
+}
+
+.menu-actions {
+  flex-shrink: 0;
+}
+
+.menu-action {
+  padding: 8px 16px;
+  background: var(--bg3, #18181b);
+  border: 1px solid var(--border, #27272a);
+  border-radius: 8px;
+  color: var(--text, #e4e4e7);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.menu-action:hover {
+  border-color: var(--accent, #d4af6e);
+}
+
+.menu-action.lock {
+  background: rgba(212, 175, 110, 0.1);
+  color: var(--accent, #d4af6e);
+}
+
+.menu-status {
+  font-size: 12px;
+  color: var(--text3, #71717a);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .menu {
+    padding: 0 12px;
+  }
+  
+  .menu-links {
+    gap: 4px;
+  }
+  
+  .menu-link {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
