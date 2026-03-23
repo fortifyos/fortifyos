@@ -77,6 +77,21 @@ function parsePriceUsd(payload) {
   return null;
 }
 
+function parseChartLatestValue(payload) {
+  if (!payload || typeof payload !== "object") return null;
+  const values = Array.isArray(payload.values) ? payload.values : Array.isArray(payload?.data?.values) ? payload.data.values : null;
+  if (!values?.length) return null;
+
+  for (let i = values.length - 1; i >= 0; i -= 1) {
+    const point = values[i];
+    const value = point?.y ?? point?.value ?? point?.close ?? point?.amount;
+    const parsed = typeof value === "number" ? value : Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+
+  return null;
+}
+
 async function fetchYahooPriceUsd() {
   const target = "https://query2.finance.yahoo.com/v8/finance/chart/BTC-USD?range=2d&interval=1d";
   const proxies = [
@@ -122,13 +137,32 @@ async function fetchFirstBlockHeight() {
     async () => parseBlockHeight(await fetchJson("https://mempool.space/api/blocks/tip/height")),
     async () => parseBlockHeight(await fetchText("https://mempool.space/api/blocks/tip/height")),
     async () => parseBlockHeight(await fetchText("https://blockstream.info/api/blocks/tip/height")),
-    async () => parseBlockHeight(await fetchText("https://blockchain.info/q/getblockcount")),
+    async () => parseBlockHeight(await fetchText("https://blockchain.info/q/getblockcount?cors=true")),
   ];
 
   for (const load of sources) {
     try {
       const height = await load();
       if (Number.isFinite(height)) return height;
+    } catch {}
+  }
+
+  return null;
+}
+
+async function fetchFirstSupplyMined() {
+  const sources = [
+    async () => parseChartLatestValue(await fetchJson("https://api.blockchain.info/charts/total-bitcoins?timespan=2days&rollingAverage=8hours&format=json&cors=true")),
+    async () => {
+      const totalSats = parsePriceUsd(await fetchText("https://blockchain.info/q/totalbc?cors=true"));
+      return Number.isFinite(totalSats) ? totalSats / SATS_PER_BTC : null;
+    },
+  ];
+
+  for (const load of sources) {
+    try {
+      const mined = await load();
+      if (Number.isFinite(mined)) return Math.min(HARD_CAP_BTC, mined);
     } catch {}
   }
 
@@ -182,13 +216,37 @@ async function loadNetworkState() {
   }
 
   try {
-    blockHeight = await fetchFirstBlockHeight();
-    if (typeof blockHeight === "number") {
+    [blockHeight, supplyMined] = await Promise.all([
+      fetchFirstBlockHeight(),
+      fetchFirstSupplyMined(),
+    ]);
+
+    if (!Number.isFinite(supplyMined) && typeof blockHeight === "number") {
       supplyMined = estimateIssuedSupply(blockHeight);
-      supplyPct = (supplyMined / HARD_CAP_BTC) * 100;
-      chainOk = true;
+    }
+
+    if (Number.isFinite(supplyMined)) {
+      try {
+        localStorage.setItem("fortify_btc_supply_mined", String(supplyMined));
+      } catch {}
+    }
+
+    if (typeof blockHeight === "number" || Number.isFinite(supplyMined)) {
+      supplyPct = Number.isFinite(supplyMined) ? (supplyMined / HARD_CAP_BTC) * 100 : null;
+      chainOk = Number.isFinite(supplyMined) || typeof blockHeight === "number";
     }
   } catch {}
+
+  if (!Number.isFinite(supplyMined)) {
+    try {
+      const cachedSupply = Number(localStorage.getItem("fortify_btc_supply_mined"));
+      if (Number.isFinite(cachedSupply) && cachedSupply > 0) {
+        supplyMined = Math.min(HARD_CAP_BTC, cachedSupply);
+        supplyPct = (supplyMined / HARD_CAP_BTC) * 100;
+        chainOk = true;
+      }
+    } catch {}
+  }
 
   const status = priceOk && chainOk ? "LIVE" : (priceOk || chainOk ? "DEGRADED" : "OFFLINE");
   return { priceUsd, blockHeight, supplyMined, supplyPct, status, lastUpdatedIso: new Date().toISOString() };
