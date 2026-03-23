@@ -4942,20 +4942,21 @@ function KnoxTerminalMod({ latest, visible, t }) {
             }
             return (
               <div key={i} style={{ animation: `radarFadeUp 0.3s ease-out ${i * 0.04}s both` }}>
-                <div style={{
-                  display: 'flex', alignItems: 'baseline', gap: 8,
-                  padding: '4px 6px',
-                  background: tagBg(line.tag),
-                  borderLeft: `2px solid ${tagColor(line.tag)}40`,
-                }}>
+                <div
+                  className="knox-line"
+                  style={{
+                    background: tagBg(line.tag),
+                    borderLeft: `2px solid ${tagColor(line.tag)}40`,
+                  }}
+                >
                   <span style={{ color: tagColor(line.tag), fontWeight: 700, fontSize: 11, flexShrink: 0, letterSpacing: '0.04em' }}>
                     [{line.tag}]
                   </span>
-                  <span style={{ color: line.ok ? t.textSecondary : tagColor(line.tag), flex: 1, lineHeight: 1.4 }}>
+                  <span className="knox-line-label" style={{ color: line.ok ? t.textSecondary : tagColor(line.tag), lineHeight: 1.4 }}>
                     {line.label}
                   </span>
                   {line.status && (
-                    <span style={{ color: line.ok ? t.textDim : tagColor(line.tag), fontSize: 11, opacity: 0.85, flexShrink: 0, textAlign: 'right', maxWidth: 160, lineHeight: 1.3 }}>
+                    <span className="knox-line-status" style={{ color: line.ok ? t.textDim : tagColor(line.tag), fontSize: 11, opacity: 0.85, lineHeight: 1.3 }}>
                       {line.status}
                     </span>
                   )}
@@ -4963,7 +4964,7 @@ function KnoxTerminalMod({ latest, visible, t }) {
                 {line.rec && (
                   <div style={{ display: 'flex', gap: 6, padding: '2px 6px 4px 20px' }}>
                     <span style={{ color: t.accent, fontSize: 10, flexShrink: 0, opacity: 0.7 }}>{'↳'} REC:</span>
-                    <span style={{ color: t.accent, fontSize: 10, opacity: 0.75, lineHeight: 1.4 }}>{line.rec}</span>
+                    <span className="knox-line-rec" style={{ color: t.accent, fontSize: 10, opacity: 0.75, lineHeight: 1.4 }}>{line.rec}</span>
                   </div>
                 )}
               </div>
@@ -4972,7 +4973,7 @@ function KnoxTerminalMod({ latest, visible, t }) {
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${t.accent}20`, fontSize: 11, color: t.textGhost, display: 'flex', justifyContent: 'space-between' }}>
+        <div className="knox-footer" style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${t.accent}20`, fontSize: 11, color: t.textGhost }}>
           <span>KNOX v2.0 | {criticalCount > 0 ? `${criticalCount} CRITICAL` : warnCount > 0 ? `${warnCount} WARNING` : '0 ALERTS'} | Stage {stage} / 7</span>
           <span style={{ color: criticalCount > 0 ? t.danger : warnCount > 0 ? t.warn : t.accent }}>
             {criticalCount > 0 ? '⬤ CRITICAL' : warnCount > 0 ? '⬤ WARNING' : '⬤ NOMINAL'}
@@ -7975,9 +7976,36 @@ function FortifyOSApp() {
           setSettings(mergedSettings);
         }
       }
-      if (th !== null) setIsDark(th);
+      if (th !== null) setIsDark(typeof th === 'boolean' ? th : th === 'true');
     })();
   }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    const themeName = isDark ? 'theme-dark' : 'theme-light';
+    const oppositeTheme = isDark ? 'theme-light' : 'theme-dark';
+    const themeColor = isDark ? THEMES.dark.void : THEMES.light.void;
+    const statusBarStyle = isDark ? 'black-translucent' : 'default';
+
+    root.classList.add(themeName);
+    root.classList.remove(oppositeTheme);
+    body.classList.add(themeName);
+    body.classList.remove(oppositeTheme);
+    root.style.colorScheme = isDark ? 'dark' : 'light';
+    body.style.backgroundColor = themeColor;
+    body.style.color = isDark ? THEMES.dark.textPrimary : THEMES.light.textPrimary;
+
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) {
+      themeMeta.setAttribute('content', themeColor);
+    }
+
+    const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (statusMeta) {
+      statusMeta.setAttribute('content', statusBarStyle);
+    }
+  }, [isDark]);
 
   const handleSync = useCallback(async (data) => {
     // Merge against latest snapshot (not defaults) so sequential account ingests can aggregate.
