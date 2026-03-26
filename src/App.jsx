@@ -13,6 +13,7 @@ import {
   ArrowRight, ChevronDown, Clock, Eye, Menu, Home, LayoutGrid
 } from 'lucide-react';
 import * as Papa from 'papaparse';
+import { SOVEREIGNTY_365 } from './data/sovereigntyBlueprint.js';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
@@ -5760,8 +5761,7 @@ function DailyLawHero({ t }) {
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const dayOfYear = Math.floor((now - yearStart) / (1000 * 60 * 60 * 24)) + 1;
 
-  const pool = DIRECTIVES[theme.month] || DIRECTIVES.JAN;
-  const directive = pool[(dayOfYear - 1) % pool.length];
+  const directive = SOVEREIGNTY_365[(dayOfYear - 1) % 365];
   const caution = t.warn || '#ffb800';
   const support = t.purple || '#8b5cf6';
   const darkMode = (t.void || '#ffffff').toLowerCase() === '#000000';
@@ -7908,6 +7908,24 @@ function FortifyOSApp() {
     window.scrollTo(0, 0);
   }, [view]);
 
+  // ── Browser History Navigation ──────────────────────
+  useEffect(() => {
+    window.history.replaceState({ view: view === 'loading' ? 'landing' : view }, '');
+  }, []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.state?.view) setView(e.state.view);
+    };
+    window.addEventListener('popstate', handler);
+    return () => window.removeEventListener('popstate', handler);
+  }, []);
+
+  const navigate = (newView) => {
+    window.history.pushState({ view: newView }, '');
+    setView(newView);
+  };
+
   const refreshIntel = useCallback(async () => {
     setIntelRefreshing(true);
     try {
@@ -7960,7 +7978,7 @@ function FortifyOSApp() {
         setLatest(migratedLatest);
       }
       // Always start at landing — user navigates to dashboard manually
-      setView('landing');
+      navigate('landing');
       if (st) {
         // Always heal missing module keys so old/local configs do not hide new dashboard modules.
         const savedMods = st.visibleModules || [];
@@ -8098,7 +8116,7 @@ function FortifyOSApp() {
       await store.set('fortify-latest', merged);
     } catch (_) { }
     setSyncFlash(true); setTimeout(() => setSyncFlash(false), 600);
-    setView('dashboard'); setSyncOpen(false);
+    navigate('dashboard'); setSyncOpen(false);
   }, [latest, settings?.payFrequency]);
 
   const toggleTheme = useCallback(async () => { const n = !isDark; setIsDark(n); await store.set('fortify-theme', n); }, [isDark]);
@@ -8175,7 +8193,7 @@ function FortifyOSApp() {
   const handleClear = useCallback(async () => {
     setSnapshots([]);
     setLatest(DEFAULT_SNAPSHOT);
-    setView('landing');
+    navigate('landing');
     await store.del('fortify-snapshots');
     await store.del('fortify-latest');
   }, []);
@@ -8597,13 +8615,13 @@ function FortifyOSApp() {
       {/* Global CRT scanline overlay — applied to all pages */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFY OS initializing...</div></div>}
-      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => setView('docs')} hasData={snapshots.length > 0} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
-      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => setView('landing')} onToggleTheme={toggleTheme} onDashboard={() => setView('dashboard')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => setView('landing')} onBitcoin={() => setView('bitcoin')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => setView('settings')} onDocs={() => setView('docs')} onUpdateDebt={handleUpdateDebt} />}
-      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => setView('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onBitcoin={() => setView('bitcoin')} onDocs={() => setView('docs')} />}
-      {view === 'bitcoin' && <BitcoinMastery onBack={() => setView('dashboard')} onDashboard={() => setView('dashboard')} onHome={() => setView('landing')} onMacroSentinel={() => setView('macroSentinel')} onSettings={() => setView('settings')} onDocs={() => setView('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
-      {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => setView('dashboard')} />}
+      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => navigate('docs')} hasData={snapshots.length > 0} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} />}
+      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => navigate('landing')} onToggleTheme={toggleTheme} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => navigate('landing')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onBitcoin={() => navigate('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} onUpdateDebt={handleUpdateDebt} />}
+      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onBitcoin={() => navigate('bitcoin')} onDocs={() => navigate('docs')} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => navigate('dashboard')} onDashboard={() => navigate('dashboard')} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
+      {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => navigate('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} isDark={isDark} />
     </div>
   );
