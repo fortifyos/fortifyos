@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 71.67,
-    "change": 3.459
+    "value": 71.94,
+    "change": -0.575
   },
   "gold": {
-    "value": 4525,
-    "change": 2.857
+    "value": 4517.7,
+    "change": -0.706
   },
   "yieldCurve": null,
   "source": {
@@ -38,16 +38,16 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 71236,
-    "change": 0.872
+    "value": 70743,
+    "change": -0.296
   },
   "eth": {
-    "value": 2164.04,
-    "change": 0.387
+    "value": 2148.67,
+    "change": -0.723
   },
   "oil": {
-    "value": 91.36,
-    "change": -1.072
+    "value": 91.88,
+    "change": 1.727
   },
   "spy": {
     "value": 656.82,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 91.8,
-    "change": 0.954
+    "value": 90.79,
+    "change": -1.104
   },
   "xrp": {
-    "value": 1.41,
-    "change": -0.514
+    "value": 1.4,
+    "change": -0.806
   },
   "doge": {
-    "value": 0.09564,
-    "change": 0.497
+    "value": 0.09424,
+    "change": -1.151
   },
   "ada": {
-    "value": 0.26902,
-    "change": 0.386
+    "value": 0.26561,
+    "change": -0.677
   },
   "avax": {
-    "value": 9.66,
-    "change": 0.603
+    "value": 9.55,
+    "change": -0.844
   },
   "link": {
-    "value": 9.35,
-    "change": 1.21
+    "value": 9.22,
+    "change": -0.327
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-03-26"
     },
     "SOL": {
-      "value": 91.85,
-      "change": 0.158,
+      "value": 90.79,
+      "change": -0.999,
       "asOf": "2026-03-26"
     },
     "XRP": {
@@ -250,8 +250,8 @@
       "asOf": "2026-03-26"
     },
     "DOGE": {
-      "value": 0.1,
-      "change": -0.459,
+      "value": 0.09,
+      "change": -1.959,
       "asOf": "2026-03-26"
     }
   }
