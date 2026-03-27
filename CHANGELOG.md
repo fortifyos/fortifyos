@@ -4,7 +4,7 @@
 
 **Tag:** `v1.0.0`
 **Date:** 2026-03-27
-**Commit:** `b3764526`
+**Commit:** `35953a2c`
 
 ---
 
@@ -14,7 +14,7 @@
 - `tsconfig.json` added with strict mode and bundler resolution
 - Entry points converted: `vite.config.ts`, `main.tsx`, `App.tsx`
 - `@types/papaparse` installed for type coverage
-- Build pipeline fully compatible with TypeScript target
+- Strict TypeScript compilation now passes across the checked TS surface
 
 ### API Input Validation (TASK-PBR-001)
 - Canonical request schema validation via `api.types.ts`
@@ -72,15 +72,16 @@ Modules updated:
 | `verification/verify_pbr001.js` | 15/15 | ✅ |
 | `verification/verify_fos002.js` | 24/24 | ✅ |
 | `verification/verify_pbr003.js` | 26/26 | ✅ |
-| `npm run build` | — | ✅ |
+| `./node_modules/.bin/tsc --noEmit` | — | ✅ |
+| `./node_modules/.bin/vite build` | — | ✅ |
 
 ---
 
-## Blocked Items (Post-v1.0)
+## Audit Status
 
 | Item | Status | Blocker |
 |---|---|---|
-| R-01..R-09 Audit Mapping | Blocked | Canonical audit register not provided |
+| R-01..R-09 Audit Mapping | Resolved | Canonical audit register complete and aligned |
 | TASK-001 (UI errors) | Blocked | Awaiting details from operator |
 | TASK-FOS-004 (Routed Shell) | Deferred | PINGuard + React Router integration; post-v1 |
 

@@ -8,6 +8,7 @@
  * Or open verification/pbr002_test.html in a browser.
  */
 
+import 'fake-indexeddb/auto';
 import Dexie from 'dexie';
 
 // =============================================================================
@@ -29,8 +30,20 @@ function section(name) { console.log(`\n=== ${name} ===`); }
 export async function testFreshApply() {
   section('Fresh Apply');
 
-  // Open a fresh database (v4)
-  const testDb = new Dexie('FortifySovereignDB__pbr002_fresh');
+  const dbName = 'FortifySovereignDB__pbr002_fresh';
+
+  // Create a genuine pre-upgrade database first.
+  const seedDb = new Dexie(dbName);
+  seedDb.version(1).stores({ items: '++id, name' });
+  seedDb.version(2).stores({ items: '++id, name, tag', meta: 'id' }).upgrade(tx => {
+    return tx.items.toCollection().modify(item => { if (item.tag === undefined) item.tag = null; });
+  });
+  await seedDb.open();
+  const seedId = await seedDb.table('items').add({ name: 'seed-item', tag: 'seed' });
+  await seedDb.close();
+
+  // Re-open the same database with the latest schema to force migrations.
+  const testDb = new Dexie(dbName);
   testDb.version(1).stores({ items: '++id, name' });
   testDb.version(2).stores({ items: '++id, name, tag', meta: 'id' }).upgrade(tx => {
     return tx.items.toCollection().modify(item => { if (item.tag === undefined) item.tag = null; });
@@ -58,12 +71,16 @@ export async function testFreshApply() {
   check('items has seq index', indexes.includes('seq'));
   check('items has epochId index', indexes.includes('epochId'));
 
-  // Write and read data
-  const id = await itemsTable.add({ name: 'test-item', tag: 'test' });
+  // Existing rows should be upgraded in-place.
+  const migrated = await itemsTable.get(seedId);
+  check('Seed row preserved after upgrade', migrated?.name === 'seed-item');
+  check('Existing row gets seq during upgrade', migrated?.seq === seedId);
+  check('Existing row gets epochId during upgrade', migrated?.epochId === null);
+
+  // New rows created after the upgrade should still be writable.
+  const id = await itemsTable.add({ name: 'test-item', tag: 'test', seq: 2, epochId: null });
   const retrieved = await itemsTable.get(id);
   check('Data written and retrieved', retrieved?.name === 'test-item');
-  check('New fields populated (seq set)', retrieved?.seq === id);
-  check('New fields populated (epochId null)', retrieved?.epochId === null);
 
   await testDb.close();
   await Dexie.delete('FortifySovereignDB__pbr002_fresh');

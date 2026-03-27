@@ -24,6 +24,8 @@ import {
   CAPABILITIES,
   validateAgentRequest,
   ValidationErrorCodes,
+  type AgentProposal,
+  type AgentRequest,
   type APIResult,
   type SuccessResult,
   type FailureResult,
@@ -62,13 +64,19 @@ export class SecurityError extends Error {
 // Result Constructors
 // =============================================================================
 
-function deny(reason: string, code?: string): FailureResult {
+function deny(reason: string, code?: FailureResult['code']): FailureResult {
   return { ok: false, reason, code };
 }
 
-function ok<T>(data: T): SuccessResult<T> {
+function ok<T extends object>(data: T): SuccessResult<T> {
   return { ok: true, ...data };
 }
+
+type LeaseVerificationResult = {
+  ok: boolean;
+  reason?: string;
+  payload?: { caps?: string[] };
+};
 
 // =============================================================================
 // Agent API Factory
@@ -93,7 +101,7 @@ export function createAgentAPI({
   getCapabilities: () => string[];
   getStage: () => string;
   getSnapshots: () => { velocity: number; runway: number };
-  verifyLeaseToken: (token: string) => Promise<{ ok: boolean; reason?: string; payload?: { caps?: string[] } }>;
+  verifyLeaseToken: (token: string) => Promise<LeaseVerificationResult>;
 }) {
   return async function agentRequest(req: unknown): Promise<APIResult> {
     // Validate against canonical schema
@@ -102,16 +110,17 @@ export function createAgentAPI({
 
     // Capability check
     const caps = getCapabilities();
-    if (!caps.includes(validation.type)) {
-      return deny(`Capability not granted: ${validation.type}`, ValidationErrorCodes.CAPABILITY_NOT_GRANTED);
+    const validatedRequest = validation as SuccessResult<AgentRequest>;
+    if (!caps.includes(validatedRequest.type)) {
+      return deny(`Capability not granted: ${validatedRequest.type}`, ValidationErrorCodes.CAPABILITY_NOT_GRANTED);
     }
 
     // Lease token verification for PROPOSE_ACTION
-    if (validation.type === CAPABILITIES.PROPOSE_ACTION) {
+    if (validatedRequest.type === CAPABILITIES.PROPOSE_ACTION) {
       if (typeof verifyLeaseToken !== 'function') {
         throw new SecurityError('Lease verification unavailable', 'LEASE_VERIFY_UNAVAILABLE', 'CRITICAL');
       }
-      const lease = await verifyLeaseToken((validation as Extract<typeof validation, { leaseToken: string }>).leaseToken);
+      const lease = await verifyLeaseToken(validatedRequest.leaseToken);
       if (!lease.ok) {
         await secureLogRef()('LEASE_REJECTED', `Lease token rejected: ${lease.reason}`, getStage(), 'WARN', {});
         return deny('Lease token invalid', ValidationErrorCodes.LEASE_TOKEN_INVALID);
@@ -125,7 +134,7 @@ export function createAgentAPI({
     // Request handling
     const snaps = getSnapshots();
 
-    switch (validation.type) {
+    switch (validatedRequest.type) {
       case CAPABILITIES.READ_VELOCITY:
         return ok({ velocity: snaps.velocity });
 
@@ -133,8 +142,7 @@ export function createAgentAPI({
         return ok({ runway: snaps.runway });
 
       case CAPABILITIES.PROPOSE_ACTION: {
-        const validated = validation as Extract<typeof validation, { type: typeof CAPABILITIES.PROPOSE_ACTION; proposal: unknown }>;
-        const result = await auditAgentProposal(validated.proposal as Record<string, unknown>, getStage());
+        const result = await auditAgentProposal(validatedRequest.proposal, getStage());
         return ok({ result });
       }
 
@@ -157,12 +165,15 @@ export function createAgentAPI({
  * @param {string} stage - Current Sovereignty stage
  * @returns {Promise<{ status: 'APPROVED'|'REJECTED', reason?: string, signature?: string }>}
  */
-async function auditAgentProposal(proposal: Record<string, unknown>, stage: string): Promise<{ status: string; reason?: string; signature?: string }> {
+async function auditAgentProposal(
+  proposal: AgentProposal,
+  stage: string
+): Promise<{ status: 'APPROVED' | 'REJECTED'; reason?: string; signature?: string }> {
   try {
     const policy = await getNeverListPolicy();
     const NEVER_LIST = buildNeverListRules(policy);
 
-    const isViolation = NEVER_LIST.some((rule: { check: (p: unknown) => boolean }) => {
+    const isViolation = NEVER_LIST.some((rule) => {
       try {
         return rule.check(proposal);
       } catch {

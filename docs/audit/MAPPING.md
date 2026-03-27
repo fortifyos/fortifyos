@@ -135,7 +135,7 @@ relative to the audit scope. Open findings: none.
 
 ## Release Audit Statement
 
-FortifyOS v1.0.0 (tag `v1.0.0`, commit `5c209b54`) addressed all nine canonical audit findings
+FortifyOS v1.0.0 (tag `v1.0.0`, commit `35953a2c`) addressed all nine canonical audit findings
 as documented above. All execution contracts were fulfilled. All verifiers passed.
 
 The system is considered remediated relative to the v1.0.0 audit scope.
