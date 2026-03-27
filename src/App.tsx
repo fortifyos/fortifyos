@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import IntelFreshness from './components/IntelFreshness.tsx';
-import MacroRadarPanels from './components/MacroRadarPanels.tsx';
-import BitcoinMastery from './pages/BitcoinMastery.tsx';
+import IntelFreshness from './components/IntelFreshness.jsx';
+import MacroRadarPanels from './components/MacroRadarPanels.jsx';
+import BitcoinMastery from './pages/BitcoinMastery.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, BarChart, Bar, CartesianGrid, Legend
@@ -2148,7 +2148,7 @@ npm run dev`}</pre>
           <p style={sty.p}>The public repo is currently organized as a web application plus supporting assets, docs, and scripts. The privacy boundary today is simpler than the older doctrine docs: source code lives in the repo, runtime state lives in the browser, and any future local data directories or backend services are optional layers you add deliberately.</p>
           <pre style={sty.pre}>{`fortifyos/
 ├── src/                     ← React application source
-│   ├── App.tsx              ← Main shell, landing, dashboard, docs, routing
+│   ├── App.jsx              ← Main shell, landing, dashboard, docs, routing
 │   ├── pages/               ← Large top-level views (Bitcoin)
 │   ├── components/          ← Shared UI components
 │   ├── db/                  ← Local browser vault / state logic
