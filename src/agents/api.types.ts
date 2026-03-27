@@ -40,13 +40,8 @@ export type ValidationErrorCode = typeof ValidationErrorCodes[keyof typeof Valid
 /**
  * Success response envelope.
  * @template T
- * @property {true} ok
- * @property {T} [key] - Result data (varies by request type)
  */
-export interface SuccessResult<T = unknown> {
-  ok: true;
-  [key: string]: T;
-}
+export type SuccessResult<T extends object = {}> = { ok: true } & T;
 
 /**
  * Failure response envelope.
@@ -61,7 +56,7 @@ export interface FailureResult {
 }
 
 /** @template T */
-export type APIResult<T = unknown> = SuccessResult<T> | FailureResult;
+export type APIResult<T extends object = {}> = SuccessResult<T> | FailureResult;
 
 /**
  * An agent-proposed action submitted for Sovereignty audit.
@@ -74,6 +69,22 @@ export interface AgentProposal {
   [key: string]: unknown;
 }
 
+export interface ReadVelocityRequest {
+  type: typeof CAPABILITIES.READ_VELOCITY;
+}
+
+export interface ReadRunwayRequest {
+  type: typeof CAPABILITIES.READ_RUNWAY;
+}
+
+export interface ProposeActionRequest {
+  type: typeof CAPABILITIES.PROPOSE_ACTION;
+  leaseToken: string;
+  proposal: AgentProposal;
+}
+
+export type AgentRequest = ReadVelocityRequest | ReadRunwayRequest | ProposeActionRequest;
+
 /**
  * Validates an incoming agent API request against known capability schemas.
  * Returns a typed SuccessResult on valid requests, FailureResult on all failures.
@@ -85,9 +96,9 @@ export interface AgentProposal {
  * - All other capability types require no additional fields
  *
  * @param {unknown} req - The raw incoming request
- * @returns {APIResult} - SuccessResult (with type field) or FailureResult with code
+ * @returns {APIResult<AgentRequest>} - SuccessResult (with validated request payload) or FailureResult with code
  */
-export function validateAgentRequest(req: unknown): APIResult {
+export function validateAgentRequest(req: unknown): APIResult<AgentRequest> {
   if (req === null || req === undefined) {
     return { ok: false, reason: 'Request is null or undefined', code: ValidationErrorCodes.INVALID_REQUEST_SHAPE };
   }
@@ -119,6 +130,15 @@ export function validateAgentRequest(req: unknown): APIResult {
     if (!('proposal' in r) || typeof r.proposal !== 'object' || r.proposal === null) {
       return { ok: false, reason: 'Missing or invalid field: proposal', code: ValidationErrorCodes.PROPOSAL_INVALID };
     }
+  }
+
+  if (type === CAPABILITIES.PROPOSE_ACTION) {
+    return {
+      ok: true,
+      type,
+      leaseToken: r.leaseToken as string,
+      proposal: r.proposal as AgentProposal,
+    };
   }
 
   return { ok: true, type };

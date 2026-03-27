@@ -7,7 +7,13 @@ import '@fontsource/jetbrains-mono/800.css';
 import './index.css';
 import App from './App';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('Root container #root was not found');
+}
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
