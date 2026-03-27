@@ -28,16 +28,18 @@ check('v3 upgrade: seq field migration', src.includes('row.seq = row.id') && src
 check('v4 upgrade: epochId field migration', src.includes('row.epochId = null') && src.includes('v4'));
 
 // 4. Rollback policy documented
-check('Rollback policy documented', src.includes('Rollback Policy') && src.includes('NOT automated'));
+check('Rollback policy documented', src.includes('Rollback Policy') && src.includes('NOT implemented'));
 
 // 5. saveCryptoMeta and getCryptoMeta exported
 check('saveCryptoMeta exported', src.includes('export async function saveCryptoMeta'));
 check('getCryptoMeta exported', src.includes('export async function getCryptoMeta'));
 
 // 6. Tables defined
-['auditLog', 'ingests', 'signers', 'macroHistory', 'agents', 'cryptoMeta', 'policy'].forEach(t => {
-  check(`Table "${t}" in schema`, src.includes(`'${t}'`));
-});
+// 6. Tables defined — match key followed by colon, with or without trailing space
+const tablePatterns = ['auditLog', 'ingests', 'signers', 'macroHistory', 'agents', 'cryptoMeta', 'policy'];
+for (const t of tablePatterns) {
+  check(`Table "${t}" in schema`, src.includes(`${t}:`) || src.includes(`${t} :`));
+}
 
 // 7. Indexes correct for v4
 check('v4 auditLog has seq index', src.includes("'++id, seq, epochId, timestamp, type, [timestamp+type], stage, severity'"));
