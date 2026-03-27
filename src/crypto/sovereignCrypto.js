@@ -1,38 +1,283 @@
-import { getKeyProvider } from './keyProvider';
+/**
+ * TASK-FOS-002: Security Error Handling — sovereignCrypto
+ *
+ * Requirements:
+ * - Typed exception classes
+ * - No silent catches
+ * - Consistent audit logging
+ * - No sensitive detail leakage in user-facing errors
+ */
+
+import { secureLogRef } from '../agents/secureLogRef.js';
+import { getKeyProvider } from './keyProvider/index.js';
+
+// =============================================================================
+// Typed Error Classes
+// =============================================================================
+
+export class CryptoError extends Error {
+  constructor(message, public readonly code, public readonly severity = 'CRITICAL') {
+    super(message);
+    this.name = 'CryptoError';
+  }
+}
+
+export class KeyProviderError extends Error {
+  constructor(message, public readonly code, public readonly severity = 'CRITICAL') {
+    super(message);
+    this.name = 'KeyProviderError';
+  }
+}
+
+export class EncryptionError extends Error {
+  constructor(message, public readonly code, public readonly severity = 'CRITICAL') {
+    super(message);
+    this.name = 'EncryptionError';
+  }
+}
+
+export class DecryptionError extends Error {
+  constructor(message, public readonly code, public readonly severity = 'CRITICAL') {
+    super(message);
+    this.name = 'DecryptionError';
+  }
+}
+
+// =============================================================================
+// Helpers
+// =============================================================================
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
-function b64(bytes) { return btoa(String.fromCharCode(...bytes)); }
-function unb64(str) { return Uint8Array.from(atob(str), c => c.charCodeAt(0)); }
+function b64(bytes) {
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function unb64(str) {
+  return Uint8Array.from(atob(str), c => c.charCodeAt(0));
+}
+
+// =============================================================================
+// Audit Logging Wrapper
+// =============================================================================
+
+async function auditCryptoEvent(event, message, severity = 'INFO', extra = {}) {
+  const log = secureLogRef();
+  await log(event, message, 'sovereignCrypto', severity, extra);
+}
+
+// =============================================================================
+// Core Operations
+// =============================================================================
 
 export async function initSovereignKey({ passphrase } = {}) {
-  const provider = getKeyProvider();
-  // Native ignores passphrase by default (device secret), but web requires it.
-  const { encKey, macKey } = await provider.init({ passphrase });
-  return { encKey, macKey, providerId: provider.id };
+  let provider;
+  try {
+    provider = getKeyProvider();
+  } catch (err) {
+    await auditCryptoEvent(
+      'KEY_PROVIDER_INIT_FAILED',
+      'Key provider unavailable',
+      'CRITICAL',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    throw new KeyProviderError('Key provider unavailable', 'PROVIDER_UNAVAILABLE', 'CRITICAL');
+  }
+
+  let result;
+  try {
+    result = await provider.init({ passphrase });
+  } catch (err) {
+    await auditCryptoEvent(
+      'KEY_INIT_FAILED',
+      'Sovereign key initialization failed',
+      'CRITICAL',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    throw new KeyProviderError(
+      'Key initialization failed',
+      'INIT_FAILED',
+      'CRITICAL'
+    );
+  }
+
+  if (!result?.encKey || !result?.macKey) {
+    await auditCryptoEvent(
+      'KEY_INIT_INCOMPLETE',
+      'Key provider returned incomplete result',
+      'CRITICAL',
+      { hasEncKey: !!(result?.encKey), hasMacKey: !!(result?.macKey) }
+    );
+    throw new KeyProviderError('Key initialization returned incomplete result', 'INCOMPLETE_RESULT', 'CRITICAL');
+  }
+
+  await auditCryptoEvent('KEY_INIT_OK', `Sovereign key initialized (provider: ${provider.id})`, 'INFO', {
+    providerId: provider.id
+  });
+
+  return { encKey: result.encKey, macKey: result.macKey, providerId: provider.id };
 }
 
 export async function encryptJSON(encKey, obj) {
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const plaintext = enc.encode(JSON.stringify(obj));
-  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, encKey, plaintext);
+  if (!encKey) {
+    throw new EncryptionError('Encryption key is required', 'KEY_MISSING', 'CRITICAL');
+  }
+  if (obj === undefined) {
+    throw new EncryptionError('Object to encrypt must be defined', 'UNDEFINED_PAYLOAD', 'CRITICAL');
+  }
+
+  let iv;
+  try {
+    iv = crypto.getRandomValues(new Uint8Array(12));
+  } catch (err) {
+    await auditCryptoEvent('ENCRYPT_IV_FAILED', 'Failed to generate IV', 'CRITICAL');
+    throw new EncryptionError('Failed to generate IV', 'IV_FAILED', 'CRITICAL');
+  }
+
+  let plaintext;
+  try {
+    plaintext = enc.encode(JSON.stringify(obj));
+  } catch (err) {
+    await auditCryptoEvent(
+      'ENCODE_FAILED',
+      'Failed to encode object as JSON',
+      'CRITICAL',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    throw new EncryptionError('Failed to encode payload', 'ENCODE_FAILED', 'CRITICAL');
+  }
+
+  let ciphertext;
+  try {
+    ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, encKey, plaintext);
+  } catch (err) {
+    await auditCryptoEvent(
+      'ENCRYPT_FAILED',
+      'AES-GCM encryption failed',
+      'CRITICAL',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    throw new EncryptionError('Encryption failed', 'ENCRYPT_FAILED', 'CRITICAL');
+  }
+
   return { ivB64: b64(iv), payloadB64: b64(new Uint8Array(ciphertext)) };
 }
 
 export async function decryptJSON(encKey, { ivB64, payloadB64 }) {
-  const iv = unb64(ivB64);
-  const payload = unb64(payloadB64);
-  const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, encKey, payload);
-  return JSON.parse(dec.decode(new Uint8Array(plaintext)));
+  if (!encKey) {
+    throw new DecryptionError('Encryption key is required', 'KEY_MISSING', 'CRITICAL');
+  }
+  if (!ivB64 || !payloadB64) {
+    throw new DecryptionError('Sealed object must have ivB64 and payloadB64', 'INVALID_SEALED_OBJ', 'CRITICAL');
+  }
+
+  let iv, payload;
+  try {
+    iv = unb64(ivB64);
+    payload = unb64(payloadB64);
+  } catch (err) {
+    await auditCryptoEvent(
+      'B64_DECODE_FAILED',
+      'Failed to decode base64 from sealed object',
+      'WARN',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    throw new DecryptionError('Invalid sealed object encoding', 'B64_DECODE_FAILED', 'CRITICAL');
+  }
+
+  let plaintext;
+  try {
+    plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, encKey, payload);
+  } catch (err) {
+    await auditCryptoEvent(
+      'DECRYPT_FAILED',
+      'AES-GCM decryption failed',
+      'CRITICAL',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    // Do not reveal whether the failure was due to wrong key vs. corrupted data
+    throw new DecryptionError('Decryption failed', 'DECRYPT_FAILED', 'CRITICAL');
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(dec.decode(new Uint8Array(plaintext)));
+  } catch (err) {
+    await auditCryptoEvent(
+      'JSON_PARSE_FAILED',
+      'Decrypted payload is not valid JSON',
+      'CRITICAL'
+    );
+    throw new DecryptionError('Decrypted payload is not valid JSON', 'JSON_PARSE_FAILED', 'CRITICAL');
+  }
+
+  return parsed;
 }
 
 export async function hmacB64(macKey, text) {
-  const sig = await crypto.subtle.sign('HMAC', macKey, enc.encode(String(text)));
+  if (!macKey) {
+    throw new CryptoError('MAC key is required', 'KEY_MISSING', 'CRITICAL');
+  }
+  if (text === undefined) {
+    throw new CryptoError('Text to MAC must be defined', 'UNDEFINED_TEXT', 'CRITICAL');
+  }
+
+  let sig;
+  try {
+    sig = await crypto.subtle.sign('HMAC', macKey, enc.encode(String(text)));
+  } catch (err) {
+    await auditCryptoEvent(
+      'HMAC_FAILED',
+      'HMAC computation failed',
+      'CRITICAL',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    throw new CryptoError('HMAC failed', 'HMAC_FAILED', 'CRITICAL');
+  }
+
   return b64(new Uint8Array(sig));
 }
 
 export async function verifyHmac(macKey, text, macB64) {
-  const sig = unb64(macB64);
-  return crypto.subtle.verify('HMAC', macKey, sig, enc.encode(String(text)));
+  if (!macKey) {
+    throw new CryptoError('MAC key is required', 'KEY_MISSING', 'CRITICAL');
+  }
+  if (!macB64) {
+    throw new CryptoError('MAC value is required', 'MAC_MISSING', 'CRITICAL');
+  }
+
+  let sig;
+  try {
+    sig = unb64(macB64);
+  } catch (err) {
+    await auditCryptoEvent(
+      'HMAC_VERIFY_B64_FAILED',
+      'Invalid base64 in MAC value',
+      'WARN'
+    );
+    throw new CryptoError('Invalid MAC encoding', 'B64_DECODE_FAILED', 'WARN');
+  }
+
+  let ok;
+  try {
+    ok = await crypto.subtle.verify('HMAC', macKey, sig, enc.encode(String(text)));
+  } catch (err) {
+    await auditCryptoEvent(
+      'HMAC_VERIFY_FAILED',
+      'HMAC verification threw',
+      'WARN',
+      { code: err instanceof Error ? err.name : 'UnknownError' }
+    );
+    // Verification errors return false rather than throwing
+    return false;
+  }
+
+  if (!ok) {
+    await auditCryptoEvent('HMAC_VERIFY_FAILED', 'MAC mismatch', 'WARN');
+  } else {
+    await auditCryptoEvent('HMAC_VERIFY_OK', 'MAC verified', 'INFO');
+  }
+
+  return ok;
 }
