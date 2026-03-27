@@ -1,7 +1,7 @@
 {
   "name": "fortifyos",
   "private": false,
-  "version": "2.3.2",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
