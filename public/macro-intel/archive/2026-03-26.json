@@ -1,11 +1,11 @@
 {
-  "date": "2026-03-27",
-  "status": "active",
+  "date": "2026-03-26",
+  "status": "archived",
   "entries": [
     {
       "session": "evening_wrap",
       "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-03-27T01:04:26.633966-04:00",
+      "timestamp": "2026-03-26T22:02:52.347512-04:00",
       "regimeMode": "mixed",
       "confidence": 0.5,
       "source": "rule_based",
@@ -28,5 +28,6 @@
     }
   ],
   "entryCount": 1,
-  "lastUpdated": "2026-03-27T01:04:26.634816-04:00"
+  "lastUpdated": "2026-03-26T22:02:52.348257-04:00",
+  "archivedAt": "2026-03-27T01:04:26.630435-04:00"
 }
