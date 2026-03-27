@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>TASK-PBR-002 Verification</title></head>
+<body>
+<h1>TASK-PBR-002 Verification</h1>
+<pre id="out"></pre>
+<script type="module">
+import { runAll } from './verification/verify_pbr002.js';
+const el = document.getElementById('out');
+const log = msg => { el.textContent += msg + '\n'; console.log(msg); };
+try {
+  await runAll();
+  log('\nAll tests completed. Open browser DevTools for detailed output.');
+} catch(err) {
+  log('ERROR: ' + err.message);
+}
+</script>
+</body>
+</html>
