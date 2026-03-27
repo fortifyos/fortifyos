@@ -1,17 +1,18 @@
 /**
- * TASK-PBR-002: Database Migrations
+ * TASK-FOS-003: JSDoc Documentation — Database Layer
  *
- * Migration layer for FortifySovereignDB using Dexie.
+ * Documented exports:
+ * - db (Dexie instance), LATEST_SCHEMA_VERSION, getSchemaHealth,
+ *   saveCryptoMeta, getCryptoMeta
  *
- * Schema authority: src/db/sovereignDB.js
- * Migration runner: applied automatically by Dexie on version bumps.
- * Version tracking: db.versionInfo stores applied schema version.
- *
- * Migration contract:
- * - fresh apply: all tables created, all upgrade functions run
- * - repeat apply: idempotent, no data loss
- * - version observable: db.versionInfo.current reflects latest applied
- * - rollback policy: documented below (automated rollback not implemented)
+ * Rollback Policy:
+ *   Automated rollback is NOT implemented. To roll back:
+ *   1. Export all data from affected tables (toCollection().toArray())
+ *   2. Close all DB connections
+ *   3. Delete the IndexedDB database
+ *   4. Downgrade schema version in this file
+ *   5. Re-open the app — fresh at lower version
+ *   Rollback is high-risk for production data. Prefer forward migrations.
  */
 
 import Dexie from 'dexie';
@@ -22,7 +23,10 @@ export const db = new Dexie('FortifySovereignDB');
 // Schema Definitions — one block per version
 // =============================================================================
 
-// v1: initial vault tables (3.0.3)
+/**
+ * v1: initial vault tables (3.0.3)
+ * Tables: auditLog, ingests, signers, macroHistory, agents, cryptoMeta
+ */
 db.version(1).stores({
   auditLog:    '++id, timestamp, type, [timestamp+type], stage, severity',
   ingests:     '++id, date, merchant, amount, category, status',
@@ -32,8 +36,10 @@ db.version(1).stores({
   cryptoMeta:  'id'
 });
 
-// v2: adds local policy table (Never List editor)
-// No data transformation required — new table only.
+/**
+ * v2: adds local policy table (Never List editor)
+ * No data transformation — new table only.
+ */
 db.version(2).stores({
   auditLog:    '++id, timestamp, type, [timestamp+type], stage, severity',
   ingests:     '++id, date, merchant, amount, category, status',
@@ -44,9 +50,10 @@ db.version(2).stores({
   policy:      'id'
 });
 
-// v3: adds seq field to auditLog entries
-// Upgrade: populate seq = id for all existing auditLog rows.
-// This makes seq track the auto-increment id.
+/**
+ * v3: adds seq index to auditLog
+ * Upgrade: sets seq = id for all existing auditLog rows.
+ */
 db.version(3).stores({
   auditLog:    '++id, seq, timestamp, type, [timestamp+type], stage, severity',
   ingests:     '++id, date, merchant, amount, category, status',
@@ -61,9 +68,11 @@ db.version(3).stores({
   });
 });
 
-// v4: vault epoch + lineage binding (epochId) stored per event
-// Upgrade: set epochId = null for all existing auditLog rows.
-// epochId is assigned by the epoch manager at write time, not retroactively.
+/**
+ * v4: adds epochId index to auditLog (vault epoch + lineage binding)
+ * Upgrade: sets epochId = null for all existing auditLog rows.
+ * epochId is assigned by the epoch manager at write time, not retroactively.
+ */
 db.version(4).stores({
   auditLog:    '++id, seq, epochId, timestamp, type, [timestamp+type], stage, severity',
   ingests:     '++id, date, merchant, amount, category, status',
@@ -79,44 +88,24 @@ db.version(4).stores({
 });
 
 // =============================================================================
-// Schema Version Tracking
-// Schema version is the Dexie schema version (not the app version).
-// Latest schema version: 4
+// Schema Version
 // =============================================================================
 
+/**
+ * The current schema version. Increment when adding a new db.version() block.
+ * @type {number}
+ */
 export const LATEST_SCHEMA_VERSION = 4;
 
 // =============================================================================
-// Version Info Helpers
-// Stores current schema version in a dedicated metadata table.
+// Schema Health
 // =============================================================================
 
 /**
- * Gets the current schema version from the DB metadata.
- * Returns null if not yet initialized (fresh DB before first open).
- */
-export async function getSchemaVersion() {
-  const info = await db.table('_versionInfo').get('schema');
-  return info?.version ?? null;
-}
-
-/**
- * Sets the current schema version in DB metadata.
- * Called after a successful migration.
- */
-async function setSchemaVersion(version) {
-  await db.table('_versionInfo').put({ id: 'schema', version });
-}
-
-// =============================================================================
-// Migration Runner
-// Dexie applies upgrades automatically on version bumps.
-// This function provides observability and validation.
-// =============================================================================
-
-/**
- * Runs schema health check.
- * Returns { schemaVersion, tableCount, ok }.
+ * Returns a snapshot of the current schema state.
+ * Use for diagnostics and version reporting.
+ *
+ * @returns {Promise<{ schemaVersion: number, tableCount: number, tables: string[], ok: boolean }>}
  */
 export async function getSchemaHealth() {
   const schemaVersion = LATEST_SCHEMA_VERSION;
@@ -130,31 +119,25 @@ export async function getSchemaHealth() {
 }
 
 // =============================================================================
-// Rollback Policy
-// ================
-// Rollback from vN to v(N-1) is NOT automated.
-//
-// Manual rollback procedure:
-// 1. Export all data from affected tables (toCollection().toArray())
-// 2. Close all DB connections
-// 3. Delete the IndexedDB database (browser: DevTools > Application > IndexedDB > FortifySovereignDB > Delete)
-// 4. Downgrade schema version in this file
-// 5. Re-open the app — data starts fresh at lower version
-//
-// Rollback is high-risk for production data. Prefer forward migrations.
-// If data corruption occurs: the only safe recovery path is from a backup,
-// not from a version downgrade. This is consistent with FortifyOS sovereignty principle:
-// data integrity is the user's responsibility; the system provides forward migration only.
+// Crypto Metadata Helpers
 // =============================================================================
 
-// =============================================================================
-// Convenience Exports
-// =============================================================================
-
+/**
+ * Saves the primary crypto metadata object.
+ * Overwrites any existing record at id='primary'.
+ *
+ * @param {object} meta - Crypto metadata to store
+ * @returns {Promise<void>}
+ */
 export async function saveCryptoMeta(meta) {
   await db.cryptoMeta.put({ id: 'primary', ...meta });
 }
 
+/**
+ * Retrieves the primary crypto metadata object.
+ *
+ * @returns {Promise<object|undefined>}
+ */
 export async function getCryptoMeta() {
   return await db.cryptoMeta.get('primary');
 }

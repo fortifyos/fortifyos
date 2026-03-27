@@ -71,6 +71,15 @@ async function auditCryptoEvent(event, message, severity = 'INFO', extra = {}) {
 // Core Operations
 // =============================================================================
 
+/**
+ * Initializes the Sovereignty key set using the configured KeyProvider.
+ * Returns encKey and macKey for use with sealJSON / hmacB64.
+ *
+ * @param {{ passphrase?: string }} [opts]
+ * @param {string} [opts.passphrase] - Passphrase to pass to the key provider (provider-dependent)
+ * @returns {Promise<{ encKey: CryptoKey, macKey: CryptoKey, providerId: string }>}
+ * @throws {KeyProviderError} If the key provider is unavailable or initialization fails
+ */
 export async function initSovereignKey({ passphrase } = {}) {
   let provider;
   try {
@@ -119,6 +128,15 @@ export async function initSovereignKey({ passphrase } = {}) {
   return { encKey: result.encKey, macKey: result.macKey, providerId: provider.id };
 }
 
+/**
+ * Encrypts a serializable object to a sealed JSON blob using AES-256-GCM.
+ * The result contains ivB64 and payloadB64 suitable for storage.
+ *
+ * @param {CryptoKey} encKey - AES-256-GCM key
+ * @param {object} obj - Serializable object to encrypt
+ * @returns {Promise<{ ivB64: string, payloadB64: string }>}
+ * @throws {EncryptionError} If encKey is missing, obj is undefined, or encryption fails
+ */
 export async function encryptJSON(encKey, obj) {
   if (!encKey) {
     throw new EncryptionError('Encryption key is required', 'KEY_MISSING', 'CRITICAL');
@@ -164,6 +182,15 @@ export async function encryptJSON(encKey, obj) {
   return { ivB64: b64(iv), payloadB64: b64(new Uint8Array(ciphertext)) };
 }
 
+/**
+ * Decrypts a sealed blob (from encryptJSON) back to a plain object.
+ *
+ * @param {CryptoKey} encKey - AES-256-GCM key (same key used to encrypt)
+ * @param {{ ivB64: string, payloadB64: string }} sealed - Sealed object from encryptJSON
+ * @returns {Promise<object>} Decrypted and parsed JSON object
+ * @throws {DecryptionError} If encKey or sealed fields are missing, or decryption fails.
+ *   Note: decryption failures do not reveal whether the key was wrong or the data was corrupted.
+ */
 export async function decryptJSON(encKey, { ivB64, payloadB64 }) {
   if (!encKey) {
     throw new DecryptionError('Encryption key is required', 'KEY_MISSING', 'CRITICAL');
@@ -215,6 +242,14 @@ export async function decryptJSON(encKey, { ivB64, payloadB64 }) {
   return parsed;
 }
 
+/**
+ * Computes HMAC-SHA256 of a text string and returns the result as base64.
+ *
+ * @param {CryptoKey} macKey - HMAC key
+ * @param {string} text - Text to authenticate
+ * @returns {Promise<string>} Base64-encoded HMAC-SHA256
+ * @throws {CryptoError} If macKey is missing or text is undefined
+ */
 export async function hmacB64(macKey, text) {
   if (!macKey) {
     throw new CryptoError('MAC key is required', 'KEY_MISSING', 'CRITICAL');
@@ -239,6 +274,16 @@ export async function hmacB64(macKey, text) {
   return b64(new Uint8Array(sig));
 }
 
+/**
+ * Verifies an HMAC over a text string.
+ * Returns false if the MAC does not match — does not throw on verification failure.
+ *
+ * @param {CryptoKey} macKey - HMAC key
+ * @param {string} text - Text that was authenticated
+ * @param {string} macB64 - Base64-encoded HMAC to verify
+ * @returns {Promise<boolean>} True if MAC is valid, false otherwise
+ * @throws {CryptoError} If macKey or macB64 is missing
+ */
 export async function verifyHmac(macKey, text, macB64) {
   if (!macKey) {
     throw new CryptoError('MAC key is required', 'KEY_MISSING', 'CRITICAL');

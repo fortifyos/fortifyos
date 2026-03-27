@@ -1,16 +1,23 @@
 /**
- * TASK-PBR-003: Alert Adapters
+ * TASK-FOS-003: JSDoc Documentation — Cross-Platform Alert System
  *
- * Pluggable delivery adapters for cross-platform alert dispatch.
- * Each adapter implements:
- *   send(alert) — deliver the alert
- *   isAvailable() — returns true if this platform can use this adapter
+ * Documented exports:
+ * - createConsoleAdapter, createBroadcastAdapter, createNotificationAdapter,
+ *   createWebhookAdapter, createDefaultAdapters
  */
 
 // =============================================================================
 // Console Adapter — always available, logs to developer console
 // =============================================================================
 
+/**
+ * Creates a ConsoleAdapter — the fallback alert adapter.
+ * Always available in any JS environment with a console.
+ *
+ * @param {{ logLevel?: string }} [options]
+ * @param {string} [options.logLevel='info'] - Minimum log level ('debug'|'info'|'warn'|'error')
+ * @returns {{ name: string, isAvailable: function(): boolean, send: function(object): Promise<void> }}
+ */
 export function createConsoleAdapter({ logLevel = 'info' } = {}) {
   const levels = ['debug', 'info', 'warn', 'error'];
   const effective = levels.includes(logLevel) ? logLevel : 'info';
@@ -34,6 +41,7 @@ export function createConsoleAdapter({ logLevel = 'info' } = {}) {
         case 'INFO':
         default:
           console.info(msg);
+          break;
       }
     },
   };
@@ -43,6 +51,16 @@ export function createConsoleAdapter({ logLevel = 'info' } = {}) {
 // Broadcast Adapter — Web BroadcastChannel API, cross-tab within same origin
 // =============================================================================
 
+/**
+ * Creates a BroadcastAdapter — delivers alerts via BroadcastChannel API.
+ * Allows other tabs/windows of the same origin to receive alerts.
+ * Requires browsers that support the BroadcastChannel API (not available in all workers).
+ *
+ * @param {{ channelName?: string, enabled?: boolean }} [options]
+ * @param {string} [options.channelName='fortify-alerts'] - BroadcastChannel name
+ * @param {boolean} [options.enabled=true] - Set false to disable
+ * @returns {{ name: string, isAvailable: function(): boolean, send: function(object): Promise<void> }}
+ */
 export function createBroadcastAdapter({ channelName = 'fortify-alerts', enabled = true } = {}) {
   let bc = null;
   let available = null; // cached isAvailable result
@@ -78,7 +96,7 @@ export function createBroadcastAdapter({ channelName = 'fortify-alerts', enabled
       const ch = getChannel();
       if (!ch) throw new Error('BroadcastChannel not available');
 
-      // Omit sensitive fields before broadcasting
+      // Only public alert fields are broadcast — no sensitive data
       const payload = {
         id: alert.id,
         title: alert.title,
@@ -96,10 +114,18 @@ export function createBroadcastAdapter({ channelName = 'fortify-alerts', enabled
 
 // =============================================================================
 // Notification Adapter — Web Notifications API
-// Requires user permission for non-persistent notifications.
-// Falls back gracefully if permission denied or API unavailable.
 // =============================================================================
 
+/**
+ * Creates a NotificationAdapter — delivers native OS notifications via the Web Notifications API.
+ * Requires user permission to be granted separately from the app.
+ * If permission is 'default' (not yet asked), isAvailable returns false and send throws.
+ * CRITICAL alerts remain open until dismissed; INFO/WARN auto-close after 8 seconds.
+ *
+ * @param {{ permission?: string }} [options]
+ * @param {string} [options.permission='default'] - 'default'|'granted'|'denied'
+ * @returns {{ name: string, isAvailable: function(): boolean, send: function(object): Promise<void> }}
+ */
 export function createNotificationAdapter({ permission = 'default' } = {}) {
   return {
     name: 'NotificationAdapter',
@@ -142,6 +168,17 @@ export function createNotificationAdapter({ permission = 'default' } = {}) {
 // Webhook Adapter — HTTP POST to a configurable endpoint
 // =============================================================================
 
+/**
+ * Creates a WebhookAdapter — POSTs JSON alert payload to a configurable HTTP endpoint.
+ * Fails fast on network errors (5 second timeout by default).
+ * The webhook URL must be a valid, parseable URL.
+ *
+ * @param {{ url?: string, headers?: object.<string,string>, timeoutMs?: number }} [options]
+ * @param {string} [options.url] - Full HTTPS (or HTTP) URL to POST alerts to
+ * @param {object.<string,string>} [options.headers={}] - Additional HTTP headers (e.g. Authorization)
+ * @param {number} [options.timeoutMs=5000] - Request timeout in milliseconds
+ * @returns {{ name: string, isAvailable: function(): boolean, send: function(object): Promise<void> }}
+ */
 export function createWebhookAdapter({ url, headers = {}, timeoutMs = 5_000 } = {}) {
   return {
     name: 'WebhookAdapter',
@@ -196,13 +233,19 @@ export function createWebhookAdapter({ url, headers = {}, timeoutMs = 5_000 } = 
 }
 
 // =============================================================================
-// Adapter Set Factory — creates all adapters with defaults
+// Adapter Set Factory
 // =============================================================================
 
 /**
- * Creates all default adapters.
- * @param {object} config — { webhookUrl?, broadcastChannel?, notificationPermission? }
- * @returns {Array<{send, isAvailable, name}>}
+ * Creates all default adapters with sensible defaults.
+ * ConsoleAdapter is always present as fallback.
+ * WebhookAdapter is only included if webhookUrl is provided.
+ *
+ * @param {{ webhookUrl?: string, broadcastChannel?: string, notificationPermission?: string }} [config]
+ * @param {string} [config.webhookUrl] - If provided, a WebhookAdapter is added
+ * @param {string} [config.broadcastChannel='fortify-alerts'] - BroadcastChannel name
+ * @param {string} [config.notificationPermission='default'] - Notification permission state
+ * @returns {Array<{send: function, isAvailable: function, name: string}>}
  */
 export function createDefaultAdapters(config = {}) {
   return [

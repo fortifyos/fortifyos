@@ -69,11 +69,36 @@ async function auditSigningEvent(event, message, severity = 'INFO', extra = {}) 
 // Core Operations
 // =============================================================================
 
+// =============================================================================
+// Exported Functions
+// =============================================================================
+
+/**
+ * Computes SHA-256 of the given text and returns the digest as a base64 string.
+ *
+ * @param {string} text - Input text to hash
+ * @returns {Promise<string>} Base64-encoded SHA-256 digest
+ */
 export async function sha256B64(text) {
   const h = await crypto.subtle.digest('SHA-256', enc.encode(String(text)));
   return b64(new Uint8Array(h));
 }
 
+/**
+ * Ensures a signing keypair exists for the vault.
+ * Loads an existing keypair from cryptoMeta if present; otherwise generates a new one.
+ * The private key is sealed with encKey before storage.
+ *
+ * @param {object} opts
+ * @param {object} opts.encKey - CryptoKey to seal the private key
+ * @param {object} [opts.cryptoMeta] - Existing crypto metadata (checked for existing keypair)
+ * @param {function} opts.saveCryptoMeta - Async function to persist updated cryptoMeta
+ * @param {function} opts.encryptJSON - Async function(encKey, obj) → sealed object
+ * @param {function} opts.decryptJSON - Async function(encKey, sealed) → plain object
+ * @returns {Promise<{ pubKey: CryptoKey, privKey: CryptoKey, fingerprintB64: string }>}
+ * @throws {CryptoKeyError} If encKey is missing, or if key import/export fails
+ * @throws {SigningError} If key sealing or metadata save fails
+ */
 export async function ensureSigningKeys({ encKey, cryptoMeta, saveCryptoMeta, encryptJSON, decryptJSON }) {
   const STAGE = 'vaultSigning';
 
@@ -276,6 +301,16 @@ export async function ensureSigningKeys({ encKey, cryptoMeta, saveCryptoMeta, en
   }
 }
 
+/**
+ * Signs an export object with the given private key.
+ * The object is canonicalized (sorted keys) before signing.
+ *
+ * @param {CryptoKey} privKey - ECDSA P-256 private key with 'sign' usage
+ * @param {object} exportObj - Object to sign
+ * @returns {Promise<string>} Base64-encoded ECDSA signature
+ * @throws {CryptoKeyError} If privKey is missing
+ * @throws {SigningError} If signing operation fails
+ */
 export async function signExport(privKey, exportObj) {
   if (!privKey) {
     throw new CryptoKeyError('Private key is required', 'KEY_MISSING', 'CRITICAL');
@@ -307,6 +342,17 @@ export async function signExport(privKey, exportObj) {
   return b64(new Uint8Array(sig));
 }
 
+/**
+ * Verifies a signature over an export object.
+ * Returns false if the signature does not match — does not throw on verification failure.
+ *
+ * @param {CryptoKey} pubKey - ECDSA P-256 public key with 'verify' usage
+ * @param {object} exportObj - Object that was signed
+ * @param {string} sigB64 - Base64-encoded ECDSA signature
+ * @returns {Promise<boolean>} True if signature is valid, false otherwise
+ * @throws {CryptoKeyError} If pubKey is missing
+ * @throws {SigningError} If exportObj or sigB64 is missing
+ */
 export async function verifyExportSignature(pubKey, exportObj, sigB64) {
   if (!pubKey) {
     throw new CryptoKeyError('Public key is required', 'KEY_MISSING', 'CRITICAL');

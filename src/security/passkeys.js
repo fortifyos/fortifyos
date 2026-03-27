@@ -64,6 +64,11 @@ async function auditPasskeyEvent(event, message, severity = 'INFO', extra = {}) 
 // Core Operations
 // =============================================================================
 
+/**
+ * Checks whether passkeys (platform authenticators) are available in the current browser.
+ *
+ * @returns {Promise<{ supported: boolean }>} supported is true if a user-verifying platform authenticator is present
+ */
 export async function passkeysSupported() {
   if (!window.PublicKeyCredential) {
     await auditPasskeyEvent('PASSKEYS_UNSUPPORTED', 'PublicKeyCredential not available in this browser', 'WARN');
@@ -109,6 +114,18 @@ export async function prfSupported() {
   return hasApi;
 }
 
+/**
+ * Creates a new passkey credential for the given user.
+ * Requires a platform authenticator (TouchID, FaceID, Windows Hello, etc.).
+ *
+ * @param {{ rpName?: string, userName?: string, userId?: string }} [opts]
+ * @param {string} [opts.rpName='FORTIFY OS'] - Relying Party name displayed in the authenticator prompt
+ * @param {string} [opts.userName='Primary'] - User display name
+ * @param {string} [opts.userId='primary'] - Stable user identifier (used as credential ID seed)
+ * @returns {Promise<{ credentialIdB64u: string }>} Base64URL-encoded credential ID
+ * @throws {PasskeyError} If required params are missing or creation fails
+ * @throws {PasskeyNotAvailableError} If the WebAuthn API is unavailable
+ */
 export async function createPasskey({ rpName = 'FORTIFY OS', userName = 'Primary', userId = 'primary' }) {
   const STAGE = 'passkeys';
 
@@ -180,6 +197,17 @@ export async function createPasskey({ rpName = 'FORTIFY OS', userName = 'Primary
   return { credentialIdB64u };
 }
 
+/**
+ * Authenticates a user using an existing passkey credential.
+ * Uses platform UI ( biometrics, PIN) to verify the user.
+ *
+ * @param {{ credentialIdB64u?: string|null, prfSaltB64u?: string|null }} [opts]
+ * @param {string|null} [opts.credentialIdB64u] - Base64URL-encoded credential ID to authenticate with. null = any registered credential.
+ * @param {string|null} [opts.prfSaltB64u] - Base64URL-encoded salt for PRF extension (used for key derivation)
+ * @returns {Promise<{ verified: boolean, prfBytes?: Uint8Array|null }>} verified is true on success; prfBytes present if PRF was used
+ * @throws {PasskeyAuthError} If authentication fails or is cancelled
+ * @throws {PasskeyNotAvailableError} If the WebAuthn API is unavailable
+ */
 export async function authenticatePasskey({ credentialIdB64u = null, prfSaltB64u = null }) {
   const STAGE = 'passkeys';
 
@@ -250,6 +278,11 @@ export async function authenticatePasskey({ credentialIdB64u = null, prfSaltB64u
   };
 }
 
+/**
+ * Generates a new cryptographically random PRF salt as a Base64URL-encoded string.
+ *
+ * @returns {string} Base64URL-encoded random 32-byte salt
+ */
 export function newPrfSalt() {
   const salt = crypto.getRandomValues(new Uint8Array(32));
   return toB64Url(salt);

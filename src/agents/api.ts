@@ -1,7 +1,23 @@
 /**
- * Pattern Blue Agent API
- * TASK-PBR-001: API Input Validation
- * TASK-FOS-002: Security Error Handling
+ * TASK-FOS-003: JSDoc Documentation — Agent API
+ *
+ * Documented exports:
+ * - SecurityError
+ * - createAgentAPI
+ *
+ * Usage:
+ * ```js
+ * import { createAgentAPI } from './api.js';
+ *
+ * const agentRequest = createAgentAPI({
+ *   getCapabilities: () => ['READ_VELOCITY', 'READ_RUNWAY', 'PROPOSE_ACTION'],
+ *   getStage: () => 'sovereign',
+ *   getSnapshots: () => ({ velocity: 67, runway: 48 }),
+ *   verifyLeaseToken: async (token) => ({ ok: true, payload: { caps: ['PROPOSE_ACTION'] } }),
+ * });
+ *
+ * const result = await agentRequest({ type: 'READ_VELOCITY' });
+ * ```
  */
 
 import {
@@ -14,12 +30,22 @@ import {
 } from './api.types';
 
 import { getNeverListPolicy, buildNeverListRules } from '../policy/neverListStore';
-import { secureLogRef } from './secureLogRef';
+import { secureLogRef } from './secureLogRef.js';
 
 // =============================================================================
-// Error Classes (TASK-FOS-002)
+// Error Classes
 // =============================================================================
 
+/**
+ * SecurityError — thrown when a security-relevant operation fails and cannot
+ * be meaningfully handled by the caller. All SecurityError instances are logged
+ * via secureLogRef before propagation.
+ *
+ * @extends Error
+ * @property {string} code - Machine-readable error identifier
+ * @property {'WARN'|'CRITICAL'} severity - Impact level
+ * @property {Record<string, unknown>} [context] - Additional context for audit log
+ */
 export class SecurityError extends Error {
   constructor(
     message: string,
@@ -45,9 +71,19 @@ function ok<T>(data: T): SuccessResult<T> {
 }
 
 // =============================================================================
-// API Factory
+// Agent API Factory
 // =============================================================================
 
+/**
+ * Creates an agentRequest handler with the given dependency providers.
+ *
+ * @param {object} deps - Dependency providers
+ * @param {function(): string[]} deps.getCapabilities - Returns current granted capability list
+ * @param {function(): string} deps.getStage - Returns current Sovereignty stage name
+ * @param {function(): { velocity: number, runway: number }} deps.getSnapshots - Returns current metrics
+ * @param {function(string): Promise<{ ok: boolean, reason?: string, payload?: { caps?: string[] } }>} deps.verifyLeaseToken - Validates a lease token
+ * @returns {function(unknown): Promise<APIResult>} - The agent request handler
+ */
 export function createAgentAPI({
   getCapabilities,
   getStage,
@@ -60,21 +96,22 @@ export function createAgentAPI({
   verifyLeaseToken: (token: string) => Promise<{ ok: boolean; reason?: string; payload?: { caps?: string[] } }>;
 }) {
   return async function agentRequest(req: unknown): Promise<APIResult> {
-    // TASK-PBR-001: Canonical validation entry point
+    // Validate against canonical schema
     const validation = validateAgentRequest(req);
     if (!validation.ok) return validation;
 
+    // Capability check
     const caps = getCapabilities();
     if (!caps.includes(validation.type)) {
       return deny(`Capability not granted: ${validation.type}`, ValidationErrorCodes.CAPABILITY_NOT_GRANTED);
     }
 
-    // TASK-FOS-002: Lease verification with logging
+    // Lease token verification for PROPOSE_ACTION
     if (validation.type === CAPABILITIES.PROPOSE_ACTION) {
       if (typeof verifyLeaseToken !== 'function') {
         throw new SecurityError('Lease verification unavailable', 'LEASE_VERIFY_UNAVAILABLE', 'CRITICAL');
       }
-      const lease = await verifyLeaseToken((validation as { leaseToken: string }).leaseToken);
+      const lease = await verifyLeaseToken((validation as Extract<typeof validation, { leaseToken: string }>).leaseToken);
       if (!lease.ok) {
         await secureLogRef()('LEASE_REJECTED', `Lease token rejected: ${lease.reason}`, getStage(), 'WARN', {});
         return deny('Lease token invalid', ValidationErrorCodes.LEASE_TOKEN_INVALID);
@@ -85,17 +122,22 @@ export function createAgentAPI({
       }
     }
 
+    // Request handling
     const snaps = getSnapshots();
 
     switch (validation.type) {
       case CAPABILITIES.READ_VELOCITY:
         return ok({ velocity: snaps.velocity });
+
       case CAPABILITIES.READ_RUNWAY:
         return ok({ runway: snaps.runway });
+
       case CAPABILITIES.PROPOSE_ACTION: {
-        const result = await auditAgentProposal((validation as { proposal: Record<string, unknown> }).proposal, getStage());
+        const validated = validation as Extract<typeof validation, { type: typeof CAPABILITIES.PROPOSE_ACTION; proposal: unknown }>;
+        const result = await auditAgentProposal(validated.proposal as Record<string, unknown>, getStage());
         return ok({ result });
       }
+
       default:
         return deny('Unknown capability', ValidationErrorCodes.UNKNOWN_CAPABILITY);
     }
@@ -103,9 +145,18 @@ export function createAgentAPI({
 }
 
 // =============================================================================
-// Proposal Audit — TASK-FOS-002: No silent catches
+// Proposal Audit
 // =============================================================================
 
+/**
+ * Audits a proposed agent action against the Sovereignty Never List.
+ * Returns approval or rejection without throwing under normal conditions.
+ * Throws SecurityError on policy evaluation failures.
+ *
+ * @param {Record<string, unknown>} proposal - The proposed action record
+ * @param {string} stage - Current Sovereignty stage
+ * @returns {Promise<{ status: 'APPROVED'|'REJECTED', reason?: string, signature?: string }>}
+ */
 async function auditAgentProposal(proposal: Record<string, unknown>, stage: string): Promise<{ status: string; reason?: string; signature?: string }> {
   try {
     const policy = await getNeverListPolicy();
@@ -122,11 +173,24 @@ async function auditAgentProposal(proposal: Record<string, unknown>, stage: stri
     const velocityImpact = typeof proposal?.impact === 'number' ? proposal.impact : 0;
 
     if (isViolation || velocityImpact < 0) {
-      await secureLogRef()('AGENT_VETO', `Agent proposed ${proposal?.action || 'UNKNOWN'} - VETOED`, stage, 'WARN', { velocityImpact });
+      await secureLogRef()(
+        'AGENT_VETO',
+        `Agent proposed ${proposal?.action || 'UNKNOWN'} - VETOED`,
+        stage,
+        'WARN',
+        { velocityImpact }
+      );
       return { status: 'REJECTED', reason: 'Sovereign Velocity Violation' };
     }
 
-    await secureLogRef()('AGENT_APPROVE', `Agent proposed ${proposal?.action || 'UNKNOWN'} - APPROVED`, stage, 'INFO', { velocityImpact });
+    await secureLogRef()(
+      'AGENT_APPROVE',
+      `Agent proposed ${proposal?.action || 'UNKNOWN'} - APPROVED`,
+      stage,
+      'INFO',
+      { velocityImpact }
+    );
+
     return { status: 'APPROVED', signature: 'KNOX_V3_AUTH' };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

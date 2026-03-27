@@ -1,19 +1,28 @@
 /**
- * Pattern Blue Agent API — TypeScript Validation Layer
- * TASK-PBR-001: API Input Validation
+ * TASK-FOS-003: JSDoc Documentation — API Types and Validation
  *
- * Canonical input contracts for all API requests.
- * Enforces deterministic rejection of malformed input.
+ * Documented exports:
+ * - CAPABILITIES, CapabilityType
+ * - ValidationErrorCodes, ValidationErrorCode
+ * - SuccessResult, FailureResult, APIResult
+ * - AgentProposal
+ * - validateAgentRequest
  */
 
+/** Recognized capability types for agent requests. */
 export const CAPABILITIES = Object.freeze({
+  /** Read the current Sovereignty Velocity metric. */
   READ_VELOCITY: 'READ_VELOCITY',
+  /** Read the current Runway metric. */
   READ_RUNWAY: 'READ_RUNWAY',
+  /** Submit a proposed agent action for audit and veto review. */
   PROPOSE_ACTION: 'PROPOSE_ACTION',
 } as const);
 
+/** @type {string} */
 export type CapabilityType = typeof CAPABILITIES[keyof typeof CAPABILITIES];
 
+/** Error codes returned on validation failure. */
 export const ValidationErrorCodes = Object.freeze({
   INVALID_REQUEST_SHAPE: 'INVALID_REQUEST_SHAPE',
   MISSING_REQUIRED_FIELD: 'MISSING_REQUIRED_FIELD',
@@ -25,31 +34,59 @@ export const ValidationErrorCodes = Object.freeze({
   PROPOSAL_INVALID: 'PROPOSAL_INVALID',
 } as const);
 
+/** @type {string} */
 export type ValidationErrorCode = typeof ValidationErrorCodes[keyof typeof ValidationErrorCodes];
 
+/**
+ * Success response envelope.
+ * @template T
+ * @property {true} ok
+ * @property {T} [key] - Result data (varies by request type)
+ */
 export interface SuccessResult<T = unknown> {
   ok: true;
   [key: string]: T;
 }
 
+/**
+ * Failure response envelope.
+ * @property {false} ok
+ * @property {string} reason - Human-readable reason for rejection
+ * @property {ValidationErrorCode} [code] - Machine-readable error code
+ */
 export interface FailureResult {
   ok: false;
   reason: string;
   code?: ValidationErrorCode;
 }
 
+/** @template T */
 export type APIResult<T = unknown> = SuccessResult<T> | FailureResult;
 
+/**
+ * An agent-proposed action submitted for Sovereignty audit.
+ * @property {string} [action] - Named action being proposed
+ * @property {number} [impact] - Estimated velocity impact (-100 to +100)
+ */
 export interface AgentProposal {
   action?: string;
   impact?: number;
   [key: string]: unknown;
 }
 
-// =============================================================================
-// Validators
-// =============================================================================
-
+/**
+ * Validates an incoming agent API request against known capability schemas.
+ * Returns a typed SuccessResult on valid requests, FailureResult on all failures.
+ *
+ * Validation rules:
+ * - Request must be a non-null object
+ * - 'type' field must be present and a known CapabilityType
+ * - PROPOSE_ACTION requires leaseToken (non-empty string) and proposal (object)
+ * - All other capability types require no additional fields
+ *
+ * @param {unknown} req - The raw incoming request
+ * @returns {APIResult} - SuccessResult (with type field) or FailureResult with code
+ */
 export function validateAgentRequest(req: unknown): APIResult {
   if (req === null || req === undefined) {
     return { ok: false, reason: 'Request is null or undefined', code: ValidationErrorCodes.INVALID_REQUEST_SHAPE };
