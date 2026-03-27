@@ -81,3 +81,4 @@ runtime documentation.
 ## Notes
 - The current supported product surface is the local web app and optional local-first hybrid backend model.
 - Passkeys/WebAuthn can be added as an unlock gate without implying a native mobile shell requirement.
+# temp test Fri Mar 27 08:14:59 EDT 2026
