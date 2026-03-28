@@ -70,7 +70,8 @@ Operator command:
 
 Default behavior:
 
-- standard scan profile
+- V2 default daily path
+- diff-aware daily scan behavior
 - all enabled v1 scanners
 - full markdown report
 - summary JSON refresh
@@ -80,7 +81,7 @@ Default behavior:
 
 Engine command:
 
-`python -m cyber_mythos.runner.main audit --target <path>`
+`python -m cyber_mythos.runner.main audit --diff --target <path>`
 
 ---
 
@@ -189,7 +190,7 @@ Supported profiles:
 
 Profile behavior:
 
-- `default` -> standard daily audit behavior
+- `default` -> V2 diff-aware daily audit behavior
 - `weekly` -> deeper audit, baseline comparison, extended checks
 
 Profiles must be passed consistently across:
@@ -208,6 +209,14 @@ These commands are not part of scheduled heartbeat execution by default:
 - `/baseline <target>`
 
 They are manual or Alfred-triggered operations only.
+
+## V2 Daily Default
+
+Cyber Mythos V2 is the default daily operating path.
+
+- Daily Alfred audit routing should prefer diff-aware scans for lower-noise operator runs
+- Weekly Alfred audit routing should prefer the `weekly` profile for deeper validation and baseline comparison
+- PR review flows should use `--profile pr` when change intelligence is the goal
 
 ---
 
