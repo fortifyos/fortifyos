@@ -1,0 +1,10 @@
+{
+  "repos": [
+    {
+      "name": "fortifyos",
+      "path": ".",
+      "last_scan": "",
+      "score": 100
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "repo_recon.framework_detection": {
+    "rule_id": "CM-RECON-001",
+    "category": "recon",
+    "severity": "low",
+    "confidence": "low",
+    "enabled": true,
+    "description": "Identify exposed frameworks and operational surfaces.",
+    "remediation": "Review detected operational surfaces and ensure only required interfaces remain exposed."
+  },
+  "secrets_scan.hardcoded_secret": {
+    "rule_id": "CM-SECRETS-001",
+    "category": "secrets",
+    "severity": "critical",
+    "confidence": "medium",
+    "enabled": true,
+    "description": "Detect obvious hardcoded secrets and API tokens.",
+    "remediation": "Move the secret to an environment variable or secret manager and rotate the exposed value."
+  },
+  "auth_scan.missing_auth_guard": {
+    "rule_id": "CM-AUTH-001",
+    "category": "authorization",
+    "severity": "high",
+    "confidence": "medium",
+    "enabled": true,
+    "description": "Detect routes and handlers missing explicit auth checks.",
+    "remediation": "Add centralized auth middleware and explicit role or session validation to the route."
+  },
+  "route_scan.exposed_admin_route": {
+    "rule_id": "CM-ROUTES-001",
+    "category": "routes",
+    "severity": "high",
+    "confidence": "medium",
+    "enabled": true,
+    "description": "Detect admin-style routes with public exposure signals.",
+    "remediation": "Place admin routes behind explicit middleware or segment them behind private or internal routing."
+  },
+  "config_scan.risky_default": {
+    "rule_id": "CM-CONFIG-001",
+    "category": "configuration",
+    "severity": "medium",
+    "confidence": "low",
+    "enabled": true,
+    "description": "Detect permissive or development-oriented configuration defaults.",
+    "remediation": "Scope development-only settings to local environments and fail closed in shared or production contexts."
+  },
+  "dependency_scan.risky_dependency": {
+    "rule_id": "CM-DEPS-001",
+    "category": "dependencies",
+    "severity": "medium",
+    "confidence": "medium",
+    "enabled": true,
+    "description": "Flag risky dependency categories and manifest drift heuristics.",
+    "remediation": "Review necessity, pin versions deliberately, and isolate unsafe execution patterns behind strict validation."
+  },
+  "ai_risk_scan.unsafe_tooling": {
+    "rule_id": "CM-AI-001",
+    "category": "ai-risk",
+    "severity": "high",
+    "confidence": "medium",
+    "enabled": true,
+    "description": "Detect unsafe AI agent tool or prompt handling patterns.",
+    "remediation": "Restrict tool permissions, validate tool inputs, and require explicit allowlists for filesystem or process access."
+  }
+}

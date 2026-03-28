@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cyber Mythos Latest Summary",
+  "type": "object",
+  "required": [
+    "run_id",
+    "target",
+    "score",
+    "coverage",
+    "risk_level",
+    "totals",
+    "top_findings",
+    "status",
+    "report_path"
+  ],
+  "properties": {
+    "run_id": {"type": "string"},
+    "target": {"type": "string"},
+    "score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "coverage": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "risk_level": {"type": "string"},
+    "totals": {
+      "type": "object",
+      "required": ["critical", "high", "medium", "low"],
+      "properties": {
+        "critical": {"type": "integer", "minimum": 0},
+        "high": {"type": "integer", "minimum": 0},
+        "medium": {"type": "integer", "minimum": 0},
+        "low": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "top_findings": {"type": "array", "items": {"type": "string"}},
+    "status": {"type": "string"},
+    "report_path": {"type": "string"}
+  },
+  "additionalProperties": false
+}
