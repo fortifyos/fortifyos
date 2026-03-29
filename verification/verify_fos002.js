@@ -7,9 +7,9 @@
 import { readFileSync } from 'fs';
 
 const modules = {
-  vaultSigning: '/Users/fortifyos/fortifyos/src/security/vaultSigning.js',
-  passkeys: '/Users/fortifyos/fortifyos/src/security/passkeys.js',
-  sovereignCrypto: '/Users/fortifyos/fortifyos/src/crypto/sovereignCrypto.js',
+  vaultSigning: new URL('../src/security/vaultSigning.js', import.meta.url),
+  passkeys: new URL('../src/security/passkeys.js', import.meta.url),
+  sovereignCrypto: new URL('../src/crypto/sovereignCrypto.js', import.meta.url),
 };
 
 let pass = 0, fail = 0;

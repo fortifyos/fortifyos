@@ -37,6 +37,9 @@ jobs:
           corepack pnpm list vite
           corepack pnpm exec vite --version
 
+      - name: Run canonical release verification suite
+        run: corepack pnpm run verify:release
+
       - name: Build public/macro.json (FRED API, non-blocking)
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
