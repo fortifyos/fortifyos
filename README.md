@@ -28,6 +28,15 @@ npm run build
 npm run preview
 ```
 
+## Release verification
+The canonical release gate for `main` is the locked verifier suite:
+
+```bash
+corepack pnpm run verify:release
+```
+
+GitHub Actions runs this suite before the production Pages build and deploy. A failing verifier blocks release.
+
 ## Deploy to GitHub Pages
 1. Push this project to `main`
 2. Run:

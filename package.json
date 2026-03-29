@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
+    "verify:release": "node verification/verify_pbr001.js && node verification/verify_fos002.js && node verification/verify_pbr002_structural.js && node verification/verify_pbr003.js",
     "update-prices": "node scripts/update-prices.js",
     "build:fresh": "node scripts/update-prices.js && vite build"
   },
