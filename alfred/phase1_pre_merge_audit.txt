@@ -1,0 +1,147 @@
+# CM-ROLLOUT-001 Phase 1 — Pre-Merge Audit
+## Task 1.1 Complete
+
+**Date:** 2026-03-30 17:32 EDT
+**Branch:** fix/typescript-release-hardening
+**Audit performed by:** ALFRED (openclaw_daemon)
+
+---
+
+## Commit Verification
+
+### Required Commits Present
+
+| Commit | Message | Status |
+|--------|---------|--------|
+| 3c130a2f | `feat: Cyber Mythos V1 + V2 (locked)` | ✅ PRESENT |
+| 5d747357 | `docs: make Cyber Mythos V2 the default daily path` | ✅ PRESENT |
+
+### Git Log (Last 10 Commits)
+
+```
+8a346096 Enforce release verification before deploy
+5d747357 docs: make Cyber Mythos V2 the default daily path
+3c130a2f feat: Cyber Mythos V1 + V2 (locked)
+15fb09ac fix: complete TypeScript hardening and reconcile release metadata
+d45d0e35 fix: align dependencies and verifier with actual runtime behavior
+0366e74c docs: correct v1.0.0 audit commit reference
+ec6a0514 docs: R-07→R-09 canonical findings, full 9/9 audit closure
+ba090493 docs: establish R-01→R-09 audit register
+5c209b54 fix: verify_pbr002_structural.js — fix table pattern and rollback check
+35953a2c release: v1.0.0
+```
+
+---
+
+## Directory Verification
+
+### Cyber Mythos Module Structure
+
+**Location:** `agents/cyber-mythos/`
+**Status:** ✅ TRACKED (committed in 3c130a2f)
+
+```
+agents/cyber-mythos/
+├── README.md
+├── SKILL.md
+├── heartbeat.md
+├── pyproject.toml
+├── configs/rules/rules_index.json
+├── schemas/finding.schema.json
+├── schemas/latest-summary.schema.json
+├── src/cyber_mythos/
+│   ├── __init__.py
+│   ├── diff/
+│   │   ├── __init__.py
+│   │   └── diff_engine.py
+│   ├── integrations/
+│   │   ├── __init__.py
+│   │   └── alfred_bridge.py
+│   ├── parsers/
+│   │   ├── __init__.py
+│   │   └── normalize.py
+│   ├── reporting/
+│   │   ├── __init__.py
+│   │   ├── csv_logger.py
+│   │   ├── history_writer.py
+│   │   ├── markdown_report.py
+│   │   └── summary_json.py
+│   ├── rules/
+│   │   ├── __init__.py
+│   │   └── rule_loader.py
+│   ├── runner/
+│   │   ├── __init__.py
+│   │   └── main.py
+│   ├── scanners/
+│   │   ├── __init__.py
+│   │   ├── ai_risk_scan.py
+│   │   ├── auth_scan.py
+│   │   ├── common.py
+│   │   ├── config_scan.py
+│   │   ├── dependency_scan.py
+│   │   ├── repo_recon.py
+│   │   ├── route_scan.py
+│   │   └── secrets_scan.py
+│   └── scoring/
+│       ├── __init__.py
+│       └── score_engine.py
+├── templates/
+│   ├── report-template.md
+│   └── summary-template.json
+└── tests/
+    ├── test_cyber_mythos.py
+    └── fixtures/
+        ├── agent_repo/
+        ├── clean_repo/
+        └── weak_repo/
+```
+
+**Total files:** 106 (excluding __pycache__ and .pyc)
+
+---
+
+## Rule Files Verification
+
+| File | Status |
+|------|--------|
+| `configs/rules/rules_index.json` | ✅ COMMITTED |
+
+---
+
+## Baseline Files
+
+**Status:** No baseline files found in commit history. Baselines are expected to be generated at runtime in `knox/security/baselines/`.
+
+---
+
+## CI Verification Gate Detection
+
+**Commit:** b524db15 (`Enforce CI verification gate before deploy`)
+**Changes:**
+- Added `verify:release` script to package.json
+- Added CI step in `.github/workflows/deploy.yml` that runs `corepack pnpm run verify:release`
+- Fixed absolute paths in `verification/verify_fos002.js` (now uses relative URLs)
+
+**Verifier Suite:**
+```javascript
+node verification/verify_pbr001.js && 
+node verification/verify_fos002.js && 
+node verification/verify_pbr002_structural.js && 
+node verification/verify_pbr003.js
+```
+
+**Impact on Merge:** The CI gate exists on `main` but NOT on `fix/typescript-release-hardening`. After merge, any future CI runs will execute this verification. This is NOT a merge conflict risk — it's a post-merge operational requirement.
+
+---
+
+## Gate Status
+
+**PRE-MERGE AUDIT: PASSED**
+
+- ✅ Required commits present and intact
+- ✅ `agents/cyber-mythos/` directory tracked (not untracked)
+- ✅ Rule files committed
+- ✅ No untracked Cyber Mythos files
+- ⚠️ CI verification gate detected on `main` (not a blocker, but will apply post-merge)
+
+**Ready for Task 1.2 — Dry-Run Merge**
