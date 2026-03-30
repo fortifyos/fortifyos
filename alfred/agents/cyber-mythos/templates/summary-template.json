@@ -1,0 +1,16 @@
+{
+  "run_id": "",
+  "target": "",
+  "score": 100,
+  "coverage": 0.0,
+  "risk_level": "low",
+  "totals": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "top_findings": [],
+  "status": "ok",
+  "report_path": ""
+}

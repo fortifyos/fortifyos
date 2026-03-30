@@ -10,3 +10,8 @@ dist/
 data/tcg/tcg_radar.db
 __pycache__/
 *.pyc
+alfred/agents/cyber-mythos/outputs/
+knox/security/baselines/
+knox/security/security-log.csv
+knox/security/latest-security-summary.json
+knox/security/vulnerability-history.md

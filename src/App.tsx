@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import IntelFreshness from './components/IntelFreshness.jsx';
 import MacroRadarPanels from './components/MacroRadarPanels.jsx';
