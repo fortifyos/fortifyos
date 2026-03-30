@@ -217,7 +217,7 @@ OK
 | File / Directory | Decision | Rationale |
 |------------------|----------|-----------|
 | `phase1_*.txt` (4 files) | ✅ Committed | Gate artifacts — deliverables |
-| `knox/security/baselines/*.json` | ✅ Committed | Persistent system state |
+| `knox/security/baselines/*.json` | `.gitignore` | Runtime artifact — regenerated per clone/workstation |
 | `knox/security/repo-registry.json` | ✅ Committed | Intentional system config |
 | `knox/security/history/` | `.gitignore` | Transient runtime logs |
 | `knox/security/outputs/` | `.gitignore` | Transient scan outputs |
