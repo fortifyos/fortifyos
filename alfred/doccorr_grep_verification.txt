@@ -1,11 +1,14 @@
 # CM-ROLLOUT-001-DOCCORR — Grep Verification
 
 **Date:** 2026-03-30 18:45 EDT
+**Scope:** `alfred/phase1_*.txt` only (not repo-wide)
 **Purpose:** Verify all stale references removed from Phase 1 gate artifacts
 
 ---
 
 ## Verification Commands
+
+All grep checks below are scoped to `phase1_*.txt` in the `alfred/` directory. This is intentional — we are validating the Phase 1 gate artifacts, not making claims about repo-wide content.
 
 ### 1. No references to stale merge commit
 
@@ -88,4 +91,4 @@ phase1_merge_confirmation.txt:181:| Diff mode scopes correctly | ✅ PASS (51/19
 | `372dbc1d` present | present | 4 occurrences | ✅ PASS |
 | `/192` present | present | 2 occurrences | ✅ PASS |
 
-**All grep verification checks passed.**
+**All grep verification checks passed (scoped to `phase1_*.txt`).**
