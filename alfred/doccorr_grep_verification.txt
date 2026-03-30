@@ -1,0 +1,91 @@
+# CM-ROLLOUT-001-DOCCORR — Grep Verification
+
+**Date:** 2026-03-30 18:45 EDT
+**Purpose:** Verify all stale references removed from Phase 1 gate artifacts
+
+---
+
+## Verification Commands
+
+### 1. No references to stale merge commit
+
+```bash
+$ grep -rn "cc3d782d" phase1_*.txt
+# Expected: no output
+```
+
+**Result:** ✅ PASS (no output)
+
+---
+
+### 2. No stale file counts
+
+```bash
+$ grep -rn "/187\|/189" phase1_*.txt
+# Expected: no output
+```
+
+**Result:** ✅ PASS (no output)
+
+---
+
+### 3. No stale run IDs
+
+```bash
+$ grep -rn "e6c3aa" phase1_*.txt
+# Expected: no output
+```
+
+**Result:** ✅ PASS (no output)
+
+---
+
+### 4. No "2 deleted" in merge stats context
+
+```bash
+$ grep -rn "2 delet" phase1_*.txt
+# Expected: no output
+```
+
+**Result:** ✅ PASS (no output)
+
+---
+
+### 5. Correct merge commit appears
+
+```bash
+$ grep -rn "372dbc1d" phase1_*.txt
+phase1_baseline_status.txt:6:**Merge Commit:** 372dbc1d
+phase1_dry_merge_report.txt:6:**Target Branch:** origin/main (ca6d2dbf) → reconciled merge (372dbc1d)
+phase1_merge_confirmation.txt:5:**Merge Commit:** 372dbc1d
+phase1_merge_confirmation.txt:17:**Merge Commit:** 372dbc1d
+```
+
+**Result:** ✅ PASS (present in all relevant files)
+
+---
+
+### 6. Correct file count appears
+
+```bash
+$ grep -rn "/192" phase1_*.txt
+phase1_baseline_status.txt:78:| Diff mode uses baseline | ✅ PASS (51/192 files) |
+phase1_merge_confirmation.txt:181:| Diff mode scopes correctly | ✅ PASS (51/192 files) |
+```
+
+**Result:** ✅ PASS (present where scan totals referenced)
+
+---
+
+## Summary
+
+| Check | Expected | Actual | Status |
+|-------|----------|--------|--------|
+| No `cc3d782d` | no output | no output | ✅ PASS |
+| No `/187` or `/189` | no output | no output | ✅ PASS |
+| No `e6c3aa` | no output | no output | ✅ PASS |
+| No `2 delet` | no output | no output | ✅ PASS |
+| `372dbc1d` present | present | 4 occurrences | ✅ PASS |
+| `/192` present | present | 2 occurrences | ✅ PASS |
+
+**All grep verification checks passed.**

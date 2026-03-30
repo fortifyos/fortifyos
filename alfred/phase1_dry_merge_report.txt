@@ -1,10 +1,11 @@
 # CM-ROLLOUT-001 Phase 1 — Dry-Run Merge Report
 ## Task 1.2 Complete
 
-**Date:** 2026-03-30 17:35 EDT
+**Date:** 2026-03-30 18:35 EDT
 **Source Branch:** fix/typescript-release-hardening (8a346096)
-**Target Branch:** main (b524db15)
-**Merge Base:** 15fb09ac
+**Target Branch:** origin/main (ca6d2dbf) → reconciled merge (372dbc1d)
+**Merge Base:** ca6d2dbf
+**Final Diff:** 47 added, 2 modified, 0 deleted
 
 ---
 
@@ -18,7 +19,7 @@ git merge --no-commit --no-ff fix/typescript-release-hardening
 
 ---
 
-## Files Touched (51 total relative to first parent)
+## Files Touched (49 total relative to first parent)
 
 ### Additions (47 files)
 
@@ -29,19 +30,14 @@ git merge --no-commit --no-ff fix/typescript-release-hardening
 | `cyber_mythos/__init__.py` | 1 file | Python package init |
 | `knox/security/repo-registry.json` | 1 file | Security state registry |
 
-### Deletions (2 files)
-
-| Path | Reason |
-|------|--------|
-| `src/App.jsx` | Migrated to TypeScript |
-| `src/App.jsx.d.ts` | No longer needed (TypeScript native) |
-
 ### Modifications (2 files)
 
 | Path | Change |
 |------|--------|
-| `src/App.tsx` | +1 line (TypeScript migration from App.jsx) |
+| `src/App.tsx` | +1 line (TypeScript migration — App.jsx removal is implicit in TypeScript conversion) |
 | `.gitignore` | +5 lines (Cyber Mythos output exclusions) |
+
+**Note:** The TypeScript migration (`App.jsx` → `App.tsx`) is counted as a modification, not a deletion + addition. Net result: 47 added, 2 modified, 0 deleted.
 
 ---
 

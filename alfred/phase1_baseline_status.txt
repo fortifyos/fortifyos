@@ -19,18 +19,20 @@ The feature branch (`fix/typescript-release-hardening`) did NOT contain any comm
 
 **Command:** `PYTHONPATH=src python3 -m cyber_mythos.runner.main baseline --target .`
 
-**Result:** ✅ Fresh baseline created on `main`
+**Result:** ✅ Fresh baseline created on reconciled branch
 
 ```json
 {
   "target": "fortifyos",
-  "run_id": "2026-03-30T22:10:45.225992Z-e6c3aa",
+  "run_id": "2026-03-30T22:32:57.796748Z-959644",
   "finding_ids": [],
   "score": 100
 }
 ```
 
 **Location:** `knox/security/baselines/fortifyos.json`
+
+**Note:** This path is gitignored (`.gitignore` line 14). The baseline is a runtime artifact, not a committed source file. It must be regenerated on any new clone or workstation.
 
 ---
 
@@ -73,7 +75,7 @@ After baseline creation, ran diff-mode audit to verify baseline is being used co
 | Baseline file exists | ✅ PASS |
 | Baseline contains valid run_id | ✅ PASS |
 | Baseline score recorded | ✅ PASS (100) |
-| Diff mode uses baseline | ✅ PASS (51/189 files) |
+| Diff mode uses baseline | ✅ PASS (51/192 files) |
 | No merge-induced corruption | ✅ PASS |
 
 ---
