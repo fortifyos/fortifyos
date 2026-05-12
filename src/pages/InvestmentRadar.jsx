@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, BarChart3, Building2, Cpu, Gauge, Menu, Search, ShieldCheck, X, Zap } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Building2, Cpu, Eye, FileText, Gauge, Home, LayoutGrid, Search, Settings, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
+import SpecialistShell from '../components/SpecialistShell.jsx';
 import './investment-radar.css';
 import {
   AI_FRONTIER_THEMES,
@@ -170,13 +171,11 @@ function ThemeUniverse({ activeTheme, onSelectTheme, onSelectTicker }) {
   );
 }
 
-export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSentinel, onBitcoin, onSettings, onDocs }) {
+export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSentinel, onBitcoin, onSettings, onDocs, isDark = true, onToggleTheme }) {
   const [filter, setFilter] = useState('all');
   const [activeTheme, setActiveTheme] = useState('power-energy');
   const [query, setQuery] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState('VTI');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
   const investable = useMemo(() => new Set(getInvestableTickers()), []);
   const universeTickers = useMemo(() => getUniqueUniverseTickers(), []);
   const selected = AI_INFRA_TICKERS.find((t) => t.symbol === selectedSymbol) || AI_INFRA_TICKERS[0];
@@ -195,69 +194,19 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
     if (theme?.tickers?.[0]) setSelectedSymbol(theme.tickers[0]);
   };
   const navItems = [
-    { key: 'home', label: 'Home', onClick: onHome },
-    { key: 'dashboard', label: 'Dashboard', onClick: onDashboard },
-    { key: 'macro', label: 'Macro Radar', onClick: onMacroSentinel },
-    { key: 'ai', label: 'AI Portfolio', onClick: null, current: true },
-    { key: 'bitcoin', label: 'Bitcoin', onClick: onBitcoin },
-    { key: 'docs', label: 'Field Manual', onClick: onDocs },
-    { key: 'settings', label: 'Settings', onClick: onSettings },
+    { key: 'home', label: 'Home', icon: Home, onClick: onHome },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: null, current: true },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
-  useEffect(() => {
-    if (!menuOpen) return undefined;
-    const onPointerDown = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
-    };
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') setMenuOpen(false);
-    };
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('touchstart', onPointerDown, { passive: true });
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('touchstart', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [menuOpen]);
-
   return (
-    <main className="ir-shell">
-      <div className="ir-bg-grid" />
-      <header className="ir-nav">
-        <div className="ir-mobile-nav" ref={menuRef}>
-          <button className="ir-mobile-nav-toggle" onClick={() => setMenuOpen((open) => !open)} aria-label="Open AI Portfolio navigation" aria-expanded={menuOpen}>
-            {menuOpen ? <X size={15} /> : <Menu size={15} />}
-          </button>
-          {menuOpen && (
-            <div className="ir-mobile-nav-pop">
-              {navItems.map((item) => (
-                <button
-                  key={item.key}
-                  className={item.current ? 'active' : ''}
-                  onClick={() => {
-                    setMenuOpen(false);
-                    item.onClick?.();
-                  }}
-                  disabled={!item.onClick}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="ir-desktop-tabs">
-          {navItems.map((item) => (
-            <button key={item.key} onClick={item.onClick} disabled={!item.onClick} className={item.current ? 'active' : ''}>
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </header>
-
-      <section className="ir-hero">
+    <SpecialistShell isDark={isDark} onToggleTheme={onToggleTheme} navItems={navItems} accentColor="#00ff41">
+      <main className="ir-shell fo-page-shell">
+      <section className="ir-hero fo-page-hero">
         <div>
           <div className="ir-pill"><ShieldCheck size={14} /> Intelligence — not financial advice</div>
           <h1>AI Frontier Portfolio Radar</h1>
@@ -341,5 +290,6 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
         </div>
       </section>
     </main>
+    </SpecialistShell>
   );
 }

@@ -39,16 +39,18 @@
 
 .bm-root{
   min-height: 100vh;
-  background: var(--bm-bg);
+  max-width: 1180px;
+  margin: 0 auto;
+  background: transparent;
   color: var(--bm-text);
-  padding: 32px 20px 28px;
+  padding: 6px 20px 48px;
   font-family: var(--bm-mono);
   overflow-x: hidden;
   position: relative;
 }
 
 .bm-root::before{
-  content: "";
+  content: none;
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -63,7 +65,7 @@
 }
 
 .bm-root::after{
-  content: "";
+  content: none;
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -262,8 +264,7 @@
 
 .bm-hero{
   max-width: 1180px;
-  margin: 0 auto 24px;
-  padding: 0;
+  margin: 0 auto 14px;
   position: relative;
 }
 
@@ -395,7 +396,7 @@
 .bm-card{
   background: linear-gradient(145deg, var(--bm-card) 0%, var(--bm-card-strong) 100%);
   border: 1px solid var(--bm-border);
-  border-radius: var(--bm-radius);
+  border-radius: 0;
   padding: 16px 16px 14px;
   transition: border-color .2s, transform .2s ease, box-shadow .2s ease;
   position: relative;
@@ -405,7 +406,7 @@
 
 .bm-card:hover{
   border-color: rgba(var(--bm-gold-rgb), .55);
-  transform: translateY(-1px);
+  transform: none;
   box-shadow: 0 20px 42px var(--bm-shadow-strong);
 }
 
@@ -970,7 +971,9 @@
   font-size: 10px;
   letter-spacing: .10em;
   border-top: 1px solid var(--bm-border);
-  padding-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--bm-border);
+  background: linear-gradient(180deg, var(--bm-card) 0%, var(--bm-card-strong) 100%);
 }
 
 .bm-foot-status{ color: var(--bm-green); }
@@ -987,7 +990,7 @@
 }
 
 @media (max-width: 640px){
-  .bm-root{ padding: 10px 14px 24px; }
+  .bm-root{ padding: 4px 10px 32px; }
   .bm-topbar{ margin-bottom: 12px; }
   .bm-topbar-actions{ gap: 8px; }
   .bm-topbar-status{ font-size: 10px; padding-top: 12px; }
