@@ -5,6 +5,11 @@ import "./bitcoin-mastery.css";
 
 const SATS_PER_BTC = 100_000_000;
 const HARD_CAP_BTC = 21_000_000;
+const ESTIMATE_ANCHOR_BLOCK = 949_138;
+const ESTIMATE_ANCHOR_TIME = Date.UTC(2026, 4, 12, 23, 12, 0);
+const ESTIMATED_BLOCK_INTERVAL_MS = 10 * 60 * 1000;
+const PRICE_SNAPSHOT_USD = 80_681.395;
+const PRICE_SNAPSHOT_LABEL = "snapshot fallback";
 
 function fmtUsd(n) {
   return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -49,9 +54,11 @@ async function firstValidSource(sources) {
     if (value == null || (typeof value === "number" && !Number.isFinite(value))) throw new Error(`${source.name} returned no value`);
     return { value, source: source.name };
   });
-  const settled = await Promise.allSettled(attempts);
-  const hit = settled.find((result) => result.status === "fulfilled");
-  return hit?.value ?? { value: null, source: null };
+  try {
+    return await Promise.any(attempts);
+  } catch {
+    return { value: null, source: null };
+  }
 }
 
 function parseBlockHeight(payload) {
@@ -88,6 +95,35 @@ function parseDifficultyAdjustment(payload) {
   return {
     progress: Number.isFinite(progress) ? progress : null,
     remainingBlocks: Number.isFinite(remaining) ? remaining : null,
+  };
+}
+
+function parseBlockchairStats(payload) {
+  const data = payload?.data;
+  if (!data || typeof data !== "object") return null;
+
+  const circulationSats = parseSats(data.circulation);
+  const blockHeight = parseBlockHeight(data.best_block_height ?? data.blocks);
+  const marketPrice = parsePriceUsd(data.market_price_usd);
+  const mempoolCount = Number(data.mempool_transactions);
+  const mempoolVsize = Number(data.mempool_size);
+  const difficulty = Number(data.difficulty);
+  const retarget = data.next_retarget_time_estimate ? Date.parse(`${data.next_retarget_time_estimate} UTC`) : null;
+
+  return {
+    priceUsd: marketPrice,
+    blockHeight,
+    supplyMined: circulationSats == null ? null : circulationSats / SATS_PER_BTC,
+    mempool: {
+      count: Number.isFinite(mempoolCount) ? mempoolCount : null,
+      vsize: Number.isFinite(mempoolVsize) ? mempoolVsize : null,
+      totalFee: null,
+    },
+    difficulty: {
+      progress: null,
+      remainingBlocks: Number.isFinite(retarget) ? Math.max(0, Math.round((retarget - Date.now()) / ESTIMATED_BLOCK_INTERVAL_MS)) : null,
+      raw: Number.isFinite(difficulty) ? difficulty : null,
+    },
   };
 }
 
@@ -142,6 +178,7 @@ async function fetchYahooPriceUsd() {
 
 async function fetchFirstPriceUsd() {
   const sources = [
+    { name: "Blockchair", load: async () => parseBlockchairStats(await fetchJson("https://api.blockchair.com/bitcoin/stats"))?.priceUsd },
     { name: "CoinGecko", load: async () => parsePriceUsd(await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")) },
     { name: "Coinbase", load: async () => parsePriceUsd(await fetchJson("https://api.coinbase.com/v2/prices/BTC-USD/spot")) },
     { name: "Binance US", load: async () => parsePriceUsd(await fetchJson("https://api.binance.us/api/v3/ticker/price?symbol=BTCUSDT")) },
@@ -155,6 +192,7 @@ async function fetchFirstPriceUsd() {
 
 async function fetchFirstBlockHeight() {
   const sources = [
+    { name: "Blockchair", load: async () => parseBlockchairStats(await fetchJson("https://api.blockchair.com/bitcoin/stats"))?.blockHeight },
     { name: "mempool.space", load: async () => parseBlockHeight(await fetchText("https://mempool.space/api/blocks/tip/height")) },
     { name: "Blockstream", load: async () => parseBlockHeight(await fetchText("https://blockstream.info/api/blocks/tip/height")) },
     { name: "blockchain.info", load: async () => parseBlockHeight(await fetchText("https://blockchain.info/q/getblockcount")) },
@@ -165,6 +203,7 @@ async function fetchFirstBlockHeight() {
 
 async function fetchIssuedSupplyBtc() {
   const sources = [
+    { name: "Blockchair", load: async () => parseBlockchairStats(await fetchJson("https://api.blockchair.com/bitcoin/stats"))?.supplyMined },
     { name: "blockchain.info", load: async () => {
       const sats = parseSats(await fetchText("https://blockchain.info/q/totalbc"));
       return sats == null ? null : sats / SATS_PER_BTC;
@@ -175,6 +214,7 @@ async function fetchIssuedSupplyBtc() {
 
 async function fetchMempoolStats() {
   const sources = [
+    { name: "Blockchair", load: async () => parseBlockchairStats(await fetchJson("https://api.blockchair.com/bitcoin/stats"))?.mempool },
     { name: "mempool.space", load: async () => parseMempoolInfo(await fetchJson("https://mempool.space/api/mempool")) },
   ];
   return firstValidSource(sources);
@@ -196,9 +236,15 @@ async function fetchFeeStats() {
 
 async function fetchDifficultyStats() {
   const sources = [
+    { name: "Blockchair", load: async () => parseBlockchairStats(await fetchJson("https://api.blockchair.com/bitcoin/stats"))?.difficulty },
     { name: "mempool.space", load: async () => parseDifficultyAdjustment(await fetchJson("https://mempool.space/api/v1/difficulty-adjustment")) },
   ];
   return firstValidSource(sources);
+}
+
+function estimateCurrentBlockHeight(nowMs = Date.now()) {
+  const elapsedBlocks = Math.max(0, Math.floor((nowMs - ESTIMATE_ANCHOR_TIME) / ESTIMATED_BLOCK_INTERVAL_MS));
+  return ESTIMATE_ANCHOR_BLOCK + elapsedBlocks;
 }
 
 function estimateIssuedSupply(blockHeight) {
@@ -231,13 +277,18 @@ async function loadNetworkState() {
 
   let priceUsd = priceResult.value;
   let priceSource = priceResult.source;
-  const blockHeight = blockResult.value;
-  const blockSource = blockResult.source;
+  let blockHeight = blockResult.value;
+  let blockSource = blockResult.source;
   let supplyMined = supplyResult.value;
   let supplySource = supplyResult.source;
   const mempool = mempoolResult.value;
   const fees = feeResult.value;
   const difficulty = difficultyResult.value;
+  if (!Number.isFinite(blockHeight)) {
+    blockHeight = estimateCurrentBlockHeight();
+    blockSource = "time estimate";
+  }
+
   const priceOk = Number.isFinite(priceUsd);
   const chainOk = Number.isFinite(blockHeight);
 
@@ -255,14 +306,21 @@ async function loadNetworkState() {
     } catch {}
   }
 
+  if (!Number.isFinite(priceUsd)) {
+    priceUsd = PRICE_SNAPSHOT_USD;
+    priceSource = PRICE_SNAPSHOT_LABEL;
+  }
+
   if (!Number.isFinite(supplyMined) && chainOk) {
-      supplyMined = estimateIssuedSupply(blockHeight);
-      supplySource = "subsidy estimate";
+    supplyMined = estimateIssuedSupply(blockHeight);
+    supplySource = "subsidy estimate";
   }
   const supplyPct = Number.isFinite(supplyMined) ? (supplyMined / HARD_CAP_BTC) * 100 : null;
 
   const realtimeOk = Number.isFinite(priceUsd) || chainOk || mempool || fees;
-  const status = Number.isFinite(priceUsd) && chainOk ? "LIVE" : (realtimeOk ? "DEGRADED" : "OFFLINE");
+  const hasLiveChain = blockSource !== "time estimate";
+  const hasLivePrice = Number.isFinite(priceUsd) && priceSource !== "cache" && priceSource !== PRICE_SNAPSHOT_LABEL;
+  const status = hasLivePrice && hasLiveChain ? "LIVE" : (realtimeOk ? "DEGRADED" : "OFFLINE");
   return {
     priceUsd,
     priceSource,
