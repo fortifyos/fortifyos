@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, BarChart3, Building2, Cpu, Gauge, Search, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Building2, Cpu, Gauge, Menu, Search, ShieldCheck, X, Zap } from 'lucide-react';
 import './investment-radar.css';
 import {
   AI_FRONTIER_THEMES,
@@ -175,6 +175,8 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
   const [activeTheme, setActiveTheme] = useState('power-energy');
   const [query, setQuery] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState('VTI');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const investable = useMemo(() => new Set(getInvestableTickers()), []);
   const universeTickers = useMemo(() => getUniqueUniverseTickers(), []);
   const selected = AI_INFRA_TICKERS.find((t) => t.symbol === selectedSymbol) || AI_INFRA_TICKERS[0];
@@ -192,18 +194,67 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
     setFilter(themeId);
     if (theme?.tickers?.[0]) setSelectedSymbol(theme.tickers[0]);
   };
+  const navItems = [
+    { key: 'home', label: 'Home', onClick: onHome },
+    { key: 'dashboard', label: 'Dashboard', onClick: onDashboard },
+    { key: 'macro', label: 'Macro Radar', onClick: onMacroSentinel },
+    { key: 'ai', label: 'AI Portfolio', onClick: null, current: true },
+    { key: 'bitcoin', label: 'Bitcoin', onClick: onBitcoin },
+    { key: 'docs', label: 'Field Manual', onClick: onDocs },
+    { key: 'settings', label: 'Settings', onClick: onSettings },
+  ];
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onPointerDown = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
+    };
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown, { passive: true });
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [menuOpen]);
 
   return (
     <main className="ir-shell">
       <div className="ir-bg-grid" />
       <header className="ir-nav">
-        <button onClick={onHome}>Home</button>
-        <button onClick={onDashboard}>Dashboard</button>
-        <button onClick={onMacroSentinel}>Macro Radar</button>
-        <button className="active">AI Portfolio</button>
-        <button onClick={onBitcoin}>Bitcoin</button>
-        <button onClick={onDocs}>Field Manual</button>
-        <button onClick={onSettings}>Settings</button>
+        <div className="ir-mobile-nav" ref={menuRef}>
+          <button className="ir-mobile-nav-toggle" onClick={() => setMenuOpen((open) => !open)} aria-label="Open AI Portfolio navigation" aria-expanded={menuOpen}>
+            {menuOpen ? <X size={15} /> : <Menu size={15} />}
+          </button>
+          {menuOpen && (
+            <div className="ir-mobile-nav-pop">
+              {navItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={item.current ? 'active' : ''}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    item.onClick?.();
+                  }}
+                  disabled={!item.onClick}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="ir-desktop-tabs">
+          {navItems.map((item) => (
+            <button key={item.key} onClick={item.onClick} disabled={!item.onClick} className={item.current ? 'active' : ''}>
+              {item.label}
+            </button>
+          ))}
+        </div>
       </header>
 
       <section className="ir-hero">

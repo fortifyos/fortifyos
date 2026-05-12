@@ -54,33 +54,25 @@ export default function SpecialistShell({
       <nav
         className="fo-pagebar"
         style={{
-          margin: "0 24px",
-          padding: "10px 14px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          border: "none",
-          background: isDark ? `linear-gradient(180deg, ${palette.background} 0%, #101010 100%)` : `linear-gradient(180deg, ${palette.background} 0%, #efefef 100%)`,
-          boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32)` : `0 12px 26px rgba(0,0,0,0.06)`,
+          "--fo-nav-bg": isDark ? `linear-gradient(180deg, ${palette.background} 0%, #101010 100%)` : `linear-gradient(180deg, ${palette.background} 0%, #efefef 100%)`,
+          "--fo-nav-border": palette.borderColor,
+          "--fo-nav-border-strong": palette.borderColor,
+          "--fo-nav-text": palette.menuText,
+          "--fo-nav-active": palette.accentColor,
+          "--fo-nav-active-bg": palette.currentBg,
+          "--fo-nav-orange": accentColor || (isDark ? "#ff9900" : "#d48a00"),
         }}
       >
         <div className="fo-pagebar-left" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div ref={menuRef} style={{ position: "relative" }}>
+          <div ref={menuRef} className="fo-mobile-nav" style={{ position: "relative" }}>
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
               aria-label={menuOpen ? "Close page menu" : "Open page menu"}
               aria-expanded={menuOpen}
+              className="fo-mobile-nav-toggle"
               style={{
-                background: "none",
-                border: `1px solid ${palette.borderColor}`,
-                borderRadius: 8,
-                width: 36,
-                height: 36,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
+                borderColor: palette.borderColor,
                 color: palette.dimColor,
               }}
             >
@@ -88,14 +80,10 @@ export default function SpecialistShell({
             </button>
             {menuOpen && (
               <div
+                className="fo-mobile-nav-pop"
                 style={{
-                  position: "absolute",
-                  top: "calc(100% + 8px)",
-                  left: 0,
-                  minWidth: 220,
-                  zIndex: 50,
                   background: palette.menuBg,
-                  border: `1px solid ${palette.borderColor}`,
+                  borderColor: palette.borderColor,
                   boxShadow: "0 18px 42px rgba(0,0,0,.55)",
                 }}
               >
@@ -105,6 +93,7 @@ export default function SpecialistShell({
                     <button
                       key={item.key}
                       type="button"
+                      className="fo-mobile-nav-item"
                       onClick={() => {
                         setMenuOpen(false);
                         item.onClick?.();
@@ -118,15 +107,9 @@ export default function SpecialistShell({
                         padding: "10px 12px",
                         background: item.current ? palette.currentBg : "transparent",
                         color: item.current ? palette.accentColor : palette.menuText,
-                        border: "none",
                         borderBottom: `1px solid ${palette.menuBorder}`,
-                        textAlign: "left",
                         cursor: item.onClick ? "pointer" : "default",
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: 13,
                         opacity: item.onClick || item.current ? 1 : 0.55,
-                        textTransform: "uppercase",
-                        letterSpacing: ".1em",
                       }}
                     >
                       {Icon ? <Icon size={15} /> : <span style={{ fontSize: 15 }}>₿</span>}
@@ -143,11 +126,8 @@ export default function SpecialistShell({
             title="Back to top"
           >
             <span
+              className="fo-pagebar-brand"
               style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: 700,
-                fontSize: 18,
-                letterSpacing: "-0.02em",
                 color: palette.textColor,
               }}
             >
@@ -163,6 +143,20 @@ export default function SpecialistShell({
             {centerLabel}
           </span>
         ) : null}
+        <div className="fo-pagebar-tabs" aria-label="Primary navigation">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className={item.current ? "is-current" : ""}
+              onClick={item.onClick}
+              disabled={!item.onClick}
+              style={item.color ? { "--fo-nav-item-color": item.color } : undefined}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
         <div className="fo-pagebar-right" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {statusLabel ? (
             <div style={{ fontSize: 11, color: palette.dimColor, letterSpacing: ".10em", textTransform: "uppercase" }}>

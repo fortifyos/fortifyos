@@ -144,12 +144,40 @@ class AppErrorBoundary extends React.Component {
 function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onToggleTheme }) {
   const themeIconColor = isDark ? '#FFD84D' : '#8B96AE';
   return (
-    <nav className="fo-pagebar" style={{ margin: '0 24px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: 'none', background: isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`, boxShadow: isDark ? `0 14px 32px rgba(0,0,0,0.32)` : `0 12px 26px rgba(0,0,0,0.06)` }}>
+    <nav
+      className="fo-pagebar"
+      style={{
+        '--fo-nav-bg': isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`,
+        '--fo-nav-border': t.borderDim,
+        '--fo-nav-border-strong': t.borderMid,
+        '--fo-nav-text': t.textSecondary,
+        '--fo-nav-active': t.accent,
+        '--fo-nav-active-bg': isDark ? `${t.accent}12` : t.accentMuted,
+        '--fo-nav-orange': isDark ? '#ff9900' : '#d48a00',
+      }}
+    >
       <div className="fo-pagebar-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <AppNavMenu t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} items={navItems} title="Open navigation" />
         <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} title="Back to top">
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: t.textPrimary }}>FORTIFY OS</span>
+          <span className="fo-pagebar-brand" style={{ color: t.textPrimary }}>FORTIFY OS</span>
         </div>
+      </div>
+      <div className="fo-pagebar-tabs" aria-label="Primary navigation">
+        {navItems.map((item) => {
+          const isCurrent = !!item.current;
+          return (
+            <button
+              key={item.key}
+              type="button"
+              className={isCurrent ? 'is-current' : ''}
+              onClick={item.onClick}
+              disabled={!item.onClick}
+              style={item.color ? { '--fo-nav-item-color': item.color } : undefined}
+            >
+              {item.label}
+            </button>
+          );
+        })}
       </div>
       <div className="fo-pagebar-right" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button
@@ -1588,10 +1616,11 @@ function useMenuDismiss(menuOpen, setMenuOpen, menuRef) {
 
 function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 'Menu' }) {
   return (
-    <div ref={menuRef} style={{ position: 'relative' }}>
+    <div ref={menuRef} className="fo-mobile-nav" style={{ position: 'relative' }}>
       <button
         onClick={() => setMenuOpen(v => !v)}
-        style={{ background: 'none', border: `1px solid ${t.borderMid}`, color: t.textSecondary, borderRadius: 8, width: 34, height: 34, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        className="fo-mobile-nav-toggle"
+        style={{ borderColor: t.borderMid, color: t.textSecondary }}
         title={title}
         aria-label={title}
         aria-expanded={menuOpen}
@@ -1599,20 +1628,21 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
         {menuOpen ? <X size={14} /> : <Menu size={14} />}
       </button>
       {menuOpen && (
-        <div style={{
-          position: 'absolute', left: 0, top: 42, zIndex: 120,
-          minWidth: 200, padding: 8,
-          background: isDark ? t.elevated : t.surface,
-          border: `1px solid ${isDark ? t.borderMid : t.borderMid}`,
-          borderRadius: 18,
-          boxShadow: isDark ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 10px 24px rgba(0,0,0,0.16)',
-        }}>
+        <div
+          className="fo-mobile-nav-pop"
+          style={{
+            background: isDark ? t.elevated : t.surface,
+            borderColor: isDark ? t.borderMid : t.borderMid,
+            boxShadow: isDark ? '0 12px 36px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04)' : '0 10px 24px rgba(0,0,0,0.16)',
+          }}
+        >
           {items.map((item) => {
             const Icon = item.icon;
             const isCurrent = !!item.current;
             return (
               <button
                 key={item.key}
+                className="fo-mobile-nav-item"
                 onClick={() => {
                   setMenuOpen(false);
                   item.onClick?.();
@@ -1625,15 +1655,7 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
                   color: isCurrent ? (item.color || t.accent) : (item.color || t.textSecondary),
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 13,
-                  padding: '10px 12px',
                   cursor: item.onClick ? 'pointer' : 'default',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 10,
                   opacity: item.onClick ? 1 : 0.8,
                 }}
               >
@@ -8316,6 +8338,125 @@ function FortifyOSApp() {
         .fo-os-shell .fortify-corner-cross.bl { left: 8px; bottom: 8px; transform: rotate(-90deg); }
         .fo-pagebar {
           position: relative;
+          margin: 0 24px 18px !important;
+          padding: 16px 14px 18px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 14px;
+          border: 1px solid var(--fo-nav-border, ${t.borderDim}) !important;
+          border-left: none !important;
+          border-right: none !important;
+          border-radius: 0 !important;
+          background: var(--fo-nav-bg, ${isDark ? `linear-gradient(180deg, ${t.surface} 0%, ${t.panel} 100%)` : `linear-gradient(180deg, ${t.surface} 0%, ${t.elevated} 100%)`}) !important;
+          box-shadow: ${isDark ? '0 14px 32px rgba(0,0,0,0.32)' : '0 12px 26px rgba(0,0,0,0.06)'} !important;
+        }
+        .fo-pagebar::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -14px;
+          height: 3px;
+          background: linear-gradient(90deg, var(--fo-nav-active, ${t.accent}), var(--fo-nav-orange, ${isDark ? '#ff9900' : '#d48a00'}) 58%, transparent);
+          box-shadow: 0 0 18px color-mix(in srgb, var(--fo-nav-active, ${t.accent}) 36%, transparent);
+          pointer-events: none;
+        }
+        .fo-pagebar::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -14px;
+          height: 18px;
+          opacity: ${isDark ? 0.18 : 0.09};
+          background-image:
+            linear-gradient(var(--fo-nav-border, ${t.borderDim}) 1px, transparent 1px),
+            linear-gradient(90deg, var(--fo-nav-border, ${t.borderDim}) 1px, transparent 1px);
+          background-size: 48px 18px;
+          pointer-events: none;
+        }
+        .fo-pagebar-brand {
+          font-family: 'JetBrains Mono', monospace;
+          font-weight: 800;
+          font-size: 16px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+        .fo-pagebar-tabs {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+          flex: 1;
+          justify-content: center;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+        .fo-pagebar-tabs::-webkit-scrollbar { display: none; }
+        .fo-pagebar-tabs button {
+          min-height: 54px;
+          border: 1px solid var(--fo-nav-border, ${t.borderDim});
+          border-radius: 0;
+          background: rgba(0,0,0,0.08);
+          color: var(--fo-nav-item-color, var(--fo-nav-text, ${t.textSecondary}));
+          padding: 0 22px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 14px;
+          font-weight: 700;
+          letter-spacing: 0.17em;
+          text-transform: uppercase;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .fo-pagebar-tabs button:hover,
+        .fo-pagebar-tabs button.is-current {
+          color: var(--fo-nav-active, ${t.accent});
+          border-color: var(--fo-nav-active, ${t.accent});
+          background: var(--fo-nav-active-bg, ${t.accent}12);
+        }
+        .fo-pagebar-tabs button:disabled {
+          cursor: default;
+          opacity: 1;
+        }
+        .fo-mobile-nav {
+          display: none;
+        }
+        .fo-mobile-nav-toggle {
+          background: none;
+          border: 1px solid;
+          border-radius: 0;
+          width: 38px;
+          height: 38px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .fo-mobile-nav-pop {
+          position: absolute;
+          left: 0;
+          top: calc(100% + 10px);
+          z-index: 120;
+          min-width: 224px;
+          padding: 8px;
+          border: 1px solid;
+          border-radius: 0;
+        }
+        .fo-mobile-nav-item {
+          width: 100%;
+          border: none;
+          text-align: left;
+          padding: 11px 12px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          white-space: nowrap;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
         .fo-page-shell {
           position: relative;
@@ -8591,11 +8732,12 @@ function FortifyOSApp() {
           .fo-pagebar {
             height: auto !important;
             min-height: 48px;
-            display: grid !important;
-            grid-template-columns: auto minmax(0, 1fr) auto;
+            display: flex !important;
             gap: 8px;
-            padding: 8px 12px !important;
+            margin: 0 10px 18px !important;
+            padding: 10px 12px 12px !important;
           }
+          .fo-pagebar-brand { font-size: 14px; letter-spacing: 0.06em; }
           .fo-pagebar-title {
             white-space: normal !important;
             overflow-wrap: anywhere;
@@ -8640,6 +8782,14 @@ function FortifyOSApp() {
             grid-template-columns: minmax(0, 1fr) !important;
           }
         }
+        @media (max-width: 640px) {
+          .fo-pagebar-tabs { display: none !important; }
+          .fo-mobile-nav { display: block !important; }
+          .fo-pagebar {
+            display: grid !important;
+            grid-template-columns: auto minmax(0, 1fr) auto !important;
+          }
+        }
       `}</style>
       <div className="fortify-ref-grid" />
       <div className="fortify-edge-rulers" />
@@ -8656,7 +8806,7 @@ function FortifyOSApp() {
       {view === 'investmentRadar' && <InvestmentRadar onBack={() => navigate('dashboard')} onHome={() => navigate('landing')} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} />}
       {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} onUpdateDebt={handleUpdateDebt} />}
       {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onDocs={() => navigate('docs')} />}
-      {view === 'bitcoin' && <BitcoinMastery onBack={() => navigate('dashboard')} onDashboard={() => navigate('dashboard')} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => navigate('dashboard')} onDashboard={() => navigate('dashboard')} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => navigate('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} isDark={isDark} />
     </div>
