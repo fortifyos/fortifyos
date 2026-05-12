@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Eye, FileText, Home, LayoutGrid, Settings, Shield, TrendingUp } from "lucide-react";
 import SpecialistShell from "../components/SpecialistShell";
 import "./bitcoin-mastery.css";
@@ -14,7 +14,12 @@ function fmtNum(n, maxFrac = 0) {
   return n.toLocaleString(undefined, { maximumFractionDigits: maxFrac });
 }
 
-async function fetchJson(url, timeoutMs = 7000) {
+function fmtCompact(n, maxFrac = 1) {
+  if (!Number.isFinite(n)) return "—";
+  return n.toLocaleString(undefined, { notation: "compact", maximumFractionDigits: maxFrac });
+}
+
+async function fetchJson(url, timeoutMs = 4500) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
@@ -26,7 +31,7 @@ async function fetchJson(url, timeoutMs = 7000) {
   }
 }
 
-async function fetchText(url, timeoutMs = 7000) {
+async function fetchText(url, timeoutMs = 4500) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
@@ -36,6 +41,17 @@ async function fetchText(url, timeoutMs = 7000) {
   } finally {
     clearTimeout(t);
   }
+}
+
+async function firstValidSource(sources) {
+  const attempts = sources.map(async (source) => {
+    const value = await source.load();
+    if (value == null || (typeof value === "number" && !Number.isFinite(value))) throw new Error(`${source.name} returned no value`);
+    return { value, source: source.name };
+  });
+  const settled = await Promise.allSettled(attempts);
+  const hit = settled.find((result) => result.status === "fulfilled");
+  return hit?.value ?? { value: null, source: null };
 }
 
 function parseBlockHeight(payload) {
@@ -51,6 +67,30 @@ function parseBlockHeight(payload) {
   return null;
 }
 
+function parseSats(payload) {
+  const raw = typeof payload === "string" ? Number(payload.trim()) : Number(payload);
+  return Number.isFinite(raw) && raw > 0 ? raw : null;
+}
+
+function parseMempoolInfo(payload) {
+  if (!payload || typeof payload !== "object") return null;
+  return {
+    count: Number.isFinite(Number(payload.count)) ? Number(payload.count) : null,
+    vsize: Number.isFinite(Number(payload.vsize)) ? Number(payload.vsize) : null,
+    totalFee: Number.isFinite(Number(payload.total_fee)) ? Number(payload.total_fee) : null,
+  };
+}
+
+function parseDifficultyAdjustment(payload) {
+  if (!payload || typeof payload !== "object") return null;
+  const progress = Number(payload.progressPercent ?? payload.progress ?? payload.progress_percentage);
+  const remaining = Number(payload.remainingBlocks ?? payload.remaining_blocks);
+  return {
+    progress: Number.isFinite(progress) ? progress : null,
+    remainingBlocks: Number.isFinite(remaining) ? remaining : null,
+  };
+}
+
 function parsePriceUsd(payload) {
   if (typeof payload === "number" && Number.isFinite(payload)) return payload;
   if (typeof payload === "string") {
@@ -64,10 +104,12 @@ function parsePriceUsd(payload) {
       const parsedKraken = parsePriceUsd(krakenLast);
       if (Number.isFinite(parsedKraken)) return parsedKraken;
     }
+    const binancePrice = payload?.symbol === "BTCUSDT" ? payload?.price : undefined;
     const nested =
       payload?.bitcoin?.usd ??
       payload?.data?.amount ??
       payload?.result?.price ??
+      binancePrice ??
       payload?.USD?.last ??
       payload?.last ??
       payload?.price ??
@@ -100,39 +142,63 @@ async function fetchYahooPriceUsd() {
 
 async function fetchFirstPriceUsd() {
   const sources = [
-    async () => parsePriceUsd(await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")),
-    async () => parsePriceUsd(await fetchJson("https://api.coinbase.com/v2/prices/BTC-USD/spot")),
-    async () => parsePriceUsd(await fetchJson("https://api.kraken.com/0/public/Ticker?pair=XBTUSD")),
-    async () => parsePriceUsd(await fetchJson("https://api.gemini.com/v1/pubticker/btcusd")),
-    async () => fetchYahooPriceUsd(),
+    { name: "CoinGecko", load: async () => parsePriceUsd(await fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")) },
+    { name: "Coinbase", load: async () => parsePriceUsd(await fetchJson("https://api.coinbase.com/v2/prices/BTC-USD/spot")) },
+    { name: "Binance US", load: async () => parsePriceUsd(await fetchJson("https://api.binance.us/api/v3/ticker/price?symbol=BTCUSDT")) },
+    { name: "Kraken", load: async () => parsePriceUsd(await fetchJson("https://api.kraken.com/0/public/Ticker?pair=XBTUSD")) },
+    { name: "Gemini", load: async () => parsePriceUsd(await fetchJson("https://api.gemini.com/v1/pubticker/btcusd")) },
+    { name: "Yahoo", load: async () => fetchYahooPriceUsd() },
   ];
 
-  for (const load of sources) {
-    try {
-      const price = await load();
-      if (Number.isFinite(price)) return price;
-    } catch {}
-  }
-
-  return null;
+  return firstValidSource(sources);
 }
 
 async function fetchFirstBlockHeight() {
   const sources = [
-    async () => parseBlockHeight(await fetchJson("https://mempool.space/api/blocks/tip/height")),
-    async () => parseBlockHeight(await fetchText("https://mempool.space/api/blocks/tip/height")),
-    async () => parseBlockHeight(await fetchText("https://blockstream.info/api/blocks/tip/height")),
-    async () => parseBlockHeight(await fetchText("https://blockchain.info/q/getblockcount")),
+    { name: "mempool.space", load: async () => parseBlockHeight(await fetchText("https://mempool.space/api/blocks/tip/height")) },
+    { name: "Blockstream", load: async () => parseBlockHeight(await fetchText("https://blockstream.info/api/blocks/tip/height")) },
+    { name: "blockchain.info", load: async () => parseBlockHeight(await fetchText("https://blockchain.info/q/getblockcount")) },
   ];
 
-  for (const load of sources) {
-    try {
-      const height = await load();
-      if (Number.isFinite(height)) return height;
-    } catch {}
-  }
+  return firstValidSource(sources);
+}
 
-  return null;
+async function fetchIssuedSupplyBtc() {
+  const sources = [
+    { name: "blockchain.info", load: async () => {
+      const sats = parseSats(await fetchText("https://blockchain.info/q/totalbc"));
+      return sats == null ? null : sats / SATS_PER_BTC;
+    } },
+  ];
+  return firstValidSource(sources);
+}
+
+async function fetchMempoolStats() {
+  const sources = [
+    { name: "mempool.space", load: async () => parseMempoolInfo(await fetchJson("https://mempool.space/api/mempool")) },
+  ];
+  return firstValidSource(sources);
+}
+
+async function fetchFeeStats() {
+  const sources = [
+    { name: "mempool.space", load: async () => {
+      const fees = await fetchJson("https://mempool.space/api/v1/fees/recommended");
+      return {
+        fastestFee: Number.isFinite(Number(fees?.fastestFee)) ? Number(fees.fastestFee) : null,
+        halfHourFee: Number.isFinite(Number(fees?.halfHourFee)) ? Number(fees.halfHourFee) : null,
+        hourFee: Number.isFinite(Number(fees?.hourFee)) ? Number(fees.hourFee) : null,
+      };
+    } },
+  ];
+  return firstValidSource(sources);
+}
+
+async function fetchDifficultyStats() {
+  const sources = [
+    { name: "mempool.space", load: async () => parseDifficultyAdjustment(await fetchJson("https://mempool.space/api/v1/difficulty-adjustment")) },
+  ];
+  return firstValidSource(sources);
 }
 
 function estimateIssuedSupply(blockHeight) {
@@ -154,64 +220,95 @@ function estimateIssuedSupply(blockHeight) {
 }
 
 async function loadNetworkState() {
-  let priceUsd = null;
-  let blockHeight = null;
-  let supplyMined = null;
-  let supplyPct = null;
-  let priceOk = false;
-  let chainOk = false;
+  const [priceResult, blockResult, supplyResult, mempoolResult, feeResult, difficultyResult] = await Promise.all([
+    fetchFirstPriceUsd().catch(() => ({ value: null, source: null })),
+    fetchFirstBlockHeight().catch(() => ({ value: null, source: null })),
+    fetchIssuedSupplyBtc().catch(() => ({ value: null, source: null })),
+    fetchMempoolStats().catch(() => ({ value: null, source: null })),
+    fetchFeeStats().catch(() => ({ value: null, source: null })),
+    fetchDifficultyStats().catch(() => ({ value: null, source: null })),
+  ]);
 
-  try {
-    priceUsd = await fetchFirstPriceUsd();
-    if (typeof priceUsd === "number") {
-      try {
-        localStorage.setItem("fortify_btc_price_usd", String(priceUsd));
-      } catch {}
-      priceOk = true;
-    }
-  } catch {}
+  let priceUsd = priceResult.value;
+  let priceSource = priceResult.source;
+  const blockHeight = blockResult.value;
+  const blockSource = blockResult.source;
+  let supplyMined = supplyResult.value;
+  let supplySource = supplyResult.source;
+  const mempool = mempoolResult.value;
+  const fees = feeResult.value;
+  const difficulty = difficultyResult.value;
+  const priceOk = Number.isFinite(priceUsd);
+  const chainOk = Number.isFinite(blockHeight);
 
-  if (!priceOk) {
+  if (priceOk) {
+    try {
+      localStorage.setItem("fortify_btc_price_usd", String(priceUsd));
+    } catch {}
+  } else {
     try {
       const cachedPrice = Number(localStorage.getItem("fortify_btc_price_usd"));
       if (Number.isFinite(cachedPrice) && cachedPrice > 0) {
         priceUsd = cachedPrice;
-        priceOk = true;
+        priceSource = "cache";
       }
     } catch {}
   }
 
-  try {
-    blockHeight = await fetchFirstBlockHeight();
-    if (typeof blockHeight === "number") {
+  if (!Number.isFinite(supplyMined) && chainOk) {
       supplyMined = estimateIssuedSupply(blockHeight);
-      supplyPct = (supplyMined / HARD_CAP_BTC) * 100;
-      chainOk = true;
-    }
-  } catch {}
+      supplySource = "subsidy estimate";
+  }
+  const supplyPct = Number.isFinite(supplyMined) ? (supplyMined / HARD_CAP_BTC) * 100 : null;
 
-  const status = priceOk && chainOk ? "LIVE" : (priceOk || chainOk ? "DEGRADED" : "OFFLINE");
-  return { priceUsd, blockHeight, supplyMined, supplyPct, status, lastUpdatedIso: new Date().toISOString() };
+  const realtimeOk = Number.isFinite(priceUsd) || chainOk || mempool || fees;
+  const status = Number.isFinite(priceUsd) && chainOk ? "LIVE" : (realtimeOk ? "DEGRADED" : "OFFLINE");
+  return {
+    priceUsd,
+    priceSource,
+    blockHeight,
+    blockSource,
+    supplyMined,
+    supplySource,
+    supplyPct,
+    mempool,
+    mempoolSource: mempoolResult.source,
+    fees,
+    feeSource: feeResult.source,
+    difficulty,
+    difficultySource: difficultyResult.source,
+    status,
+    lastUpdatedIso: new Date().toISOString(),
+  };
 }
 
 function usePulseOverlay() {
   const ref = useRef(null);
-  const trigger = () => {
+  const trigger = useCallback(() => {
     const el = ref.current;
     if (!el) return;
     el.classList.remove("bm-pulse--on");
     void el.offsetWidth;
     el.classList.add("bm-pulse--on");
-  };
+  }, []);
   return { ref, trigger };
 }
 
 export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSentinel, onInvestmentRadar, onSettings, onDocs, isDark = true, onToggleTheme }) {
   const [net, setNet] = useState({
     priceUsd: null,
+    priceSource: null,
     blockHeight: null,
+    blockSource: null,
     supplyMined: null,
+    supplySource: null,
     supplyPct: null,
+    mempool: null,
+    mempoolSource: null,
+    fees: null,
+    feeSource: null,
+    difficulty: null,
+    difficultySource: null,
     lastUpdatedIso: null,
     status: "OFFLINE",
   });
@@ -363,6 +460,60 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </div>
         </div>
       </header>
+
+      <section className="bm-live-panel fo-page-section" aria-label="Live Bitcoin network telemetry">
+        <div className="bm-live-panel-head">
+          <div>
+            <span className={`bm-live ${net.status === "LIVE" ? "is-live" : net.status === "DEGRADED" ? "is-degraded" : "is-offline"}`}>
+              ● {net.status} REAL-TIME BITCOIN INTEGRATION
+            </span>
+            <h2>Live Chain Feed</h2>
+          </div>
+          <div className="bm-live-sync">REFRESHES EVERY 30S · {lastSync}</div>
+        </div>
+        <div className="bm-live-grid">
+          <div className="bm-live-cell">
+            <span>BTC/USD</span>
+            <strong>{net.priceUsd == null ? "—" : fmtUsd(net.priceUsd)}</strong>
+            <small>{net.priceSource || "waiting for price source"}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Tip Height</span>
+            <strong>{net.blockHeight == null ? "—" : fmtNum(net.blockHeight)}</strong>
+            <small>{net.blockSource || "waiting for chain source"}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Issued Supply</span>
+            <strong>{net.supplyMined == null ? "—" : fmtNum(net.supplyMined, 8)}</strong>
+            <small>{net.supplySource || "waiting for supply source"}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Remaining</span>
+            <strong>{scarcity.remaining == null ? "—" : fmtNum(scarcity.remaining, 8)}</strong>
+            <small>{net.supplyPct == null ? "hard cap pending" : `${net.supplyPct.toFixed(6)}% issued`}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Mempool</span>
+            <strong>{net.mempool?.count == null ? "—" : fmtCompact(net.mempool.count, 1)}</strong>
+            <small>{net.mempool?.vsize == null ? "transactions pending" : `${fmtCompact(net.mempool.vsize, 1)} vB pending`}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Priority Fee</span>
+            <strong>{net.fees?.fastestFee == null ? "—" : `${fmtNum(net.fees.fastestFee)} sat/vB`}</strong>
+            <small>{net.fees?.halfHourFee == null ? "waiting for fee source" : `30m ${fmtNum(net.fees.halfHourFee)} · 60m ${fmtNum(net.fees.hourFee ?? net.fees.halfHourFee)} sat/vB`}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Difficulty Epoch</span>
+            <strong>{net.difficulty?.progress == null ? "—" : `${net.difficulty.progress.toFixed(1)}%`}</strong>
+            <small>{net.difficulty?.remainingBlocks == null ? "waiting for epoch source" : `${fmtNum(net.difficulty.remainingBlocks)} blocks remaining`}</small>
+          </div>
+          <div className="bm-live-cell">
+            <span>Market Cap</span>
+            <strong>{net.priceUsd == null || net.supplyMined == null ? "—" : fmtUsd(net.priceUsd * net.supplyMined)}</strong>
+            <small>price × issued supply</small>
+          </div>
+        </div>
+      </section>
 
       <main className="bm-grid">
         <section className="bm-card fo-page-section bm-card--accent-gold">
