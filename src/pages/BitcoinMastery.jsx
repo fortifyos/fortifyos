@@ -316,10 +316,10 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       accentColor="#f7931a"
       statusLabel={`Last Sync ${lastSync === "—" ? "—" : new Date(net.lastUpdatedIso).toLocaleTimeString()}`}
     >
-    <div className={`bm-root ${isDark ? "bm-dark" : "bm-light"}`}>
+    <div className={`bm-root fo-page-shell ${isDark ? "bm-dark" : "bm-light"}`}>
       <div ref={pulseRef} className="bm-pulse-overlay" aria-hidden="true" />
 
-      <header className="bm-hero">
+      <header className="bm-hero fo-page-hero">
         <div className="bm-statusbar" role="group" aria-label="Network status">
           <span className={`bm-live ${net.status === "LIVE" ? "is-live" : net.status === "DEGRADED" ? "is-degraded" : "is-offline"}`}>
             ● {net.status} NETWORK FEED
@@ -365,7 +365,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       </header>
 
       <main className="bm-grid">
-        <section className="bm-card bm-card--accent-gold">
+        <section className="bm-card fo-page-section bm-card--accent-gold">
           <div className="bm-card-h bm-card-h--split">
             <div>
               <span className="bm-idx">01</span>
@@ -386,7 +386,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </div>
         </section>
 
-        <section className="bm-card bm-card--accent-green">
+        <section className="bm-card fo-page-section bm-card--accent-green">
           <div className="bm-card-h">
             <span className="bm-idx">02</span>
             <h2>COMPARATIVE ANALYSIS: LEAKY ASSETS</h2>
@@ -428,7 +428,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </p>
         </section>
 
-        <section className="bm-card bm-card--wide bm-card--accent-amber">
+        <section className="bm-card fo-page-section bm-card--wide bm-card--accent-amber">
           <div className="bm-card-h">
             <span className="bm-idx">03</span>
             <h2>THE CONVICTION ENGINE</h2>
@@ -472,7 +472,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </div>
         </section>
 
-        <section className={`bm-card bm-card--wide bm-card--accent-cycle bm-phase-${halving.phaseTone}`}>
+        <section className={`bm-card fo-page-section bm-card--wide bm-card--accent-cycle bm-phase-${halving.phaseTone}`}>
           <div className="bm-card-h bm-card-h--split">
             <div>
               <span className="bm-idx">04</span>
@@ -544,7 +544,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </p>
         </section>
 
-        <section className="bm-card bm-card--wide bm-card--accent-gold">
+        <section className="bm-card fo-page-section bm-card--wide bm-card--accent-gold">
           <div className="bm-card-h">
             <span className="bm-idx">05</span>
             <h2>THE CITADEL PROTOCOL (SECURITY)</h2>
@@ -581,7 +581,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
         </section>
       </main>
 
-      <footer className="bm-footer">
+      <footer className="bm-footer fo-page-shell-panel">
         <span className="bm-foot-status">SYSTEM STATUS: EDUCATIONAL FRAMEWORK ONLY.</span>
         <span>LEGAL: FORTIFY OS is not providing investment, tax, or legal advice.</span>
         <span>LAST SYNC: {lastSync}</span>
