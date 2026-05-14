@@ -14,10 +14,10 @@ export default defineConfig(() => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'logo192.png', 'logo512.png', 'robots.txt'],
+        includeAssets: ['favicon.ico', 'favicon.svg', 'logo192.png', 'logo512.png', 'robots.txt'],
         manifest: {
           name: 'FORTIFY OS: Sovereign Terminal',
-          short_name: 'Knox v3.0',
+          short_name: 'FORTIFY OS',
           description: 'Architecting an Everlasting Foundation.',
           theme_color: '#000000',
           background_color: '#000000',
