@@ -8339,11 +8339,11 @@ function FortifyOSApp() {
         .fo-pagebar {
           position: relative;
           margin: 0 24px 18px !important;
-          padding: 16px 14px 18px !important;
-          display: flex !important;
+          padding: 12px 14px 14px !important;
+          display: grid !important;
+          grid-template-columns: minmax(136px, 188px) minmax(0, 1fr) minmax(136px, 188px) !important;
           align-items: center !important;
-          justify-content: space-between !important;
-          gap: 14px;
+          gap: 12px;
           border: 1px solid var(--fo-nav-border, ${t.borderDim}) !important;
           border-left: none !important;
           border-right: none !important;
@@ -8379,8 +8379,8 @@ function FortifyOSApp() {
         .fo-pagebar-brand {
           font-family: 'JetBrains Mono', monospace;
           font-weight: 800;
-          font-size: 16px;
-          letter-spacing: 0.08em;
+          font-size: 15px;
+          letter-spacing: 0.07em;
           text-transform: uppercase;
           white-space: nowrap;
         }
@@ -8389,26 +8389,27 @@ function FortifyOSApp() {
           align-items: center;
           gap: 10px;
           min-width: 0;
-          flex: 1;
+          grid-column: 2;
           justify-content: center;
           overflow-x: auto;
           scrollbar-width: none;
         }
         .fo-pagebar-tabs::-webkit-scrollbar { display: none; }
         .fo-pagebar-tabs button {
-          min-height: 54px;
+          min-height: 42px;
           border: 1px solid var(--fo-nav-border, ${t.borderDim});
           border-radius: 0;
-          background: rgba(0,0,0,0.08);
+          background: rgba(0,0,0,0.06);
           color: var(--fo-nav-item-color, var(--fo-nav-text, ${t.textSecondary}));
-          padding: 0 22px;
+          padding: 0 16px;
           font-family: 'JetBrains Mono', monospace;
-          font-size: 14px;
+          font-size: 12px;
           font-weight: 700;
-          letter-spacing: 0.17em;
+          letter-spacing: 0.13em;
           text-transform: uppercase;
           cursor: pointer;
           white-space: nowrap;
+          transition: border-color .18s ease, color .18s ease, background .18s ease;
         }
         .fo-pagebar-tabs button:hover,
         .fo-pagebar-tabs button.is-current {
@@ -8584,7 +8585,7 @@ function FortifyOSApp() {
 .fo-pagebar-left,
 .fo-pagebar-right,
 .fo-pagebar-title { min-width: 0; }
-.fo-pagebar-left { grid-column: 1; }
+.fo-pagebar-left { grid-column: 1; justify-self: start; }
 .fo-pagebar-title { grid-column: 2; justify-self: center; text-align: center; }
 .fo-pagebar-right { grid-column: 3; justify-self: end; }
 
@@ -8732,7 +8733,7 @@ function FortifyOSApp() {
           .fo-pagebar {
             height: auto !important;
             min-height: 48px;
-            display: flex !important;
+            display: grid !important;
             gap: 8px;
             margin: 0 10px 18px !important;
             padding: 10px 12px 12px !important;
@@ -8775,6 +8776,18 @@ function FortifyOSApp() {
           }
         }
         @media (max-width: 900px) {
+          .fo-pagebar {
+            grid-template-columns: minmax(120px, 160px) minmax(0, 1fr) minmax(48px, 120px) !important;
+          }
+          .fo-pagebar-tabs {
+            gap: 7px !important;
+          }
+          .fo-pagebar-tabs button {
+            min-height: 38px !important;
+            padding: 0 11px !important;
+            font-size: 11px !important;
+            letter-spacing: 0.09em !important;
+          }
           .radar-war-grid,
           .radar-school-grid,
           .radar-sim-grid,
