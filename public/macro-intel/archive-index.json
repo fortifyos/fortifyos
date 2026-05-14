@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-05-13",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 7,
+    "archivePath": "archive/2026-05-13.json",
+    "archivedAt": "2026-05-14T02:22:06.966852-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-05-12",
     "regimeMode": "mixed",
     "dominantDrivers": [],
