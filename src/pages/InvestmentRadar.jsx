@@ -13,7 +13,7 @@ import {
   getUniqueUniverseTickers,
 } from '../data/investmentRadarData.js';
 
-function TradingViewTape({ symbols }) {
+function TradingViewTape({ symbols, isDark }) {
   const ref = useRef(null);
   useEffect(() => {
     if (!ref.current) return;
@@ -28,16 +28,16 @@ function TradingViewTape({ symbols }) {
       showSymbolLogo: true,
       isTransparent: true,
       displayMode: 'adaptive',
-      colorTheme: 'dark',
+      colorTheme: isDark ? 'dark' : 'light',
       locale: 'en',
     });
     ref.current.appendChild(container);
     ref.current.appendChild(script);
-  }, [symbols]);
+  }, [symbols, isDark]);
   return <div ref={ref} className="ir-tv-tape" aria-label="Live ticker tape" />;
 }
 
-function TradingViewMiniChart({ ticker }) {
+function TradingViewMiniChart({ ticker, isDark }) {
   const ref = useRef(null);
   useEffect(() => {
     if (!ref.current || !ticker) return;
@@ -54,14 +54,14 @@ function TradingViewMiniChart({ ticker }) {
       height: '100%',
       locale: 'en',
       dateRange: '12M',
-      colorTheme: 'dark',
+      colorTheme: isDark ? 'dark' : 'light',
       isTransparent: true,
       autosize: true,
       largeChartUrl: '',
     });
     ref.current.appendChild(widget);
     ref.current.appendChild(script);
-  }, [ticker?.symbol]);
+  }, [ticker?.symbol, isDark]);
   return (
     <div ref={ref} className="ir-mini-chart" aria-label={`${ticker?.symbol || 'Ticker'} live price chart`}>
       {!ticker?.tradingView && <div className="ir-chart-empty">No public TradingView symbol in this universe.</div>}
@@ -204,7 +204,7 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
   ];
 
   return (
-    <SpecialistShell isDark={isDark} onToggleTheme={onToggleTheme} navItems={navItems} accentColor="#00ff41">
+    <SpecialistShell isDark={isDark} onToggleTheme={onToggleTheme} navItems={navItems} accentColor={isDark ? '#00ff41' : '#1D7A3A'}>
       <main className="ir-shell fo-page-shell">
       <section className="ir-hero fo-page-hero">
         <div>
@@ -228,7 +228,7 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
         </div>
       </section>
 
-      <TradingViewTape symbols={AI_INFRA_TICKERS.slice(0, 14)} />
+      <TradingViewTape symbols={AI_INFRA_TICKERS.slice(0, 14)} isDark={isDark} />
 
       <HierarchyMap activeTheme={activeTheme} onSelectTheme={selectTheme} />
       <ThemeUniverse activeTheme={activeTheme} onSelectTheme={selectTheme} onSelectTicker={setSelectedSymbol} />
@@ -267,7 +267,7 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
             {selected.tradingView && <a href={`https://www.tradingview.com/symbols/${selected.tradingView.replace(':', '-')}/`} target="_blank" rel="noreferrer">Open live chart <ArrowUpRight size={14} /></a>}
           </div>
           <div className="ir-sector-line"><strong>Sector:</strong> {selected.sector} <span>Stage: {selected.stage}</span></div>
-          <TradingViewMiniChart ticker={selected} />
+          <TradingViewMiniChart ticker={selected} isDark={isDark} />
           <div className="ir-thesis-grid">
             <div><h3><Gauge size={16} /> Role</h3><p>{selected.role}</p></div>
             <div><h3><Zap size={16} /> Thesis</h3><p>{selected.thesis}</p></div>

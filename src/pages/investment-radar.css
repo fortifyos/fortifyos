@@ -22,6 +22,23 @@
   overflow-x: hidden;
 }
 
+.fo-os-light .ir-shell {
+  --ir-bg: #f7f7f7;
+  --ir-panel: #ffffff;
+  --ir-panel-2: #f1f3f1;
+  --ir-line: #c8cec8;
+  --ir-line-strong: #98a398;
+  --ir-text: #101510;
+  --ir-soft: #2f3a32;
+  --ir-dim: #58635b;
+  --ir-ghost: #7f8981;
+  --ir-green: #1d7a3a;
+  --ir-green-soft: rgba(29, 122, 58, .12);
+  --ir-orange: #c36f0c;
+  --ir-orange-soft: rgba(195, 111, 12, .12);
+  --ir-cyan: #0d8f8f;
+}
+
 .ir-shell *,
 .ir-shell *::before,
 .ir-shell *::after { box-sizing: border-box; }
@@ -79,6 +96,7 @@
 }
 
 .ir-hero-actions button:hover,
+.ir-filters button:hover,
 .ir-filters button.active {
   color: var(--ir-green);
   border-color: var(--ir-green);
@@ -101,6 +119,12 @@
   background: linear-gradient(180deg, var(--ir-panel) 0%, var(--ir-panel-2) 100%);
   border-radius: 0;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .02), 0 14px 32px rgba(0, 0, 0, .18);
+}
+
+.fo-os-light .ir-card,
+.fo-os-light .ir-sidebar,
+.fo-os-light .ir-theme-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72), 0 10px 24px rgba(18, 24, 18, .08);
 }
 
 .ir-hero > div:first-child,
@@ -185,6 +209,12 @@
   background: linear-gradient(160deg, rgba(255, 153, 0, .1), rgba(0, 255, 65, .035), var(--ir-panel-2)) !important;
 }
 
+.fo-os-light .ir-command-card {
+  background:
+    linear-gradient(160deg, rgba(195, 111, 12, .22), rgba(29, 122, 58, .14) 42%, #f7faf7 100%),
+    var(--ir-panel) !important;
+}
+
 .ir-command-line {
   display: flex;
   gap: 10px;
@@ -211,6 +241,16 @@
   border: 1px solid var(--ir-line);
   border-radius: 0;
   background: rgba(0, 0, 0, .22);
+}
+
+.fo-os-light .ir-metrics div,
+.fo-os-light .ir-thesis-grid div,
+.fo-os-light .ir-startup,
+.fo-os-light .ir-week,
+.fo-os-light .ir-symbol-grid button,
+.fo-os-light .ir-hierarchy-steps button,
+.fo-os-light .ir-active-theme {
+  background: rgba(255, 255, 255, .62);
 }
 
 .ir-metrics div { padding: 12px; }
@@ -271,6 +311,10 @@
   border-color: var(--ir-orange);
   background: linear-gradient(180deg, rgba(255, 153, 0, .08) 0%, var(--ir-panel-2) 100%);
 }
+
+.fo-os-light .ir-theme-card.active {
+  background: linear-gradient(180deg, rgba(195, 111, 12, .16) 0%, rgba(255, 255, 255, .88) 100%);
+}
 .ir-theme-head {
   width: 100%;
   text-align: left;
@@ -327,6 +371,7 @@
 .ir-bar-meta span { color: var(--ir-dim); }
 .ir-bar { height: 8px; background: rgba(255, 255, 255, .06); border-radius: 0; overflow: hidden; }
 .ir-bar span { display: block; height: 100%; border-radius: 0; background: linear-gradient(90deg, var(--ir-orange), var(--ir-green)); }
+.fo-os-light .ir-bar { background: rgba(16, 21, 16, .12); }
 .ir-schedule { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
 .ir-week { padding: 9px; display: flex; justify-content: space-between; color: var(--ir-dim); }
 .ir-week strong { color: var(--ir-text); }
@@ -335,6 +380,7 @@
 .ir-sidebar { padding: 14px; max-height: 860px; overflow: auto; }
 .ir-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--ir-line); background: rgba(0,0,0,.22); border-radius: 0; padding: 10px; margin-bottom: 10px; }
 .ir-search input { width: 100%; background: transparent; border: 0; outline: 0; color: var(--ir-text); font-family: inherit; font-size: 13px; }
+.fo-os-light .ir-search { background: rgba(255, 255, 255, .72); }
 .ir-filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
 .ir-active-theme { padding: 10px; margin-bottom: 12px; display: grid; gap: 5px; }
 .ir-active-theme span { color: var(--ir-green); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; }
@@ -349,6 +395,9 @@
   padding: 13px;
   cursor: pointer;
   font-family: inherit;
+}
+.fo-os-light .ir-ticker-card {
+  background: rgba(255, 255, 255, .66);
 }
 .ir-ticker-card.active,
 .ir-ticker-card:hover { border-color: var(--ir-orange); background: var(--ir-orange-soft); }
@@ -367,6 +416,7 @@
 .ir-sector-line strong { color: var(--ir-text); }
 .ir-sector-line span { color: var(--ir-orange); }
 .ir-mini-chart { height: 430px; border: 1px solid var(--ir-line); border-radius: 0; background: rgba(0,0,0,.22); overflow: hidden; margin-bottom: 14px; }
+.fo-os-light .ir-mini-chart { background: rgba(255, 255, 255, .74); }
 .ir-chart-empty { height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; color: var(--ir-dim); text-align: center; font-size: 13px; }
 .ir-thesis-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .ir-thesis-grid div { padding: 13px; }
