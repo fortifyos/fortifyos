@@ -7958,6 +7958,10 @@ function FortifyOSApp() {
   const enforcementActive = !!enforcement && (view === 'landing' || view === 'macroSentinel' || view === 'bitcoin');
 
   useEffect(() => {
+    document.title = 'FORTIFY OS';
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, [view]);
 

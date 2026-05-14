@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FORTIFY OS">
+  <defs>
+    <linearGradient id="frame" x1="6" y1="6" x2="58" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00ff41"/>
+      <stop offset="0.48" stop-color="#f7931a"/>
+      <stop offset="1" stop-color="#b45cff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="70%">
+      <stop offset="0" stop-color="#00ff41" stop-opacity="0.32"/>
+      <stop offset="0.52" stop-color="#f7931a" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#050607" stop-opacity="1"/>
+    </radialGradient>
+    <filter id="neon" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="1.7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="9" fill="#050607"/>
+  <rect x="5" y="5" width="54" height="54" rx="7" fill="url(#glow)" stroke="url(#frame)" stroke-width="2.5" filter="url(#neon)"/>
+  <path d="M16 22h32M16 43h32M21 17v32M43 17v32" stroke="#0e1712" stroke-width="1" opacity="0.72"/>
+  <path d="M22 24l8 8-8 8" fill="none" stroke="#f4f7f0" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M34 42h10" stroke="#00ff41" stroke-width="4" stroke-linecap="square"/>
+  <path d="M10 10h13M10 10v13M54 54H41M54 54V41" fill="none" stroke="#f7931a" stroke-width="2" opacity="0.95"/>
+</svg>
