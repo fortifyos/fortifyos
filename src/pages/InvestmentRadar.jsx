@@ -13,6 +13,18 @@ import {
   getUniqueUniverseTickers,
 } from '../data/investmentRadarData.js';
 
+const ALLOCATION_PRESETS = [250, 500, 1000, 2500];
+const MAX_ALLOCATION = 100000;
+
+function formatDollars(value) {
+  const amount = Number.isFinite(value) ? value : 0;
+  return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+}
+
+function scaledDollars(total, pct) {
+  return Math.round((Number(total) || 0) * (pct / 100));
+}
+
 function TradingViewTape({ symbols, isDark }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -69,7 +81,43 @@ function TradingViewMiniChart({ ticker, isDark }) {
   );
 }
 
-function AllocationCard({ option, selected }) {
+function AllocationPlanner({ amount, onAmountChange }) {
+  const normalizedAmount = Math.max(0, Math.min(MAX_ALLOCATION, Number(amount) || 0));
+  return (
+    <section className="ir-card ir-allocation-planner">
+      <div>
+        <div className="ir-kicker">Optional allocation model</div>
+        <h2>Choose capital amount</h2>
+        <p>Scale either Track 2 path without changing the discipline: percentages, timing, and no-trade guardrails stay fixed.</p>
+      </div>
+      <div className="ir-allocation-controls">
+        <label htmlFor="ir-allocation-amount">Starting amount</label>
+        <div className="ir-amount-row">
+          <span>$</span>
+          <input
+            id="ir-allocation-amount"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={normalizedAmount}
+            onChange={(event) => onAmountChange(event.target.value)}
+            aria-label="Portfolio allocation amount"
+          />
+        </div>
+        <div className="ir-preset-row" aria-label="Allocation amount presets">
+          {ALLOCATION_PRESETS.map((preset) => (
+            <button key={preset} className={normalizedAmount === preset ? 'active' : ''} onClick={() => onAmountChange(preset)}>
+              {formatDollars(preset)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AllocationCard({ option, selected, amount }) {
+  const optionBase = Number(option.total) || 1;
   return (
     <section className={`ir-card ir-allocation ${selected ? 'is-selected' : ''}`}>
       <div className="ir-card-head">
@@ -77,23 +125,29 @@ function AllocationCard({ option, selected }) {
           <div className="ir-kicker">Track 2 capital allocation</div>
           <h2>{option.label}</h2>
         </div>
-        <div className="ir-total">${option.total}</div>
+        <div className="ir-total">{formatDollars(amount)}</div>
       </div>
       <div className="ir-bars">
-        {option.holdings.map((holding) => (
-          <div key={holding.symbol} className="ir-bar-row">
-            <div className="ir-bar-meta"><strong>{holding.symbol}</strong><span>${holding.dollars} · {holding.pct}%</span></div>
-            <div className="ir-bar"><span style={{ width: `${holding.pct}%` }} /></div>
-          </div>
-        ))}
+        {option.holdings.map((holding) => {
+          const dollars = scaledDollars(amount, holding.pct);
+          return (
+            <div key={holding.symbol} className="ir-bar-row">
+              <div className="ir-bar-meta"><strong>{holding.symbol}</strong><span>{formatDollars(dollars)} · {holding.pct}%</span></div>
+              <div className="ir-bar"><span style={{ width: `${holding.pct}%` }} /></div>
+            </div>
+          );
+        })}
       </div>
       <div className="ir-schedule">
-        {option.weeklySchedule.map((week) => (
-          <div key={week.week} className="ir-week">
-            <span>W{week.week}</span>
-            <strong>${week.total}</strong>
-          </div>
-        ))}
+        {option.weeklySchedule.map((week) => {
+          const weekPct = (week.total / optionBase) * 100;
+          return (
+            <div key={week.week} className="ir-week">
+              <span>W{week.week}</span>
+              <strong>{formatDollars(scaledDollars(amount, weekPct))}</strong>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -114,6 +168,13 @@ function TickerCard({ ticker, active, onSelect }) {
 }
 
 function HierarchyMap({ activeTheme, onSelectTheme }) {
+  const activeStep = AI_HIERARCHY_STEPS.find((step) => AI_FRONTIER_THEMES.find((item) => item.stage === step.name)?.id === activeTheme);
+  const [openLayer, setOpenLayer] = useState(activeStep?.layer || '2');
+
+  useEffect(() => {
+    if (activeStep?.layer) setOpenLayer(activeStep.layer);
+  }, [activeStep?.layer]);
+
   return (
     <section className="ir-hierarchy ir-card">
       <div className="ir-card-head">
@@ -127,12 +188,33 @@ function HierarchyMap({ activeTheme, onSelectTheme }) {
         {AI_HIERARCHY_STEPS.map((step) => {
           const theme = AI_FRONTIER_THEMES.find((item) => item.stage === step.name);
           const isActive = theme && activeTheme === theme.id;
+          const isOpen = openLayer === step.layer;
           return (
-            <button key={step.layer} className={isActive ? 'active' : ''} onClick={() => theme && onSelectTheme(theme.id)}>
-              <span>{step.layer}</span>
-              <strong>{step.name}</strong>
-              <small>{step.path}</small>
-            </button>
+            <article key={step.layer} className={`ir-path-card ${isActive ? 'active' : ''} ${isOpen ? 'is-open' : ''}`}>
+              <button
+                className="ir-path-toggle"
+                aria-expanded={isOpen}
+                onClick={() => {
+                  if (theme) onSelectTheme(theme.id);
+                  setOpenLayer(isOpen ? null : step.layer);
+                }}
+              >
+                <span>{step.layer}</span>
+                <strong>{step.name}</strong>
+                <small>{isOpen ? 'Close' : 'Open'}</small>
+              </button>
+              {isOpen && (
+                <div className="ir-path-panel">
+                  <p>{step.thesis}</p>
+                  {theme && (
+                    <>
+                      <div className="ir-path-meta"><span>Top conviction</span><strong>{theme.topPicks.join(', ')}</strong></div>
+                      <div className="ir-path-tickers">{theme.tickers.join(' · ')}</div>
+                    </>
+                  )}
+                </div>
+              )}
+            </article>
           );
         })}
       </div>
@@ -176,6 +258,7 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
   const [activeTheme, setActiveTheme] = useState('power-energy');
   const [query, setQuery] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState('VTI');
+  const [allocationAmount, setAllocationAmount] = useState(500);
   const hierarchyRef = useRef(null);
   const allocationRef = useRef(null);
   const workbenchRef = useRef(null);
@@ -215,6 +298,10 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
   const showPowerBet = () => {
     selectTheme('power-energy');
     scrollToModule(hierarchyRef);
+  };
+  const updateAllocationAmount = (value) => {
+    const next = Math.round(Number(value) || 0);
+    setAllocationAmount(Math.max(0, Math.min(MAX_ALLOCATION, next)));
   };
   const navItems = [
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
@@ -258,10 +345,13 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
       </div>
       <ThemeUniverse activeTheme={activeTheme} onSelectTheme={selectTheme} onSelectTicker={setSelectedSymbol} />
 
-      <section ref={allocationRef} className="ir-grid-2 ir-jump-target">
-        <AllocationCard option={PORTFOLIO_OPTIONS.optionA} selected />
-        <AllocationCard option={PORTFOLIO_OPTIONS.optionB} />
-      </section>
+      <div ref={allocationRef} className="ir-allocation-module ir-jump-target">
+        <AllocationPlanner amount={allocationAmount} onAmountChange={updateAllocationAmount} />
+        <section className="ir-grid-2">
+          <AllocationCard option={PORTFOLIO_OPTIONS.optionA} amount={allocationAmount} selected />
+          <AllocationCard option={PORTFOLIO_OPTIONS.optionB} amount={allocationAmount} />
+        </section>
+      </div>
 
       <section ref={workbenchRef} className="ir-workbench ir-jump-target">
         <aside className="ir-sidebar">
