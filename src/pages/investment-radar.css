@@ -43,6 +43,10 @@
 .ir-shell *::before,
 .ir-shell *::after { box-sizing: border-box; }
 
+.ir-jump-target {
+  scroll-margin-top: 92px;
+}
+
 .ir-bg-grid {
   display: none;
   position: fixed;

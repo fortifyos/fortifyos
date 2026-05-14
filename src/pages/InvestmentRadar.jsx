@@ -176,6 +176,9 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
   const [activeTheme, setActiveTheme] = useState('power-energy');
   const [query, setQuery] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState('VTI');
+  const hierarchyRef = useRef(null);
+  const allocationRef = useRef(null);
+  const workbenchRef = useRef(null);
   const investable = useMemo(() => new Set(getInvestableTickers()), []);
   const universeTickers = useMemo(() => getUniqueUniverseTickers(), []);
   const selected = AI_INFRA_TICKERS.find((t) => t.symbol === selectedSymbol) || AI_INFRA_TICKERS[0];
@@ -192,6 +195,26 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
     setActiveTheme(themeId);
     setFilter(themeId);
     if (theme?.tickers?.[0]) setSelectedSymbol(theme.tickers[0]);
+  };
+  const scrollToModule = (ref) => {
+    window.requestAnimationFrame(() => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+  const showInvestableCore = () => {
+    setFilter('capital');
+    setSelectedSymbol('VTI');
+    scrollToModule(allocationRef);
+  };
+  const showSignalWatchlist = () => {
+    setFilter('signal');
+    const signalTicker = AI_INFRA_TICKERS.find((ticker) => ticker.track === 'signal');
+    if (signalTicker) setSelectedSymbol(signalTicker.symbol);
+    scrollToModule(workbenchRef);
+  };
+  const showPowerBet = () => {
+    selectTheme('power-energy');
+    scrollToModule(hierarchyRef);
   };
   const navItems = [
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
@@ -212,9 +235,9 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
           <h1>AI Frontier Portfolio Radar</h1>
           <p>Visual command page for the Aschenbrenner hierarchy: compute, power, industrial buildout, data centers, chips, edge AI, quantum optionality, and ETF breadth.</p>
           <div className="ir-hero-actions">
-            <button onClick={() => setFilter('capital')}>Show investable core</button>
-            <button onClick={() => setFilter('signal')}>Show signal watchlist</button>
-            <button onClick={() => selectTheme('power-energy')}>Aschenbrenner power bet</button>
+            <button onClick={showInvestableCore}>Show investable core</button>
+            <button onClick={showSignalWatchlist}>Show signal watchlist</button>
+            <button onClick={showPowerBet}>Aschenbrenner power bet</button>
             <button onClick={onBack}>Back</button>
           </div>
         </div>
@@ -230,15 +253,17 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
 
       <TradingViewTape symbols={AI_INFRA_TICKERS.slice(0, 14)} isDark={isDark} />
 
-      <HierarchyMap activeTheme={activeTheme} onSelectTheme={selectTheme} />
+      <div ref={hierarchyRef} className="ir-jump-target">
+        <HierarchyMap activeTheme={activeTheme} onSelectTheme={selectTheme} />
+      </div>
       <ThemeUniverse activeTheme={activeTheme} onSelectTheme={selectTheme} onSelectTicker={setSelectedSymbol} />
 
-      <section className="ir-grid-2">
+      <section ref={allocationRef} className="ir-grid-2 ir-jump-target">
         <AllocationCard option={PORTFOLIO_OPTIONS.optionA} selected />
         <AllocationCard option={PORTFOLIO_OPTIONS.optionB} />
       </section>
 
-      <section className="ir-workbench">
+      <section ref={workbenchRef} className="ir-workbench ir-jump-target">
         <aside className="ir-sidebar">
           <div className="ir-search"><Search size={16} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search ticker, theme, company..." /></div>
           <div className="ir-filters">
