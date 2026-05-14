@@ -240,7 +240,7 @@
 .ir-startup,
 .ir-week,
 .ir-symbol-grid button,
-.ir-hierarchy-steps button,
+.ir-path-card,
 .ir-active-theme {
   border: 1px solid var(--ir-line);
   border-radius: 0;
@@ -252,7 +252,7 @@
 .fo-os-light .ir-startup,
 .fo-os-light .ir-week,
 .fo-os-light .ir-symbol-grid button,
-.fo-os-light .ir-hierarchy-steps button,
+.fo-os-light .ir-path-card,
 .fo-os-light .ir-active-theme {
   background: rgba(255, 255, 255, .62);
 }
@@ -273,23 +273,32 @@
 
 .ir-hierarchy { max-width: 1180px; margin: 0 auto 14px; }
 .ir-hierarchy-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.ir-hierarchy-steps button {
-  min-height: 132px;
-  text-align: left;
-  padding: 14px;
+.ir-path-card {
+  min-height: 0;
   color: var(--ir-soft);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-family: inherit;
+  overflow: hidden;
 }
-.ir-hierarchy-steps button.active,
-.ir-hierarchy-steps button:hover {
+.ir-path-card.active,
+.ir-path-card:hover {
   border-color: var(--ir-orange);
   background: var(--ir-orange-soft);
 }
-.ir-hierarchy-steps span {
+.ir-path-toggle {
+  width: 100%;
+  min-height: 86px;
+  text-align: left;
+  padding: 14px;
+  color: var(--ir-soft);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+}
+.ir-path-toggle span {
   width: 28px;
   height: 28px;
   display: inline-flex;
@@ -299,8 +308,24 @@
   color: var(--ir-green);
   font-weight: 800;
 }
-.ir-hierarchy-steps strong { color: var(--ir-text); font-size: 15px; text-transform: uppercase; }
-.ir-hierarchy-steps small { color: var(--ir-dim); line-height: 1.45; font-size: 12px; }
+.ir-path-toggle strong { color: var(--ir-text); font-size: 15px; text-transform: uppercase; line-height: 1.25; }
+.ir-path-toggle small { color: var(--ir-dim); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
+.ir-path-panel {
+  padding: 0 14px 14px;
+  display: grid;
+  gap: 10px;
+  color: var(--ir-dim);
+}
+.ir-path-panel p { margin: 0; color: var(--ir-soft); line-height: 1.55; font-size: 12px; }
+.ir-path-meta { display: grid; gap: 3px; }
+.ir-path-meta span { color: var(--ir-dim); text-transform: uppercase; letter-spacing: .1em; font-size: 10px; }
+.ir-path-meta strong { color: var(--ir-green); font-size: 12px; }
+.ir-path-tickers {
+  color: var(--ir-text);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
 
 .ir-theme-universe {
   max-width: 1180px;
@@ -369,6 +394,63 @@
 .ir-card h2,
 .ir-detail h2 { margin: 6px 0 0; font-size: 24px; letter-spacing: -0.02em; font-weight: 800; text-transform: uppercase; }
 .ir-total { font-size: 28px; color: var(--ir-green); font-weight: 800; }
+.ir-allocation-module { max-width: 1180px; margin: 0 auto 14px; }
+.ir-allocation-module .ir-grid-2 { margin-bottom: 0; }
+.ir-allocation-planner {
+  margin: 0 0 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: end;
+}
+.ir-allocation-planner h2 { margin-top: 6px; }
+.ir-allocation-planner p { margin: 9px 0 0; color: var(--ir-dim); line-height: 1.55; font-size: 13px; max-width: 660px; }
+.ir-allocation-controls { display: grid; gap: 8px; }
+.ir-allocation-controls label {
+  color: var(--ir-dim);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-size: 11px;
+}
+.ir-amount-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--ir-line);
+  background: rgba(0, 0, 0, .22);
+  padding: 9px 10px;
+}
+.fo-os-light .ir-amount-row { background: rgba(255, 255, 255, .72); }
+.ir-amount-row span { color: var(--ir-green); font-weight: 800; font-size: 18px; }
+.ir-amount-row input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ir-text);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 800;
+}
+.ir-preset-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.ir-preset-row button {
+  border: 1px solid var(--ir-line);
+  background: rgba(0, 0, 0, .18);
+  color: var(--ir-soft);
+  padding: 8px 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+}
+.fo-os-light .ir-preset-row button { background: rgba(255, 255, 255, .66); }
+.ir-preset-row button.active,
+.ir-preset-row button:hover {
+  border-color: var(--ir-green);
+  color: var(--ir-green);
+  background: var(--ir-green-soft);
+}
 .ir-allocation.is-selected { border-color: rgba(0, 255, 65, .55); }
 .ir-bars { display: grid; gap: 12px; }
 .ir-bar-meta { display: flex; justify-content: space-between; color: var(--ir-soft); font-size: 12px; margin-bottom: 6px; }
@@ -440,7 +522,8 @@
   .ir-workbench,
   .ir-thesis-grid,
   .ir-startup-grid,
-  .ir-theme-universe { grid-template-columns: 1fr; }
+  .ir-theme-universe,
+  .ir-allocation-planner { grid-template-columns: 1fr; }
   .ir-hierarchy-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ir-sidebar { max-height: none; }
 }
