@@ -8342,6 +8342,7 @@ function FortifyOSApp() {
         .fo-os-shell .fortify-corner-cross.bl { left: 8px; bottom: 8px; transform: rotate(-90deg); }
         .fo-pagebar {
           position: relative;
+          container-type: inline-size;
           margin: 0 24px 18px !important;
           padding: 12px 14px 14px !important;
           display: grid !important;
@@ -8462,6 +8463,10 @@ function FortifyOSApp() {
           display: flex;
           align-items: center;
           gap: 8px;
+        }
+        @container (max-width: 1260px) {
+          .fo-pagebar-tabs { display: none !important; }
+          .fo-mobile-nav { display: block !important; }
         }
         .fo-page-shell {
           position: relative;
@@ -8799,12 +8804,20 @@ function FortifyOSApp() {
             grid-template-columns: minmax(0, 1fr) !important;
           }
         }
-        @media (max-width: 640px) {
+        @media (max-width: 1280px) {
           .fo-pagebar-tabs { display: none !important; }
           .fo-mobile-nav { display: block !important; }
           .fo-pagebar {
             display: grid !important;
             grid-template-columns: auto minmax(0, 1fr) auto !important;
+          }
+          .fo-pagebar-left {
+            gap: 10px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .fo-pagebar-right > div {
+            display: none !important;
           }
         }
       `}</style>
