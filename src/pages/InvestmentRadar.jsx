@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, BarChart3, Building2, Cpu, Eye, FileText, Gauge, Home, LayoutGrid, Search, Settings, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Cpu, Eye, FileText, Gauge, Home, LayoutGrid, Search, Settings, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
 import SpecialistShell from '../components/SpecialistShell.jsx';
 import './investment-radar.css';
 import {
@@ -7,8 +7,6 @@ import {
   AI_HIERARCHY_STEPS,
   AI_INFRA_TICKERS,
   PORTFOLIO_OPTIONS,
-  STARTUP_TRACKS,
-  TICKER_DIRECTORY,
   getInvestableTickers,
   getUniqueUniverseTickers,
 } from '../data/investmentRadarData.js';
@@ -23,6 +21,45 @@ function formatDollars(value) {
 
 function scaledDollars(total, pct) {
   return Math.round((Number(total) || 0) * (pct / 100));
+}
+
+function snapshotPath(symbol) {
+  const seed = Array.from(symbol || 'AI').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return Array.from({ length: 10 }, (_, index) => {
+    const x = 8 + index * 10;
+    const wave = Math.sin((seed + index * 13) / 10) * 13;
+    const drift = (index - 4.5) * ((seed % 5) - 1);
+    const y = Math.max(12, Math.min(86, 52 - wave - drift));
+    return `${x},${y}`;
+  }).join(' ');
+}
+
+function TickerSnapshot({ ticker }) {
+  if (!ticker) return null;
+  const trackLabel = ticker.track === 'capital' ? 'Track 2 core' : ticker.track === 'research' ? 'Research only' : 'Track 1 signal';
+  return (
+    <div className="ir-chart-snapshot">
+      <div className="ir-snapshot-head">
+        <div>
+          <span>Daily close snapshot</span>
+          <strong>{ticker.symbol}</strong>
+        </div>
+        <small>{trackLabel}</small>
+      </div>
+      <div className="ir-snapshot-visual" aria-hidden="true">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+          <polyline points={snapshotPath(ticker.symbol)} />
+        </svg>
+      </div>
+      <div className="ir-snapshot-grid">
+        <div><span>Company</span><strong>{ticker.name}</strong></div>
+        <div><span>Layer</span><strong>{ticker.layer}</strong></div>
+        <div><span>Sector</span><strong>{ticker.sector}</strong></div>
+        <div><span>Stage</span><strong>{ticker.stage}</strong></div>
+      </div>
+      <p>{ticker.role}</p>
+    </div>
+  );
 }
 
 function TradingViewTape({ symbols, isDark }) {
@@ -49,34 +86,10 @@ function TradingViewTape({ symbols, isDark }) {
   return <div ref={ref} className="ir-tv-tape" aria-label="Live ticker tape" />;
 }
 
-function TradingViewMiniChart({ ticker, isDark }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    if (!ref.current || !ticker) return;
-    ref.current.innerHTML = '';
-    if (!ticker.tradingView) return;
-    const widget = document.createElement('div');
-    widget.className = 'tradingview-widget-container__widget';
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      symbol: ticker.tradingView,
-      width: '100%',
-      height: '100%',
-      locale: 'en',
-      dateRange: '12M',
-      colorTheme: isDark ? 'dark' : 'light',
-      isTransparent: true,
-      autosize: true,
-      largeChartUrl: '',
-    });
-    ref.current.appendChild(widget);
-    ref.current.appendChild(script);
-  }, [ticker?.symbol, isDark]);
+function TradingViewMiniChart({ ticker }) {
   return (
-    <div ref={ref} className="ir-mini-chart" aria-label={`${ticker?.symbol || 'Ticker'} live price chart`}>
-      {!ticker?.tradingView && <div className="ir-chart-empty">No public TradingView symbol in this universe.</div>}
+    <div className="ir-mini-chart" aria-label={`${ticker?.symbol || 'Ticker'} live price chart`}>
+      <TickerSnapshot ticker={ticker} />
     </div>
   );
 }
@@ -222,37 +235,6 @@ function HierarchyMap({ activeTheme, onSelectTheme }) {
   );
 }
 
-function ThemeUniverse({ activeTheme, onSelectTheme, onSelectTicker }) {
-  return (
-    <section className="ir-theme-universe">
-      {AI_FRONTIER_THEMES.map((theme) => (
-        <article key={theme.id} className={`ir-theme-card ${activeTheme === theme.id ? 'active' : ''}`}>
-          <button className="ir-theme-head" onClick={() => onSelectTheme(theme.id)}>
-            <span>{theme.label}</span>
-            <strong>{theme.sector}</strong>
-          </button>
-          <div className="ir-theme-stage">{theme.stage}</div>
-          <div className="ir-top-picks">
-            <span>Top conviction</span>
-            <strong>{theme.topPicks.join(', ')}</strong>
-          </div>
-          <div className="ir-symbol-grid">
-            {theme.tickers.map((symbol) => {
-              const ticker = TICKER_DIRECTORY[symbol];
-              return (
-                <button key={symbol} onClick={() => onSelectTicker(symbol)} title={`${ticker?.name || symbol} - ${ticker?.sector || theme.label}`}>
-                  <strong>{symbol}</strong>
-                  <span>{ticker?.name || 'Unknown'}</span>
-                </button>
-              );
-            })}
-          </div>
-        </article>
-      ))}
-    </section>
-  );
-}
-
 export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSentinel, onBitcoin, onSettings, onDocs, isDark = true, onToggleTheme }) {
   const [filter, setFilter] = useState('all');
   const [activeTheme, setActiveTheme] = useState('power-energy');
@@ -343,7 +325,6 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
       <div ref={hierarchyRef} className="ir-jump-target">
         <HierarchyMap activeTheme={activeTheme} onSelectTheme={selectTheme} />
       </div>
-      <ThemeUniverse activeTheme={activeTheme} onSelectTheme={selectTheme} onSelectTicker={setSelectedSymbol} />
 
       <div ref={allocationRef} className="ir-allocation-module ir-jump-target">
         <AllocationPlanner amount={allocationAmount} onAmountChange={updateAllocationAmount} />
@@ -382,27 +363,13 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
             {selected.tradingView && <a href={`https://www.tradingview.com/symbols/${selected.tradingView.replace(':', '-')}/`} target="_blank" rel="noreferrer">Open live chart <ArrowUpRight size={14} /></a>}
           </div>
           <div className="ir-sector-line"><strong>Sector:</strong> {selected.sector} <span>Stage: {selected.stage}</span></div>
-          <TradingViewMiniChart ticker={selected} isDark={isDark} />
+          <TradingViewMiniChart ticker={selected} />
           <div className="ir-thesis-grid">
             <div><h3><Gauge size={16} /> Role</h3><p>{selected.role}</p></div>
             <div><h3><Zap size={16} /> Thesis</h3><p>{selected.thesis}</p></div>
             <div><h3><BarChart3 size={16} /> Risk</h3><p>{selected.risk}</p></div>
           </div>
         </section>
-      </section>
-
-      <section className="ir-startups ir-card">
-        <div className="ir-card-head"><div><div className="ir-kicker">Track 3 operator execution</div><h2>Private ideas stay out of the portfolio</h2></div><Building2 /></div>
-        <div className="ir-startup-grid">
-          {STARTUP_TRACKS.map((idea) => (
-            <div key={idea.name} className="ir-startup">
-              <strong>{idea.name}</strong>
-              <span>{idea.lane}</span>
-              <p>{idea.verdict}</p>
-              <small>Capital allocation: ${idea.capitalAllocation}</small>
-            </div>
-          ))}
-        </div>
       </section>
     </main>
     </SpecialistShell>
