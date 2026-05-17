@@ -202,7 +202,6 @@ function AllocationCard({ optionKey, option, selected, amount, onSelect, enabled
 }
 
 function FrontierThesis() {
-  const [open, setOpen] = useState(false);
   const rankedNames = [
     ['1', 'CoreWeave', 'Compute frontier'],
     ['2', 'Astera Labs', 'AI chips / interconnects'],
@@ -211,39 +210,32 @@ function FrontierThesis() {
     ['5', 'Nebius Group', 'Alternative compute'],
   ];
   return (
-    <section className={`ir-card ir-frontier-thesis ${open ? 'is-open' : 'is-collapsed'}`}>
-      <button className="ir-section-toggle ir-frontier-toggle" onClick={() => setOpen((current) => !current)} aria-expanded={open}>
-        <span>Frontier thesis</span>
-        <small>{open ? 'Collapse' : 'Expand'}</small>
-        <ChevronDown size={16} aria-hidden="true" />
-      </button>
-      {open && (
-        <div className="ir-frontier-body">
-          <div>
-            <div className="ir-kicker">Common pattern</div>
-            <h2>The winners may be the ecosystem itself</h2>
-            <p>Instead of chasing only consumer apps, this thesis watches second-order dependencies: compute, power, data centers, robotics, memory bandwidth, and physical AI deployment.</p>
-          </div>
-          <div className="ir-frontier-lanes">
-            <span>Compute</span>
-            <span>Power</span>
-            <span>Industrial automation</span>
-            <span>Edge / data centers</span>
-            <span>Chips</span>
-            <span>Robotics</span>
-            <span>Quantum</span>
-          </div>
-          <div className="ir-frontier-watchlist">
-            {rankedNames.map(([rank, name, lane]) => (
-              <div key={name}>
-                <strong>{rank}</strong>
-                <span>{name}</span>
-                <small>{lane}</small>
-              </div>
-            ))}
-          </div>
+    <section className="ir-card ir-frontier-thesis">
+      <div className="ir-frontier-body">
+        <div>
+          <div className="ir-kicker">Frontier thesis</div>
+          <h2>The winners may be the ecosystem itself</h2>
+          <p>Instead of chasing only consumer apps, this thesis watches second-order dependencies: compute, power, data centers, robotics, memory bandwidth, and physical AI deployment.</p>
         </div>
-      )}
+        <div className="ir-frontier-lanes">
+          <span>Compute</span>
+          <span>Power</span>
+          <span>Industrial automation</span>
+          <span>Edge / data centers</span>
+          <span>Chips</span>
+          <span>Robotics</span>
+          <span>Quantum</span>
+        </div>
+        <div className="ir-frontier-watchlist">
+          {rankedNames.map(([rank, name, lane]) => (
+            <div key={name}>
+              <strong>{rank}</strong>
+              <span>{name}</span>
+              <small>{lane}</small>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

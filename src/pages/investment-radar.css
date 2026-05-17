@@ -592,12 +592,7 @@
   margin: 0 auto 14px;
   padding: 0;
 }
-.ir-frontier-toggle {
-  margin-bottom: 0;
-  border: 0;
-}
 .ir-frontier-body {
-  border-top: 1px solid var(--ir-line);
   display: grid;
   gap: 16px;
   padding: 18px;
