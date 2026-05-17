@@ -655,7 +655,12 @@
 .ir-section-toggle svg { color: var(--ir-dim); transition: transform .18s ease; }
 .ir-section-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 .ir-workbench { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 14px; align-items: start; }
-.ir-sidebar { padding: 14px; max-height: 860px; overflow: auto; }
+.ir-sidebar {
+  padding: 14px;
+  height: 760px;
+  max-height: 760px;
+  overflow: auto;
+}
 .ir-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--ir-line); background: rgba(0,0,0,.22); border-radius: 0; padding: 10px; margin-bottom: 10px; }
 .ir-search input { width: 100%; background: transparent; border: 0; outline: 0; color: var(--ir-text); font-family: inherit; font-size: 13px; }
 .fo-os-light .ir-search { background: rgba(255, 255, 255, .72); }
@@ -805,7 +810,7 @@
   .ir-profile-controls,
   .ir-frontier-watchlist { grid-template-columns: 1fr; }
   .ir-hierarchy-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ir-sidebar { max-height: none; }
+  .ir-sidebar { height: auto; max-height: none; }
 }
 
 @media (max-width: 640px) {
