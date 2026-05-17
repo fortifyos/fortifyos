@@ -223,6 +223,7 @@ const CORE_TICKER_DETAILS = {
     risk: 'High expectations, volatility, and execution/valuation risk.',
   },
   NVDA: {
+    track: 'capital',
     role: 'AI accelerator anchor and Vera Rubin compute signal.',
     thesis: 'Dominant GPU/software ecosystem powering frontier AI training and inference.',
     risk: 'Valuation and capex-cycle concentration.',
@@ -317,7 +318,23 @@ export const AI_INFRA_TICKERS = Object.keys(TICKER_DIRECTORY).map((symbol) => {
 
 export const PORTFOLIO_OPTIONS = {
   optionA: {
-    label: 'Option A - disciplined default',
+    label: 'Option A - defensive core',
+    status: 'open',
+    total: 500,
+    holdings: [
+      { symbol: 'VTI', dollars: 350, pct: 70 },
+      { symbol: 'SMH', dollars: 100, pct: 20 },
+      { symbol: 'XLE', dollars: 50, pct: 10 },
+    ],
+    weeklySchedule: [
+      { week: 1, VTI: 140, SMH: 40, XLE: 20, total: 200 },
+      { week: 2, VTI: 70, SMH: 20, XLE: 10, total: 100 },
+      { week: 3, VTI: 70, SMH: 20, XLE: 10, total: 100 },
+      { week: 4, VTI: 70, SMH: 20, XLE: 10, total: 100 },
+    ],
+  },
+  optionB: {
+    label: 'Option B - disciplined default',
     status: 'open',
     total: 500,
     holdings: [
@@ -332,8 +349,8 @@ export const PORTFOLIO_OPTIONS = {
       { week: 4, VTI: 60, SMH: 25, XLE: 15, total: 100 },
     ],
   },
-  optionB: {
-    label: 'Option B - AI conviction tilt',
+  optionC: {
+    label: 'Option C - AI conviction tilt',
     status: 'open',
     total: 500,
     holdings: [
@@ -347,6 +364,24 @@ export const PORTFOLIO_OPTIONS = {
       { week: 2, VTI: 50, SMH: 25, CEG: 15, PLTR: 10, total: 100 },
       { week: 3, VTI: 50, SMH: 25, CEG: 15, PLTR: 10, total: 100 },
       { week: 4, VTI: 50, SMH: 25, CEG: 15, PLTR: 10, total: 100 },
+    ],
+  },
+  optionD: {
+    label: 'Option D - frontier aggressive',
+    status: 'open',
+    total: 500,
+    holdings: [
+      { symbol: 'VTI', dollars: 200, pct: 40 },
+      { symbol: 'SMH', dollars: 125, pct: 25 },
+      { symbol: 'CEG', dollars: 75, pct: 15 },
+      { symbol: 'PLTR', dollars: 50, pct: 10 },
+      { symbol: 'NVDA', dollars: 50, pct: 10 },
+    ],
+    weeklySchedule: [
+      { week: 1, VTI: 80, SMH: 50, CEG: 30, PLTR: 20, NVDA: 20, total: 200 },
+      { week: 2, VTI: 40, SMH: 25, CEG: 15, PLTR: 10, NVDA: 10, total: 100 },
+      { week: 3, VTI: 40, SMH: 25, CEG: 15, PLTR: 10, NVDA: 10, total: 100 },
+      { week: 4, VTI: 40, SMH: 25, CEG: 15, PLTR: 10, NVDA: 10, total: 100 },
     ],
   },
 };

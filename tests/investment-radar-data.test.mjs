@@ -14,8 +14,10 @@ import {
 
 assert.equal(PORTFOLIO_OPTIONS.optionA.total, 500, 'Option A should total $500');
 assert.equal(PORTFOLIO_OPTIONS.optionB.total, 500, 'Option B should total $500');
-assert.deepEqual(getInvestableTickers().sort(), ['CEG', 'PLTR', 'SMH', 'VTI', 'XLE'].sort());
-assert.ok(AI_INFRA_TICKERS.some((ticker) => ticker.symbol === 'NVDA' && ticker.track === 'signal'));
+assert.equal(PORTFOLIO_OPTIONS.optionC.total, 500, 'Option C should total $500');
+assert.equal(PORTFOLIO_OPTIONS.optionD.total, 500, 'Option D should total $500');
+assert.deepEqual(getInvestableTickers().sort(), ['CEG', 'NVDA', 'PLTR', 'SMH', 'VTI', 'XLE'].sort());
+assert.ok(AI_INFRA_TICKERS.some((ticker) => ticker.symbol === 'NVDA' && ticker.track === 'capital'));
 assert.equal(AI_HIERARCHY_STEPS.length, 8, 'Aschenbrenner hierarchy should have 8 layers');
 assert.equal(AI_FRONTIER_THEMES.length, 8, 'Frontier universe should have 8 themes');
 assert.ok(getUniqueUniverseTickers().length >= 60, 'Frontier universe should include 60+ unique tickers');
