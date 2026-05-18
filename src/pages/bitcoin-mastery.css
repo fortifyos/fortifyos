@@ -423,6 +423,14 @@
   text-transform: uppercase;
 }
 
+.bm-live-intro{
+  margin: 0 0 12px;
+  max-width: 720px;
+  color: var(--bm-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .bm-live-sync{
   color: var(--bm-muted);
   font-size: 10px;
@@ -434,7 +442,7 @@
 
 .bm-live-grid{
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 

@@ -480,48 +480,8 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
       <div ref={pulseRef} className="bm-pulse-overlay" aria-hidden="true" />
 
       <header className="bm-hero fo-page-hero">
-        <div className="bm-statusbar" role="group" aria-label="Network status">
-          <span className={`bm-live ${net.status === "LIVE" ? "is-live" : net.status === "DEGRADED" ? "is-degraded" : "is-offline"}`}>
-            ● {net.status} NETWORK FEED
-          </span>
-          <span className="bm-divider">|</span>
-          <span className="bm-kv">
-            <span className="bm-k">BTC/USD</span>
-            <span className="bm-v">{net.priceUsd == null ? "—" : fmtUsd(net.priceUsd)}</span>
-          </span>
-          <span className="bm-divider">|</span>
-          <span className="bm-kv">
-            <span className="bm-k">BLOCK</span>
-            <span className="bm-v">{net.blockHeight == null ? "—" : fmtNum(net.blockHeight)}</span>
-          </span>
-          <span className="bm-divider">|</span>
-          <span className="bm-kv">
-            <span className="bm-k">HARD CAP</span>
-            <span className="bm-v">21,000,000</span>
-          </span>
-        </div>
-
         <h1 className="bm-title">THE SOVEREIGN STANDARD</h1>
         <p className="bm-subtitle">A savings technology built for a world where money can be diluted.</p>
-
-        <div className="bm-scarcity">
-          <div className="bm-scarcity-row">
-            <span className="bm-scarcity-label">
-              NETWORK SCARCITY:
-              <span className="bm-scarcity-val">{net.supplyPct == null ? " — " : ` ${scarcity.pct.toFixed(2)}% `}</span>
-              MINED
-            </span>
-            <span className="bm-scarcity-meta">
-              {scarcity.mined == null ? "SUPPLY: —" : `SUPPLY: ${fmtNum(scarcity.mined, 4)} / 21,000,000`}
-              {scarcity.remaining == null ? "" : `  |  REMAINING: ${fmtNum(scarcity.remaining, 4)}`}
-            </span>
-          </div>
-          <div className="bm-progress" aria-label="Scarcity progress">
-            <div className="bm-progress-track">
-              <div className="bm-progress-fill" style={{ width: `${Math.max(0, Math.min(100, scarcity.pct))}%` }} />
-            </div>
-          </div>
-        </div>
       </header>
 
       <section className="bm-live-panel fo-page-section" aria-label="Live Bitcoin network telemetry">
@@ -530,50 +490,38 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
             <span className={`bm-live ${net.status === "LIVE" ? "is-live" : net.status === "DEGRADED" ? "is-degraded" : "is-offline"}`}>
               ● {net.status} REAL-TIME BITCOIN INTEGRATION
             </span>
-            <h2>Live Chain Feed</h2>
+            <h2>Bitcoin at a Glance</h2>
           </div>
           <div className="bm-live-sync">REFRESHES EVERY 30S · {lastSync}</div>
         </div>
+        <p className="bm-live-intro">
+          A simple snapshot of the network right now: price, progress, and how much of the fixed supply already exists.
+        </p>
         <div className="bm-live-grid">
           <div className="bm-live-cell">
-            <span>BTC/USD</span>
+            <span>Price Today</span>
             <strong>{net.priceUsd == null ? "—" : fmtUsd(net.priceUsd)}</strong>
             <small>{net.priceSource || "waiting for price source"}</small>
           </div>
           <div className="bm-live-cell">
-            <span>Tip Height</span>
+            <span>Blocks Confirmed</span>
             <strong>{net.blockHeight == null ? "—" : fmtNum(net.blockHeight)}</strong>
-            <small>{net.blockSource || "waiting for chain source"}</small>
+            <small>the chain keeps advancing</small>
           </div>
           <div className="bm-live-cell">
-            <span>Issued Supply</span>
+            <span>Coins Already Mined</span>
             <strong>{net.supplyMined == null ? "—" : fmtNum(net.supplyMined, 8)}</strong>
-            <small>{net.supplySource || "waiting for supply source"}</small>
+            <small>{net.supplyPct == null ? "waiting for supply source" : `${net.supplyPct.toFixed(2)}% of all bitcoin`}</small>
           </div>
           <div className="bm-live-cell">
-            <span>Remaining</span>
+            <span>Coins Left to Mine</span>
             <strong>{scarcity.remaining == null ? "—" : fmtNum(scarcity.remaining, 8)}</strong>
-            <small>{net.supplyPct == null ? "hard cap pending" : `${net.supplyPct.toFixed(6)}% issued`}</small>
+            <small>before the hard cap is reached</small>
           </div>
           <div className="bm-live-cell">
-            <span>Mempool</span>
-            <strong>{net.mempool?.count == null ? "—" : fmtCompact(net.mempool.count, 1)}</strong>
-            <small>{net.mempool?.vsize == null ? "transactions pending" : `${fmtCompact(net.mempool.vsize, 1)} vB pending`}</small>
-          </div>
-          <div className="bm-live-cell">
-            <span>Priority Fee</span>
-            <strong>{net.fees?.fastestFee == null ? "—" : `${fmtNum(net.fees.fastestFee)} sat/vB`}</strong>
-            <small>{net.fees?.halfHourFee == null ? "waiting for fee source" : `30m ${fmtNum(net.fees.halfHourFee)} · 60m ${fmtNum(net.fees.hourFee ?? net.fees.halfHourFee)} sat/vB`}</small>
-          </div>
-          <div className="bm-live-cell">
-            <span>Difficulty Epoch</span>
-            <strong>{net.difficulty?.progress == null ? "—" : `${net.difficulty.progress.toFixed(1)}%`}</strong>
-            <small>{net.difficulty?.remainingBlocks == null ? "waiting for epoch source" : `${fmtNum(net.difficulty.remainingBlocks)} blocks remaining`}</small>
-          </div>
-          <div className="bm-live-cell">
-            <span>Market Cap</span>
+            <span>Network Value</span>
             <strong>{net.priceUsd == null || net.supplyMined == null ? "—" : fmtUsd(net.priceUsd * net.supplyMined)}</strong>
-            <small>price × issued supply</small>
+            <small>price × coins already mined</small>
           </div>
         </div>
       </section>
