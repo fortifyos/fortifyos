@@ -7909,7 +7909,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           .ms2-wrap progress.hud-heat::-moz-progress-bar { background: #f0b429; box-shadow: 0 0 8px #f0b429; }
 
           @media (max-width: 980px) {
-            .ms2-wrap { padding: 64px 10px 22px !important; }
+            .ms2-wrap { padding: 8px 10px 22px !important; }
             .ms2-top { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
             .ms2-grid { grid-template-columns: 1fr !important; }
             .ms2-grid-3 { grid-template-columns: 1fr !important; }
