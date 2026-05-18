@@ -370,6 +370,9 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     lastUpdatedIso: null,
     status: "OFFLINE",
   });
+  const [moneyExpansion, setMoneyExpansion] = useState(40);
+  const [btcSlice, setBtcSlice] = useState(0.01);
+  const [weeklyBuy, setWeeklyBuy] = useState(25);
   const { ref: pulseRef, trigger: pulse } = usePulseOverlay();
   const convictionPct = 85;
 
@@ -462,6 +465,10 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
   ];
 
   const lastSync = net.lastUpdatedIso == null ? "—" : new Date(net.lastUpdatedIso).toLocaleString();
+  const preservedPower = 100 / (1 + moneyExpansion / 100);
+  const btcSliceDenominator = btcSlice > 0 ? HARD_CAP_BTC / btcSlice : null;
+  const annualDca = weeklyBuy * 52;
+  const fourYearDca = annualDca * 4;
 
   return (
     <SpecialistShell
@@ -495,7 +502,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
         </div>
 
         <h1 className="bm-title">THE SOVEREIGN STANDARD</h1>
-        <p className="bm-subtitle">1 BTC = 1 / 21,000,000 OF FUTURE GLOBAL WEALTH</p>
+        <p className="bm-subtitle">A savings technology built for a world where money can be diluted.</p>
 
         <div className="bm-scarcity">
           <div className="bm-scarcity-row">
@@ -576,55 +583,153 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           <div className="bm-card-h bm-card-h--split">
             <div>
               <span className="bm-idx">01</span>
-              <h2>MACRO NARRATIVE: THE GENESIS</h2>
+              <h2>WHY BITCOIN EXISTS</h2>
             </div>
             <span className="bm-proto-status">
               PROTOCOL STATUS: <span className="bm-green">OPERATIONAL</span>
             </span>
           </div>
           <p>
-            Bitcoin is a decentralized protocol of trust with an immutable ledger and a hard cap
-            enforced by global consensus. Born from the 2008 financial crisis to provide network scarcity.
+            Your money is not standing still. When the money supply grows faster than your savings,
+            each unit can quietly buy less over time. Bitcoin was created after the 2008 financial crisis
+            as a different answer: money with rules no single institution can rewrite.
           </p>
+          <div className="bm-leak">
+            <div className="bm-leak-head">
+              <span>The Leak</span>
+              <strong>${preservedPower.toFixed(0)} of buying power remains</strong>
+            </div>
+            <input
+              aria-label="Money expansion"
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={moneyExpansion}
+              onChange={(event) => setMoneyExpansion(Number(event.target.value))}
+            />
+            <div className="bm-leak-scale">
+              <span>$100 saved</span>
+              <span>Money supply +{moneyExpansion}%</span>
+            </div>
+          </div>
           <div className="bm-tags">
-            <span className="bm-tag">HARD CAP: 21,000,000</span>
-            <span className="bm-tag">ISSUANCE: HALVING CYCLE</span>
-            <span className="bm-tag">LEDGER: IMMUTABLE</span>
+            <span className="bm-tag">PROBLEM: DILUTION</span>
+            <span className="bm-tag">ANSWER: RULES</span>
+            <span className="bm-tag">PURPOSE: PRESERVE WORK</span>
           </div>
         </section>
 
         <section className="bm-card fo-page-section bm-card--accent-green">
           <div className="bm-card-h">
             <span className="bm-idx">02</span>
-            <h2>COMPARATIVE ANALYSIS: LEAKY ASSETS</h2>
+            <h2>THE ONE RULE BITCOIN CHANGED</h2>
           </div>
+          <p>
+            Bitcoin is not powerful because it is digital. It is powerful because it is scarce,
+            global, and difficult to corrupt.
+          </p>
+          <div className="bm-principles">
+            <div className="bm-principle">
+              <strong>Fixed Supply</strong>
+              <span>Only 21 million will ever exist.</span>
+            </div>
+            <div className="bm-principle">
+              <strong>Open Network</strong>
+              <span>Anyone can participate without asking permission.</span>
+            </div>
+            <div className="bm-principle">
+              <strong>Self-Custody</strong>
+              <span>You can hold it directly instead of depending on an intermediary.</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="bm-card fo-page-section bm-card--wide bm-card--accent-gold">
+          <div className="bm-card-h">
+            <span className="bm-idx">03</span>
+            <h2>SCARCITY YOU CAN SEE</h2>
+          </div>
+          <p>
+            Twenty-one million is not a slogan. It is the entire monetary policy. New supply arrives
+            on schedule, total supply stays finite, and every holder owns a measurable slice of the network.
+          </p>
+          <div className="bm-slice-grid">
+            <div className="bm-slice-panel">
+              <span>Issued Supply</span>
+              <strong>{scarcity.mined == null ? "—" : fmtNum(scarcity.mined, 4)}</strong>
+              <small>{net.supplyPct == null ? "waiting for feed" : `${net.supplyPct.toFixed(2)}% mined`}</small>
+            </div>
+            <div className="bm-slice-panel">
+              <span>Remaining</span>
+              <strong>{scarcity.remaining == null ? "—" : fmtNum(scarcity.remaining, 4)}</strong>
+              <small>before the hard cap is reached</small>
+            </div>
+            <div className="bm-slice-panel bm-slice-panel--interactive">
+              <span>Your Slice</span>
+              <strong>{btcSlice} BTC</strong>
+              <small>{btcSliceDenominator == null ? "—" : `1 / ${fmtNum(btcSliceDenominator)} of total supply`}</small>
+            </div>
+          </div>
+          <input
+            className="bm-slice-range"
+            aria-label="Bitcoin amount"
+            type="range"
+            min="0.001"
+            max="1"
+            step="0.001"
+            value={btcSlice}
+            onChange={(event) => setBtcSlice(Number(event.target.value))}
+          />
+        </section>
+
+        <section className="bm-card fo-page-section bm-card--wide bm-card--accent-green">
+          <div className="bm-card-h">
+            <span className="bm-idx">04</span>
+            <h2>WHAT MAKES GOOD MONEY?</h2>
+          </div>
+          <p>
+            Every asset stores value differently. Dollars are convenient. Gold is durable. Real estate is useful.
+            Bitcoin combines traits that rarely live in the same asset.
+          </p>
           <div className="bm-table-wrap">
             <table className="bm-table">
               <thead>
                 <tr>
                   <th>ATTRIBUTE</th>
                   <th>BITCOIN</th>
+                  <th>DOLLARS</th>
                   <th>REAL ESTATE</th>
                   <th>GOLD</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Maintenance</td>
-                  <td className="bm-td--btc">0% Repairs</td>
-                  <td className="bm-td--risk">Entropy</td>
-                  <td>Storage</td>
+                  <td>Supply</td>
+                  <td className="bm-td--btc">Fixed</td>
+                  <td className="bm-td--risk">Expandable</td>
+                  <td className="bm-td--risk">Expandable</td>
+                  <td>Slow Growth</td>
                 </tr>
                 <tr>
                   <td>Portability</td>
                   <td className="bm-td--btc">Instant / Global</td>
+                  <td>High</td>
                   <td className="bm-td--risk">Immobile</td>
                   <td>Heavy</td>
                 </tr>
                 <tr>
-                  <td>Confiscation</td>
-                  <td className="bm-td--btc">Minimal (Self-Custody)</td>
-                  <td className="bm-td--risk">High Risk</td>
+                  <td>Upkeep</td>
+                  <td className="bm-td--btc">Minimal</td>
+                  <td>Inflation</td>
+                  <td className="bm-td--risk">Repairs / Taxes</td>
+                  <td>Storage</td>
+                </tr>
+                <tr>
+                  <td>Self-Custody</td>
+                  <td className="bm-td--btc">Native</td>
+                  <td className="bm-td--risk">Limited</td>
+                  <td className="bm-td--risk">Direct, Illiquid</td>
                   <td>Moderate</td>
                 </tr>
               </tbody>
@@ -635,10 +740,27 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </p>
         </section>
 
+        <section className="bm-card fo-page-section bm-card--wide bm-card--accent-gold">
+          <div className="bm-card-h">
+            <span className="bm-idx">05</span>
+            <h2>HISTORY RHYMES</h2>
+          </div>
+          <p>
+            Important systems often look unnecessary before they look obvious. The challenge is not
+            spotting change after consensus forms. It is recognizing the shape of it before then.
+          </p>
+          <div className="bm-history">
+            <div><strong>Internet</strong><span>“Why would ordinary people need this?”</span></div>
+            <div><strong>Smartphones</strong><span>“A phone without buttons?”</span></div>
+            <div><strong>Cloud</strong><span>“Why rent compute instead of own it?”</span></div>
+            <div><strong>Bitcoin</strong><span>“Why would money need no bank?”</span></div>
+          </div>
+        </section>
+
         <section className="bm-card fo-page-section bm-card--wide bm-card--accent-amber">
           <div className="bm-card-h">
-            <span className="bm-idx">03</span>
-            <h2>THE CONVICTION ENGINE</h2>
+            <span className="bm-idx">06</span>
+            <h2>HOW LONG-TERM HOLDERS THINK</h2>
           </div>
           <div className="bm-conviction-level">
             CURRENT LEVEL: <span className="bm-bracket-val">[ GENERATIONAL OPPORTUNITY ]</span>
@@ -677,13 +799,40 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
               <div className="bm-alloc-p">Recurring buys aligned to your cycle gate.</div>
             </div>
           </div>
+          <div className="bm-dca">
+            <div>
+              <span>Noise</span>
+              <strong>Daily price swings</strong>
+            </div>
+            <div>
+              <span>Signal</span>
+              <strong>Scarcity · survival · adoption</strong>
+            </div>
+            <div>
+              <span>Behavior</span>
+              <strong>${weeklyBuy}/week = ${fmtNum(annualDca)} yearly</strong>
+            </div>
+          </div>
+          <input
+            className="bm-slice-range"
+            aria-label="Weekly recurring buy"
+            type="range"
+            min="5"
+            max="250"
+            step="5"
+            value={weeklyBuy}
+            onChange={(event) => setWeeklyBuy(Number(event.target.value))}
+          />
+          <p className="bm-note">
+            A simple recurring plan compounds discipline before it compounds capital: ${fmtNum(fourYearDca)} contributed across four years before returns.
+          </p>
         </section>
 
         <section className={`bm-card fo-page-section bm-card--wide bm-card--accent-cycle bm-phase-${halving.phaseTone}`}>
           <div className="bm-card-h bm-card-h--split">
             <div>
-              <span className="bm-idx">04</span>
-              <h2>BTC 500-DAY HALVING CYCLE</h2>
+              <span className="bm-idx">07</span>
+              <h2>BITCOIN MOVES IN SEASONS</h2>
             </div>
             <span className={`bm-phase-chip bm-phase-chip--${halving.phaseTone}`}>{halving.phase}</span>
           </div>
@@ -751,23 +900,64 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </p>
         </section>
 
+        <section className="bm-card fo-page-section bm-card--accent-green">
+          <div className="bm-card-h">
+            <span className="bm-idx">08</span>
+            <h2>WHO IS THIS FOR?</h2>
+          </div>
+          <div className="bm-audience">
+            <div>
+              <strong>The Saver</strong>
+              <span>Wants to preserve work across decades.</span>
+            </div>
+            <div>
+              <strong>The Builder</strong>
+              <span>Thinks in systems and hard constraints.</span>
+            </div>
+            <div>
+              <strong>The Sovereign Individual</strong>
+              <span>Values direct custody and permissionless movement.</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="bm-card fo-page-section bm-card--accent-gold">
+          <div className="bm-card-h">
+            <span className="bm-idx">09</span>
+            <h2>MYTH / REALITY</h2>
+          </div>
+          <div className="bm-myths">
+            <div><strong>“I need a whole coin.”</strong><span>No. Bitcoin divides into 100 million sats.</span></div>
+            <div><strong>“It is only volatility.”</strong><span>Volatility is real. So is the question of long-term debasement.</span></div>
+            <div><strong>“It has no backing.”</strong><span>The rule set is the point: scarcity, portability, verifiability.</span></div>
+          </div>
+        </section>
+
         <section className="bm-card fo-page-section bm-card--wide bm-card--accent-gold">
           <div className="bm-card-h">
-            <span className="bm-idx">05</span>
-            <h2>THE CITADEL PROTOCOL (SECURITY)</h2>
+            <span className="bm-idx">10</span>
+            <h2>HOW TO BEGIN SAFELY</h2>
           </div>
           <div className="bm-steps">
             <div className="bm-step">
-              <div className="bm-step-h"><span className="bm-step-num">1.</span> EXIT COUNTERPARTIES</div>
-              <div className="bm-step-p">Withdraw to self-custody immediately. Not your keys, not your coins.</div>
+              <div className="bm-step-h"><span className="bm-step-num">1.</span> LEARN FIRST</div>
+              <div className="bm-step-p">Understand the thesis before allocating capital.</div>
             </div>
             <div className="bm-step">
-              <div className="bm-step-h"><span className="bm-step-num">2.</span> HARDWARE VAULT</div>
-              <div className="bm-step-p">Use a Bitcoin-focused hardware wallet; keep seed offline.</div>
+              <div className="bm-step-h"><span className="bm-step-num">2.</span> START SMALL</div>
+              <div className="bm-step-p">Build conviction before position size.</div>
             </div>
             <div className="bm-step">
-              <div className="bm-step-h"><span className="bm-step-num">3.</span> VERIFY INDEPENDENTLY</div>
-              <div className="bm-step-p">Run a node to confirm the chain.</div>
+              <div className="bm-step-h"><span className="bm-step-num">3.</span> HOLD CORRECTLY</div>
+              <div className="bm-step-p">Use recurring discipline, then graduate into self-custody.</div>
+            </div>
+          </div>
+          <div className="bm-citadel">
+            <span>Deep Dive: Citadel Protocol</span>
+            <div className="bm-citadel-grid">
+              <div><strong>Exit Counterparties</strong><span>Withdraw to self-custody. Not your keys, not your coins.</span></div>
+              <div><strong>Hardware Vault</strong><span>Use a Bitcoin-focused hardware wallet; keep seed offline.</span></div>
+              <div><strong>Verify Independently</strong><span>Run a node to confirm the chain.</span></div>
             </div>
           </div>
           <div className="bm-actions">

@@ -586,6 +586,217 @@
   margin-top: 4px;
 }
 
+.bm-leak{
+  margin: 14px 0 12px;
+  border: 1px solid var(--bm-border);
+  background: rgba(var(--bm-gold-rgb), .05);
+  padding: 12px;
+}
+
+.bm-leak-head,
+.bm-leak-scale{
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bm-leak-head{
+  align-items: baseline;
+  margin-bottom: 10px;
+  color: var(--bm-dim);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.bm-leak-head strong{
+  color: var(--bm-gold);
+  font-size: 12px;
+}
+
+.bm-leak input,
+.bm-slice-range{
+  width: 100%;
+  accent-color: var(--bm-gold);
+}
+
+.bm-leak-scale{
+  margin-top: 8px;
+  color: var(--bm-muted);
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+.bm-principles,
+.bm-history,
+.bm-audience,
+.bm-myths{
+  display: grid;
+  gap: 8px;
+}
+
+.bm-principle,
+.bm-history > div,
+.bm-audience > div,
+.bm-myths > div{
+  border: 1px solid var(--bm-border);
+  background: rgba(255,255,255,.015);
+  padding: 11px 12px;
+}
+
+.bm-root.bm-light .bm-principle,
+.bm-root.bm-light .bm-history > div,
+.bm-root.bm-light .bm-audience > div,
+.bm-root.bm-light .bm-myths > div{
+  background: rgba(0,0,0,.025);
+}
+
+.bm-principle strong,
+.bm-history strong,
+.bm-audience strong,
+.bm-myths strong{
+  display: block;
+  color: var(--bm-gold);
+  font-size: 11px;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+.bm-principle span,
+.bm-history span,
+.bm-audience span,
+.bm-myths span{
+  display: block;
+  margin-top: 5px;
+  color: var(--bm-soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.bm-slice-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+
+.bm-slice-panel{
+  border: 1px solid var(--bm-border);
+  background: rgba(255,255,255,.015);
+  padding: 12px;
+}
+
+.bm-root.bm-light .bm-slice-panel{
+  background: rgba(0,0,0,.025);
+}
+
+.bm-slice-panel span,
+.bm-slice-panel small{
+  display: block;
+}
+
+.bm-slice-panel span{
+  color: var(--bm-dim);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.bm-slice-panel strong{
+  display: block;
+  margin-top: 7px;
+  color: var(--bm-gold);
+  font-size: 20px;
+}
+
+.bm-slice-panel small{
+  margin-top: 5px;
+  color: var(--bm-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.bm-slice-panel--interactive strong{
+  color: var(--bm-green);
+}
+
+.bm-history{
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.bm-dca{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+
+.bm-dca > div{
+  border: 1px solid var(--bm-border);
+  padding: 10px 12px;
+}
+
+.bm-dca span{
+  display: block;
+  color: var(--bm-dim);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.bm-dca strong{
+  display: block;
+  margin-top: 6px;
+  color: var(--bm-soft);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.bm-citadel{
+  margin-top: 12px;
+  border: 1px solid var(--bm-border);
+  padding: 12px;
+  background: rgba(var(--bm-green-rgb), .03);
+}
+
+.bm-citadel > span{
+  color: var(--bm-green);
+  display: block;
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.bm-citadel-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.bm-citadel-grid > div{
+  border: 1px solid var(--bm-border);
+  padding: 10px 12px;
+}
+
+.bm-citadel-grid strong{
+  display: block;
+  color: var(--bm-soft);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.bm-citadel-grid span{
+  display: block;
+  margin-top: 5px;
+  color: var(--bm-dim);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 .bm-tag{
   font-size: 10px;
   letter-spacing: .10em;
@@ -1084,6 +1295,10 @@
   .bm-cycle-grid{ grid-template-columns: 1fr; }
   .bm-cycle-stat--wide{ grid-column: span 1; }
   .bm-card-h--split{ flex-direction: column; align-items: flex-start; gap: 4px; }
+  .bm-slice-grid,
+  .bm-history,
+  .bm-dca,
+  .bm-citadel-grid{ grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px){
