@@ -1618,7 +1618,14 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
   return (
     <div ref={menuRef} className="fo-mobile-nav" style={{ position: 'relative' }}>
       <button
-        onClick={() => setMenuOpen(v => !v)}
+        type="button"
+        onPointerDown={(event) => {
+          if (event.pointerType === 'touch') {
+            event.preventDefault();
+            setMenuOpen((open) => !open);
+          }
+        }}
+        onClick={() => setMenuOpen((open) => !open)}
         className="fo-mobile-nav-toggle"
         style={{ borderColor: t.borderMid, color: t.textSecondary }}
         title={title}
@@ -5907,7 +5914,7 @@ function InfoTip({ text, t, align = 'center', direction = 'up' }) {
   );
 }
 
-function DirectiveMod({ visible, latest, t }) {
+function DirectiveMod({ visible, latest, t, title = 'CFO Daily Pulse' }) {
   const now = new Date();
 
   // Stage + meta
@@ -5942,7 +5949,7 @@ function DirectiveMod({ visible, latest, t }) {
     return diff >= 0 && diff <= 48;
   });
 
-  return (<Card title="CFO Daily Pulse" visible={visible} delay={20} t={t}>
+  return (<Card title={title} visible={visible} delay={20} t={t}>
 
     {/* ═══ 4-METRIC ROW ═══ */}
     <div className="status-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, marginBottom: 2 }}>
@@ -6090,25 +6097,6 @@ function DirectiveMod({ visible, latest, t }) {
         </div>
       );
     })()}
-
-    {/* ═══ BUDGET ALERTS ═══ */}
-    {(blownCats.length > 0 || warnCats.length > 0) && (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ fontSize: 15, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Budget Alerts</div>
-        {blownCats.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14 }}>
-            <span style={{ color: t.danger, fontWeight: 700, fontSize: 14 }}>✕ BLOWN</span>
-            <span style={{ color: t.textSecondary }}>{c.name} — ${c.actual.toLocaleString()} / ${c.budgeted.toLocaleString()}</span>
-          </div>
-        ))}
-        {warnCats.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14 }}>
-            <span style={{ color: t.warn, fontWeight: 700, fontSize: 14 }}>⚠ WARN</span>
-            <span style={{ color: t.textSecondary }}>{c.name} — ${c.actual.toLocaleString()} / ${c.budgeted.toLocaleString()}</span>
-          </div>
-        ))}
-      </div>
-    )}
 
   </Card>);
 }
@@ -6543,12 +6531,165 @@ function TransactionsMod({ latest, visible, t, onImport }) {
 // ═══════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ═══════════════════════════════════════════════════
+function buildDashboardIntelligence(latest, previous, history = []) {
+  const current = latest || {};
+  const prior = previous || null;
+  const currentIncome = current?.budget?.income || current?._meta?.income || 0;
+  const currentSpend = totalBudgetSpent(current);
+  const currentRunway = runwayDaysFromLatest(current);
+  const currentVelocity = calcVelocity(current);
+  const currentSavings = calcSavingsRate(current);
+  const currentDebt = totalDebt(current?.debts || []);
+  const currentStage = calcStage(current);
+
+  const changes = [];
+  const observations = [];
+  if (prior) {
+    const priorSpend = totalBudgetSpent(prior);
+    const priorRunway = runwayDaysFromLatest(prior);
+    const priorDebt = totalDebt(prior?.debts || []);
+    const spendDelta = currentSpend - priorSpend;
+    const runwayDelta = currentRunway - priorRunway;
+    const debtDelta = currentDebt - priorDebt;
+    if (Math.abs(spendDelta) >= 1) changes.push(`${spendDelta > 0 ? 'Spending rose' : 'Spending fell'} ${fmt(Math.abs(spendDelta))} since the last import.`);
+    if (runwayDelta !== 0) changes.push(`Emergency runway ${runwayDelta > 0 ? 'improved' : 'fell'} ${Math.abs(runwayDelta)} day${Math.abs(runwayDelta) === 1 ? '' : 's'}.`);
+    if (Math.abs(debtDelta) >= 1) changes.push(`Debt ${debtDelta > 0 ? 'increased' : 'declined'} ${fmt(Math.abs(debtDelta))}.`);
+
+    const priorCats = new Map((prior?.budget?.categories || []).map((cat) => [cat.name, Number(cat.actual || 0)]));
+    const currentCats = (current?.budget?.categories || [])
+      .map((cat) => ({ name: cat.name, delta: Number(cat.actual || 0) - Number(priorCats.get(cat.name) || 0) }))
+      .filter((cat) => Math.abs(cat.delta) >= 1)
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+    if (currentCats[0]) {
+      observations.push(`${currentCats[0].name} ${currentCats[0].delta > 0 ? 'rose' : 'fell'} ${fmt(Math.abs(currentCats[0].delta))}; it is the largest category swing.`);
+    }
+
+    const txnKey = (tx) => String(tx?.description || '').trim().toLowerCase();
+    const priorNames = new Set((prior?._recentTxns || []).map(txnKey).filter(Boolean));
+    const currentCounts = new Map();
+    (current?._recentTxns || []).forEach((tx) => {
+      if ((tx?.amount || 0) >= 0) return;
+      const key = txnKey(tx);
+      if (!key) return;
+      currentCounts.set(key, (currentCounts.get(key) || 0) + 1);
+    });
+    const newRepeat = [...currentCounts.entries()].find(([key, count]) => count >= 2 && !priorNames.has(key));
+    if (newRepeat) observations.push(`New repeat spend pattern detected: ${newRepeat[0]} appeared ${newRepeat[1]} times.`);
+  }
+
+  const recentHistory = (history?.length ? history : [current]).slice(-3);
+  const breachCounts = new Map();
+  recentHistory.forEach((snapshot) => {
+    (snapshot?.budget?.categories || []).forEach((cat) => {
+      if (cat.budgeted > 0 && cat.actual > cat.budgeted && cat.name !== 'Medical') {
+        breachCounts.set(cat.name, (breachCounts.get(cat.name) || 0) + 1);
+      }
+    });
+  });
+  const repeatedBreach = [...breachCounts.entries()].find(([, count]) => count >= 2);
+  if (repeatedBreach) observations.push(`${repeatedBreach[0]} has breached plan in ${repeatedBreach[1]} of the last ${recentHistory.length} snapshots.`);
+
+  if (!changes.length) changes.push(prior ? 'No material financial state change since the last import.' : 'Import another snapshot to unlock change detection between syncs.');
+
+  const priorities = [];
+  if (currentRunway < 30) priorities.push({ level: 'critical', title: 'Protect survival runway', detail: `${currentRunway} days of coverage leaves no room for optional spending.` });
+  if (currentVelocity < 0.1 && currentIncome > 0) priorities.push({ level: 'critical', title: 'Restore wealth velocity', detail: `${Math.round(currentVelocity * 100)}% is below the 10% floor; money is not moving forward fast enough.` });
+  const blown = (current?.budget?.categories || []).filter((c) => c.budgeted > 0 && c.actual > c.budgeted && c.name !== 'Medical');
+  if (blown.length) priorities.push({ level: 'warning', title: 'Contain budget breaches', detail: `${blown.map((c) => c.name).slice(0, 2).join(', ')} ${blown.length === 1 ? 'is' : 'are'} over plan.` });
+  if (currentDebt > 0) priorities.push({ level: 'focus', title: 'Attack liability drag', detail: `${fmt(currentDebt)} remains in debt obligations.` });
+  if (!priorities.length) priorities.push({ level: 'stable', title: 'Preserve the system', detail: 'No urgent breach detected. Keep the plan boring and repeatable.' });
+
+  let posture = 'Data is quiet; the system needs another import before it can say more.';
+  let nextMove = 'Import a fresh statement so FortifyOS can compare your financial state over time.';
+  if (currentRunway < 30) {
+    posture = 'Defense mode: the balance sheet needs oxygen before ambition.';
+    nextMove = 'Direct the next available surplus to emergency cash until the first 30 days are secured.';
+  } else if (currentVelocity < 0.2 && currentIncome > 0) {
+    posture = 'Progress is alive, but not yet forceful enough to compound.';
+    nextMove = 'Cut one recurring leak or redirect one discretionary category into savings or debt payoff this week.';
+  } else if (currentStage >= 3 && currentSavings >= 20) {
+    posture = 'The machine is stable enough to shift from defense into deliberate expansion.';
+    nextMove = 'Keep automation intact and review whether surplus is reaching your highest-return objective.';
+  }
+
+  return {
+    changes,
+    observations,
+    priorities: priorities.slice(0, 3),
+    posture,
+    nextMove,
+    scorecard: [
+      { label: 'Runway', value: `${currentRunway}d` },
+      { label: 'Velocity', value: `${Math.round(currentVelocity * 100)}%` },
+      { label: 'Saved', value: `${Math.round(currentSavings)}%` },
+      { label: 'Debt', value: fmt(currentDebt) },
+    ],
+  };
+}
+
+function DashboardIntelBrief({ intelligence, t, isDark }) {
+  return (
+    <div className="dashboard-intel-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr)', gap: 12, marginBottom: 12 }}>
+      <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: '14px 16px' }}>
+        <div style={{ fontSize: 11, color: t.accent, textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: 10 }}>Daily Financial Brief</div>
+        <div style={{ fontSize: 18, color: t.textPrimary, lineHeight: 1.45, marginBottom: 10 }}>{intelligence.posture}</div>
+        <div style={{ display: 'grid', gap: 7 }}>
+          {intelligence.changes.map((change) => (
+            <div key={change} style={{ fontSize: 13, color: t.textSecondary, lineHeight: 1.55 }}>↳ {change}</div>
+          ))}
+          {intelligence.observations.map((observation) => (
+            <div key={observation} style={{ fontSize: 12, color: t.warn, lineHeight: 1.55 }}>◈ {observation}</div>
+          ))}
+        </div>
+      </div>
+      <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.panel : t.elevated, padding: '14px 16px', display: 'grid', gap: 12 }}>
+        <div>
+          <div style={{ fontSize: 11, color: t.warn, textTransform: 'uppercase', letterSpacing: '0.16em', marginBottom: 8 }}>Next Best Move</div>
+          <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.6 }}>{intelligence.nextMove}</div>
+        </div>
+        <div className="dashboard-intel-scorecard" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+          {intelligence.scorecard.map((item) => (
+            <div key={item.label} style={{ border: `1px solid ${t.borderDim}`, padding: '8px 6px', textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{item.label}</div>
+              <div style={{ fontSize: 14, color: t.textPrimary, marginTop: 4 }}>{item.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardPriorityStack({ items, t }) {
+  const tone = {
+    critical: t.danger,
+    warning: t.warn,
+    focus: t.purple,
+    stable: t.accent,
+  };
+  return (
+    <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
+      {items.map((item, index) => (
+        <div key={`${item.title}-${index}`} style={{ display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr)', gap: 10, alignItems: 'start', border: `1px solid ${t.borderDim}`, borderLeft: `3px solid ${tone[item.level]}`, background: t.surface, padding: '10px 12px' }}>
+          <div style={{ color: tone[item.level], fontWeight: 800, fontSize: 16 }}>{String(index + 1).padStart(2, '0')}</div>
+          <div>
+            <div style={{ color: t.textPrimary, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{item.title}</div>
+            <div style={{ color: t.textSecondary, fontSize: 12, lineHeight: 1.55, marginTop: 4 }}>{item.detail}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onInvestmentRadar, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const quickMenuRef = useRef(null);
   useMenuDismiss(quickMenuOpen, setQuickMenuOpen, quickMenuRef);
   const vis = settings.visibleModules;
+  const priorSnapshot = snapshots?.length > 1 ? snapshots[snapshots.length - 2] : null;
+  const intelligence = buildDashboardIntelligence(latest, priorSnapshot, snapshots || []);
   const ac = { red: 0, amber: 0, green: 0 };
   const debts = Array.isArray(latest?.debts) ? latest.debts : [];
   if (debts.some(d => (d?.balance || 0) > 2000)) ac.red++;
@@ -6638,18 +6779,30 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
 
       <div className="main-grid" style={{ display: 'grid', gap: 14 }}>
 
-        {/* Row 1 — CFO Daily Pulse: full width */}
+        {/* Row 1 — AI command layer: what changed, what matters, what to do next */}
         {vis.includes('directive') && (
           <DashboardSection
             title="Command Pulse"
-            subtitle="Start here. This is the dashboard’s operating brief: pressure, posture, and what deserves attention first."
+            subtitle="Start here. The imported data resolves into posture, change, and the one move that deserves attention first."
             tone={t.accent}
           >
-            <DirectiveMod visible latest={latest} t={t} />
+            <DashboardIntelBrief intelligence={intelligence} t={t} isDark={isDark} />
+            <DashboardPriorityStack items={intelligence.priorities} t={t} />
           </DashboardSection>
         )}
 
-        {/* Row 2 — Money Map strip: full width, compact */}
+        {/* Row 2 — core vitals: compact health read without repeating the command layer */}
+        {vis.includes('directive') && (
+          <DashboardSection
+            title="System Vitals"
+            subtitle="The scoreboard beneath the brief: stage, runway, savings, and whether the machine is actually gaining ground."
+            tone={t.textSecondary}
+          >
+            <DirectiveMod visible latest={latest} t={t} title="Financial Vitals" />
+          </DashboardSection>
+        )}
+
+        {/* Row 3 — Money Map strip: full width, compact */}
         {vis.includes('netWorth') && (
           <DashboardSection
             title="Balance Map"
@@ -8342,6 +8495,8 @@ function FortifyOSApp() {
         .fo-os-shell .fortify-corner-cross.bl { left: 8px; bottom: 8px; transform: rotate(-90deg); }
         .fo-pagebar {
           position: relative;
+          z-index: 200;
+          overflow: visible !important;
           container-type: inline-size;
           margin: 0 24px 18px !important;
           padding: 12px 14px 14px !important;
@@ -8428,6 +8583,8 @@ function FortifyOSApp() {
         }
         .fo-mobile-nav {
           display: none;
+          position: relative;
+          z-index: 210;
         }
         .fo-mobile-nav-toggle {
           background: none;
@@ -8444,7 +8601,7 @@ function FortifyOSApp() {
           position: absolute;
           left: 0;
           top: calc(100% + 10px);
-          z-index: 120;
+          z-index: 220;
           min-width: 224px;
           padding: 8px;
           border: 1px solid;
@@ -8728,6 +8885,8 @@ function FortifyOSApp() {
           .bill-cal-row { grid-template-columns: 1fr !important; }
           .sync-row-3 { grid-template-columns: 1fr !important; }
           .status-metrics { grid-template-columns: 1fr 1fr !important; }
+          .dashboard-intel-grid { grid-template-columns: 1fr !important; }
+          .dashboard-intel-scorecard { grid-template-columns: 1fr 1fr !important; }
           .sync-row-debt { grid-template-columns: 1fr !important; }
           .fo-ticker-track { animation-duration: 52s !important; }
           .hero-title { font-size: 36px !important; }

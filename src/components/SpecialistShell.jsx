@@ -67,6 +67,12 @@ export default function SpecialistShell({
           <div ref={menuRef} className="fo-mobile-nav" style={{ position: "relative" }}>
             <button
               type="button"
+              onPointerDown={(event) => {
+                if (event.pointerType === "touch") {
+                  event.preventDefault();
+                  setMenuOpen((open) => !open);
+                }
+              }}
               onClick={() => setMenuOpen((open) => !open)}
               aria-label={menuOpen ? "Close page menu" : "Open page menu"}
               aria-expanded={menuOpen}
