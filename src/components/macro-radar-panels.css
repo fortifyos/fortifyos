@@ -121,6 +121,15 @@
   letter-spacing: 0.12em;
 }
 
+.mir-feed-status {
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.mir-feed-status.is-complete { color: var(--mir-green); }
+.mir-feed-status.is-partial { color: var(--mir-amber); }
+
 .mir-drivers {
   display: flex;
   gap: 6px;
@@ -301,6 +310,14 @@
 }
 
 .mir-invalidation-item .mir-watch-dot { background: var(--mir-red); }
+
+.mir-archive-note {
+  margin-bottom: 12px;
+  color: var(--mir-ghost);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
 
 .mir-archive-list {
   display: grid;

@@ -258,10 +258,7 @@ function HierarchyHeader() {
   return (
     <section className="ir-hierarchy ir-card">
       <div className="ir-card-head">
-        <div>
-          <div className="ir-kicker">Aschenbrenner hierarchy</div>
-          <h2>Investment path to AI</h2>
-        </div>
+        <div className="ir-kicker">Aschenbrenner hierarchy</div>
         <Cpu />
       </div>
     </section>

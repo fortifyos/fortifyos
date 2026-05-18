@@ -66,7 +66,7 @@ def load_macro_json(base_path: str) -> dict:
     data = load_json(path, default={})
     if not data:
         logger.warning("load_macro_json: macro.json not found or empty at %s", path)
-    return data or {}
+    return _normalize_macro_shape(data or {})
 
 
 def build_asset_snapshot(
@@ -244,6 +244,67 @@ def _deep_get(data: dict, path: str) -> Any:
             return None
         current = current.get(part)
     return current
+
+
+def _normalize_macro_shape(data: dict) -> dict:
+    """Return macro data in the nested shape expected by the engine.
+
+    The public price updater emits a compact flat payload, while the macro
+    engine historically consumed a nested payload.  Accept both shapes so a
+    feed-format change cannot silently degrade every downstream score to null.
+    """
+    if not isinstance(data, dict):
+        return {}
+
+    # Older snapshots already use the engine-native shape.
+    if any(key in data for key in ("indices", "crypto", "volatility", "commodities")):
+        return data
+
+    normalized = dict(data)
+
+    def from_flat(flat_key: str, value_key: str) -> dict:
+        raw = data.get(flat_key)
+        if not isinstance(raw, dict):
+            return {}
+        value = _to_float(raw.get("value"))
+        change_pct = _to_float(raw.get("change"))
+        previous_close = None
+        if value is not None and change_pct is not None and change_pct != -100:
+            previous_close = value / (1 + change_pct / 100)
+        payload = {value_key: value}
+        if previous_close is not None:
+            payload["previousClose"] = previous_close
+        for key, raw_value in raw.items():
+            if key not in {"value", "change"}:
+                payload[key] = raw_value
+        return payload
+
+    normalized["indices"] = {"spx": from_flat("sp500", "price")}
+    normalized["crypto"] = {"btc": from_flat("btc", "price")}
+    normalized["volatility"] = {"vix": from_flat("vix", "value")}
+    normalized["commodities"] = {
+        "gold": from_flat("gold", "price"),
+        "wti": from_flat("oil", "price"),
+    }
+    normalized["forex"] = {"dxy": from_flat("dxy", "value")}
+    normalized["rates"] = {"tnx": from_flat("tnx", "yield")}
+
+    def flat_value(key: str) -> Optional[float]:
+        raw = data.get(key)
+        if isinstance(raw, dict):
+            return _to_float(raw.get("value"))
+        return _to_float(raw)
+
+    normalized["fedBalance"] = {
+        "walcl": flat_value("walcl"),
+        "tga": flat_value("tga"),
+        "rrp": flat_value("rrp"),
+        "walclPrior": flat_value("walclPrior"),
+        "tgaPrior": flat_value("tgaPrior"),
+        "rrpPrior": flat_value("rrpPrior"),
+    }
+
+    return normalized
 
 
 def _to_float(value: Any) -> Optional[float]:

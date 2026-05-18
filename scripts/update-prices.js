@@ -153,6 +153,8 @@ async function fetchStocks() {
     vix:    '^VIX',
     sp500:  '^GSPC',
     nasdaq: '^IXIC',
+    dxy:    'DX-Y.NYB',
+    tnx:    '^TNX',
   };
 
   // Extended ticker cache — stored in macro.json under "tickers" key

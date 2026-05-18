@@ -274,18 +274,49 @@ function DirectiveCard({ directive, latestEntry }) {
   );
 }
 
+function archiveSignature(item) {
+  const drivers = (item.dominantDrivers || []).slice(0, 2).join("|");
+  return `${item.regimeMode || "mixed"}:${drivers}`;
+}
+
+function groupArchiveEras(items) {
+  const sorted = [...(items || [])].sort((a, b) => b.date.localeCompare(a.date));
+  return sorted.reduce((eras, item) => {
+    const latest = eras[eras.length - 1];
+    const signature = archiveSignature(item);
+    if (latest?.signature === signature) {
+      latest.startDate = item.date;
+      latest.days += 1;
+      latest.entryCount += item.entryCount || 0;
+      return eras;
+    }
+    eras.push({
+      ...item,
+      signature,
+      startDate: item.date,
+      endDate: item.date,
+      days: 1,
+      entryCount: item.entryCount || 0,
+    });
+    return eras;
+  }, []);
+}
+
 function ArchiveRail({ items }) {
-  if (!items?.length) return null;
-  const sorted = [...items].sort((a, b) => b.date.localeCompare(a.date));
+  const eras = groupArchiveEras(items).slice(0, 8);
+  if (!eras.length) return null;
   return (
     <section className="mir-card">
-      <div className="mir-card-hd">ARCHIVE HISTORY</div>
+      <div className="mir-card-hd">REGIME HISTORY</div>
       <div className="mir-card-body">
+        <div className="mir-archive-note">Only changes are shown; unchanged days collapse into one era.</div>
         <div className="mir-archive-list">
-          {sorted.map((item) => (
-            <div key={item.date} className="mir-archive-item">
+          {eras.map((item) => (
+            <div key={`${item.startDate}-${item.endDate}-${item.signature}`} className="mir-archive-item">
               <div>
-                <div className="mir-archive-date">{item.date}</div>
+                <div className="mir-archive-date">
+                  {item.startDate === item.endDate ? item.endDate : `${item.startDate} → ${item.endDate}`}
+                </div>
                 {item.dominantDrivers?.length > 0 && (
                   <div className="mir-archive-drivers">
                     {item.dominantDrivers.slice(0, 2).map((d) => d.replace(/_/g, " ")).join(" · ")}
@@ -296,7 +327,7 @@ function ArchiveRail({ items }) {
                 <span className={`mir-archive-regime mode-${item.regimeMode}`}>
                   {REGIME_LABELS[item.regimeMode] ?? item.regimeMode}
                 </span>
-                <span className="mir-archive-count">{item.entryCount}x</span>
+                <span className="mir-archive-count">{item.days} {item.days === 1 ? "day" : "days"}</span>
               </div>
             </div>
           ))}
@@ -422,6 +453,14 @@ export default function MacroRadarPanels({ isDark = true }) {
     if (!market?.assets) return [];
     return Array.isArray(market.assets) ? market.assets.filter(Boolean) : Object.values(market.assets).filter(Boolean);
   }, [market]);
+  const feedCoverage = useMemo(() => {
+    const liveAssets = assets.filter((asset) => asset.value != null).length;
+    return {
+      liveAssets,
+      trackedAssets: assets.length,
+      complete: assets.length > 0 && liveAssets === assets.length,
+    };
+  }, [assets]);
   const latestEntry = useMemo(() => {
     const entries = todayLog?.entries || [];
     return entries.length ? entries[entries.length - 1] : null;
@@ -438,8 +477,13 @@ export default function MacroRadarPanels({ isDark = true }) {
           <div>
             <h2 className="mir-title">RADAR MARKET FEED</h2>
             <div className="mir-subtitle">
-              PRE-MARKET LOG · ARCHIVE HISTORY · NEXT RUN {formatCountdown(nextRunAt)}
+              {SESSION_LABELS[regime?.session] ?? "MARKET LOG"} · REGIME HISTORY · NEXT RUN {formatCountdown(nextRunAt)}
             </div>
+            {!loading && (
+              <div className={`mir-feed-status ${feedCoverage.complete ? "is-complete" : "is-partial"}`}>
+                FEED {feedCoverage.complete ? "LIVE" : "PARTIAL"} · {feedCoverage.liveAssets}/{feedCoverage.trackedAssets || 0} MARKET INPUTS SYNCED
+              </div>
+            )}
           </div>
           {regime?.dominantDrivers?.length > 0 && (
             <div className="mir-drivers">
