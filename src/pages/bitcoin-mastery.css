@@ -1108,6 +1108,50 @@
   margin-bottom: 10px;
 }
 
+.bm-season-brief{
+  display: grid;
+  grid-template-columns: 1.05fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.bm-season-brief > div{
+  border: 1px solid var(--bm-border);
+  background: rgba(255,255,255,.015);
+  padding: 12px;
+}
+
+.bm-root.bm-light .bm-season-brief > div{
+  background: rgba(0,0,0,.025);
+}
+
+.bm-season-brief span{
+  display: block;
+  color: var(--bm-dim);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.bm-season-answer strong{
+  display: block;
+  margin-top: 7px;
+  color: var(--bm-red);
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.1;
+}
+
+.bm-season-brief--accum .bm-season-answer strong{ color: var(--bm-green); }
+.bm-season-brief--dist .bm-season-answer strong{ color: var(--bm-amber); }
+.bm-season-brief--wait .bm-season-answer strong{ color: var(--bm-red); }
+
+.bm-season-brief p{
+  margin: 8px 0 0;
+  color: var(--bm-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .bm-cycle-kpi,
 .bm-cycle-stat{
   border: 1px solid var(--bm-border);
@@ -1182,10 +1226,10 @@
 
 .bm-cycle-track{
   position: relative;
-  height: 12px;
+  height: 18px;
   border: 1px solid var(--bm-border);
   background: #101010;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .bm-root.bm-light .bm-cycle-track{ background: #dadbd6; }
@@ -1217,21 +1261,40 @@
 .bm-cycle-halving-mark{
   position: absolute;
   left: 50%;
-  top: -2px;
+  top: -1px;
   width: 2px;
-  height: 16px;
+  height: 20px;
   background: var(--bm-gold);
   transform: translateX(-50%);
 }
 
 .bm-cycle-now{
   position: absolute;
-  top: -3px;
-  width: 4px;
+  top: 50%;
+  width: 18px;
   height: 18px;
-  transform: translateX(-50%);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
   animation: bm-cyclePulse 2s ease-in-out infinite;
-  box-shadow: 0 0 10px currentColor;
+  box-shadow: 0 0 0 4px rgba(255,255,255,.06), 0 0 18px currentColor;
+  z-index: 4;
+}
+
+.bm-cycle-now::before{
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  background: #050505;
+}
+
+.bm-cycle-now::after{
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: inherit;
+  border: 1px solid currentColor;
+  opacity: .55;
 }
 
 .bm-phase-now--accum{ color: var(--bm-green); background: var(--bm-green); }
@@ -1260,6 +1323,10 @@
   gap: 8px;
 }
 
+.bm-cycle-grid--simple{
+  grid-template-columns: 1.1fr 1fr 1fr;
+}
+
 .bm-cycle-stat--wide{
   grid-column: span 2;
 }
@@ -1270,9 +1337,36 @@
 .bm-cycle-stat--purple{ border-left: 2px solid #8b5cf6; }
 .bm-cycle-stat--neutral{ border-left: 2px solid var(--bm-muted); }
 
+.bm-cycle-watch{
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.bm-cycle-watch span{
+  color: var(--bm-soft);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.bm-cycle-watch span::before{
+  content: "• ";
+  color: var(--bm-gold);
+}
+
 @keyframes bm-cyclePulse{
-  0%,100%{ opacity: .75; transform: translateX(-50%) scaleY(1); }
-  50%{ opacity: 1; transform: translateX(-50%) scaleY(1.08); }
+  0%,100%{ opacity: .78; transform: translate(-50%, -50%) scale(1); }
+  50%{ opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+.bm-card--accent-cycle > .bm-note{
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.bm-root.bm-light .bm-card--accent-cycle > .bm-note{
+  border-top-color: rgba(0,0,0,.08);
 }
 
 .bm-footer{
@@ -1300,6 +1394,7 @@
   .bm-alloc{ grid-template-columns: 1fr; }
   .bm-steps{ grid-template-columns: 1fr; }
   .bm-cycle-kpis{ grid-template-columns: 1fr; }
+  .bm-season-brief{ grid-template-columns: 1fr; }
   .bm-cycle-grid{ grid-template-columns: 1fr; }
   .bm-cycle-stat--wide{ grid-column: span 1; }
   .bm-card-h--split{ flex-direction: column; align-items: flex-start; gap: 4px; }
