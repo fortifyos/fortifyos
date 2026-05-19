@@ -545,12 +545,12 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </div>
           <div className="bm-live-cell">
             <span>Coins Already Mined</span>
-            <strong>{net.supplyMined == null ? "—" : fmtNum(net.supplyMined, 8)}</strong>
+            <strong>{net.supplyMined == null ? "—" : fmtNum(net.supplyMined, 2)}</strong>
             <small>{net.supplyPct == null ? "waiting for supply source" : `${net.supplyPct.toFixed(2)}% of all bitcoin`}</small>
           </div>
           <div className="bm-live-cell">
             <span>Coins Left to Mine</span>
-            <strong>{scarcity.remaining == null ? "—" : fmtNum(scarcity.remaining, 8)}</strong>
+            <strong>{scarcity.remaining == null ? "—" : fmtNum(scarcity.remaining, 2)}</strong>
             <small>before the hard cap is reached</small>
           </div>
           <div className="bm-live-cell">
@@ -579,8 +579,26 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
           </p>
           <div className="bm-leak">
             <div className="bm-leak-head">
-              <span>The Leak</span>
+              <span>Purchasing Power Leak</span>
               <strong>${preservedPower.toFixed(0)} of buying power remains</strong>
+            </div>
+            <p className="bm-leak-copy">
+              Move the slider to simulate money expansion. The point is simple: if more dollars are created
+              while your savings stay flat, each dollar represents a smaller share of the system.
+            </p>
+            <div className="bm-leak-readout">
+              <div>
+                <span>You saved</span>
+                <strong>$100</strong>
+              </div>
+              <div>
+                <span>Money supply expands</span>
+                <strong>+{moneyExpansion}%</strong>
+              </div>
+              <div>
+                <span>Buying power feels like</span>
+                <strong>${preservedPower.toFixed(0)}</strong>
+              </div>
             </div>
             <input
               aria-label="Money expansion"
@@ -592,8 +610,8 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
               onChange={(event) => setMoneyExpansion(Number(event.target.value))}
             />
             <div className="bm-leak-scale">
-              <span>$100 saved</span>
-              <span>Money supply +{moneyExpansion}%</span>
+              <span>No dilution</span>
+              <span>Heavy dilution</span>
             </div>
           </div>
           <div className="bm-tags">
