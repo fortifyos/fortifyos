@@ -1815,7 +1815,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Operating Doctrine</div>
-          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Four layers. One sequence.</h2>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', marginBottom: 36, color: t.textPrimary }}>Four layers. One sequence.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
             {[
               { num: '01', title: 'DEFEND', desc: 'Import data, expose cash-flow leaks, rank debt, BNPL, bills, and emergency runway before chasing upside.', Icon: ShieldAlert },
@@ -1840,7 +1840,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Market Opportunity Atlas</div>
-          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 14, color: t.textPrimary }}>AI is one lane. Wealth has many.</h2>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', marginBottom: 18, color: t.textPrimary }}>AI is one lane. Wealth has many.</h2>
           <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.75, maxWidth: 620, marginBottom: 34 }}>
             The Atlas gives users stock-pick style research paths: what to study, why it matters, what breaks the thesis, and which broad exposure options exist.
           </p>
@@ -1869,7 +1869,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Wealth Architecture</div>
-          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Building wealth is only half the game.</h2>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', marginBottom: 36, color: t.textPrimary }}>Building wealth is only half the game.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
             {[
               { title: 'Trusts & Estate Basics', desc: 'Revocable trusts, irrevocable concepts, beneficiaries, powers of attorney, and legacy instructions.', Icon: FileText },
@@ -1894,7 +1894,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 16, fontFamily: mono }}>Field Manual</div>
-          <h2 style={{ fontFamily: mono, fontSize: 20, fontWeight: 700, marginBottom: 14, color: t.textPrimary }}>Want to understand the full system?</h2>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', marginBottom: 18, color: t.textPrimary }}>Want to understand the full system?</h2>
           <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 480, marginBottom: 28 }}>
             The Field Manual covers the 7 Stages framework, enforcement logic, privacy architecture, macro education, thesis modules, and the path toward wealth architecture.
           </p>
@@ -1945,21 +1945,126 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
   ];
 
   const lanes = [
-    { num: '01', title: 'AI / Automation', status: 'ACTIVE', desc: 'Compute, chips, power, data centers, robotics, and broad AI exposure. A completed thesis module is live now.', action: 'Open AI Portfolio', onClick: onInvestmentRadar, color: accent },
-    { num: '02', title: 'Bitcoin / Digital Scarcity', status: 'ACTIVE', desc: 'Hard-money education, live BTC context, scarcity, cycle seasons, and self-custody basics.', action: 'Open Bitcoin', onClick: onBitcoin, color: t.crypto },
-    { num: '03', title: 'Energy & Power', status: 'NEXT', desc: 'Grid demand, nuclear, natural gas, utilities, electrification, and the power bottleneck behind AI and industry.', color: t.warn },
-    { num: '04', title: 'Defense / Aerospace', status: 'NEXT', desc: 'National security, space, drones, cyber, industrial capacity, and long-cycle government demand.', color: t.textSecondary },
-    { num: '05', title: 'Healthcare / Longevity', status: 'PLANNED', desc: 'Aging demographics, biotech optionality, medtech, obesity, diagnostics, and life-extension infrastructure.', color: t.purple },
-    { num: '06', title: 'Real Assets', status: 'PLANNED', desc: 'Real estate, REITs, land, infrastructure, farmland, and income-producing tangible assets.', color: t.crypto },
-    { num: '07', title: 'Commodities', status: 'PLANNED', desc: 'Gold, silver, copper, oil, uranium, fertilizer, and hard-asset cycles that follow scarcity and geopolitics.', color: t.warn },
-    { num: '08', title: 'Alternatives / Collectibles', status: 'PLANNED', desc: 'Cards, watches, art, sneakers, rare books, games, provenance, grading, storage, liquidity, and hype cycles.', color: t.textSecondary },
+    { num: '01', title: 'AI / Automation', status: 'ACTIVE', desc: 'Compute, chips, power, data centers, robotics, and broad AI exposure. The existing AI Frontier page remains the flagship deep-dive.', action: 'Open AI Portfolio', onClick: onInvestmentRadar, color: accent, leaders: 'NVDA · AMD · AVGO · CEG · VST · PLTR', future: 'CoreWeave · Astera Labs · Vertiv · Figure AI · Anduril' },
+    { num: '02', title: 'Bitcoin / Digital Scarcity', status: 'ACTIVE', desc: 'Hard-money education, live BTC context, scarcity, cycle seasons, and self-custody basics.', action: 'Open Bitcoin', onClick: onBitcoin, color: t.crypto, leaders: 'BTC · IBIT · FBTC · MSTR · COIN', future: 'Custody rails · Lightning apps · Treasury adopters' },
+    { num: '03', title: 'Energy & Power', status: 'NEXT', desc: 'Grid demand, nuclear, natural gas, utilities, electrification, and the power bottleneck behind AI and industry.', color: t.warn, leaders: 'CEG · VST · ETN · GEV · NRG', future: 'SMR builders · grid equipment · turbine backlog' },
+    { num: '04', title: 'Defense / Aerospace', status: 'NEXT', desc: 'National security, space, drones, cyber, industrial capacity, and long-cycle government demand.', color: t.textSecondary, leaders: 'LMT · RTX · NOC · GD · PLTR · RKLB', future: 'Anduril · SpaceX · counter-drone · autonomy' },
+    { num: '05', title: 'Healthcare / Longevity', status: 'PLANNED', desc: 'Aging demographics, biotech optionality, medtech, obesity, diagnostics, and life-extension infrastructure.', color: t.purple, leaders: 'LLY · NVO · TMO · DHR · ISRG', future: 'GLP-1 second wave · gene editing · AI discovery' },
+    { num: '06', title: 'Real Assets', status: 'PLANNED', desc: 'Real estate, REITs, land, infrastructure, farmland, and income-producing tangible assets.', color: t.crypto, leaders: 'EQIX · DLR · PLD · AMT · LAND', future: 'Data-center REITs · farmland platforms · infrastructure funds' },
+    { num: '07', title: 'Commodities', status: 'PLANNED', desc: 'Gold, silver, copper, oil, uranium, fertilizer, and hard-asset cycles that follow scarcity and geopolitics.', color: t.warn, leaders: 'GLD · SLV · FCX · CCJ · XLE', future: 'Uranium term market · copper deficits · critical minerals' },
+    { num: '08', title: 'Alternatives / Collectibles', status: 'PLANNED', desc: 'Cards, watches, art, sneakers, rare books, games, provenance, grading, storage, liquidity, and hype cycles.', color: t.textSecondary, leaders: 'EBAY · grading rails · auction houses', future: 'PSA/Collectors · fractional markets · vaulting & insurance' },
+    { num: '09', title: 'Portfolio Construction Discipline', status: 'ACTIVE', desc: 'The guardrail layer: position sizing, core vs satellite, wrappers, cash-flow quality, thesis invalidation, and behavioral risk across all lanes.', color: accent, leaders: 'Core · Satellite · Cash Flow · Sizing · Invalidation', future: 'Personal IPS · rebalancing rules · lane risk budgets' },
+  ];
+
+  const constructionRules = [
+    { title: 'Core before satellite', desc: 'The foundation protects the plan: cash reserve, broad exposure, debt control, and only then concentrated lane bets.' },
+    { title: 'Size the volatility', desc: 'A brilliant thesis sized too large becomes a behavioral trap. The size should survive ugly drawdowns.' },
+    { title: 'Know the asset type', desc: 'Cash-flow assets have valuation anchors. No-cash-flow assets depend more heavily on liquidity, narrative, and the next buyer.' },
+    { title: 'Prefer shovels when unsure', desc: 'Equipment, rails, infrastructure, and service providers often capture a theme without needing to pick the final winner.' },
+    { title: 'Match wrapper to asset', desc: 'Fees, tax treatment, retirement accounts, REIT income, collectibles treatment, and futures roll cost quietly shape real returns.' },
+    { title: 'Write the exit before entry', desc: 'Each lane needs invalidation signals before emotion arrives. Conviction without a kill-switch becomes religion.' },
+  ];
+
+  const constructionModel = [
+    ['Foundation', 'Broad market, cash reserve, debt discipline, insurance basics', 'Protect the system from forced selling.'],
+    ['Satellite', 'AI, Bitcoin, Energy, Defense, Healthcare, Real Assets, Commodities, Alternatives', 'Express researched convictions without letting any one story own the portfolio.'],
+    ['Watchlist', 'Future companies, private names, emerging supply-chain bottlenecks', 'Study early, wait for evidence, avoid headline FOMO.'],
+  ];
+
+  const analystSkeleton = [
+    ['01', 'Thesis', 'The structural engine: why this is an opportunity, not just a headline.'],
+    ['02', 'Why Now', 'The catalyst that turned a slow theme into a live one.'],
+    ['03', 'Time-Horizon Map', '1–3 year cycle, 3–10 year buildout, 10–30 year terminal state.'],
+    ['04', 'Value Chain', 'Where money actually flows, with leading tickers and future companies to research.'],
+    ['05', 'Signals & Metrics', 'The five reads a serious analyst watches before forming conviction.'],
+    ['06', 'Ways to Get Exposure', 'Broad index, thematic ETF, single names, private/direct, and the tradeoffs.'],
+    ['07', 'Bear Case', 'The strongest argument that the lane disappoints.'],
+    ['08', 'Invalidation Signals', 'What would prove the thesis wrong before emotion takes over.'],
+    ['09', 'Behavioral Traps', 'The specific way this lane separates retail money from its owners.'],
+  ];
+
+  const laneLinks = [
+    'AI → Power → Commodities: compute demand cascades into electricity, turbines, uranium, copper, and grid hardware.',
+    'AI → Real Assets: data-center REITs and power-adjacent infrastructure sit between growth tech and hard assets.',
+    'Bitcoin ↔ Gold / Commodities: different expressions of debasement protection with very different volatility profiles.',
+    'Defense → Critical Minerals: rearmament pulls rare earths, specialty metals, aerospace suppliers, and autonomy rails.',
+    'Healthcare → Real Assets: aging demographics drive drug demand and senior-housing / medical infrastructure demand.',
+  ];
+
+  const architectureSkeleton = [
+    ['01', 'Core Idea', 'What the pillar protects against, in plain English.'],
+    ['02', 'Who Needs to Care', 'The life events and trigger conditions that make the topic urgent.'],
+    ['03', 'Building Blocks', 'The instruments, roles, account types, documents, and concepts involved.'],
+    ['04', 'Decision Framework', 'The questions and trade-offs that shape the right path.'],
+    ['05', 'Common Mistakes', 'The expensive errors people make before they know the machinery.'],
+    ['06', 'Rule Shape', 'How limits, exemptions, brackets, or coverage layers are structured — with live-number lookup prompts.'],
+    ['07', 'Professional Line', 'When self-education ends and an estate attorney, CPA, planner, or broker belongs in the room.'],
+    ['08', 'Sales Traps', 'How fear, complexity, and commissions distort this pillar.'],
   ];
 
   const architecture = [
-    { title: 'Trusts & Estate Basics', desc: 'Revocable trusts, irrevocable concepts, beneficiaries, powers of attorney, and legacy instructions.', Icon: FileText },
-    { title: 'Life Insurance Strategy', desc: 'Term vs permanent, income protection, family scenarios, and when insurance is protection versus product.', Icon: Shield },
-    { title: 'Tax-Aware Wealth', desc: 'Account placement, capital gains awareness, taxable vs retirement accounts, and why taxes shape compounding.', Icon: Database },
-    { title: 'Asset Protection', desc: 'Titling, custody, insurance, documentation, storage, and boundaries across public and private assets.', Icon: Lock },
+    {
+      num: '01', title: 'Trusts & Estate Basics', Icon: FileText,
+      core: 'Estate planning answers who decides if you cannot, who receives what, and how assets transfer. The durable lesson is control, privacy, incapacity planning, and probate avoidance — not just death taxes.',
+      triggers: 'Adulthood, children, marriage, divorce, home ownership, business ownership, inheritance, moving states, blended families, special-needs beneficiaries, or multi-state real estate.',
+      blocks: 'Durable financial power of attorney, healthcare proxy, advance directive, HIPAA authorization, will, revocable living trust, irrevocable trusts, beneficiary designations, TOD/POD, titling, executor, trustee, guardian.',
+      framework: 'Start with incapacity. Then decide whether probate/privacy/control justify a trust. Separate revocable control from irrevocable protection. Remember: a trust must be funded or it is an empty box.',
+      mistakes: 'No incapacity documents, stale beneficiaries, unfunded trusts, DIY documents that miss state execution rules, naming minors directly, never reviewing after life changes.',
+      lookup: 'Look up current federal estate/gift exemption, annual gift exclusion, your state estate/inheritance tax threshold, probate rules, and basis step-up treatment before acting.',
+      professional: 'Estate attorney for trusts, minor children, blended families, real estate complexity, business ownership, state-tax exposure, special-needs planning, or irrevocable structures.',
+      trap: 'Trust mills selling “everyone needs a trust,” and confusion that a revocable trust creates tax savings or asset protection. It usually does neither.'
+    },
+    {
+      num: '02', title: 'Life Insurance Strategy', Icon: Shield,
+      core: 'Life insurance protects people who depend on your income or labor. The question is not “what product should I buy?” It is “who suffers financially if I die, and for how long?”',
+      triggers: 'Dependents, mortgage or co-signed debt, spouse leaving the workforce, children, business partners, key-person exposure, estate liquidity needs, or a special-needs dependent.',
+      blocks: 'Term life, whole life, universal life, variable universal life, riders, death benefit, cash value, surrender charge, conversion option, key-person coverage, buy-sell funding, ILIT.',
+      framework: 'Need first, product second. Temporary need usually points to term. Permanent need may justify permanent coverage. Separate protection from investment pitch.',
+      mistakes: 'Buying permanent coverage for a temporary need, under-insuring while overpaying, insuring people with no dependents, child policies as “investments,” too-short terms, surrendering permanent policies without exit math.',
+      lookup: 'Compare current term quotes, policy fees, guaranteed vs projected values, insurer ratings, state insurance rules, and estate inclusion rules before deciding.',
+      professional: 'Fee-only planner for coverage need; independent insurance broker for quotes; estate attorney and CPA for ILIT, business, estate liquidity, or special-needs structures.',
+      trap: '“Infinite banking,” fear-based urgency, optimistic illustrations, and commission asymmetry where the most profitable product for the seller may not be best for the buyer.'
+    },
+    {
+      num: '03', title: 'Tax-Aware Positioning', Icon: Database,
+      core: 'Tax-aware positioning is about placing the right asset in the right bucket, holding for the right duration, and sequencing gains, losses, and withdrawals so compounding leaks less.',
+      triggers: 'Earned income, employer match, taxable + retirement accounts, high-income years, self-employment, windfalls, concentrated stock, equity compensation, retirement approach, or unusual tax years.',
+      blocks: 'Taxable brokerage, traditional accounts, Roth accounts, HSA, capital gains, qualified dividends, ordinary income, tax-loss harvesting, wash-sale rule, Roth conversions, backdoor/mega-backdoor Roth, RMDs.',
+      framework: 'Understand the three buckets: taxable flexibility, tax-deferred deduction now/tax later, and tax-free compounding. Put tax-inefficient assets in shelters and tax-efficient assets in taxable when appropriate.',
+      mistakes: 'Leaving employer match, backward asset location, selling just before long-term treatment, botched wash sales, ignoring the HSA, cashing out old retirement accounts, letting taxes prevent needed risk reduction.',
+      lookup: 'Look up current contribution limits, phase-outs, capital-gains brackets, NIIT thresholds, HSA limits, RMD age/rules, and state tax treatment each year.',
+      professional: 'CPA or tax advisor for conversions, equity compensation, business plans, concentrated positions, retirement withdrawals, high-income years, and state-specific planning.',
+      trap: 'Products marketed as “tax-free” substitutes for actual tax-advantaged accounts, and over-optimizing taxes while ignoring investment quality or risk.'
+    },
+    {
+      num: '04', title: 'Asset Protection', Icon: Lock,
+      core: 'Asset protection draws boundaries so one liability event cannot consume everything. It is preventive: structure and insurance must exist before a claim is known or foreseeable.',
+      triggers: 'Business ownership, rental property, high-liability professions, meaningful net worth, marriage/divorce, partners, physical assets, crypto custody, collectibles, or any activity that creates lawsuit exposure.',
+      blocks: 'Umbrella insurance, liability limits, malpractice/E&O/D&O, landlord coverage, LLCs, corporations, separate accounts, corporate formalities, titling, homestead rules, retirement account protection, irrevocable trusts, custody, records, appraisals.',
+      framework: 'Insure before you structure. Match the structure to the real risk silo. Respect formalities. Decide how much control you are willing to give up for protection.',
+      mistakes: 'Under-insuring, acting too late, commingling LLC funds, over-engineering offshore structures, poor documentation, no proof of ownership, confusing protection with hiding assets.',
+      lookup: 'Look up state homestead protections, tenancy rules, LLC law, retirement-account creditor protection, umbrella coverage requirements, and fraudulent-transfer rules.',
+      professional: 'Insurance broker for liability coverage; asset-protection or estate attorney for entities, trusts, rentals, businesses, high-net-worth exposure, and any offshore/DAPT discussion.',
+      trap: 'Fear-driven “judgment-proof” marketing, secrecy pitches, and exotic structures sold to people whose real issue is basic insurance and documentation.'
+    },
+  ];
+
+  const architectureLinks = [
+    'Tax ↔ Estate: basis step-up, gifting, and probate shape whether to hold, gift, or transfer assets at death.',
+    'Estate ↔ Asset Protection: irrevocable trusts trade control for protection; retirement accounts can be both tax tools and protected assets.',
+    'Insurance ↔ Estate: death benefit can provide liquidity, especially when heirs would otherwise need to sell assets under pressure.',
+    'Asset Protection ↔ Lanes: Bitcoin custody, collectibles provenance, metals storage, real-estate titling, and business entities all sit here.',
+    'Tax ↔ Every Lane: the account wrapper can matter as much as the ticker, especially for REITs, commodities, active funds, and collectibles.',
+  ];
+
+  const architecturePrinciples = [
+    'Defense compounds too: avoiding tax drag, probate, forced sales, or uninsured losses is a real return.',
+    'Control vs protection is the master trade-off: keep control and accept exposure, or give up control for stronger protection.',
+    'Insure the catastrophe, structure the rest: boring coverage often beats complex machinery.',
+    'Timing matters: documents before incapacity, insurance before health changes, protection before claims, tax moves before deadlines.',
+    'Jurisdiction governs: state and country rules can flip the answer completely.',
+    'Match the specialist to the problem: estate attorney, CPA, fee-only planner, independent broker, or asset-protection attorney.',
+    'A plan no one can find or maintain is not a plan: records, beneficiaries, funding, and reviews are the architecture.',
   ];
 
   return (
@@ -1968,7 +2073,7 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
       <main style={{ maxWidth: 1180, margin: '0 auto', padding: '42px 24px 80px' }}>
         <section className="fo-page-section" style={{ borderTop: `2px solid ${accent}`, padding: 28, marginBottom: 18 }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>FortifyOS Wealth System</div>
-          <h1 style={{ fontSize: 'clamp(34px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.04em', margin: '0 0 18px', fontFamily: "'Times New Roman', Georgia, serif", textTransform: 'uppercase' }}>
+          <h1 style={{ fontSize: 'clamp(46px, 8vw, 92px)', fontWeight: 700, lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', fontFamily: "'Times New Roman', Georgia, serif", textTransform: 'uppercase' }}>
             Opportunity<br /><span style={{ color: accent }}>Atlas</span>
           </h1>
           <p style={{ maxWidth: 720, color: t.textSecondary, fontSize: 16, lineHeight: 1.75, margin: '0 0 22px' }}>
@@ -1991,40 +2096,177 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
 
         <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Opportunity Lanes</div>
-          <h2 style={{ margin: '0 0 22px', fontSize: 22 }}>Stock-pick style research paths without pretending to be a financial advisor.</h2>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 22px' }}>Stock-pick style research paths without pretending to be a financial advisor.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
             {lanes.map((lane) => (
-              <div key={lane.title} style={{ border: `1px solid ${lane.status === 'ACTIVE' ? lane.color : t.borderDim}`, background: t.surface, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 210 }}>
+              <div key={lane.title} style={{ border: `1px solid ${lane.status === 'ACTIVE' ? lane.color : t.borderDim}`, background: t.surface, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 270 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                   <span style={{ color: t.textDim, fontSize: 12 }}>{lane.num}</span>
                   <span style={{ color: lane.color, fontSize: 10, letterSpacing: '0.14em' }}>{lane.status}</span>
                 </div>
                 <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 14 }}>{lane.title}</div>
                 <p style={{ color: t.textDim, lineHeight: 1.65, margin: 0, fontSize: 13 }}>{lane.desc}</p>
-                {lane.onClick && (
-                  <button onClick={lane.onClick} style={{ marginTop: 'auto', background: 'none', border: `1px solid ${lane.color}`, color: lane.color, padding: '10px 12px', cursor: 'pointer', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>
-                    {lane.action}
-                  </button>
-                )}
+                <div style={{ marginTop: 'auto', display: 'grid', gap: 8 }}>
+                  <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 10 }}>
+                    <div style={{ color: lane.color, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>Leading research names</div>
+                    <div style={{ color: t.textPrimary, fontSize: 12, lineHeight: 1.55 }}>{lane.leaders}</div>
+                  </div>
+                  <div>
+                    <div style={{ color: t.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>Future watch</div>
+                    <div style={{ color: t.textSecondary, fontSize: 12, lineHeight: 1.55 }}>{lane.future}</div>
+                  </div>
+                  {lane.onClick && (
+                    <button onClick={lane.onClick} style={{ marginTop: 4, background: 'none', border: `1px solid ${lane.color}`, color: lane.color, padding: '10px 12px', cursor: 'pointer', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>
+                      {lane.action}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="fo-page-section" style={{ padding: 24 }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Wealth Architecture</div>
-          <h2 style={{ margin: '0 0 22px', fontSize: 22 }}>The build is not complete until it is protected.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
-            {architecture.map(({ title, desc, Icon }) => (
-              <div key={title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 20 }}>
-                <Icon size={18} style={{ color: accent, marginBottom: 12 }} />
-                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 9 }}>{title}</div>
-                <div style={{ color: t.textDim, lineHeight: 1.65, fontSize: 13 }}>{desc}</div>
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Analyst Template</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>Every lane uses the same nine-part research skeleton.</h2>
+          <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 820, fontSize: 14 }}>
+            The repetition is the moat: by the third lane, users stop reading like headline chasers and start reading like analysts. AI keeps its full Frontier page; this Atlas becomes the reusable structure for every future lane.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+            {analystSkeleton.map(([num, title, desc]) => (
+              <div key={title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 16, minHeight: 128 }}>
+                <div style={{ color: accent, fontSize: 11, marginBottom: 10 }}>{num}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 8 }}>{title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{desc}</div>
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>How the Lanes Interconnect</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>The wealth map is a system, not eight separate bets.</h2>
+          <div style={{ display: 'grid', gap: 2 }}>
+            {laneLinks.map((link, index) => (
+              <div key={link} style={{ display: 'grid', gridTemplateColumns: '42px 1fr', gap: 12, alignItems: 'start', border: `1px solid ${t.borderDim}`, background: t.surface, padding: 14 }}>
+                <span style={{ color: index === 0 ? accent : t.textDim, fontWeight: 800 }}>{String(index + 1).padStart(2, '0')}</span>
+                <span style={{ color: t.textSecondary, lineHeight: 1.6, fontSize: 13 }}>{link}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, border: `1px solid ${accent}55`, background: `${accent}10`, padding: 16 }}>
+            <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 8 }}>Active discipline layer</div>
+            <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Lane 09 — Portfolio Construction Discipline</div>
+            <div style={{ color: t.textDim, lineHeight: 1.65, fontSize: 13 }}>This is the operating manual that explains how the eight opportunity lanes fit together without turning the product into personalized advice.</div>
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18, borderTop: `2px solid ${accent}` }}>
+          <div style={{ fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Lane 09 · Active Module</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(38px, 6vw, 68px)', fontWeight: 700, lineHeight: 0.88, letterSpacing: '-0.06em', textTransform: 'uppercase', margin: '0 0 18px' }}>Portfolio Construction Discipline</h2>
+          <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 860, fontSize: 14 }}>
+            The first eight lanes answer where opportunity may live. Lane 09 answers the more important question: how do you pursue opportunity without letting one narrative, one ticker, or one cycle take control of the whole system?
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 2, marginBottom: 18 }}>
+            {constructionModel.map(([layer, assets, purpose]) => (
+              <div key={layer} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+                <div style={{ color: accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 8 }}>{layer}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, lineHeight: 1.45, marginBottom: 8 }}>{assets}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{purpose}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+            {constructionRules.map((rule, index) => (
+              <div key={rule.title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 16, minHeight: 145 }}>
+                <div style={{ color: index < 2 ? accent : t.textDim, fontSize: 11, marginBottom: 10 }}>{String(index + 1).padStart(2, '0')}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 8 }}>{rule.title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{rule.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 18, borderLeft: `2px solid ${t.warn}`, paddingLeft: 14, color: t.textDim, fontSize: 12, lineHeight: 1.7 }}>
+            Educational framework only. This module teaches portfolio mechanics and decision hygiene; it does not assign a user-specific allocation, ticker weight, or buy/sell instruction.
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Wealth Architecture · Protection Layer</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>Building wealth is only half the game. Keeping it is the other half.</h2>
+          <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 880, fontSize: 14 }}>
+            Opportunity lanes are offense. Wealth Architecture is defense: taxes, lawsuits, incapacity, premature death, custody, and the eventual handoff. This library teaches the machinery and the questions to ask before meeting a qualified professional — not a one-size-fits-all plan.
+          </p>
+
+          <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18, marginBottom: 18 }}>
+            <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>Reusable pillar skeleton</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+              {architectureSkeleton.map(([num, title, desc]) => (
+                <div key={title} style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 14, minHeight: 118 }}>
+                  <div style={{ color: accent, fontSize: 10, marginBottom: 8 }}>{num}</div>
+                  <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 12, marginBottom: 7 }}>{title}</div>
+                  <div style={{ color: t.textDim, lineHeight: 1.55, fontSize: 12 }}>{desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 2 }}>
+            {architecture.map((pillar) => {
+              const Icon = pillar.Icon;
+              return (
+                <article key={pillar.title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                    <div style={{ color: accent, fontWeight: 800 }}>{pillar.num}</div>
+                    <Icon size={18} style={{ color: accent }} />
+                  </div>
+                  <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13 }}>{pillar.title}</div>
+                  {[
+                    ['Core idea', pillar.core],
+                    ['Triggers', pillar.triggers],
+                    ['Building blocks', pillar.blocks],
+                    ['Decision framework', pillar.framework],
+                    ['Common mistakes', pillar.mistakes],
+                    ['Current-rule lookup', pillar.lookup],
+                    ['Professional line', pillar.professional],
+                    ['Sales traps', pillar.trap],
+                  ].map(([label, body]) => (
+                    <div key={label} style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 10 }}>
+                      <div style={{ color: label === 'Current-rule lookup' ? t.warn : accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>{label}</div>
+                      <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{body}</div>
+                    </div>
+                  ))}
+                </article>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 2 }}>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+              <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>How the pillars interconnect</div>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {architectureLinks.map((link, index) => (
+                  <div key={link} style={{ display: 'grid', gridTemplateColumns: '30px 1fr', gap: 10 }}>
+                    <span style={{ color: t.textDim, fontSize: 11 }}>{String(index + 1).padStart(2, '0')}</span>
+                    <span style={{ color: t.textSecondary, lineHeight: 1.55, fontSize: 12 }}>{link}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+              <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>Shared principles</div>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {architecturePrinciples.map((principle, index) => (
+                  <div key={principle} style={{ display: 'grid', gridTemplateColumns: '30px 1fr', gap: 10 }}>
+                    <span style={{ color: t.textDim, fontSize: 11 }}>{String(index + 1).padStart(2, '0')}</span>
+                    <span style={{ color: t.textSecondary, lineHeight: 1.55, fontSize: 12 }}>{principle}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div style={{ marginTop: 20, borderLeft: `2px solid ${t.warn}`, paddingLeft: 14, color: t.textDim, fontSize: 12, lineHeight: 1.7 }}>
-            Educational only. Trust, tax, insurance, estate, and investment decisions vary by jurisdiction and personal situation. FortifyOS provides frameworks, not legal, tax, insurance, or financial advice.
+            Educational only. Trust, tax, insurance, estate, accounting, and asset-protection decisions vary by jurisdiction and individual facts. FortifyOS explains mechanisms and professional questions; it does not provide legal, tax, insurance, or financial advice. Current dollar limits should be looked up at the moment of use.
           </div>
         </section>
       </main>
@@ -2476,7 +2718,7 @@ npm run dev`}</pre>
           <div style={{ fontFamily: mono, fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 10 }}>
             {track === 'web' ? 'Web User Track — No setup required' : 'Advanced Track — Self-hosted installation'}
           </div>
-          <h1 style={{ fontFamily: mono, fontSize: 28, fontWeight: 700, color: t.textPrimary, marginBottom: 12 }}>FORTIFY OS Field Manual</h1>
+          <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(42px, 7vw, 76px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.06em', color: t.textPrimary, marginBottom: 16, textTransform: 'uppercase' }}>FORTIFY OS Field Manual</h1>
           <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 580 }}>
             {track === 'web'
               ? 'Everything you need to operate FORTIFY OS through the browser. No installation. No terminal commands. Drop your data, run the system, export your snapshot.'
@@ -4788,7 +5030,7 @@ function FortressOfCashHero({ latest, t }) {
             <span style={{ color: accentAlt }}>SECTOR-03</span>
             <span>Fortress of Cash</span>
           </div>
-          <div style={{ marginTop: 12, fontSize: 34, lineHeight: 1.02, color: t.textPrimary, fontWeight: 900, letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
+          <div style={{ marginTop: 14, fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: 0.88, color: t.textPrimary, fontWeight: 700, letterSpacing: '-0.06em', textTransform: 'uppercase' }}>
             {directive}
           </div>
           <div style={{ marginTop: 8, fontSize: 11, color: accentAlt, textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 700 }}>
@@ -5959,14 +6201,15 @@ function DailyLawHero({ t }) {
       </div>
 
       <div style={{
-        fontSize: 34,
-        fontWeight: 900,
+        fontFamily: "'Times New Roman', Georgia, serif",
+        fontSize: 'clamp(42px, 7vw, 82px)',
+        fontWeight: 700,
         color: t.textPrimary,
-        letterSpacing: '-0.04em',
-        lineHeight: 1.04,
-        marginBottom: 14,
+        letterSpacing: '-0.07em',
+        lineHeight: 0.86,
+        marginBottom: 18,
         textTransform: 'uppercase',
-        maxWidth: 820,
+        maxWidth: 900,
       }}>
         {directive.title}
       </div>
@@ -7585,7 +7828,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               Fed Command Brief · Day {dayOfYear}
             </div>
           </div>
-          <div style={{ fontSize: 34, lineHeight: 1.1, color: t.textPrimary, fontWeight: 800, marginBottom: 14, fontFamily: "'JetBrains Mono', monospace" }}>
+          <div style={{ fontSize: 'clamp(42px, 7vw, 82px)', lineHeight: 0.9, color: t.textPrimary, fontWeight: 700, marginBottom: 18, fontFamily: "'Times New Roman', Georgia, serif", letterSpacing: '-0.06em' }}>
             {fedBrief.headline}
           </div>
           <div style={{ borderLeft: `3px solid ${confColor}`, paddingLeft: 14, marginBottom: 14 }}>
