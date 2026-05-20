@@ -1722,7 +1722,7 @@ function RefusalOverlay({ enforcement, onRoute }) {
 // ═══════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════
-function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onInvestmentRadar, onBitcoin, onSettings, latest }) {
+function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, onDashboard, onMacroSentinel, onWealthAtlas, onInvestmentRadar, onBitcoin, onSettings, latest }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const accent = t.accent;
@@ -1739,6 +1739,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
     { key: 'home', label: 'Home', icon: Home, onClick: null, current: true },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: onWealthAtlas },
     { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: onInvestmentRadar },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
@@ -1922,12 +1923,122 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
 }
 
 // ═══════════════════════════════════════════════════
+// WEALTH ATLAS VIEW
+// ═══════════════════════════════════════════════════
+function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacroSentinel, onInvestmentRadar, onBitcoin, onSettings, onDocs, latest }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  useMenuDismiss(menuOpen, setMenuOpen, menuRef);
+  const mono = "'JetBrains Mono', monospace";
+  const accent = t.accent;
+  const stage = calcStage(latest || {});
+
+  const navItems = [
+    { key: 'home', label: 'Home', icon: Home, onClick: onHome },
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
+    { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: null, current: true },
+    { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: onInvestmentRadar },
+    { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
+    { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
+    { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
+  ];
+
+  const lanes = [
+    { num: '01', title: 'AI / Automation', status: 'ACTIVE', desc: 'Compute, chips, power, data centers, robotics, and broad AI exposure. A completed thesis module is live now.', action: 'Open AI Portfolio', onClick: onInvestmentRadar, color: accent },
+    { num: '02', title: 'Bitcoin / Digital Scarcity', status: 'ACTIVE', desc: 'Hard-money education, live BTC context, scarcity, cycle seasons, and self-custody basics.', action: 'Open Bitcoin', onClick: onBitcoin, color: t.crypto },
+    { num: '03', title: 'Energy & Power', status: 'NEXT', desc: 'Grid demand, nuclear, natural gas, utilities, electrification, and the power bottleneck behind AI and industry.', color: t.warn },
+    { num: '04', title: 'Defense / Aerospace', status: 'NEXT', desc: 'National security, space, drones, cyber, industrial capacity, and long-cycle government demand.', color: t.textSecondary },
+    { num: '05', title: 'Healthcare / Longevity', status: 'PLANNED', desc: 'Aging demographics, biotech optionality, medtech, obesity, diagnostics, and life-extension infrastructure.', color: t.purple },
+    { num: '06', title: 'Real Assets', status: 'PLANNED', desc: 'Real estate, REITs, land, infrastructure, farmland, and income-producing tangible assets.', color: t.crypto },
+    { num: '07', title: 'Commodities', status: 'PLANNED', desc: 'Gold, silver, copper, oil, uranium, fertilizer, and hard-asset cycles that follow scarcity and geopolitics.', color: t.warn },
+    { num: '08', title: 'Alternatives / Collectibles', status: 'PLANNED', desc: 'Cards, watches, art, sneakers, rare books, games, provenance, grading, storage, liquidity, and hype cycles.', color: t.textSecondary },
+  ];
+
+  const architecture = [
+    { title: 'Trusts & Estate Basics', desc: 'Revocable trusts, irrevocable concepts, beneficiaries, powers of attorney, and legacy instructions.', Icon: FileText },
+    { title: 'Life Insurance Strategy', desc: 'Term vs permanent, income protection, family scenarios, and when insurance is protection versus product.', Icon: Shield },
+    { title: 'Tax-Aware Wealth', desc: 'Account placement, capital gains awareness, taxable vs retirement accounts, and why taxes shape compounding.', Icon: Database },
+    { title: 'Asset Protection', desc: 'Titling, custody, insurance, documentation, storage, and boundaries across public and private assets.', Icon: Lock },
+  ];
+
+  return (
+    <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: mono }}>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
+      <main style={{ maxWidth: 1180, margin: '0 auto', padding: '42px 24px 80px' }}>
+        <section className="fo-page-section" style={{ borderTop: `2px solid ${accent}`, padding: 28, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>FortifyOS Wealth System</div>
+          <h1 style={{ fontSize: 'clamp(34px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.04em', margin: '0 0 18px', fontFamily: "'Times New Roman', Georgia, serif", textTransform: 'uppercase' }}>
+            Opportunity<br /><span style={{ color: accent }}>Atlas</span>
+          </h1>
+          <p style={{ maxWidth: 720, color: t.textSecondary, fontSize: 16, lineHeight: 1.75, margin: '0 0 22px' }}>
+            FortifyOS is expanding from personal finance defense into a full wealth map: protect cash flow, read market conditions, study high-signal opportunity lanes, and build structures that protect what you create.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 2 }}>
+            {[
+              ['Current Stage', `${stage} / 7`],
+              ['First Rule', 'Do not chase'],
+              ['Atlas Purpose', 'Research paths'],
+              ['Advice Mode', 'Educational only'],
+            ].map(([label, value]) => (
+              <div key={label} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 14 }}>
+                <div style={{ color: t.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 6 }}>{label}</div>
+                <div style={{ color: label === 'Current Stage' ? accent : t.textPrimary, fontWeight: 700, fontSize: 13 }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Opportunity Lanes</div>
+          <h2 style={{ margin: '0 0 22px', fontSize: 22 }}>Stock-pick style research paths without pretending to be a financial advisor.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
+            {lanes.map((lane) => (
+              <div key={lane.title} style={{ border: `1px solid ${lane.status === 'ACTIVE' ? lane.color : t.borderDim}`, background: t.surface, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 210 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                  <span style={{ color: t.textDim, fontSize: 12 }}>{lane.num}</span>
+                  <span style={{ color: lane.color, fontSize: 10, letterSpacing: '0.14em' }}>{lane.status}</span>
+                </div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 14 }}>{lane.title}</div>
+                <p style={{ color: t.textDim, lineHeight: 1.65, margin: 0, fontSize: 13 }}>{lane.desc}</p>
+                {lane.onClick && (
+                  <button onClick={lane.onClick} style={{ marginTop: 'auto', background: 'none', border: `1px solid ${lane.color}`, color: lane.color, padding: '10px 12px', cursor: 'pointer', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>
+                    {lane.action}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Wealth Architecture</div>
+          <h2 style={{ margin: '0 0 22px', fontSize: 22 }}>The build is not complete until it is protected.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
+            {architecture.map(({ title, desc, Icon }) => (
+              <div key={title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 20 }}>
+                <Icon size={18} style={{ color: accent, marginBottom: 12 }} />
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 9 }}>{title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.65, fontSize: 13 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 20, borderLeft: `2px solid ${t.warn}`, paddingLeft: 14, color: t.textDim, fontSize: 12, lineHeight: 1.7 }}>
+            Educational only. Trust, tax, insurance, estate, and investment decisions vary by jurisdiction and personal situation. FortifyOS provides frameworks, not legal, tax, insurance, or financial advice.
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════
 // DOCUMENTATION VIEW
 // ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
 // DOCUMENTATION VIEW — TWO-TRACK FIELD MANUAL
 // ═══════════════════════════════════════════════════
-function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onInvestmentRadar, onBitcoin, onSettings }) {
+function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentinel, onWealthAtlas, onInvestmentRadar, onBitcoin, onSettings }) {
   const [track, setTrack] = useState(() => localStorage.getItem('fm_track') || 'web');
   const [activeSection, setActiveSection] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1956,6 +2067,7 @@ function DocsView({ t, isDark, onBack, onToggleTheme, onDashboard, onMacroSentin
     { key: 'home', label: 'Home', icon: Home, onClick: onBack },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: onWealthAtlas },
     { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: onInvestmentRadar },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: null, current: true },
@@ -6696,7 +6808,7 @@ function DashboardPriorityStack({ items, t }) {
   );
 }
 
-function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onInvestmentRadar, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
+function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggle, onSetPayFrequency, onExport, onClear, onToggleTheme, syncFlash, onHome, onMacroSentinel, onWealthAtlas, onInvestmentRadar, onBitcoin, onSettings, onDocs, fredMacro, onRefreshIntel, intelRefreshing = false, intelRefreshNonce = 0, onUpdateDebt }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const quickMenuRef = useRef(null);
@@ -6731,6 +6843,7 @@ function DashboardView({ snapshots, latest, settings, t, isDark, onSync, onToggl
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: null, current: true },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: onWealthAtlas },
     { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: onInvestmentRadar },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
@@ -6973,7 +7086,7 @@ const FED_DAILY_BRIEFS = [
 
 // MACRO SENTINEL — PRE-MARKET RADAR (React Dashboard)
 // ═══════════════════════════════════════════════════
-function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onInvestmentRadar, onBitcoin, onSettings, onDocs }) {
+function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro, settings, onHome, onWealthAtlas, onInvestmentRadar, onBitcoin, onSettings, onDocs }) {
   const [macro, setMacro] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [warFocus, setWarFocus] = useState('policy');
@@ -7421,6 +7534,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: null, current: true },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: onWealthAtlas },
     { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: onInvestmentRadar },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
@@ -7943,7 +8057,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
 // ═══════════════════════════════════════════════════
 // SETTINGS VIEW — Full-page, consistent with Docs/Radar
 // ═══════════════════════════════════════════════════
-function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onInvestmentRadar, onBitcoin, onDocs }) {
+function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, onSetPayFrequency, onExport, onClear, onImport, onHome, onMacroSentinel, onWealthAtlas, onInvestmentRadar, onBitcoin, onDocs }) {
   const [confirm, setConfirm] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -7972,6 +8086,7 @@ function SettingsView({ t, isDark, onBack, onToggleTheme, settings, onToggle, on
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onBack },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: onWealthAtlas },
     { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: onInvestmentRadar },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
@@ -8091,6 +8206,7 @@ function FortifyOSApp() {
     dashboard: '#dashboard',
     docs: '#field-manual',
     macroSentinel: '#macro-radar',
+    wealthAtlas: '#wealth-atlas',
     investmentRadar: '#ai-portfolio',
     bitcoin: '#bitcoin',
     settings: '#settings',
@@ -8101,6 +8217,8 @@ function FortifyOSApp() {
     '#docs': 'docs',
     '#macro-radar': 'macroSentinel',
     '#macroSentinel': 'macroSentinel',
+    '#wealth-atlas': 'wealthAtlas',
+    '#wealthAtlas': 'wealthAtlas',
     '#ai-portfolio': 'investmentRadar',
     '#investmentRadar': 'investmentRadar',
     '#bitcoin': 'bitcoin',
@@ -9003,13 +9121,14 @@ function FortifyOSApp() {
       {/* Global CRT scanline overlay — applied to all pages */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998, opacity: isDark ? 1 : 0.35, background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%), linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.015), rgba(0,0,255,0.04))', backgroundSize: '100% 2px, 3px 100%' }} />
       {view === 'loading' && <div style={{ background: t.void, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: t.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: 14, textShadow: isDark ? `0 0 10px ${t.accent}40` : 'none' }}>FORTIFY OS initializing...</div></div>}
-      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => navigate('docs')} hasData={snapshots.length > 0} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} />}
-      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => navigate('landing')} onToggleTheme={toggleTheme} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} />}
-      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => navigate('landing')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} />}
-      {view === 'investmentRadar' && <InvestmentRadar onBack={() => navigate('dashboard')} onHome={() => navigate('landing')} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
-      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} onUpdateDebt={handleUpdateDebt} />}
-      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onDocs={() => navigate('docs')} />}
-      {view === 'bitcoin' && <BitcoinMastery onBack={() => navigate('dashboard')} onDashboard={() => navigate('dashboard')} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
+      {view === 'landing' && <LandingView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onInitialize={() => setSyncOpen(true)} onDocs={() => navigate('docs')} hasData={snapshots.length > 0} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onWealthAtlas={() => navigate('wealthAtlas')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} />}
+      {view === 'wealthAtlas' && <WealthAtlasView t={t} isDark={isDark} latest={latest} onToggleTheme={toggleTheme} onHome={() => navigate('landing')} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} />}
+      {view === 'docs' && <DocsView t={t} isDark={isDark} onBack={() => navigate('landing')} onToggleTheme={toggleTheme} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onWealthAtlas={() => navigate('wealthAtlas')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} />}
+      {view === 'macroSentinel' && <MacroSentinelView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} latest={latest} fredMacro={fredMacro} settings={settings} onHome={() => navigate('landing')} onWealthAtlas={() => navigate('wealthAtlas')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} />}
+      {view === 'investmentRadar' && <InvestmentRadar onBack={() => navigate('dashboard')} onHome={() => navigate('landing')} onDashboard={() => navigate('dashboard')} onMacroSentinel={() => navigate('macroSentinel')} onWealthAtlas={() => navigate('wealthAtlas')} onBitcoin={() => navigate('bitcoin')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
+      {view === 'dashboard' && <DashboardView snapshots={snapshots} latest={latest} settings={settings} t={t} isDark={isDark} onSync={handleSync} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onToggleTheme={toggleTheme} syncFlash={syncFlash} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onWealthAtlas={() => navigate('wealthAtlas')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} fredMacro={fredMacro} onRefreshIntel={refreshIntel} intelRefreshing={intelRefreshing} intelRefreshNonce={intelRefreshNonce} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} onUpdateDebt={handleUpdateDebt} />}
+      {view === 'settings' && <SettingsView t={t} isDark={isDark} onBack={() => navigate('dashboard')} onToggleTheme={toggleTheme} settings={settings} onToggle={toggleModule} onSetPayFrequency={setPayFrequency} onExport={handleExport} onClear={handleClear} onImport={() => setSyncOpen(true)} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onWealthAtlas={() => navigate('wealthAtlas')} onInvestmentRadar={() => navigate('investmentRadar')} onBitcoin={() => navigate('bitcoin')} onDocs={() => navigate('docs')} />}
+      {view === 'bitcoin' && <BitcoinMastery onBack={() => navigate('dashboard')} onDashboard={() => navigate('dashboard')} onHome={() => navigate('landing')} onMacroSentinel={() => navigate('macroSentinel')} onWealthAtlas={() => navigate('wealthAtlas')} onInvestmentRadar={() => navigate('investmentRadar')} onSettings={() => navigate('settings')} onDocs={() => navigate('docs')} isDark={isDark} onToggleTheme={toggleTheme} />}
       {enforcementActive && <RefusalOverlay enforcement={enforcement} onRoute={() => navigate('dashboard')} />}
       <UniversalSync open={syncOpen} onClose={() => setSyncOpen(false)} onSync={handleSync} t={t} isDark={isDark} />
     </div>

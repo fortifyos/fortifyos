@@ -352,7 +352,7 @@ function usePulseOverlay() {
   return { ref, trigger };
 }
 
-export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSentinel, onInvestmentRadar, onSettings, onDocs, isDark = true, onToggleTheme }) {
+export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSentinel, onWealthAtlas, onInvestmentRadar, onSettings, onDocs, isDark = true, onToggleTheme }) {
   const [net, setNet] = useState({
     priceUsd: null,
     priceSource: null,
@@ -493,6 +493,7 @@ export default function BitcoinMastery({ onBack, onHome, onDashboard, onMacroSen
     { key: "home", label: "Home", icon: Home, onClick: onHome },
     { key: "dashboard", label: "Dashboard", icon: LayoutGrid, onClick: onDashboard || onBack },
     { key: "radar", label: "Radar", icon: Eye, onClick: onMacroSentinel },
+    { key: "wealth", label: "Wealth Atlas", icon: TrendingUp, onClick: onWealthAtlas },
     { key: "invest", label: "AI Portfolio", icon: TrendingUp, onClick: onInvestmentRadar },
     { key: "bitcoin", label: "Bitcoin", icon: null, onClick: null, current: true },
     { key: "docs", label: "Field Manual", icon: FileText, onClick: onDocs },

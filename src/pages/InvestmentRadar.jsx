@@ -321,7 +321,7 @@ function ThemeUniverse({ activeTheme, onSelectTheme, onSelectTicker }) {
   );
 }
 
-export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSentinel, onBitcoin, onSettings, onDocs, isDark = true, onToggleTheme }) {
+export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSentinel, onWealthAtlas, onBitcoin, onSettings, onDocs, isDark = true, onToggleTheme }) {
   const [filter, setFilter] = useState('all');
   const [activeTheme, setActiveTheme] = useState('power-energy');
   const [query, setQuery] = useState('');
@@ -401,6 +401,7 @@ export default function InvestmentRadar({ onBack, onHome, onDashboard, onMacroSe
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid, onClick: onDashboard },
     { key: 'radar', label: 'Radar', icon: Eye, onClick: onMacroSentinel },
+    { key: 'wealth', label: 'Wealth Atlas', icon: TrendingUp, onClick: onWealthAtlas },
     { key: 'invest', label: 'AI Portfolio', icon: TrendingUp, onClick: null, current: true },
     { key: 'bitcoin', label: 'Bitcoin', icon: null, onClick: onBitcoin, color: '#f7931a' },
     { key: 'docs', label: 'Field Manual', icon: FileText, onClick: onDocs },
