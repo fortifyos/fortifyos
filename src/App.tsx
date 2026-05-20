@@ -1746,6 +1746,17 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
   ];
 
   const mono = "'JetBrains Mono', monospace";
+  const stageName = stages.find((s) => s.n === currentStage)?.name || 'Unmapped';
+  const atlasLanes = [
+    { label: 'AI / Automation', status: 'Active', onClick: onInvestmentRadar, color: accent },
+    { label: 'Bitcoin / Digital Scarcity', status: 'Active', onClick: onBitcoin, color: t.crypto },
+    { label: 'Energy & Power', status: 'Next', color: t.warn },
+    { label: 'Defense / Aerospace', status: 'Next', color: t.textSecondary },
+    { label: 'Healthcare / Longevity', status: 'Planned', color: t.purple },
+    { label: 'Real Assets / REITs', status: 'Planned', color: t.crypto },
+    { label: 'Commodities', status: 'Planned', color: t.warn },
+    { label: 'Alternatives / Collectibles', status: 'Planned', color: t.textSecondary },
+  ];
 
   return (
     <div className="fo-home-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: t.void, color: t.textPrimary }}>
@@ -1755,14 +1766,26 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       <section className="fo-shared-section" style={{ padding: '72px 24px 64px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
           <div style={{ display: 'inline-block', background: t.panel, border: `1px solid ${t.borderDim}`, padding: '6px 12px', marginBottom: 28, fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: mono }}>
-            Local-first · Privacy-enforced · Debt-elimination protocol
+            Local-first · Privacy-enforced · Wealth-building operating system
           </div>
           <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.88, letterSpacing: '-0.05em', marginBottom: 24, color: t.textPrimary, fontSize: 'clamp(44px, 9vw, 88px)' }}>
-            Your finances.<br />Structured.<br /><span style={{ color: accent }}>Enforced.</span>
+            Defend cash.<br />Read markets.<br /><span style={{ color: accent }}>Build wealth.</span>
           </h1>
           <p style={{ fontSize: 17, color: t.textSecondary, maxWidth: 560, lineHeight: 1.75, marginBottom: 36, fontFamily: mono }}>
-            Drop your bank statement. FORTIFY OS maps your debt, BNPL, bills, and cash flow — then tells you exactly what to do next. No accounts. No cloud sync. Your data stays on your machine.
+            FORTIFY OS maps your personal finances, watches the macro battlefield, teaches investable opportunity lanes, and points you toward the structures that protect what you build.
           </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 2, marginBottom: 34 }}>
+            {[
+              { label: 'Current Stage', val: `${currentStage} · ${stageName}` },
+              { label: 'Core Rule', val: 'Protect first' },
+              { label: 'Growth Layer', val: 'Study before risk' },
+            ].map((item) => (
+              <div key={item.label} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 14 }}>
+                <div style={{ fontFamily: mono, fontSize: 10, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 7 }}>{item.label}</div>
+                <div style={{ fontFamily: mono, fontSize: 13, color: item.label === 'Current Stage' ? accent : t.textPrimary, fontWeight: 700 }}>{item.val}</div>
+              </div>
+            ))}
+          </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             {hasData ? (
               <>
@@ -1790,13 +1813,14 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ SECTION 02 — HOW IT WORKS ═══ */}
       <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>How It Works</div>
-          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Three steps. No setup required.</h2>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Operating Doctrine</div>
+          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Four layers. One sequence.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
             {[
-              { num: '01', title: 'DROP YOUR CSV', desc: 'Export a statement from any bank. Drag it in. FORTIFY OS reads it — nothing is uploaded anywhere.', Icon: Upload },
-              { num: '02', title: 'FILL THE GAPS', desc: 'Add debts, BNPL installments, and recurring bills manually. Takes five minutes. Full picture complete.', Icon: FileText },
-              { num: '03', title: 'EXPORT YOUR SNAPSHOT', desc: 'Download your JSON snapshot. Lives on your machine. Bring it back any session. Nothing stored on our servers.', Icon: Lock },
+              { num: '01', title: 'DEFEND', desc: 'Import data, expose cash-flow leaks, rank debt, BNPL, bills, and emergency runway before chasing upside.', Icon: ShieldAlert },
+              { num: '02', title: 'READ', desc: 'Use macro radar and market context to understand when conditions reward patience, risk, or defense.', Icon: Eye },
+              { num: '03', title: 'STUDY', desc: 'Explore thesis lanes like AI, Bitcoin, energy, defense, alternatives, and real assets with bull/bear logic.', Icon: TrendingUp },
+              { num: '04', title: 'PROTECT', desc: 'Learn the architecture around trusts, insurance, beneficiaries, taxes, and estate planning basics.', Icon: Lock },
             ].map((s, i) => (
               <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 22 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
@@ -1814,20 +1838,25 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ SECTION 03 — WHAT YOU GET ═══ */}
       <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>What You Get</div>
-          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Four outcomes. Not a feature list.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 2 }}>
-            {[
-              { label: 'CLARITY', desc: 'Every obligation visible in one place. Debt, BNPL countdowns, recurring bills, emergency runway — mapped and ranked.', Icon: LayoutGrid },
-              { label: 'ENFORCEMENT', desc: "The system doesn't just track what happened. It tells you what should happen — and flags when you're off course.", Icon: ShieldAlert },
-              { label: 'PRIVACY', desc: 'Your data never leaves your machine. No login. No account. No cloud sync. A JSON snapshot is the only thing that travels — and only when you export it.', Icon: Lock },
-              { label: 'DIRECTION', desc: 'The 7 Stages framework shows exactly where you are in your financial journey and what actions are appropriate right now.', Icon: TrendingUp },
-            ].map((c, i) => (
-              <div key={i} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 22, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                <c.Icon size={18} style={{ color: accent, flexShrink: 0, marginTop: 2 }} />
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Market Opportunity Atlas</div>
+          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 14, color: t.textPrimary }}>AI is one lane. Wealth has many.</h2>
+          <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.75, maxWidth: 620, marginBottom: 34 }}>
+            The Atlas gives users stock-pick style research paths: what to study, why it matters, what breaks the thesis, and which broad exposure options exist.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+            {atlasLanes.map((c, i) => (
+              <div key={i} onClick={c.onClick || undefined} role={c.onClick ? 'button' : undefined} style={{ background: t.surface, border: `1px solid ${c.status === 'Active' ? c.color : t.borderDim}`, padding: 18, cursor: c.onClick ? 'pointer' : 'default' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center', marginBottom: 14 }}>
+                  <span style={{ fontFamily: mono, fontSize: 10, color: c.color, textTransform: 'uppercase', letterSpacing: '0.14em' }}>{c.status}</span>
+                  <span style={{ color: c.color, fontFamily: mono, fontSize: 12 }}>{c.status === 'Active' ? 'OPEN' : 'QUEUED'}</span>
+                </div>
                 <div>
-                  <div style={{ fontFamily: mono, fontSize: 13, fontWeight: 700, marginBottom: 8, color: t.textPrimary, letterSpacing: '0.08em' }}>{c.label}</div>
-                  <div style={{ fontSize: 14, color: t.textDim, lineHeight: 1.7 }}>{c.desc}</div>
+                  <div style={{ fontFamily: mono, fontSize: 13, fontWeight: 700, marginBottom: 8, color: t.textPrimary, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{c.label}</div>
+                  <div style={{ fontSize: 13, color: t.textDim, lineHeight: 1.65 }}>
+                    {c.status === 'Active'
+                      ? 'Built as an educational thesis module with live context and research rails.'
+                      : 'Planned lane for thesis, watchlist, broad exposure, risks, and timing signals.'}
+                  </div>
                 </div>
               </div>
             ))}
@@ -1838,39 +1867,24 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ SECTION 04 — TWO PATHS ═══ */}
       <section className="fo-shared-section" style={{ padding: '64px 24px', borderBottom: `1px solid ${t.borderDim}` }}>
         <div style={{ maxWidth: 780, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Two Paths</div>
-          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Start now or go deep.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
-            {/* Web User */}
-            <div style={{ background: t.surface, border: `1px solid ${accent}40`, padding: 28 }}>
-              <div style={{ fontFamily: mono, fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Web User — Start Now</div>
-              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.8, marginBottom: 24 }}>
-                No setup. No install. No account.<br />
-                Drop a CSV, fill in your data,<br />
-                export your snapshot. Done.
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12, fontFamily: mono }}>Wealth Architecture</div>
+          <h2 style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, marginBottom: 36, color: t.textPrimary }}>Building wealth is only half the game.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
+            {[
+              { title: 'Trusts & Estate Basics', desc: 'Revocable trusts, irrevocable concepts, beneficiaries, powers of attorney, and legacy instructions.', Icon: FileText },
+              { title: 'Life Insurance Strategy', desc: 'Term vs permanent, income protection, family scenarios, and when insurance is protection versus product.', Icon: Shield },
+              { title: 'Tax-Aware Positioning', desc: 'Account types, capital gains awareness, taxable vs retirement placement, and why taxes shape returns.', Icon: Database },
+              { title: 'Asset Protection', desc: 'Titling, custody, documentation, insurance, storage, and risk boundaries across asset classes.', Icon: Lock },
+            ].map((item) => (
+              <div key={item.title} style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 24 }}>
+                <item.Icon size={18} style={{ color: accent, marginBottom: 14 }} />
+                <div style={{ fontFamily: mono, fontSize: 13, fontWeight: 700, color: t.textPrimary, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>{item.title}</div>
+                <div style={{ fontSize: 14, color: t.textDim, lineHeight: 1.7 }}>{item.desc}</div>
               </div>
-              <div style={{ fontSize: 12, color: t.textDim, fontFamily: mono, marginBottom: 24, borderLeft: `2px solid ${accent}`, paddingLeft: 12 }}>
-                Your financial state lives in a JSON file on your machine. Nothing is stored here.
-              </div>
-              <button onClick={onInitialize} style={{ background: accent, color: isDark ? '#000' : '#fff', fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '12px 24px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.1em', width: '100%', justifyContent: 'center' }}>
-                Launch App <ArrowRight size={14} />
-              </button>
-            </div>
-            {/* Advanced */}
-            <div style={{ background: t.surface, border: `1px solid ${t.borderDim}`, padding: 28 }}>
-              <div style={{ fontFamily: mono, fontSize: 11, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Advanced — Self-Hosted</div>
-              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.8, marginBottom: 24 }}>
-                Full local install. Persistent storage.<br />
-                Complete KNOX protocol stack.<br />
-                Private remote access via Tailscale.
-              </div>
-              <div style={{ fontSize: 12, color: t.textDim, fontFamily: mono, marginBottom: 24, borderLeft: `2px solid ${t.borderDim}`, paddingLeft: 12 }}>
-                Clone the repo. Your data directory stays on your machine. Full Field Manual in the docs.
-              </div>
-              <a href="https://github.com/fortifyos/fortifyos" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: mono, fontSize: 13, padding: '12px 24px', cursor: 'pointer', color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'none', boxSizing: 'border-box' }}>
-                View on GitHub <ArrowRight size={14} />
-              </a>
-            </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 22, fontSize: 12, color: t.textDim, fontFamily: mono, lineHeight: 1.7, borderLeft: `2px solid ${t.warn}`, paddingLeft: 14 }}>
+            Educational only. Trust, tax, insurance, and estate decisions vary by jurisdiction and should be reviewed with qualified professionals.
           </div>
         </div>
       </section>
@@ -1881,7 +1895,7 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 16, fontFamily: mono }}>Field Manual</div>
           <h2 style={{ fontFamily: mono, fontSize: 20, fontWeight: 700, marginBottom: 14, color: t.textPrimary }}>Want to understand the full system?</h2>
           <p style={{ fontSize: 15, color: t.textSecondary, lineHeight: 1.7, maxWidth: 480, marginBottom: 28 }}>
-            The Field Manual covers every module, the 7 Stages framework, enforcement logic, privacy architecture, and the macro education layer.
+            The Field Manual covers the 7 Stages framework, enforcement logic, privacy architecture, macro education, thesis modules, and the path toward wealth architecture.
           </p>
           <button onClick={onDocs} style={{ background: 'none', border: `1px solid ${t.borderDim}`, fontFamily: mono, fontWeight: 700, fontSize: 13, padding: '13px 28px', cursor: 'pointer', color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             Read the Field Manual <ArrowRight size={14} />
@@ -1892,9 +1906,9 @@ function LandingView({ t, onInitialize, onDocs, onToggleTheme, isDark, hasData, 
       {/* ═══ FOOTER ═══ */}
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderTop: `1px solid ${t.borderDim}` }}>
         {[
-          { label: 'Privacy', val: 'Local browser storage', Icon: Lock },
-          { label: 'Daily time', val: '2–5 minutes', Icon: Clock },
-          { label: 'Setup', val: 'Zero install required', Icon: Zap },
+          { label: 'Defense', val: 'Cash-flow first', Icon: ShieldAlert },
+          { label: 'Opportunity', val: 'Atlas expanding', Icon: TrendingUp },
+          { label: 'Architecture', val: 'Protect the build', Icon: Lock },
         ].map((s, i) => (
           <div key={i} style={{ padding: 28, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, borderRight: i < 2 ? `1px solid ${t.borderDim}` : 'none' }}>
             <s.Icon size={18} style={{ color: accent, marginBottom: 4 }} />
