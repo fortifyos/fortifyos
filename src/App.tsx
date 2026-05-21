@@ -143,6 +143,15 @@ class AppErrorBoundary extends React.Component {
    ========================================================================= */
 function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onToggleTheme }) {
   const themeIconColor = isDark ? '#FFD84D' : '#8B96AE';
+  const wealthChildren = [
+    { label: 'Opportunity Lanes', hash: '#wealth-atlas-opportunities' },
+    { label: 'Wealth Architecture', hash: '#wealth-architecture' },
+    { label: 'Signal Brief', hash: '#signal-brief' },
+  ];
+  const goHash = (hash) => {
+    window.history.pushState({ view: 'wealthAtlas' }, '', `${window.location.pathname}${window.location.search}${hash}`);
+    window.dispatchEvent(new Event('hashchange'));
+  };
   return (
     <nav
       className="fo-pagebar"
@@ -165,17 +174,73 @@ function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onTogg
       <div className="fo-pagebar-tabs" aria-label="Primary navigation">
         {navItems.map((item) => {
           const isCurrent = !!item.current;
+          const hasChildren = item.key === 'wealth';
           return (
-            <button
-              key={item.key}
-              type="button"
-              className={isCurrent ? 'is-current' : ''}
-              onClick={item.onClick}
-              disabled={!item.onClick}
-              style={item.color ? { '--fo-nav-item-color': item.color } : undefined}
-            >
-              {item.label}
-            </button>
+            <div key={item.key} style={{ position: 'relative', display: 'inline-flex' }} className="fo-nav-nest">
+              <button
+                type="button"
+                className={isCurrent ? 'is-current' : ''}
+                onClick={item.onClick}
+                disabled={!item.onClick && !hasChildren}
+                aria-haspopup={hasChildren ? 'menu' : undefined}
+                aria-expanded={hasChildren && isCurrent ? true : undefined}
+                onKeyDown={(event) => {
+                  if (!hasChildren) return;
+                  if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    goHash(wealthChildren[0].hash);
+                  } else if (event.key === 'Escape') {
+                    event.currentTarget.blur();
+                  }
+                }}
+                style={item.color ? { '--fo-nav-item-color': item.color } : undefined}
+              >
+                {item.label}{hasChildren ? ' ▾' : ''}
+              </button>
+              {hasChildren && (
+                <div
+                  role="menu"
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    minWidth: 230,
+                    zIndex: 10050,
+                    background: isDark ? t.elevated : t.surface,
+                    border: `1px solid ${t.borderMid}`,
+                    boxShadow: isDark ? '0 18px 36px rgba(0,0,0,0.55)' : '0 14px 24px rgba(0,0,0,0.16)',
+                    padding: 6,
+                    display: 'none',
+                  }}
+                  className="fo-nav-nest-pop"
+                >
+                  {wealthChildren.map((child) => (
+                    <button
+                      key={child.hash}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => goHash(child.hash)}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        background: window.location.hash === child.hash ? `${t.accent}14` : 'transparent',
+                        border: 'none',
+                        borderLeft: `2px solid ${window.location.hash === child.hash ? t.accent : 'transparent'}`,
+                        color: window.location.hash === child.hash ? t.accent : t.textSecondary,
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 11,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.1em',
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {child.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
@@ -1646,29 +1711,66 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
           {items.map((item) => {
             const Icon = item.icon;
             const isCurrent = !!item.current;
+            const isWealth = item.key === 'wealth';
+            const wealthChildren = [
+              { label: 'Opportunity Lanes', hash: '#wealth-atlas-opportunities' },
+              { label: 'Wealth Architecture', hash: '#wealth-architecture' },
+              { label: 'Signal Brief', hash: '#signal-brief' },
+            ];
             return (
-              <button
-                key={item.key}
-                className="fo-mobile-nav-item"
-                onClick={() => {
-                  setMenuOpen(false);
-                  item.onClick?.();
-                }}
-                disabled={!item.onClick}
-                style={{
-                  width: '100%',
-                  background: isCurrent ? (isDark ? `${t.accent}18` : t.accentMuted) : 'none',
-                  border: 'none',
-                  color: isCurrent ? (item.color || t.accent) : (item.color || t.textSecondary),
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 13,
-                  cursor: item.onClick ? 'pointer' : 'default',
-                  opacity: item.onClick ? 1 : 0.8,
-                }}
-              >
-                {Icon ? <Icon size={15} /> : <span style={{ fontSize: 16, lineHeight: 1 }}>₿</span>}
-                <span>{item.label}</span>
-              </button>
+              <div key={item.key}>
+                <button
+                  className="fo-mobile-nav-item"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    item.onClick?.();
+                  }}
+                  disabled={!item.onClick && !isWealth}
+                  aria-haspopup={isWealth ? 'menu' : undefined}
+                  aria-expanded={isWealth ? isCurrent : undefined}
+                  style={{
+                    width: '100%',
+                    background: isCurrent ? (isDark ? `${t.accent}18` : t.accentMuted) : 'none',
+                    border: 'none',
+                    color: isCurrent ? (item.color || t.accent) : (item.color || t.textSecondary),
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 13,
+                    cursor: (item.onClick || isWealth) ? 'pointer' : 'default',
+                    opacity: (item.onClick || isWealth) ? 1 : 0.8,
+                  }}
+                >
+                  {Icon ? <Icon size={15} /> : <span style={{ fontSize: 16, lineHeight: 1 }}>₿</span>}
+                  <span>{item.label}{isWealth ? ' ▾' : ''}</span>
+                </button>
+                {isWealth && (
+                  <div style={{ display: 'grid', gap: 1, padding: '2px 0 6px 24px' }}>
+                    {wealthChildren.map((child) => (
+                      <button
+                        key={child.hash}
+                        className="fo-mobile-nav-item"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          window.history.pushState({ view: 'wealthAtlas' }, '', `${window.location.pathname}${window.location.search}${child.hash}`);
+                          window.dispatchEvent(new Event('hashchange'));
+                        }}
+                        style={{
+                          width: '100%',
+                          background: window.location.hash === child.hash ? (isDark ? `${t.accent}18` : t.accentMuted) : 'none',
+                          border: 'none',
+                          borderLeft: `2px solid ${window.location.hash === child.hash ? t.accent : t.borderDim}`,
+                          color: window.location.hash === child.hash ? t.accent : t.textSecondary,
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: 12,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <span style={{ width: 15 }} />
+                        <span>{child.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -1944,6 +2046,21 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     { key: 'settings', label: 'Settings', icon: Settings, onClick: onSettings },
   ];
 
+  const [atlasHash, setAtlasHash] = useState(() => window.location.hash || '#wealth-atlas');
+  useEffect(() => {
+    const syncAtlasHash = () => setAtlasHash(window.location.hash || '#wealth-atlas');
+    window.addEventListener('hashchange', syncAtlasHash);
+    window.addEventListener('popstate', syncAtlasHash);
+    return () => {
+      window.removeEventListener('hashchange', syncAtlasHash);
+      window.removeEventListener('popstate', syncAtlasHash);
+    };
+  }, []);
+  const goAtlas = (hash) => {
+    window.history.pushState({ view: 'wealthAtlas' }, '', `${window.location.pathname}${window.location.search}${hash}`);
+    window.dispatchEvent(new Event('hashchange'));
+  };
+
   const lanes = [
     { num: '01', title: 'AI / Automation', status: 'ACTIVE', desc: 'Compute, chips, power, data centers, robotics, and broad AI exposure. The existing AI Frontier page remains the flagship deep-dive.', action: 'Open AI Portfolio', onClick: onInvestmentRadar, color: accent, leaders: 'NVDA · AMD · AVGO · CEG · VST · PLTR', future: 'CoreWeave · Astera Labs · Vertiv · Figure AI · Anduril' },
     { num: '02', title: 'Bitcoin / Digital Scarcity', status: 'ACTIVE', desc: 'Hard-money education, live BTC context, scarcity, cycle seasons, and self-custody basics.', action: 'Open Bitcoin', onClick: onBitcoin, color: t.crypto, leaders: 'BTC · IBIT · FBTC · MSTR · COIN', future: 'Custody rails · Lightning apps · Treasury adopters' },
@@ -1953,7 +2070,7 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     { num: '06', title: 'Real Assets', status: 'PLANNED', desc: 'Real estate, REITs, land, infrastructure, farmland, and income-producing tangible assets.', color: t.crypto, leaders: 'EQIX · DLR · PLD · AMT · LAND', future: 'Data-center REITs · farmland platforms · infrastructure funds' },
     { num: '07', title: 'Commodities', status: 'PLANNED', desc: 'Gold, silver, copper, oil, uranium, fertilizer, and hard-asset cycles that follow scarcity and geopolitics.', color: t.warn, leaders: 'GLD · SLV · FCX · CCJ · XLE', future: 'Uranium term market · copper deficits · critical minerals' },
     { num: '08', title: 'Alternatives / Collectibles', status: 'PLANNED', desc: 'Cards, watches, art, sneakers, rare books, games, provenance, grading, storage, liquidity, and hype cycles.', color: t.textSecondary, leaders: 'EBAY · grading rails · auction houses', future: 'PSA/Collectors · fractional markets · vaulting & insurance' },
-    { num: '09', title: 'Portfolio Construction Discipline', status: 'ACTIVE', desc: 'The guardrail layer: position sizing, core vs satellite, wrappers, cash-flow quality, thesis invalidation, and behavioral risk across all lanes.', color: accent, leaders: 'Core · Satellite · Cash Flow · Sizing · Invalidation', future: 'Personal IPS · rebalancing rules · lane risk budgets' },
+    { num: '09', title: 'Space / Frontier Tech', status: 'PLANNED', desc: 'Launch, satellites, orbital infrastructure, and the technologies pushing the edge of what is investable.', color: t.purple, leaders: 'SPCX · RKLB · PL · IRDM · LMT', future: 'Starlink · orbital compute · satellite data + AI · launch cadence' },
   ];
 
   const constructionRules = [
@@ -1995,11 +2112,26 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     ['01', 'Core Idea', 'What the pillar protects against, in plain English.'],
     ['02', 'Who Needs to Care', 'The life events and trigger conditions that make the topic urgent.'],
     ['03', 'Building Blocks', 'The instruments, roles, account types, documents, and concepts involved.'],
-    ['04', 'Decision Framework', 'The questions and trade-offs that shape the right path.'],
-    ['05', 'Common Mistakes', 'The expensive errors people make before they know the machinery.'],
-    ['06', 'Rule Shape', 'How limits, exemptions, brackets, or coverage layers are structured — with live-number lookup prompts.'],
+    ['04', 'Rule Shape', 'How limits, exemptions, brackets, coverage layers, and legal mechanics are structured.'],
+    ['05', 'Decision Framework', 'The questions and trade-offs that shape the right path.'],
+    ['06', 'Common Mistakes', 'The expensive errors people make before they know the machinery.'],
     ['07', 'Professional Line', 'When self-education ends and an estate attorney, CPA, planner, or broker belongs in the room.'],
     ['08', 'Sales Traps', 'How fear, complexity, and commissions distort this pillar.'],
+  ];
+
+  const architecturePhilosophy = [
+    {
+      title: 'Comprehension over lookup',
+      desc: 'FortifyOS teaches how the machinery works: why the rule exists, how the tiers stack, and what trade-off each tool creates. The current dollar amount is a lookup; the structure is the lesson.'
+    },
+    {
+      title: 'Complete toolkit, readable map',
+      desc: 'Each pillar names the full family of documents, trusts, accounts, coverage types, custody choices, and edge cases so users know what exists before a professional conversation.'
+    },
+    {
+      title: 'Frameworks, not prescriptions',
+      desc: 'Architecture is jurisdiction-specific and fact-specific. The product surfaces the questions a qualified professional would ask, then routes users to the right specialist.'
+    },
   ];
 
   const architecture = [
@@ -2007,10 +2139,10 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
       num: '01', title: 'Trusts & Estate Basics', Icon: FileText,
       core: 'Estate planning answers who decides if you cannot, who receives what, and how assets transfer. The durable lesson is control, privacy, incapacity planning, and probate avoidance — not just death taxes.',
       triggers: 'Adulthood, children, marriage, divorce, home ownership, business ownership, inheritance, moving states, blended families, special-needs beneficiaries, or multi-state real estate.',
-      blocks: 'Durable financial power of attorney, healthcare proxy, advance directive, HIPAA authorization, will, revocable living trust, irrevocable trusts, beneficiary designations, TOD/POD, titling, executor, trustee, guardian.',
-      framework: 'Start with incapacity. Then decide whether probate/privacy/control justify a trust. Separate revocable control from irrevocable protection. Remember: a trust must be funded or it is an empty box.',
-      mistakes: 'No incapacity documents, stale beneficiaries, unfunded trusts, DIY documents that miss state execution rules, naming minors directly, never reviewing after life changes.',
-      lookup: 'Look up current federal estate/gift exemption, annual gift exclusion, your state estate/inheritance tax threshold, probate rules, and basis step-up treatment before acting.',
+      blocks: 'Incapacity documents, intestacy, wills, pour-over wills, revocable trusts, irrevocable trusts, ILITs, SLATs, GRATs, QPRTs, charitable trusts, dynasty/GST trusts, special-needs trusts, spendthrift trusts, testamentary trusts, beneficiary designations, TOD/POD, titling, trustees, executors, guardians, and legacy instructions.',
+      framework: 'Start with incapacity. Then decide whether probate/privacy/control justify a trust. Separate revocable control from irrevocable protection. Coordinate beneficiary designations because they override the will. Remember: a trust must be funded or it is an empty box.',
+      mistakes: 'No incapacity documents, stale beneficiaries, unfunded trusts, DIY documents that miss state execution rules, naming minors directly, forgetting digital assets, and never reviewing after life changes.',
+      lookup: 'Estate/gift tax is structurally a unified lifetime exemption plus annual per-recipient exclusions, portability between spouses, GST rules, basis step-up, and state-level thresholds. Learn the shape, then verify current federal and state figures before acting.',
       professional: 'Estate attorney for trusts, minor children, blended families, real estate complexity, business ownership, state-tax exposure, special-needs planning, or irrevocable structures.',
       trap: 'Trust mills selling “everyone needs a trust,” and confusion that a revocable trust creates tax savings or asset protection. It usually does neither.'
     },
@@ -2018,21 +2150,21 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
       num: '02', title: 'Life Insurance Strategy', Icon: Shield,
       core: 'Life insurance protects people who depend on your income or labor. The question is not “what product should I buy?” It is “who suffers financially if I die, and for how long?”',
       triggers: 'Dependents, mortgage or co-signed debt, spouse leaving the workforce, children, business partners, key-person exposure, estate liquidity needs, or a special-needs dependent.',
-      blocks: 'Term life, whole life, universal life, variable universal life, riders, death benefit, cash value, surrender charge, conversion option, key-person coverage, buy-sell funding, ILIT.',
-      framework: 'Need first, product second. Temporary need usually points to term. Permanent need may justify permanent coverage. Separate protection from investment pitch.',
-      mistakes: 'Buying permanent coverage for a temporary need, under-insuring while overpaying, insuring people with no dependents, child policies as “investments,” too-short terms, surrendering permanent policies without exit math.',
-      lookup: 'Compare current term quotes, policy fees, guaranteed vs projected values, insurer ratings, state insurance rules, and estate inclusion rules before deciding.',
+      blocks: 'Term life, level term, decreasing term, convertibility riders, whole life, universal life, indexed UL, variable UL, death benefit, cash value, surrender charges, MEC rules, underwriting, key-person coverage, buy-sell funding, ILITs, disability insurance, and long-term-care coverage.',
+      framework: 'Need first, product second. Temporary need usually points to term. Permanent need may justify permanent coverage for estate liquidity, lifelong support, or business continuity. Separate protection from investment pitch and read the guaranteed column before the projected one.',
+      mistakes: 'Buying permanent coverage for a temporary need, under-insuring while overpaying, insuring people with no dependents, child policies as “investments,” ignoring disability insurance, too-short terms, and surrendering permanent policies without exit math.',
+      lookup: 'Insurance rules are shaped by income-tax-free death benefits, cash-value tax deferral, MEC guardrails, estate inclusion if you own the policy, and needs-analysis sizing. Verify current quotes, insurer ratings, policy expenses, and state rules before deciding.',
       professional: 'Fee-only planner for coverage need; independent insurance broker for quotes; estate attorney and CPA for ILIT, business, estate liquidity, or special-needs structures.',
       trap: '“Infinite banking,” fear-based urgency, optimistic illustrations, and commission asymmetry where the most profitable product for the seller may not be best for the buyer.'
     },
     {
-      num: '03', title: 'Tax-Aware Positioning', Icon: Database,
+      num: '03', title: 'Tax-Aware Wealth', Icon: Database,
       core: 'Tax-aware positioning is about placing the right asset in the right bucket, holding for the right duration, and sequencing gains, losses, and withdrawals so compounding leaks less.',
       triggers: 'Earned income, employer match, taxable + retirement accounts, high-income years, self-employment, windfalls, concentrated stock, equity compensation, retirement approach, or unusual tax years.',
-      blocks: 'Taxable brokerage, traditional accounts, Roth accounts, HSA, capital gains, qualified dividends, ordinary income, tax-loss harvesting, wash-sale rule, Roth conversions, backdoor/mega-backdoor Roth, RMDs.',
+      blocks: 'Taxable brokerage, Traditional 401(k)/403(b)/457/IRA, Roth accounts, TSP, SEP-IRA, SIMPLE IRA, Solo 401(k), cash-balance plans, HSA, 529s, UGMA/UTMA, capital gains, dividends, NIIT, collectibles rates, QSBS, tax-loss harvesting, gain harvesting, Roth conversions, backdoor/mega-backdoor Roth, and RMDs.',
       framework: 'Understand the three buckets: taxable flexibility, tax-deferred deduction now/tax later, and tax-free compounding. Put tax-inefficient assets in shelters and tax-efficient assets in taxable when appropriate.',
       mistakes: 'Leaving employer match, backward asset location, selling just before long-term treatment, botched wash sales, ignoring the HSA, cashing out old retirement accounts, letting taxes prevent needed risk reduction.',
-      lookup: 'Look up current contribution limits, phase-outs, capital-gains brackets, NIIT thresholds, HSA limits, RMD age/rules, and state tax treatment each year.',
+      lookup: 'Tax rules are shaped by layered contribution limits, age catch-ups, income phase-outs, long-term capital-gains tiers, surtaxes, RMD ages, and state treatment. Learn the bucket mechanics, then verify current limits and brackets each year.',
       professional: 'CPA or tax advisor for conversions, equity compensation, business plans, concentrated positions, retirement withdrawals, high-income years, and state-specific planning.',
       trap: 'Products marketed as “tax-free” substitutes for actual tax-advantaged accounts, and over-optimizing taxes while ignoring investment quality or risk.'
     },
@@ -2040,10 +2172,10 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
       num: '04', title: 'Asset Protection', Icon: Lock,
       core: 'Asset protection draws boundaries so one liability event cannot consume everything. It is preventive: structure and insurance must exist before a claim is known or foreseeable.',
       triggers: 'Business ownership, rental property, high-liability professions, meaningful net worth, marriage/divorce, partners, physical assets, crypto custody, collectibles, or any activity that creates lawsuit exposure.',
-      blocks: 'Umbrella insurance, liability limits, malpractice/E&O/D&O, landlord coverage, LLCs, corporations, separate accounts, corporate formalities, titling, homestead rules, retirement account protection, irrevocable trusts, custody, records, appraisals.',
-      framework: 'Insure before you structure. Match the structure to the real risk silo. Respect formalities. Decide how much control you are willing to give up for protection.',
+      blocks: 'Umbrella insurance, liability limits, malpractice/E&O/D&O, landlord policies, LLCs, corporations, series LLCs, holding-company structures, FLPs, titling, tenancy by the entirety, homestead rules, retirement-account protection, irrevocable trusts, DAPTs, offshore trusts, custody, records, appraisals, provenance, vaulting, and secure storage.',
+      framework: 'Insure before you structure. Match the structure to the real risk silo. Respect formalities. Decide how much control you are willing to give up for protection. Treat public securities, private assets, real estate, crypto, metals, and collectibles as different custody problems.',
       mistakes: 'Under-insuring, acting too late, commingling LLC funds, over-engineering offshore structures, poor documentation, no proof of ownership, confusing protection with hiding assets.',
-      lookup: 'Look up state homestead protections, tenancy rules, LLC law, retirement-account creditor protection, umbrella coverage requirements, and fraudulent-transfer rules.',
+      lookup: 'Protection is layered: insurance first, entity separation second, titling/exemptions third, advanced trusts last. Verify state homestead rules, tenancy rules, LLC law, retirement-account creditor protection, umbrella requirements, and fraudulent-transfer lookback rules.',
       professional: 'Insurance broker for liability coverage; asset-protection or estate attorney for entities, trusts, rentals, businesses, high-net-worth exposure, and any offshore/DAPT discussion.',
       trap: 'Fear-driven “judgment-proof” marketing, secrecy pitches, and exotic structures sold to people whose real issue is basic insurance and documentation.'
     },
@@ -2053,7 +2185,7 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     'Tax ↔ Estate: basis step-up, gifting, and probate shape whether to hold, gift, or transfer assets at death.',
     'Estate ↔ Asset Protection: irrevocable trusts trade control for protection; retirement accounts can be both tax tools and protected assets.',
     'Insurance ↔ Estate: death benefit can provide liquidity, especially when heirs would otherwise need to sell assets under pressure.',
-    'Asset Protection ↔ Lanes: Bitcoin custody, collectibles provenance, metals storage, real-estate titling, and business entities all sit here.',
+    'Asset Protection ↔ Everything Owned: securities custody, private business interests, Bitcoin keys, collectibles provenance, metals storage, real-estate titling, and business entities all sit here.',
     'Tax ↔ Every Lane: the account wrapper can matter as much as the ticker, especially for REITs, commodities, active funds, and collectibles.',
   ];
 
@@ -2065,7 +2197,180 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     'Jurisdiction governs: state and country rules can flip the answer completely.',
     'Match the specialist to the problem: estate attorney, CPA, fee-only planner, independent broker, or asset-protection attorney.',
     'A plan no one can find or maintain is not a plan: records, beneficiaries, funding, and reviews are the architecture.',
+    'Understand the machinery, then verify the number: every limit has a durable shape and a current value.',
   ];
+
+  const signalArticles = [
+    {
+      slug: 'spacex-ipo',
+      hash: '#signal-brief-spacex-ipo',
+      num: '02',
+      tags: ['IPO', 'MARKETS'],
+      date: 'May 21, 2026',
+      read: '~7 min',
+      flag: 'DEVELOPING',
+      headline: 'SpaceX Is Going Public: Inside the Largest IPO in History',
+      dek: 'For the first time, regular people will be able to own a piece of SpaceX. The hard truth: wanting in and getting in — at a sane price — are two very different things.',
+      desk: 'BY FORTIFYOS · MARKETS DESK · ● FACTS VERIFIED AS OF MAY 21, 2026 · DEVELOPING',
+      bullets: [
+        'SpaceX filed to go public. Targeting a Nasdaq listing around June 12, 2026, ticker SPCX.',
+        'Aims to raise up to ~$75 billion at a ~$1.75 trillion valuation — by far the largest IPO ever.',
+        'Elon Musk keeps voting control via dual-class shares and reportedly will not sell any of his own shares.',
+        'The company is growing fast but currently losing money and would trade at a sky-high revenue multiple.',
+        'Every detail is a target until the deal prices. Date, valuation, and ticker can change.',
+      ],
+      sections: {
+        happened: 'SpaceX — private since Elon Musk founded it in 2002 — filed its S-1 with the SEC around May 20, 2026. The plan, as reported: market to investors around June 4, price around June 11, and begin trading on Nasdaq around June 12 under SPCX. The numbers are staggering: a target valuation near $1.75 trillion and a raise of up to $75 billion. Dual-class shares mean Musk keeps voting control even after public investors buy economic exposure.',
+        matters: 'For everyday investors, the headline is simple: for the first time, the public may be able to own a piece of SpaceX. But huge demand plus small float usually means ordinary investors do not receive shares at the IPO price. The realistic path is often buying after trading opens, potentially at a markup, on a volatile first day.',
+        opportunity: ['Learn the IPO mechanics: pricing, listing day, float, and lock-up periods.', 'Research satellite internet economics: Starlink user growth, ARPU, margins, and churn.', 'Study launch-cost deflation and defense demand as downstream forces.', 'Understand governance before buying: dual-class shares can mean almost no vote.'],
+        lanes: 'Related FortifyOS Lanes → Space / Frontier Tech, Defense / Aerospace, AI / Automation, and Bitcoin / Digital Scarcity because the reported filing disclosed BTC holdings.',
+        risks: ['A great company can still be a poor entry point if the valuation is extreme.', 'Dual-class shares create economic exposure with little voting power.', 'Reusable Starship and orbital compute are still execution risks.', 'Small float plus forced demand can distort the early trading price.', 'Until the deal prices, date, valuation, ticker, and final terms remain targets.'],
+        watch: [['Public S-1', 'Read the real numbers on SEC EDGAR, not headlines.'], ['Pricing window', 'Final offer price and shares actually sold.'], ['First trade', 'Where the stock opens compared with the IPO price.'], ['Lock-up expiry', 'When insiders are first allowed to sell.']],
+        glossary: [['IPO', 'Initial Public Offering; the first time a private company sells shares to the public.'], ['S-1', 'The detailed filing submitted to the SEC before going public.'], ['Roadshow', 'Marketing meetings with big investors before the IPO.'], ['Dual-class shares', 'A structure where founders keep extra voting power.'], ['Float', 'The portion of shares actually available for public trading.'], ['Lock-up period', 'A window after the IPO when insiders cannot sell.']],
+        sources: 'Sources: SEC filing reporting via Reuters/Bloomberg; ARK Invest; TradingKey; CoinDesk; TECHi. Confirm all figures against the public S-1 on SEC EDGAR before publish.',
+      },
+    },
+    {
+      slug: 'quantum-computing-equity-stake',
+      hash: '#signal-brief-quantum-computing-equity-stake',
+      num: '01',
+      tags: ['POLICY', 'TECH'],
+      date: 'May 21, 2026',
+      read: '~6 min',
+      headline: 'Washington Just Bet $2 Billion on Quantum Computing — and Took an Ownership Stake',
+      dek: "The U.S. government didn't just hand nine companies a check. It bought a slice of each one. That's a bigger deal than the dollar figure.",
+      desk: 'BY FORTIFYOS · POLICY DESK · ● FACTS VERIFIED AS OF MAY 21, 2026',
+      bullets: [
+        'The U.S. Department of Commerce signed 9 letters of intent worth ~$2.01 billion to fund quantum-computing companies.',
+        'IBM gets the biggest slice, while smaller pure-play firms like D-Wave, Rigetti, and Infleqtion receive smaller allocations.',
+        'The twist: the government is taking a minority ownership stake in each company in return — not just a grant.',
+        'Quantum stocks jumped sharply on the news, with some names up 25–30% in a single day.',
+        'These are letters of intent, not finished deals. Terms can still change.',
+      ],
+      sections: {
+        happened: 'On May 21, 2026, the U.S. Department of Commerce — through NIST — announced nine letters of intent to channel about $2.013 billion into American quantum-computing companies using CHIPS and Science Act money. Named in reporting: IBM, GlobalFoundries, Atom Computing, Diraq, D-Wave Quantum, Infleqtion, PsiQuantum, Quantinuum, and Rigetti Computing. The new part: in exchange for funding, the government receives minority, non-controlling equity stakes.',
+        matters: "You do not need to understand the physics to read the signal. When the government commits real money and takes ownership, it is treating the technology as a long-term national priority. Several companies tied to the theme are publicly traded, which means ordinary investors can study the space — but exposure and risk are not the same thing.",
+        opportunity: ['Diversified giants vs. pure-plays: diluted but cushioned exposure versus concentrated volatility.', 'Picks and shovels: foundries and hardware suppliers may get paid regardless of which quantum approach wins.', 'Competing technologies: superconducting, neutral-atom, photonic, and annealing approaches remain unresolved.'],
+        lanes: 'Related FortifyOS Lanes → AI / Automation, Defense / Aerospace, and a possible future quantum sub-module.',
+        risks: ['Letters of intent are not final funded deals.', 'Many pure-play quantum companies have little or no revenue.', 'Useful, fault-tolerant quantum computing may take many years.', 'Government ownership introduces political and governance questions.', 'A real frontier technology can still produce brutal losses in individual stocks.'],
+        watch: [['Deal close', 'Whether LOIs convert into final funded agreements.'], ['Per-company terms', 'Actual size of equity stakes and milestone conditions.'], ['Tech milestones', 'Error correction and qubit scaling progress.'], ['Volatility', 'Whether stocks hold gains after the initial pop fades.']],
+        glossary: [['Qubit', 'The basic unit of a quantum computer.'], ['Fault-tolerant', 'Reliable enough to perform useful work despite errors.'], ['Quantum foundry', 'A factory that manufactures quantum hardware.'], ['Letter of intent', 'A serious intention to do a deal, but not a final contract.'], ['CHIPS Act', 'A 2022 U.S. law funding domestic high-tech manufacturing.'], ['Equity stake', 'An ownership share.']],
+        sources: 'Sources: U.S. Dept. of Commerce / NIST release; Atom Computing & Rigetti company releases; CNN, CNBC, Reuters, WSJ, The Quantum Insider.',
+      },
+    },
+  ];
+
+  const signalTagColor = (tag) => tag === 'POLICY' ? accent : tag === 'IPO' || tag === 'CRYPTO' ? t.warn : tag === 'MARKETS' ? t.purple : t.textDim;
+  const SignalTags = ({ tags }) => (
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      {tags.map((tag) => (
+        <span key={tag} style={{ border: `1px solid ${signalTagColor(tag)}`, color: signalTagColor(tag), padding: '4px 8px', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{tag}</span>
+      ))}
+    </div>
+  );
+
+  const activeArticle = signalArticles.find((article) => atlasHash === article.hash);
+
+  const shell = (children) => (
+    <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: mono }}>
+      <AppTopbar t={t} isDark={isDark} menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuRef={menuRef} navItems={navItems} onToggleTheme={onToggleTheme} />
+      <main style={{ maxWidth: 1180, margin: '0 auto', padding: '42px 24px 80px' }}>{children}</main>
+    </div>
+  );
+
+  if (activeArticle) {
+    const article = activeArticle;
+    return shell(
+      <article className="fo-page-section" style={{ padding: 26, borderTop: `2px solid ${accent}` }}>
+        <button onClick={() => goAtlas('#signal-brief')} style={{ background: 'none', border: 'none', color: accent, cursor: 'pointer', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, padding: 0, marginBottom: 18 }}>← Back to Signal Brief</button>
+        <SignalTags tags={article.tags} />
+        <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(42px, 7vw, 84px)', lineHeight: 0.9, letterSpacing: '-0.06em', margin: '20px 0 12px', textTransform: 'uppercase' }}>{article.headline}</h1>
+        <p style={{ fontFamily: "'Times New Roman', Georgia, serif", fontStyle: 'italic', fontSize: 22, color: t.textSecondary, lineHeight: 1.35, maxWidth: 900 }}>{article.dek}</p>
+        <div style={{ borderTop: `1px solid ${t.borderDim}`, borderBottom: `1px solid ${t.borderDim}`, padding: '12px 0', color: t.textDim, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <span>{article.desk}</span>{article.flag && <span style={{ color: t.warn }}>{article.flag}</span>}
+        </div>
+        <div style={{ border: `1px solid ${accent}`, background: `${accent}10`, padding: 18, margin: '22px 0' }}>
+          <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 10 }}>TL;DR · The 60-Second Version</div>
+          <ul style={{ margin: 0, paddingLeft: 20, color: t.textSecondary, lineHeight: 1.7 }}>{article.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
+        </div>
+        {[
+          ['01', 'What happened', article.sections.happened],
+          ['02', 'Why it matters to you', article.sections.matters],
+        ].map(([num, title, body]) => (
+          <section key={title} style={{ marginTop: 24 }}>
+            <h2 style={{ borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 10, color: t.textPrimary, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>{num}</span> {title}</h2>
+            <p style={{ color: t.textSecondary, lineHeight: 1.75, fontSize: 15 }}>{body}</p>
+          </section>
+        ))}
+        <section style={{ marginTop: 24 }}>
+          <h2 style={{ borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>03</span> Where the opportunity is</h2>
+          <ul style={{ color: t.textSecondary, lineHeight: 1.75, fontSize: 15 }}>{article.sections.opportunity.map((x) => <li key={x}>{x}</li>)}</ul>
+          <div style={{ border: `1px dashed ${accent}`, padding: 14, color: accent, fontSize: 13, lineHeight: 1.6 }}>{article.sections.lanes}</div>
+        </section>
+        <section style={{ marginTop: 24, borderLeft: `2px solid ${t.warn}`, background: `${t.warn}10`, padding: 18 }}>
+          <h2 style={{ marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>04</span> The risks / the other side</h2>
+          <ul style={{ color: t.textSecondary, lineHeight: 1.75, fontSize: 15 }}>{article.sections.risks.map((x) => <li key={x}>{x}</li>)}</ul>
+        </section>
+        <section style={{ marginTop: 24 }}>
+          <h2 style={{ borderBottom: `1px solid ${t.borderDim}`, paddingBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>05</span> What to watch next</h2>
+          <div style={{ display: 'grid', gap: 2 }}>{article.sections.watch.map(([k, v]) => <div key={k} style={{ border: `1px solid ${t.borderDim}`, padding: 12, display: 'grid', gridTemplateColumns: '180px 1fr', gap: 12 }}><b style={{ color: accent }}>{k}</b><span style={{ color: t.textSecondary }}>{v}</span></div>)}</div>
+        </section>
+        <section style={{ marginTop: 24, background: t.surface, border: `1px solid ${t.borderDim}`, padding: 18 }}>
+          <h2 style={{ marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>06</span> Plain-English glossary</h2>
+          <div style={{ display: 'grid', gap: 2 }}>{article.sections.glossary.map(([k, v]) => <div key={k} style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 12, padding: 8, borderTop: `1px solid ${t.borderDim}` }}><b>{k}</b><span style={{ color: t.textSecondary }}>{v}</span></div>)}</div>
+        </section>
+        <footer style={{ marginTop: 24, color: t.textDim, lineHeight: 1.7, fontSize: 12, borderTop: `1px solid ${t.borderDim}`, paddingTop: 14 }}>
+          Educational only. Trust, tax, insurance, estate, and investment decisions vary by jurisdiction and personal situation. FortifyOS provides frameworks, not legal, tax, insurance, or financial advice.<br />{article.sections.sources}
+        </footer>
+      </article>
+    );
+  }
+
+  if (atlasHash === '#signal-brief') {
+    return shell(
+      <section className="fo-page-section" style={{ padding: 26, borderTop: `2px solid ${accent}` }}>
+        <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: 11, marginBottom: 12 }}>Signal Brief</div>
+        <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(46px, 8vw, 92px)', lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', textTransform: 'uppercase' }}>Plain-English market reports.</h1>
+        <p style={{ color: t.textSecondary, lineHeight: 1.7, maxWidth: 760 }}>News reports that translate policy, markets, technology, IPOs, crypto, and macro shifts into what changed, why it matters, where to research, and what could prove the story wrong.</p>
+        <div style={{ color: t.textDim, fontSize: 12, margin: '18px 0 24px' }}>Educational only. Company names are research starting points, not endorsements.</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 2 }}>
+          {signalArticles.map((article) => (
+            <button key={article.hash} onClick={() => goAtlas(article.hash)} style={{ textAlign: 'left', border: `1px solid ${t.borderDim}`, background: t.surface, padding: 20, cursor: 'pointer', color: t.textPrimary, fontFamily: mono, minHeight: 260 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}><span style={{ color: accent }}>{article.num}</span><SignalTags tags={article.tags} /></div>
+              <div style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 32, lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: 12 }}>{article.headline}</div>
+              <div style={{ color: t.textSecondary, lineHeight: 1.55, marginBottom: 16 }}>{article.dek}</div>
+              <div style={{ color: t.textDim, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }}>{article.date} · {article.read}{article.flag ? ` · ${article.flag}` : ''}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (atlasHash === '#wealth-atlas') {
+    const atlasCards = [
+      ['01', 'Opportunity Lanes', 'The research grid: AI, Bitcoin, Energy, Defense, Healthcare, Real Assets, Commodities, Alternatives, and Space.', '#wealth-atlas-opportunities'],
+      ['02', 'Wealth Architecture', 'The protection layer: trusts, insurance, taxes, custody, asset protection, and transfer.', '#wealth-architecture'],
+      ['03', 'Signal Brief', 'Plain-English article reports with TL;DR, risks, watchlists, glossary, and lane cross-links.', '#signal-brief'],
+      ['04', 'Field Manual', 'Keep this top-level for now; the structure is ready if the owner later nests it here.', '#field-manual'],
+    ];
+    return shell(
+      <section className="fo-page-section" style={{ padding: 26, borderTop: `2px solid ${accent}` }}>
+        <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: 11, marginBottom: 12 }}>FortifyOS Wealth Atlas</div>
+        <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(48px, 8vw, 94px)', lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', textTransform: 'uppercase' }}>The map of what to build, study, and protect.</h1>
+        <p style={{ color: t.textSecondary, lineHeight: 1.7, maxWidth: 820 }}>Choose a lane: opportunity research, wealth protection, or plain-English signal reports. The goal is not to chase headlines — it is to build fluency.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2, marginTop: 24 }}>
+          {atlasCards.map(([num, title, desc, hash]) => (
+            <button key={title} onClick={() => hash === '#field-manual' ? onDocs() : goAtlas(hash)} style={{ minHeight: 210, textAlign: 'left', border: `1px solid ${hash === '#signal-brief' ? t.warn : t.borderDim}`, background: t.surface, color: t.textPrimary, padding: 18, cursor: 'pointer', fontFamily: mono }}>
+              <div style={{ color: hash === '#signal-brief' ? t.warn : accent, fontSize: 12, marginBottom: 14 }}>{num}</div>
+              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>{title}</div>
+              <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 13 }}>{desc}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: t.void, color: t.textPrimary, fontFamily: mono }}>
@@ -2156,16 +2461,16 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
           </div>
           <div style={{ marginTop: 16, border: `1px solid ${accent}55`, background: `${accent}10`, padding: 16 }}>
             <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 8 }}>Active discipline layer</div>
-            <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Lane 09 — Portfolio Construction Discipline</div>
+            <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Operating Layer — Portfolio Construction Discipline</div>
             <div style={{ color: t.textDim, lineHeight: 1.65, fontSize: 13 }}>This is the operating manual that explains how the eight opportunity lanes fit together without turning the product into personalized advice.</div>
           </div>
         </section>
 
         <section className="fo-page-section" style={{ padding: 24, marginBottom: 18, borderTop: `2px solid ${accent}` }}>
-          <div style={{ fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Lane 09 · Active Module</div>
+          <div style={{ fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Operating Layer · Active Module</div>
           <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(38px, 6vw, 68px)', fontWeight: 700, lineHeight: 0.88, letterSpacing: '-0.06em', textTransform: 'uppercase', margin: '0 0 18px' }}>Portfolio Construction Discipline</h2>
           <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 860, fontSize: 14 }}>
-            The first eight lanes answer where opportunity may live. Lane 09 answers the more important question: how do you pursue opportunity without letting one narrative, one ticker, or one cycle take control of the whole system?
+            The opportunity lanes answer where opportunity may live. This operating layer answers the more important question: how do you pursue opportunity without letting one narrative, one ticker, or one cycle take control of the whole system?
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 2, marginBottom: 18 }}>
             {constructionModel.map(([layer, assets, purpose]) => (
@@ -2194,8 +2499,18 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
           <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Wealth Architecture · Protection Layer</div>
           <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>Building wealth is only half the game. Keeping it is the other half.</h2>
           <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 880, fontSize: 14 }}>
-            Opportunity lanes are offense. Wealth Architecture is defense: taxes, lawsuits, incapacity, premature death, custody, and the eventual handoff. This library teaches the machinery and the questions to ask before meeting a qualified professional — not a one-size-fits-all plan.
+            Opportunity lanes are offense. Wealth Architecture is defense: taxes, lawsuits, incapacity, premature death, custody, and the eventual handoff. This library teaches the machinery and the questions to ask before meeting a qualified professional — not a one-size-fits-all plan, and not a stale list of this-year dollar limits.
           </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2, marginBottom: 18 }}>
+            {architecturePhilosophy.map((item, index) => (
+              <div key={item.title} style={{ border: `1px solid ${index === 0 ? accent : t.borderDim}`, background: index === 0 ? `${accent}10` : t.surface, padding: 16, minHeight: 142 }}>
+                <div style={{ color: index === 0 ? accent : t.textDim, fontSize: 11, marginBottom: 10 }}>{String(index + 1).padStart(2, '0')}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 8 }}>{item.title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
 
           <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18, marginBottom: 18 }}>
             <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>Reusable pillar skeleton</div>
@@ -2224,14 +2539,14 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
                     ['Core idea', pillar.core],
                     ['Triggers', pillar.triggers],
                     ['Building blocks', pillar.blocks],
+                    ['How rules are structured', pillar.lookup],
                     ['Decision framework', pillar.framework],
                     ['Common mistakes', pillar.mistakes],
-                    ['Current-rule lookup', pillar.lookup],
                     ['Professional line', pillar.professional],
                     ['Sales traps', pillar.trap],
                   ].map(([label, body]) => (
                     <div key={label} style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 10 }}>
-                      <div style={{ color: label === 'Current-rule lookup' ? t.warn : accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>{label}</div>
+                      <div style={{ color: label === 'How rules are structured' ? t.warn : accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>{label}</div>
                       <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{body}</div>
                     </div>
                   ))}
@@ -8497,6 +8812,11 @@ function FortifyOSApp() {
     '#macroSentinel': 'macroSentinel',
     '#wealth-atlas': 'wealthAtlas',
     '#wealthAtlas': 'wealthAtlas',
+    '#wealth-atlas-opportunities': 'wealthAtlas',
+    '#wealth-architecture': 'wealthAtlas',
+    '#signal-brief': 'wealthAtlas',
+    '#signal-brief-quantum-computing-equity-stake': 'wealthAtlas',
+    '#signal-brief-spacex-ipo': 'wealthAtlas',
     '#ai-portfolio': 'investmentRadar',
     '#investmentRadar': 'investmentRadar',
     '#bitcoin': 'bitcoin',
@@ -8543,7 +8863,11 @@ function FortifyOSApp() {
       }
     };
     window.addEventListener('popstate', handler);
-    return () => window.removeEventListener('popstate', handler);
+    window.addEventListener('hashchange', handler);
+    return () => {
+      window.removeEventListener('popstate', handler);
+      window.removeEventListener('hashchange', handler);
+    };
   }, []);
 
   const navigate = (newView) => {
@@ -8986,6 +9310,11 @@ function FortifyOSApp() {
           color: var(--fo-nav-active, ${t.accent});
           border-color: var(--fo-nav-active, ${t.accent});
           background: var(--fo-nav-active-bg, ${t.accent}12);
+        }
+        .fo-nav-nest:hover .fo-nav-nest-pop,
+        .fo-nav-nest:focus-within .fo-nav-nest-pop {
+          display: grid !important;
+          gap: 2px;
         }
         .fo-pagebar-tabs button:disabled {
           cursor: default;
