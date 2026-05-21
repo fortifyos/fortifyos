@@ -7408,6 +7408,10 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const liquidityPulseDur = netLiq == null ? '2.8s' : netLiq > 5500000 ? '1.8s' : netLiq > 4500000 ? '2.4s' : '3.2s';
   const liquidityFlowOpacity = netLiq == null ? 0.45 : clampRadar(((netLiq - 3500000) / 2500000), 0.25, 1);
   const pumpLabel = netLiq == null ? 'LIVE NET LIQUIDITY' : netLiq > 5500000 ? 'LIQUIDITY FLOOD' : netLiq > 4500000 ? 'LIQUIDITY OPEN' : 'LIQUIDITY TIGHT';
+  const macroUsesRawMillions = (value) => value != null && Math.abs(value) > 10000;
+  const macroTgaTailwindLine = (value) => macroUsesRawMillions(value) ? 800000 : 800;
+  const macroTgaDangerLine = (value) => macroUsesRawMillions(value) ? 950000 : 950;
+  const fmtMacroT = (value) => value == null ? '—' : `$${((macroUsesRawMillions(value) ? value / 1000000 : value / 1000)).toFixed(2)}T`;
 
   // ── Signal Confluence Engine ───────────────────────────────────────────────
   const confNetLiq = walcl != null && tga != null ? walcl - tga : null;
@@ -7420,7 +7424,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   }
   if (daysPostHalving <= 500) cyclePts = 40;
   else if (daysPostHalving < 800) cyclePts = 10;
-  if (tga != null && tga < 800) tgaPts = 20;
+  if (tga != null && tga < macroTgaTailwindLine(tga)) tgaPts = 20;
   const confScore = liqPts + cyclePts + tgaPts;
   const confColor = confScore >= 75 ? t.accent : confScore >= 40 ? t.warn : t.danger;
   const confStatus = confScore >= 75 ? 'TARGET ACQUIRED // CONFLUENCE HIGH'
@@ -7429,7 +7433,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const theater = confScore >= 75 ? 'RISK-ON' : confScore >= 40 ? 'NEUTRAL' : 'RISK-OFF';
   const posture = confScore >= 75 ? 'ATTACK' : confScore >= 40 ? 'WAIT' : 'DEFEND';
   const policyPressure = fedFundsRate == null ? 35 : clampRadar((fedFundsRate / 5) * 100, 0, 100);
-  const treasuryPressure = tga == null ? 25 : clampRadar((tga / 1200000) * 100, 0, 100);
+  const treasuryPressure = tga == null ? 25 : clampRadar((tga / (macroUsesRawMillions(tga) ? 1200000 : 1200)) * 100, 0, 100);
   const cyclePressure = daysPostHalving <= 500 ? 25 : daysPostHalving < 800 ? 55 : 85;
   const volatilityPressure = vix == null ? 30 : clampRadar(((vix - 12) / 28) * 100, 0, 100);
   const warPressures = [
@@ -7450,8 +7454,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       label: 'Treasury',
       score: treasuryPressure,
       tone: treasuryPressure >= 65 ? t.danger : treasuryPressure >= 40 ? t.warn : t.accent,
-      summary: tga == null ? 'No TGA data.' : `TGA at $${(tga / 1000).toFixed(2)}T is the Treasury drain on liquidity.`,
-      why: tga == null ? 'Treasury pressure cannot be scored without TGA.' : tga >= 900 ? 'Treasury is absorbing liquidity instead of releasing it. This is a brake on risk assets.' : tga >= 800 ? 'Treasury pressure is active but not yet dominant.' : 'Treasury pressure is light. Falling TGA is usually a tailwind for liquidity.',
+      summary: tga == null ? 'No TGA data.' : `TGA at ${fmtMacroT(tga)} is the Treasury drain on liquidity.`,
+      why: tga == null ? 'Treasury pressure cannot be scored without TGA.' : tga >= macroTgaDangerLine(tga) ? 'Treasury is absorbing liquidity instead of releasing it. This is a brake on risk assets.' : tga >= macroTgaTailwindLine(tga) ? 'Treasury pressure is active but not yet dominant.' : 'Treasury pressure is light. Falling TGA is usually a tailwind for liquidity.',
       flips: [
         tga == null ? 'Load TGA series' : `Below $0.80T upgrades Treasury pressure from drag to tailwind`,
         tga == null ? 'No data' : `Above $0.95T pushes Treasury pressure into high-risk territory`,
@@ -7489,16 +7493,10 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     : theater === 'NEUTRAL'
       ? 'The theater is mixed. Capital should stay patient and selective.'
       : 'Defensive conditions dominate. Survival matters more than speed.';
-  const warThresholds = [
-    { label: 'Risk-On Trigger', value: netLiq == null ? 'Need live net liquidity' : netLiq > 5500000 ? 'Active now' : 'Net liquidity above $5.50T', tone: t.accent },
-    { label: 'Treasury Flip', value: tga == null ? 'Need TGA data' : tga < 800 ? 'Active now' : 'TGA below $0.80T', tone: t.warn },
-    { label: 'Policy Relief', value: fedFundsRate == null ? 'Need DFF data' : fedFundsRate < 3.5 ? 'Active now' : 'Fed Funds below 3.50%', tone: reactorColor },
-    { label: 'Stress Exit', value: vix == null ? 'Need VIX data' : vix < 18 ? 'Active now' : 'VIX below 18', tone: t.textSecondary },
-  ];
   const confComponents = [
     {
       label: 'NET LIQUIDITY (WALCL − TGA)', score: liqPts, max: 40,
-      note: confNetLiq != null ? `$${(confNetLiq / 1000).toFixed(2)}T` : 'no data'
+      note: confNetLiq != null ? fmtMacroT(confNetLiq) : 'no data'
     },
     {
       label: 'HALVING CYCLE MATURITY', score: cyclePts, max: 40,
@@ -7506,14 +7504,14 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     },
     {
       label: 'TREASURY PRESSURE (TGA)', score: tgaPts, max: 20,
-      note: tga != null ? `$${(tga / 1000).toFixed(2)}T TGA` : 'no data'
+      note: tga != null ? `${fmtMacroT(tga)} TGA` : 'no data'
     },
   ];
   const schoolSignals = [
     {
       key: 'net-liquidity',
       label: 'Net Liquidity',
-      current: netLiq == null ? 'Need WALCL, TGA, and RRP' : `${netLiq >= 0 ? '+' : ''}$${Math.abs(netLiq / 1000).toFixed(2)}T`,
+      current: netLiq == null ? 'Need WALCL, TGA, and RRP' : `${netLiq >= 0 ? '+' : ''}${fmtMacroT(Math.abs(netLiq))}`,
       explain: 'Net liquidity is the fuel available to financial markets after Treasury cash and reverse repo balances are removed from the Fed balance sheet.',
       bullish: 'When it rises, risk assets usually get more oxygen.',
       bearish: 'When it falls, markets lose fuel even if headlines sound dovish.',
@@ -7533,7 +7531,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     {
       key: 'tga',
       label: 'TGA',
-      current: tga == null ? 'Need Treasury data' : `$${(tga / 1000).toFixed(2)}T`,
+      current: tga == null ? 'Need Treasury data' : fmtMacroT(tga),
       explain: 'The Treasury General Account is the government cash pile at the Fed. When it rises, cash can be pulled out of the system.',
       bullish: 'A falling TGA usually releases liquidity back toward markets.',
       bearish: 'A rising TGA can drain reserves even without a rate hike.',
@@ -7564,14 +7562,25 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
   const activeLesson = schoolSignals.find((item) => item.key === lessonFocus) || schoolSignals[0];
   const simulateWarGame = ({ fedFunds = fedFundsRate, treasury = tga, volatility = vix, liquidity = netLiq }) => {
     const simPolicy = fedFunds == null ? 35 : clampRadar((fedFunds / 5) * 100, 0, 100);
-    const simTreasury = treasury == null ? 25 : clampRadar((treasury / 1200000) * 100, 0, 100);
+    const simTreasury = treasury == null ? 25 : clampRadar((treasury / (macroUsesRawMillions(treasury) ? 1200000 : 1200)) * 100, 0, 100);
     const simVol = volatility == null ? 30 : clampRadar(((volatility - 12) / 28) * 100, 0, 100);
-    const simLiqPts = liquidity == null ? 0 : liquidity > 5500000 ? 40 : liquidity > 5000000 ? 20 : 0;
-    const simScore = simLiqPts + cyclePts + (treasury != null && treasury < 800 ? 20 : 0);
+    const simLiqPts = liquidity == null ? 0 : liquidity > 5500000 ? 35 : liquidity > 5000000 ? 22 : liquidity > 4500000 ? 12 : 0;
+    const simTreasuryPts = treasury == null ? 0 : treasury < macroTgaTailwindLine(treasury) ? 20 : treasury < macroTgaDangerLine(treasury) ? 10 : 0;
+    const simPolicyPts = fedFunds == null ? 0 : fedFunds < 3.5 ? 20 : fedFunds < 4.5 ? 10 : 0;
+    const simStressPts = volatility == null ? 0 : volatility < 18 ? 15 : volatility < 25 ? 8 : 0;
+    const simCyclePts = daysPostHalving <= 500 ? 10 : daysPostHalving < 800 ? 5 : 0;
+    const simScore = simLiqPts + simTreasuryPts + simPolicyPts + simStressPts + simCyclePts;
     return {
       score: simScore,
       theater: simScore >= 75 ? 'RISK-ON' : simScore >= 40 ? 'NEUTRAL' : 'RISK-OFF',
       posture: simScore >= 75 ? 'ATTACK' : simScore >= 40 ? 'WAIT' : 'DEFEND',
+      recipe: [
+        { label: 'Liquidity fuel', score: simLiqPts, max: 35, rule: '> $5.50T = full fuel' },
+        { label: 'Treasury drain', score: simTreasuryPts, max: 20, rule: 'TGA < $0.80T = tailwind' },
+        { label: 'Fed relief', score: simPolicyPts, max: 20, rule: 'Fed Funds < 3.50% = relief' },
+        { label: 'Stress calm', score: simStressPts, max: 15, rule: 'VIX < 18 = calm tape' },
+        { label: 'Cycle support', score: simCyclePts, max: 10, rule: 'Cycle window adds context' },
+      ],
       primary: [
         { label: 'Policy', score: simPolicy },
         { label: 'Treasury', score: simTreasury },
@@ -7597,7 +7606,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       key: 'tga-draw',
       label: 'Treasury drains $100B',
       detail: 'Treasury cash leaves the account and reserves loosen.',
-      snapshot: simulateWarGame({ treasury: tga == null ? null : Math.max(0, tga - 100) }),
+      snapshot: simulateWarGame({ treasury: tga == null ? null : Math.max(0, tga - (macroUsesRawMillions(tga) ? 100000 : 100)) }),
     },
     {
       key: 'stress-spike',
@@ -7629,25 +7638,25 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
       key: 'treasury',
       label: 'TGA',
       unit: 'T',
-      step: 25,
+      step: macroUsesRawMillions(tga) ? 25000 : 25,
       min: 0,
-      max: 1200,
+      max: macroUsesRawMillions(tga) ? 1200000 : 1200,
       base: tga,
       accent: t.warn,
       description: 'Treasury cash drains or releases reserves into the system.',
-      format: (value) => `$${(value / 1000).toFixed(2)}T`,
+      format: (value) => fmtMacroT(value),
     },
     {
       key: 'liquidity',
       label: 'Net Liquidity',
       unit: 'T',
-      step: 100,
-      min: 3500,
-      max: 6500,
+      step: macroUsesRawMillions(netLiq) ? 100000 : 100,
+      min: macroUsesRawMillions(netLiq) ? 3500000 : 3500,
+      max: macroUsesRawMillions(netLiq) ? 6500000 : 6500,
       base: netLiq,
       accent: netLiqColor,
       description: 'This is the market fuel line for the war game.',
-      format: (value) => `$${(value / 1000).toFixed(2)}T`,
+      format: (value) => fmtMacroT(value),
     },
     {
       key: 'volatility',
@@ -7668,6 +7677,11 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
     { label: 'Primary Pressure', value: simSnapshot.primary.label, tone: t.textPrimary },
     { label: 'Signal Score', value: `${simSnapshot.score}/100`, tone: simSnapshot.score >= 75 ? t.accent : simSnapshot.score >= 40 ? t.warn : t.danger },
   ];
+  const simNextStep = simSnapshot.score >= 75
+    ? 'Result: RISK-ON. The model says conditions are aligned enough for offensive study — still not a chase signal.'
+    : simSnapshot.score >= 40
+      ? `Result: NEUTRAL. You need ${75 - simSnapshot.score} more points to reach RISK-ON. Look for Fed relief, a lower TGA, calmer VIX, or stronger liquidity.`
+      : `Result: RISK-OFF. You need ${40 - simSnapshot.score} more points just to leave defense mode. The system wants patience first.`;
 
   useEffect(() => {
     setSimState({
@@ -7720,18 +7734,44 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         ],
       };
     });
-    const thresholdSetups = warThresholds.map((threshold, index) => {
-      const next = warThresholds[(index + 1) % warThresholds.length];
-      return {
-        prompt: `What threshold is the page watching here: ${threshold.label}?`,
+    const thresholdSetups = [
+      {
+        prompt: 'What does Fed relief mean in this model?',
         correct: 'a',
         options: [
-          { key: 'a', text: threshold.value, why: `${threshold.label} flips when ${threshold.value}. That is the exact trigger shown on the page.` },
-          { key: 'b', text: next.value, why: `That belongs to ${next.label}, not ${threshold.label}.` },
-          { key: 'c', text: 'No specific threshold matters here', why: `${threshold.label} is built around a concrete trigger, so there is a specific line to watch.` },
+          { key: 'a', text: 'Fed Funds below 3.50%', why: 'Below 3.50%, policy moves from restrictive toward neutral, so the model gives Fed relief points.' },
+          { key: 'b', text: 'VIX above 25', why: 'That is stress, not relief. A high VIX usually argues for caution.' },
+          { key: 'c', text: 'TGA above $0.95T', why: 'A high TGA is usually a liquidity drain, not Fed relief.' },
         ],
-      };
-    });
+      },
+      {
+        prompt: 'What does a Treasury tailwind mean?',
+        correct: 'b',
+        options: [
+          { key: 'a', text: 'Treasury cash rising above $0.95T', why: 'That usually pulls cash from the system and creates pressure.' },
+          { key: 'b', text: 'TGA below $0.80T', why: 'A lower Treasury cash balance can release liquidity back into the system, which is why the model treats it as a tailwind.' },
+          { key: 'c', text: 'Mortgage rates falling for one day', why: 'Mortgage rates matter to households, but this threshold is specifically about Treasury cash.' },
+        ],
+      },
+      {
+        prompt: 'What does Stress Exit mean?',
+        correct: 'a',
+        options: [
+          { key: 'a', text: 'VIX below 18', why: 'VIX below 18 means market fear is calm enough for policy and liquidity signals to matter more.' },
+          { key: 'b', text: 'VIX above 25', why: 'Above 25 is stress rising, not stress exiting.' },
+          { key: 'c', text: 'Net liquidity below $4.50T', why: 'That is about market fuel drying up, not stress exiting.' },
+        ],
+      },
+      {
+        prompt: 'What does the Risk-On trigger require?',
+        correct: 'c',
+        options: [
+          { key: 'a', text: 'Only one good headline', why: 'One headline is not enough. The model wants conditions, not vibes.' },
+          { key: 'b', text: 'TGA above $0.95T', why: 'That is usually a drag because Treasury is absorbing liquidity.' },
+          { key: 'c', text: 'Net liquidity above $5.50T', why: 'Strong liquidity is the main fuel line. Above $5.50T is the model’s clearest risk-on fuel trigger.' },
+        ],
+      },
+    ];
     const scenarioSetups = flightScenarios.map((scenario) => ({
       prompt: `If this happens, what posture follows: ${scenario.label}?`,
       correct: 'b',
@@ -7751,27 +7791,103 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         missionCode: `FED-${String(index + 1).padStart(3, '0')}`,
       };
     });
-  }, [flightScenarios, schoolSignals, warThresholds]);
+  }, [flightScenarios, schoolSignals]);
   const drillQuestion = drillQuestionBank[(dayOfYear - 1) % drillQuestionBank.length];
-  const quizResult = drillQuestion.options.find((item) => item.key === quizChoice) || null;
-  const recentEntries = [...blackBoxLog].reverse();
-  const latestEntry = recentEntries[0] || null;
-  const oldestEntry = recentEntries[recentEntries.length - 1] || null;
-  const debriefShift = latestEntry && oldestEntry ? latestEntry.score - oldestEntry.score : 0;
-  const debriefHeadline = latestEntry == null
-    ? 'No recorded regime changes yet.'
-    : debriefShift > 0
-      ? `Signal strength improved ${debriefShift} points across the recent campaign log.`
-      : debriefShift < 0
-        ? `Signal strength weakened ${Math.abs(debriefShift)} points across the recent campaign log.`
-        : 'Signal strength has been stable across the recent campaign log.';
-  const debriefGuidance = latestEntry == null
-    ? 'Once macro data refreshes, the system will start logging regime snapshots automatically.'
-    : latestEntry.status === 'LOCKED'
-      ? 'Conditions are aligned enough to justify offensive monitoring, but you still want confirmation from stress and policy.'
-      : latestEntry.status === 'SCANNING'
-        ? 'The system is in observation mode. Wait for a cleaner trigger instead of forcing conviction.'
-        : 'The environment is still hostile. Defense and patience matter more than speed.';
+  const quizResult = quizChoice ? drillQuestion.options.find((item) => item.key === quizChoice) || null : null;
+  const quizIsCorrect = quizChoice != null && quizChoice === drillQuestion.correct;
+  const simplePosture = posture === 'ATTACK'
+    ? {
+      label: 'Opportunity is improving',
+      plain: 'Money conditions are becoming friendlier. This does not mean chase; it means study, compare, and prepare a clean plan.',
+      moneyMove: 'Keep cash discipline, but start paying closer attention to quality assets and sectors showing strength.',
+      tone: t.accent,
+    }
+    : posture === 'WAIT'
+      ? {
+        label: 'Mixed signals — patience pays',
+        plain: 'The economy is not giving a clean green light. Some signals help markets, others still pressure households and businesses.',
+        moneyMove: 'Avoid rushed decisions. Build cash, reduce expensive debt, and watch for confirmation before taking bigger risk.',
+        tone: t.warn,
+      }
+      : {
+        label: 'Defense first',
+        plain: 'Money is tight or stress is elevated. This is the environment where weak balance sheets usually get exposed first.',
+        moneyMove: 'Protect runway, avoid leverage, and make sure bills, debt, and emergency cash are under control.',
+        tone: t.danger,
+      };
+
+  const fedPlain = fedFundsRate == null
+    ? 'Waiting on live Fed Funds data.'
+    : fedFundsRate >= 3.5
+      ? 'The Fed is keeping money expensive. Loans, refinancing, and business expansion feel heavier.'
+      : fedFundsRate >= 1.5
+        ? 'The Fed is closer to neutral. Money is not cheap, but pressure is less severe than a full tightening regime.'
+        : 'The Fed is making money easier. This can help markets, but it can also restart speculation and inflation pressure.';
+  const bondPlain = yieldCurve == null
+    ? 'Waiting on bond-market data.'
+    : yieldCurve < 0
+      ? 'The bond market is warning that short-term policy is tight compared with long-term growth expectations.'
+      : 'The bond curve is healthier than an inversion. Growth expectations have more breathing room.';
+  const liquidityPlain = netLiq == null
+    ? 'Waiting on Fed balance sheet, Treasury cash, and reverse repo data.'
+    : netLiq > 5500000
+      ? 'Market fuel is abundant. Risk assets usually get more oxygen when this stays strong.'
+      : netLiq > 4500000
+        ? 'Market fuel is usable but not overwhelming. Confirmation matters.'
+        : 'Market fuel is tight. Even good headlines can struggle if liquidity is draining.';
+  const stressPlain = vix == null
+    ? 'Waiting on market stress data.'
+    : vix >= 25
+      ? 'Stress is loud. Investors are paying up for protection, and forced selling risk rises.'
+      : vix >= 18
+        ? 'Stress is elevated but not panic. Markets are cautious.'
+        : 'Stress is calm. Liquidity and policy signals can lead the market more clearly.';
+  const macroTranslatorCards = [
+    {
+      eyebrow: 'Fed decision',
+      title: 'What is the price of money?',
+      signal: fedFundsRate == null ? 'Pending' : `${fedFundsRate.toFixed(2)}% Fed Funds`,
+      plain: fedPlain,
+      daily: 'Hits credit cards, car loans, mortgage rates, business hiring, and how attractive cash feels.',
+      tone: reactorColor,
+    },
+    {
+      eyebrow: 'Bond market',
+      title: 'What is the market saying about time?',
+      signal: yieldCurve == null ? 'Pending' : `${yieldCurve.toFixed(2)}% 10Y–2Y curve`,
+      plain: bondPlain,
+      daily: 'Shapes mortgage pressure, stock valuations, bank lending, pensions, and retirement account swings.',
+      tone: yieldCurve != null && yieldCurve < 0 ? t.danger : t.accent,
+    },
+    {
+      eyebrow: 'Liquidity',
+      title: 'How much fuel is in the system?',
+      signal: netLiq == null ? 'Pending' : `${fmtMacroT(netLiq)} net liquidity`,
+      plain: liquidityPlain,
+      daily: 'When fuel rises, markets breathe easier. When it drains, cash discipline matters more.',
+      tone: netLiqColor,
+    },
+    {
+      eyebrow: 'Stress',
+      title: 'Is the crowd calm or defensive?',
+      signal: vix == null ? 'Pending' : `${vix.toFixed(2)} VIX`,
+      plain: stressPlain,
+      daily: 'Stress affects layoffs, lending, retirement balances, and how fast investors run to safety.',
+      tone: volatilityPressure >= 65 ? t.danger : volatilityPressure >= 40 ? t.warn : t.accent,
+    },
+  ];
+  const householdImpacts = [
+    { label: 'Borrowers', text: fedFundsRate != null && fedFundsRate >= 3.5 ? 'Expensive debt deserves priority. Refinancing is harder.' : 'Debt pressure may ease if rates keep moving lower.' },
+    { label: 'Savers', text: fedFundsRate != null && fedFundsRate >= 3.5 ? 'Cash can finally earn something, but inflation still matters.' : 'Cash yields may fall, so idle money needs a plan.' },
+    { label: 'Workers', text: 'Tight money can slow hiring before headlines admit it. Watch job openings, layoffs, and company guidance.' },
+    { label: 'Investors', text: posture === 'ATTACK' ? 'Study strength, but do not confuse green lights with permission to over-size.' : 'Demand confirmation. Avoid chasing narratives before the signals improve.' },
+  ];
+  const plainSignals = [
+    { label: 'Fed Funds', meaning: 'cost of short-term money', watch: 'Cuts help only if liquidity confirms.' },
+    { label: 'Yield Curve', meaning: 'growth stress gauge', watch: 'Inversion says policy may be too tight.' },
+    { label: 'Net Liquidity', meaning: 'market fuel', watch: 'Rising fuel supports risk appetite.' },
+    { label: 'VIX', meaning: 'market fear', watch: 'Above 25 means stress can override everything.' },
+  ];
 
   const navItems = [
     { key: 'home', label: 'Home', icon: Home, onClick: onHome },
@@ -7792,24 +7908,6 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
         className={`ms2-wrap ${confScore >= 75 ? 'state-locked' : confScore >= 40 ? 'state-scanning' : 'state-jammed'}`}
         style={{ maxWidth: 1180, margin: '0 auto', padding: '6px 20px 32px', '--primary': confColor }}
       >
-
-        {/* ── TACTICAL HUD BAR ─────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: isDark ? '#060c06' : '#f0f7f0', border: `1px solid ${confColor}44`, marginBottom: 8, flexWrap: 'wrap', gap: 8, fontFamily: "'JetBrains Mono', monospace" }}>
-          <span style={{ fontSize: 11, color: confColor, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>STATUS: {confStatus}</span>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>FUEL</span>
-              <progress className="hud-bar" value={Math.min(100, ((confNetLiq || 0) / 6000) * 100)} max="100" />
-              {confNetLiq != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(confNetLiq / 1000).toFixed(1)}T</span>}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ fontSize: 10, color: t.textGhost, letterSpacing: '0.08em' }}>HEAT</span>
-              <progress className="hud-bar hud-heat" value={Math.min(100, ((tga || 0) / 1000) * 100)} max="100" />
-              {tga != null && <span style={{ fontSize: 10, color: t.textGhost }}>${(tga / 1000).toFixed(2)}T</span>}
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 900, color: confColor, border: `1px solid ${confColor}`, padding: '1px 7px', letterSpacing: '0.06em' }}>{confScore}/100</span>
-          </div>
-        </div>
 
         <MacroBanner fredMacro={macro || fredMacro} visible={!settings?.visibleModules || settings.visibleModules.includes('macroBanner')} t={t} refreshNonce={0} rotating={true} />
 
@@ -7841,104 +7939,77 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
           </div>
         </div>
 
-        <MacroRadarPanels isDark={isDark} />
-
-        <div style={{ marginTop: 12, border: `2px solid ${primaryPressure.tone}`, background: t.panel, padding: '18px 20px', animation: 'radarFadeUp 0.35s ease-out 0.35s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>Macro War Game</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 46, fontWeight: 900, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{theater}</span>
-                <span style={{ fontSize: 13, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>Current Theater</span>
+        <section style={{ marginTop: 14, border: `2px solid ${simplePosture.tone}`, background: t.panel, padding: '22px 24px', position: 'relative', overflow: 'hidden', animation: 'radarFadeUp 0.35s ease-out 0.12s both' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${t.accent}, ${t.warn}, ${simplePosture.tone})`, opacity: 0.95 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.75fr) minmax(320px, 1.25fr)', gap: 16, alignItems: 'stretch' }} className="radar-war-grid">
+            <div style={{ border: `1px solid ${simplePosture.tone}55`, background: isDark ? `${simplePosture.tone}0d` : `${simplePosture.tone}08`, padding: '18px 18px 20px' }}>
+              <div style={{ fontSize: 12, color: t.textGhost, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 10 }}>Radar Translation</div>
+              <div style={{ fontSize: 'clamp(34px, 5vw, 60px)', lineHeight: 0.92, color: t.textPrimary, fontFamily: "'Times New Roman', Georgia, serif", fontWeight: 800, letterSpacing: '-0.055em', marginBottom: 12 }}>
+                What this means for your money
               </div>
-              <div style={{ marginTop: 8, fontSize: 16, color: t.textPrimary, fontWeight: 600 }}>{warHeadline}</div>
-            </div>
-            <div className="radar-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(120px, 1fr))', gap: 8, minWidth: 'min(100%, 420px)', flex: '1 1 320px' }}>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Best Posture</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: posture === 'ATTACK' ? t.accent : posture === 'WAIT' ? t.warn : t.danger, fontFamily: "'JetBrains Mono', monospace" }}>{posture}</div>
+              <div style={{ display: 'inline-flex', border: `1px solid ${simplePosture.tone}`, color: simplePosture.tone, padding: '7px 10px', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 14 }}>
+                {simplePosture.label}
               </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Primary Pressure</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: primaryPressure.tone, fontFamily: "'JetBrains Mono', monospace" }}>{primaryPressure.label}</div>
-              </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, padding: '10px 12px', background: isDark ? t.elevated : t.surface }}>
-                <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signal Score</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: confColor, fontFamily: "'JetBrains Mono', monospace" }}>{confScore}/100</div>
+              <p style={{ margin: 0, color: t.textSecondary, fontSize: 16, lineHeight: 1.65 }}>
+                {simplePosture.plain}
+              </p>
+              <div style={{ marginTop: 14, borderTop: `1px solid ${t.borderDim}`, paddingTop: 12, color: t.textPrimary, fontSize: 14, lineHeight: 1.55 }}>
+                <span style={{ color: simplePosture.tone, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Fortify posture: </span>{simplePosture.moneyMove}
               </div>
             </div>
-          </div>
 
-          <div className="radar-war-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 1.1fr) minmax(260px, 0.9fr)', gap: 12 }}>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Choose the Pressure to Study</div>
-              <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
-                {warPressures.map((item) => (
-                  <button
-                    className="radar-pressure-btn"
-                    key={item.key}
-                    onClick={() => setWarFocus(item.key)}
-                    style={{
-                      width: '100%',
-                      display: 'grid',
-                      gridTemplateColumns: '110px 1fr auto',
-                      gap: 10,
-                      alignItems: 'center',
-                      background: warFocus === item.key ? (isDark ? `${item.tone}12` : `${item.tone}10`) : 'transparent',
-                      border: `1px solid ${warFocus === item.key ? item.tone : t.borderDim}`,
-                      color: t.textPrimary,
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontFamily: "'JetBrains Mono', monospace",
-                    }}
-                  >
-                    <span style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', color: warFocus === item.key ? item.tone : t.textSecondary }}>{item.label}</span>
-                    <div style={{ height: 6, background: t.borderDim, position: 'relative' }}>
-                      <div style={{ height: '100%', width: `${item.score}%`, background: item.tone, boxShadow: `0 0 8px ${item.tone}66` }} />
-                    </div>
-                    <span style={{ fontSize: 12, color: item.tone, fontWeight: 700 }}>{Math.round(item.score)}</span>
-                  </button>
+            <div style={{ display: 'grid', gap: 10 }}>
+              <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: '13px 14px' }}>
+                <div style={{ color: t.textGhost, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 8 }}>The chain reaction</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', color: t.textPrimary, fontSize: 14, lineHeight: 1.45 }}>
+                  {['Fed sets rates', 'Money gets easier or harder', 'Loans + hiring respond', 'Homes, jobs, stocks feel it', 'Your posture changes'].map((step, index) => (
+                    <React.Fragment key={step}>
+                      <span style={{ border: `1px solid ${index === 0 ? reactorColor : t.borderDim}`, color: index === 0 ? reactorColor : t.textSecondary, padding: '7px 9px', background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.55)' }}>{step}</span>
+                      {index < 4 && <span style={{ color: t.textGhost }}>→</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+
+              <div className="radar-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+                {macroTranslatorCards.map((card) => (
+                  <div key={card.eyebrow} style={{ border: `1px solid ${card.tone}55`, background: isDark ? `${card.tone}0a` : `${card.tone}08`, padding: '12px 12px 13px', minHeight: 178 }}>
+                    <div style={{ color: card.tone, fontSize: 10, letterSpacing: '0.13em', textTransform: 'uppercase', fontWeight: 900, marginBottom: 8 }}>{card.eyebrow}</div>
+                    <div style={{ color: t.textPrimary, fontSize: 15, fontWeight: 900, lineHeight: 1.25, marginBottom: 8 }}>{card.title}</div>
+                    <div style={{ color: card.tone, fontSize: 13, fontWeight: 900, marginBottom: 8 }}>{card.signal}</div>
+                    <div style={{ color: t.textSecondary, fontSize: 12, lineHeight: 1.5 }}>{card.daily}</div>
+                    <div style={{ marginTop: 10, borderTop: `1px solid ${t.borderDim}`, paddingTop: 9, color: t.textGhost, fontSize: 12, lineHeight: 1.5 }}>{card.plain}</div>
+                  </div>
                 ))}
               </div>
-              <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
-                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>Why It Matters</div>
-                <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, marginBottom: 8 }}>{focusPressure.why}</div>
-                <div style={{ fontSize: 14, color: focusPressure.tone }}>{focusPressure.summary}</div>
-              </div>
-            </div>
 
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>What Flips the Signal</div>
-                <div style={{ display: 'grid', gap: 8 }}>
-                  {warThresholds.map((item) => (
-                    <div key={item.label} style={{ borderLeft: `2px solid ${item.tone}`, paddingLeft: 10 }}>
-                      <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</div>
-                      <div style={{ fontSize: 14, color: item.tone, fontWeight: 700 }}>{item.value}</div>
-                    </div>
-                  ))}
+              <div className="radar-war-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: '13px 14px' }}>
+                  <div style={{ color: t.textGhost, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 8 }}>Who feels it first</div>
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {householdImpacts.map((item) => (
+                      <div key={item.label} style={{ display: 'grid', gridTemplateColumns: '92px 1fr', gap: 10, fontSize: 12, lineHeight: 1.45 }}>
+                        <span style={{ color: simplePosture.tone, fontWeight: 900, textTransform: 'uppercase' }}>{item.label}</span>
+                        <span style={{ color: t.textSecondary }}>{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-                <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Operational Readout</div>
-                <div style={{ display: 'grid', gap: 8 }}>
-                  {confComponents.map(({ label, score, max, note }) => (
-                    <div key={label}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: t.textGhost, marginBottom: 4, fontFamily: "'JetBrains Mono', monospace" }}>
-                        <span>{label}</span>
-                        <span style={{ color: score > 0 ? confColor : t.textGhost }}>{score}/{max} · {note}</span>
+                <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: '13px 14px' }}>
+                  <div style={{ color: t.textGhost, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 8 }}>Signals to base decisions on</div>
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {plainSignals.map((item) => (
+                      <div key={item.label} style={{ display: 'grid', gridTemplateColumns: '92px 1fr', gap: 10, fontSize: 12, lineHeight: 1.45 }}>
+                        <span style={{ color: t.textPrimary, fontWeight: 900 }}>{item.label}</span>
+                        <span style={{ color: t.textSecondary }}>{item.meaning}. <span style={{ color: t.textGhost }}>{item.watch}</span></span>
                       </div>
-                      <div style={{ height: 3, background: t.borderDim, borderRadius: 2 }}>
-                        <div style={{ height: '100%', width: `${(score / max) * 100}%`, background: score > 0 ? confColor : t.borderDim, borderRadius: 2 }} />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.6s both' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
@@ -8021,7 +8092,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                   <div>
                     <div style={{ fontSize: 12, color: confColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>Fed Scenario Lab</div>
                     <div style={{ fontSize: 14, color: t.textGhost, lineHeight: 1.6, maxWidth: 500 }}>
-                      Move one lever at a time and watch the regime shift. This is the closest thing to a policy sandbox on the page.
+                      Move one lever at a time and watch the regime shift. The score rules are visible now: RISK-OFF is 0–39, NEUTRAL is 40–74, and RISK-ON begins at 75.
                     </div>
                   </div>
                   <button
@@ -8073,9 +8144,9 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                           style={{ width: '100%', accentColor: control.accent }}
                         />
                         <div className="radar-sim-scale" style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 10, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          <span>{control.min}{control.unit}</span>
+                          <span>{control.format ? control.format(control.min) : `${control.min}${control.unit}`}</span>
                           <span>{Math.round(pct)}% of simulation range</span>
-                          <span>{control.max}{control.unit}</span>
+                          <span>{control.format ? control.format(control.max) : `${control.max}${control.unit}`}</span>
                         </div>
                       </div>
                     );
@@ -8097,16 +8168,28 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                   <div style={{ marginTop: 14, borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
                     <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Interpretation</div>
                     <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65 }}>
-                      {simSnapshot.theater === 'RISK-ON'
-                        ? 'The sandbox now favors offensive positioning. Policy, liquidity, and stress are aligned well enough to support ATTACK.'
-                        : simSnapshot.theater === 'NEUTRAL'
-                          ? 'The sandbox is mixed. One or two conditions improved, but the system still prefers WAIT over aggression.'
-                          : 'The sandbox stays defensive. One lever alone is not enough to overpower the current drag profile.'}
+                      {simNextStep}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 16 }}>
+                  <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Score Recipe</div>
+                  <div style={{ display: 'grid', gap: 8, marginBottom: 14 }}>
+                    {simSnapshot.recipe.map((item) => (
+                      <div key={item.label} style={{ border: `1px solid ${t.borderDim}`, padding: '9px 10px', background: isDark ? t.panel : t.surface }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 5 }}>
+                          <span style={{ color: t.textPrimary, fontSize: 12, fontWeight: 900 }}>{item.label}</span>
+                          <span style={{ color: item.score === item.max ? t.accent : item.score > 0 ? t.warn : t.textGhost, fontSize: 12, fontWeight: 900 }}>{item.score}/{item.max}</span>
+                        </div>
+                        <div style={{ height: 4, background: t.borderDim, marginBottom: 6 }}>
+                          <div style={{ width: `${(item.score / item.max) * 100}%`, height: '100%', background: item.score === item.max ? t.accent : item.score > 0 ? t.warn : t.borderMid }} />
+                        </div>
+                        <div style={{ color: t.textGhost, fontSize: 11, lineHeight: 1.4 }}>{item.rule}</div>
+                      </div>
+                    ))}
+                  </div>
+
                   <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Preset Actions</div>
                   <div style={{ display: 'grid', gap: 8 }}>
                     {flightScenarios.map((item) => (
@@ -8115,7 +8198,7 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                         type="button"
                         onClick={() => {
                           if (item.key === 'cut-50') setSimState((prev) => ({ ...prev, fedFunds: fedFundsRate == null ? prev.fedFunds : Math.max(0, fedFundsRate - 0.5) }));
-                          if (item.key === 'tga-draw') setSimState((prev) => ({ ...prev, treasury: tga == null ? prev.treasury : Math.max(0, tga - 100) }));
+                          if (item.key === 'tga-draw') setSimState((prev) => ({ ...prev, treasury: tga == null ? prev.treasury : Math.max(0, tga - (macroUsesRawMillions(tga) ? 100000 : 100)) }));
                           if (item.key === 'stress-spike') setSimState((prev) => ({ ...prev, volatility: 28 }));
                           if (item.key === 'liq-boost') setSimState((prev) => ({ ...prev, liquidity: netLiq == null ? prev.liquidity : netLiq + 250000 }));
                         }}
@@ -8166,8 +8249,8 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
                     key={option.key}
                     onClick={() => setQuizChoice(option.key)}
                     style={{
-                      border: `1px solid ${quizChoice === option.key ? (option.correct ? t.accent : t.warn) : t.borderDim}`,
-                      background: quizChoice === option.key ? (isDark ? `${option.correct ? t.accent : t.warn}14` : `${option.correct ? t.accent : t.warn}10`) : 'transparent',
+                      border: `1px solid ${quizChoice === option.key ? (option.key === drillQuestion.correct ? t.accent : t.warn) : t.borderDim}`,
+                      background: quizChoice === option.key ? (isDark ? `${option.key === drillQuestion.correct ? t.accent : t.warn}14` : `${option.key === drillQuestion.correct ? t.accent : t.warn}10`) : 'transparent',
                       color: t.textPrimary,
                       textAlign: 'left',
                       padding: '10px 12px',
@@ -8179,62 +8262,14 @@ function MacroSentinelView({ t, isDark, onBack, onToggleTheme, latest, fredMacro
               </div>
               {quizResult && (
                 <div style={{ marginTop: 14, borderTop: `1px solid ${t.borderDim}`, paddingTop: 12 }}>
-                  <div style={{ fontSize: 12, color: quizResult.correct ? t.accent : t.warn, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
-                    {quizResult.correct ? 'Correct' : 'Not quite'}
+                  <div style={{ fontSize: 12, color: quizIsCorrect ? t.accent : t.warn, textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
+                    {quizIsCorrect ? 'Correct' : 'Not quite'}
                   </div>
                   <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65 }}>{quizResult.why}</div>
                 </div>
               )}
             </div>
           )}
-        </div>
-
-        <div style={{ marginTop: 12, border: `1px solid ${t.borderMid}`, background: t.panel, padding: 16, animation: 'radarFadeUp 0.4s ease-out 0.7s both' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
-            <div>
-              <div style={{ fontSize: 13, color: t.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>Signal Debrief</div>
-              <div style={{ marginTop: 6, fontSize: 15, color: t.textGhost, maxWidth: 720 }}>{debriefHeadline}</div>
-            </div>
-            <button onClick={() => { setBlackBoxLog([]); try { localStorage.removeItem('fortify_blackbox'); } catch { } }} style={{ background: 'none', border: `1px solid ${t.borderDim}`, color: t.textGhost, fontSize: 10, padding: '4px 8px', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em', flexShrink: 0 }}>CLEAR HISTORY</button>
-          </div>
-          <div className="radar-debrief-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 0.95fr) minmax(280px, 1.05fr)', gap: 12 }}>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Why It Matters Now</div>
-              <div style={{ fontSize: 15, color: t.textPrimary, lineHeight: 1.65, marginBottom: 12 }}>{debriefGuidance}</div>
-              <div className="radar-debrief-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(70px, 1fr))', gap: 8 }}>
-                <div>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Latest</div>
-                  <div style={{ fontSize: 16, color: latestEntry?.status === 'LOCKED' ? t.accent : latestEntry?.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700 }}>{latestEntry?.status || '—'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Shift</div>
-                  <div style={{ fontSize: 16, color: debriefShift >= 0 ? t.accent : t.danger, fontWeight: 700 }}>{latestEntry ? `${debriefShift >= 0 ? '+' : ''}${debriefShift}` : '—'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: t.textGhost, textTransform: 'uppercase' }}>Next Watch</div>
-                  <div style={{ fontSize: 16, color: primaryPressure.tone, fontWeight: 700 }}>{primaryPressure.label}</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ border: `1px solid ${t.borderDim}`, background: isDark ? t.elevated : t.surface, padding: 14 }}>
-              <div style={{ fontSize: 11, color: t.textGhost, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontFamily: "'JetBrains Mono', monospace" }}>Campaign Log</div>
-              <div style={{ display: 'grid', gap: 8, maxHeight: 260, overflowY: 'auto' }}>
-                {recentEntries.length === 0 ? (
-                  <div style={{ fontSize: 14, color: t.textDim }}>Awaiting enough macro refreshes to build a campaign history.</div>
-                ) : recentEntries.slice(0, 6).map((entry, i) => (
-                  <div key={entry.ts + i} style={{ borderLeft: `2px solid ${entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger}`, paddingLeft: 10 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, color: t.textGhost, fontFamily: "'JetBrains Mono', monospace" }}>[ {entry.ts} ]</span>
-                      <span style={{ fontSize: 11, color: entry.status === 'LOCKED' ? t.accent : entry.status === 'SCANNING' ? t.warn : t.danger, fontWeight: 700, letterSpacing: '0.08em' }}>{entry.score}/100</span>
-                    </div>
-                    <div style={{ fontSize: 14, color: t.textPrimary, lineHeight: 1.55 }}>
-                      Status {entry.status} with liquidity at ${(entry.netLiq / 1000).toFixed(2)}T, TGA at ${(entry.tga / 1000).toFixed(2)}T, and cycle age {entry.dph} days.
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         <style>{`
