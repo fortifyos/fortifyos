@@ -145,11 +145,13 @@ function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onTogg
   const themeIconColor = isDark ? '#FFD84D' : '#8B96AE';
   const wealthChildren = [
     { label: 'Opportunity Lanes', hash: '#wealth-atlas-opportunities' },
+    { label: 'AI Frontier Portfolio', hash: '#ai-portfolio' },
     { label: 'Wealth Architecture', hash: '#wealth-architecture' },
     { label: 'Signal Brief', hash: '#signal-brief' },
   ];
   const goHash = (hash) => {
-    window.history.pushState({ view: 'wealthAtlas' }, '', `${window.location.pathname}${window.location.search}${hash}`);
+    const view = hash === '#ai-portfolio' ? 'investmentRadar' : 'wealthAtlas';
+    window.history.pushState({ view }, '', `${window.location.pathname}${window.location.search}${hash}`);
     window.dispatchEvent(new Event('hashchange'));
   };
   return (
@@ -172,8 +174,8 @@ function AppTopbar({ t, isDark, menuOpen, setMenuOpen, menuRef, navItems, onTogg
         </div>
       </div>
       <div className="fo-pagebar-tabs" aria-label="Primary navigation">
-        {navItems.map((item) => {
-          const isCurrent = !!item.current;
+        {navItems.filter((item) => item.key !== 'invest').map((item) => {
+          const isCurrent = !!item.current || (item.key === 'wealth' && navItems.some((nav) => nav.key === 'invest' && nav.current));
           const hasChildren = item.key === 'wealth';
           return (
             <div key={item.key} style={{ position: 'relative', display: 'inline-flex' }} className="fo-nav-nest">
@@ -1714,9 +1716,11 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
             const isWealth = item.key === 'wealth';
             const wealthChildren = [
               { label: 'Opportunity Lanes', hash: '#wealth-atlas-opportunities' },
+              { label: 'AI Frontier Portfolio', hash: '#ai-portfolio' },
               { label: 'Wealth Architecture', hash: '#wealth-architecture' },
               { label: 'Signal Brief', hash: '#signal-brief' },
             ];
+            if (item.key === 'invest') return null;
             return (
               <div key={item.key}>
                 <button
@@ -1750,7 +1754,8 @@ function AppNavMenu({ t, isDark, menuOpen, setMenuOpen, menuRef, items, title = 
                         className="fo-mobile-nav-item"
                         onClick={() => {
                           setMenuOpen(false);
-                          window.history.pushState({ view: 'wealthAtlas' }, '', `${window.location.pathname}${window.location.search}${child.hash}`);
+                          const view = child.hash === '#ai-portfolio' ? 'investmentRadar' : 'wealthAtlas';
+                          window.history.pushState({ view }, '', `${window.location.pathname}${window.location.search}${child.hash}`);
                           window.dispatchEvent(new Event('hashchange'));
                         }}
                         style={{
@@ -2057,7 +2062,8 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     };
   }, []);
   const goAtlas = (hash) => {
-    window.history.pushState({ view: 'wealthAtlas' }, '', `${window.location.pathname}${window.location.search}${hash}`);
+    const view = hash === '#ai-portfolio' ? 'investmentRadar' : 'wealthAtlas';
+    window.history.pushState({ view }, '', `${window.location.pathname}${window.location.search}${hash}`);
     window.dispatchEvent(new Event('hashchange'));
   };
 
@@ -2349,10 +2355,11 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
 
   if (atlasHash === '#wealth-atlas') {
     const atlasCards = [
-      ['01', 'Opportunity Lanes', 'The research grid: AI, Bitcoin, Energy, Defense, Healthcare, Real Assets, Commodities, Alternatives, and Space.', '#wealth-atlas-opportunities'],
-      ['02', 'Wealth Architecture', 'The protection layer: trusts, insurance, taxes, custody, asset protection, and transfer.', '#wealth-architecture'],
-      ['03', 'Signal Brief', 'Plain-English article reports with TL;DR, risks, watchlists, glossary, and lane cross-links.', '#signal-brief'],
-      ['04', 'Field Manual', 'Keep this top-level for now; the structure is ready if the owner later nests it here.', '#field-manual'],
+      ['01', 'Opportunity Lanes', 'The research grid: Bitcoin, Energy, Defense, Healthcare, Real Assets, Commodities, Alternatives, Space, and the AI flagship.', '#wealth-atlas-opportunities'],
+      ['02', 'AI Frontier Portfolio', 'The live visual command page for the Aschenbrenner hierarchy and AI infrastructure watchlist.', '#ai-portfolio'],
+      ['03', 'Wealth Architecture', 'The protection layer: trusts, insurance, taxes, custody, asset protection, and transfer.', '#wealth-architecture'],
+      ['04', 'Signal Brief', 'Plain-English article reports with TL;DR, risks, watchlists, glossary, and lane cross-links.', '#signal-brief'],
+      ['05', 'Field Manual', 'Keep this top-level for now; the structure is ready if the owner later nests it here.', '#field-manual'],
     ];
     return shell(
       <section className="fo-page-section" style={{ padding: 26, borderTop: `2px solid ${accent}` }}>
@@ -2369,6 +2376,230 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
           ))}
         </div>
       </section>
+    );
+  }
+
+
+  if (atlasHash === '#wealth-atlas-opportunities') {
+    return shell(
+      <>
+        <section className="fo-page-section" style={{ borderTop: `2px solid ${accent}`, padding: 28, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>FortifyOS Wealth System</div>
+          <h1 style={{ fontSize: 'clamp(46px, 8vw, 92px)', fontWeight: 700, lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', fontFamily: "'Times New Roman', Georgia, serif", textTransform: 'uppercase' }}>
+            Opportunity<br /><span style={{ color: accent }}>Atlas</span>
+          </h1>
+          <p style={{ maxWidth: 720, color: t.textSecondary, fontSize: 16, lineHeight: 1.75, margin: '0 0 22px' }}>
+            FortifyOS is expanding from personal finance defense into a full wealth map: protect cash flow, read market conditions, study high-signal opportunity lanes, and build structures that protect what you create.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 2 }}>
+            {[
+              ['Current Stage', `${stage} / 7`],
+              ['First Rule', 'Do not chase'],
+              ['Atlas Purpose', 'Research paths'],
+              ['Advice Mode', 'Educational only'],
+            ].map(([label, value]) => (
+              <div key={label} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 14 }}>
+                <div style={{ color: t.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 6 }}>{label}</div>
+                <div style={{ color: label === 'Current Stage' ? accent : t.textPrimary, fontWeight: 700, fontSize: 13 }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Opportunity Lanes</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 22px' }}>Stock-pick style research paths without pretending to be a financial advisor.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
+            {lanes.map((lane) => (
+              <div key={lane.title} style={{ border: `1px solid ${lane.status === 'ACTIVE' ? lane.color : t.borderDim}`, background: t.surface, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 270 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                  <span style={{ color: t.textDim, fontSize: 12 }}>{lane.num}</span>
+                  <span style={{ color: lane.color, fontSize: 10, letterSpacing: '0.14em' }}>{lane.status}</span>
+                </div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 14 }}>{lane.title}</div>
+                <p style={{ color: t.textDim, lineHeight: 1.65, margin: 0, fontSize: 13 }}>{lane.desc}</p>
+                <div style={{ marginTop: 'auto', display: 'grid', gap: 8 }}>
+                  <div style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 10 }}>
+                    <div style={{ color: lane.color, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>Leading research names</div>
+                    <div style={{ color: t.textPrimary, fontSize: 12, lineHeight: 1.55 }}>{lane.leaders}</div>
+                  </div>
+                  <div>
+                    <div style={{ color: t.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>Future watch</div>
+                    <div style={{ color: t.textSecondary, fontSize: 12, lineHeight: 1.55 }}>{lane.future}</div>
+                  </div>
+                  {lane.onClick && (
+                    <button onClick={lane.onClick} style={{ marginTop: 4, background: 'none', border: `1px solid ${lane.color}`, color: lane.color, padding: '10px 12px', cursor: 'pointer', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>
+                      {lane.action}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Analyst Template</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>Every lane uses the same nine-part research skeleton.</h2>
+          <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 820, fontSize: 14 }}>
+            The repetition is the moat: by the third lane, users stop reading like headline chasers and start reading like analysts. AI keeps its full Frontier page; this Atlas becomes the reusable structure for every future lane.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+            {analystSkeleton.map(([num, title, desc]) => (
+              <div key={title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 16, minHeight: 128 }}>
+                <div style={{ color: accent, fontSize: 11, marginBottom: 10 }}>{num}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 8 }}>{title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>How the Lanes Interconnect</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>The wealth map is a system, not eight separate bets.</h2>
+          <div style={{ display: 'grid', gap: 2 }}>
+            {laneLinks.map((link, index) => (
+              <div key={link} style={{ display: 'grid', gridTemplateColumns: '42px 1fr', gap: 12, alignItems: 'start', border: `1px solid ${t.borderDim}`, background: t.surface, padding: 14 }}>
+                <span style={{ color: index === 0 ? accent : t.textDim, fontWeight: 800 }}>{String(index + 1).padStart(2, '0')}</span>
+                <span style={{ color: t.textSecondary, lineHeight: 1.6, fontSize: 13 }}>{link}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, border: `1px solid ${accent}55`, background: `${accent}10`, padding: 16 }}>
+            <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 8 }}>Active discipline layer</div>
+            <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Operating Layer — Portfolio Construction Discipline</div>
+            <div style={{ color: t.textDim, lineHeight: 1.65, fontSize: 13 }}>This is the operating manual that explains how the eight opportunity lanes fit together without turning the product into personalized advice.</div>
+          </div>
+        </section>
+
+        <section className="fo-page-section" style={{ padding: 24, marginBottom: 18, borderTop: `2px solid ${accent}` }}>
+          <div style={{ fontSize: 11, color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Operating Layer · Active Module</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(38px, 6vw, 68px)', fontWeight: 700, lineHeight: 0.88, letterSpacing: '-0.06em', textTransform: 'uppercase', margin: '0 0 18px' }}>Portfolio Construction Discipline</h2>
+          <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 860, fontSize: 14 }}>
+            The opportunity lanes answer where opportunity may live. This operating layer answers the more important question: how do you pursue opportunity without letting one narrative, one ticker, or one cycle take control of the whole system?
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 2, marginBottom: 18 }}>
+            {constructionModel.map(([layer, assets, purpose]) => (
+              <div key={layer} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+                <div style={{ color: accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 8 }}>{layer}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, lineHeight: 1.45, marginBottom: 8 }}>{assets}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{purpose}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+            {constructionRules.map((rule, index) => (
+              <div key={rule.title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 16, minHeight: 145 }}>
+                <div style={{ color: index < 2 ? accent : t.textDim, fontSize: 11, marginBottom: 10 }}>{String(index + 1).padStart(2, '0')}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 8 }}>{rule.title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{rule.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 18, borderLeft: `2px solid ${t.warn}`, paddingLeft: 14, color: t.textDim, fontSize: 12, lineHeight: 1.7 }}>
+            Educational framework only. This module teaches portfolio mechanics and decision hygiene; it does not assign a user-specific allocation, ticker weight, or buy/sell instruction.
+          </div>
+        </section>
+
+
+      </>
+    );
+  }
+
+  if (atlasHash === '#wealth-architecture') {
+    return shell(
+      <>
+        <section className="fo-page-section" style={{ padding: 24 }}>
+          <div style={{ fontSize: 11, color: t.textDim, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 12 }}>Wealth Architecture · Protection Layer</div>
+          <h2 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(34px, 5vw, 58px)', fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.055em', textTransform: 'uppercase', margin: '0 0 18px' }}>Building wealth is only half the game. Keeping it is the other half.</h2>
+          <p style={{ color: t.textSecondary, lineHeight: 1.7, margin: '0 0 22px', maxWidth: 880, fontSize: 14 }}>
+            Opportunity lanes are offense. Wealth Architecture is defense: taxes, lawsuits, incapacity, premature death, custody, and the eventual handoff. This library teaches the machinery and the questions to ask before meeting a qualified professional — not a one-size-fits-all plan, and not a stale list of this-year dollar limits.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2, marginBottom: 18 }}>
+            {architecturePhilosophy.map((item, index) => (
+              <div key={item.title} style={{ border: `1px solid ${index === 0 ? accent : t.borderDim}`, background: index === 0 ? `${accent}10` : t.surface, padding: 16, minHeight: 142 }}>
+                <div style={{ color: index === 0 ? accent : t.textDim, fontSize: 11, marginBottom: 10 }}>{String(index + 1).padStart(2, '0')}</div>
+                <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13, marginBottom: 8 }}>{item.title}</div>
+                <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18, marginBottom: 18 }}>
+            <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>Reusable pillar skeleton</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 2 }}>
+              {architectureSkeleton.map(([num, title, desc]) => (
+                <div key={title} style={{ border: `1px solid ${t.borderDim}`, background: t.panel, padding: 14, minHeight: 118 }}>
+                  <div style={{ color: accent, fontSize: 10, marginBottom: 8 }}>{num}</div>
+                  <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 12, marginBottom: 7 }}>{title}</div>
+                  <div style={{ color: t.textDim, lineHeight: 1.55, fontSize: 12 }}>{desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 2 }}>
+            {architecture.map((pillar) => {
+              const Icon = pillar.Icon;
+              return (
+                <article key={pillar.title} style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+                    <div style={{ color: accent, fontWeight: 800 }}>{pillar.num}</div>
+                    <Icon size={18} style={{ color: accent }} />
+                  </div>
+                  <div style={{ color: t.textPrimary, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: 13 }}>{pillar.title}</div>
+                  {[
+                    ['Core idea', pillar.core],
+                    ['Triggers', pillar.triggers],
+                    ['Building blocks', pillar.blocks],
+                    ['How rules are structured', pillar.lookup],
+                    ['Decision framework', pillar.framework],
+                    ['Common mistakes', pillar.mistakes],
+                    ['Professional line', pillar.professional],
+                    ['Sales traps', pillar.trap],
+                  ].map(([label, body]) => (
+                    <div key={label} style={{ borderTop: `1px solid ${t.borderDim}`, paddingTop: 10 }}>
+                      <div style={{ color: label === 'How rules are structured' ? t.warn : accent, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 5 }}>{label}</div>
+                      <div style={{ color: t.textDim, lineHeight: 1.6, fontSize: 12 }}>{body}</div>
+                    </div>
+                  ))}
+                </article>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 2 }}>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+              <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>How the pillars interconnect</div>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {architectureLinks.map((link, index) => (
+                  <div key={link} style={{ display: 'grid', gridTemplateColumns: '30px 1fr', gap: 10 }}>
+                    <span style={{ color: t.textDim, fontSize: 11 }}>{String(index + 1).padStart(2, '0')}</span>
+                    <span style={{ color: t.textSecondary, lineHeight: 1.55, fontSize: 12 }}>{link}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ border: `1px solid ${t.borderDim}`, background: t.surface, padding: 18 }}>
+              <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 11, marginBottom: 12 }}>Shared principles</div>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {architecturePrinciples.map((principle, index) => (
+                  <div key={principle} style={{ display: 'grid', gridTemplateColumns: '30px 1fr', gap: 10 }}>
+                    <span style={{ color: t.textDim, fontSize: 11 }}>{String(index + 1).padStart(2, '0')}</span>
+                    <span style={{ color: t.textSecondary, lineHeight: 1.55, fontSize: 12 }}>{principle}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 20, borderLeft: `2px solid ${t.warn}`, paddingLeft: 14, color: t.textDim, fontSize: 12, lineHeight: 1.7 }}>
+            Educational only. Trust, tax, insurance, estate, accounting, and asset-protection decisions vary by jurisdiction and individual facts. FortifyOS explains mechanisms and professional questions; it does not provide legal, tax, insurance, or financial advice. Current dollar limits should be looked up at the moment of use.
+          </div>
+        </section>
+      </>
     );
   }
 
