@@ -1,28 +1,28 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-05-21T18:17:06.493506-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-05-21T22:55:53.746841-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 1,
+    "breadthQuality": -2,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality moderately elevated (score: +1)",
+    "Breadth Quality strongly suppressed (score: -2)",
     "Net Fed Liquidity neutral (score: +0)",
     "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
