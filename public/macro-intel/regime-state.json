@@ -1,7 +1,7 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-05-24T09:18:15.535008-04:00",
+  "timestamp": "2026-05-24T11:59:07.171452-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -12,14 +12,14 @@
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": 1,
-    "cryptoRiskAppetite": 1
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality moderately elevated (score: +1)",
-    "Crypto Risk Appetite moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
     "Broad participation — cross-asset confirmation across equities and crypto"
