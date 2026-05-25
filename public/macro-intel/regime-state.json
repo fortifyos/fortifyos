@@ -1,7 +1,7 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-05-25T13:04:58.091586-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-05-25T15:24:20.462090-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -10,23 +10,21 @@
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
-    "dollarPressure": -1,
+    "dollarPressure": 0,
     "breadthQuality": 1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Dollar Pressure moderately suppressed (score: -1)",
     "Breadth Quality moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
     "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
-    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
