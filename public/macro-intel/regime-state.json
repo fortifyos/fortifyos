@@ -1,7 +1,7 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-05-25T05:58:24.115853-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-05-25T10:47:33.258953-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -12,14 +12,14 @@
     "volatilityStress": 0,
     "dollarPressure": -1,
     "breadthQuality": 1,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Dollar Pressure moderately suppressed (score: -1)",
     "Breadth Quality moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Crypto Risk Appetite moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
     "Dollar weakening — relief for dollar-denominated risk assets and commodities",
