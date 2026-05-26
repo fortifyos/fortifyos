@@ -1,7 +1,7 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-05-26T02:42:51.602790-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-05-26T13:54:36.869330-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -12,14 +12,14 @@
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": -2,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
     "Inflation Pressure moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Commodity complex softening — disinflationary read on demand outlook",
