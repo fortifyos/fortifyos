@@ -53,8 +53,39 @@
         "Low confidence — regime classification may shift on next checkpoint",
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-05-28T14:07:44.313606-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 0.59% since last checkpoint (+44.67)",
+        "CBOE VIX down 5.75% since last checkpoint (-0.96)",
+        "Gold (XAU/USD) up 2.64% since last checkpoint (+116.7)",
+        "WTI Crude Oil down 2.62% since last checkpoint (-2.39)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-05-28T08:23:24.813230-04:00"
+  "entryCount": 3,
+  "lastUpdated": "2026-05-28T14:07:44.314743-04:00"
 }
