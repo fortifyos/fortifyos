@@ -1,23 +1,23 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-05-31T15:11:33.313351-04:00",
+  "timestamp": "2026-05-31T17:56:31.911476-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -2,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
+    "Breadth Quality moderately suppressed (score: -1)",
     "Net Fed Liquidity neutral (score: +0)",
     "Inflation Pressure neutral (score: +0)"
   ],
