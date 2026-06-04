@@ -1,7 +1,7 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-06-04T10:51:12.478261-04:00",
+  "timestamp": "2026-06-04T13:44:11.717666-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,18 +11,18 @@
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality moderately suppressed (score: -1)",
     "Crypto Risk Appetite moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Mixed signals across dimensions — no strong directional confirmation"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
