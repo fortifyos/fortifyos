@@ -1,7 +1,7 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-06-05T15:50:17.219588-04:00",
+  "timestamp": "2026-06-05T18:13:33.228175-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -12,14 +12,14 @@
     "volatilityStress": 1,
     "dollarPressure": 1,
     "breadthQuality": -2,
-    "cryptoRiskAppetite": -2
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
-    "Crypto Risk Appetite strongly suppressed (score: -2)",
-    "Inflation Pressure moderately suppressed (score: -1)"
+    "Inflation Pressure moderately suppressed (score: -1)",
+    "Growth Health moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Commodity complex softening — disinflationary read on demand outlook",
