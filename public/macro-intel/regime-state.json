@@ -1,30 +1,33 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-06-05T05:40:28.698933-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-06-05T10:43:16.378271-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.5,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": -1,
     "growthHealth": 0,
     "volatilityStress": 0,
-    "dollarPressure": 0,
-    "breadthQuality": 0,
-    "cryptoRiskAppetite": 0
+    "dollarPressure": 1,
+    "breadthQuality": -2,
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)",
-    "Growth Health neutral (score: +0)"
+    "Breadth Quality strongly suppressed (score: -2)",
+    "Inflation Pressure moderately suppressed (score: -1)",
+    "Dollar Pressure moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "Mixed signals across dimensions — no strong directional confirmation"
+    "Commodity complex softening — disinflationary read on demand outlook",
+    "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
+    "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
