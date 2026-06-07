@@ -1,25 +1,25 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-06-06T18:01:33.221624-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-06-06T23:32:31.547032-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": -1,
     "growthHealth": -1,
     "volatilityStress": 1,
     "dollarPressure": 1,
-    "breadthQuality": -2,
-    "cryptoRiskAppetite": 0
+    "breadthQuality": -1,
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
     "Inflation Pressure moderately suppressed (score: -1)",
-    "Growth Health moderately suppressed (score: -1)"
+    "Growth Health moderately suppressed (score: -1)",
+    "Volatility Stress moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
     "Commodity complex softening — disinflationary read on demand outlook",
