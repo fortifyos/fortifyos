@@ -1,35 +1,30 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-06-07T23:37:40.041735-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-06-08T06:47:00.541843-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 1,
+    "inflationPressure": 0,
     "growthHealth": -1,
-    "volatilityStress": 1,
+    "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Inflation Pressure moderately elevated (score: +1)",
     "Growth Health moderately suppressed (score: -1)",
-    "Volatility Stress moderately elevated (score: +1)"
+    "Crypto Risk Appetite moderately elevated (score: +1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
   ],
   "watchLevels": [
-    "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
