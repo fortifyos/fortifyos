@@ -2115,7 +2115,7 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
   ];
 
   const architectureSkeleton = [
-    ['01', 'Core Idea', 'What the pillar protects against, in plain English.'],
+    ['01', 'Core Idea', 'What the pillar protects against, in clear language.'],
     ['02', 'Who Needs to Care', 'The life events and trigger conditions that make the topic urgent.'],
     ['03', 'Building Blocks', 'The instruments, roles, account types, documents, and concepts involved.'],
     ['04', 'Rule Shape', 'How limits, exemptions, brackets, coverage layers, and legal mechanics are structured.'],
@@ -2322,7 +2322,7 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
           <div style={{ display: 'grid', gap: 2 }}>{article.sections.watch.map(([k, v]) => <div key={k} style={{ border: `1px solid ${t.borderDim}`, padding: 12, display: 'grid', gridTemplateColumns: '180px 1fr', gap: 12 }}><b style={{ color: accent }}>{k}</b><span style={{ color: t.textSecondary }}>{v}</span></div>)}</div>
         </section>
         <section style={{ marginTop: 24, background: t.surface, border: `1px solid ${t.borderDim}`, padding: 18 }}>
-          <h2 style={{ marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>06</span> Plain-English glossary</h2>
+          <h2 style={{ marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 16 }}><span style={{ color: t.warn }}>06</span> Glossary</h2>
           <div style={{ display: 'grid', gap: 2 }}>{article.sections.glossary.map(([k, v]) => <div key={k} style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 12, padding: 8, borderTop: `1px solid ${t.borderDim}` }}><b>{k}</b><span style={{ color: t.textSecondary }}>{v}</span></div>)}</div>
         </section>
         <footer style={{ marginTop: 24, color: t.textDim, lineHeight: 1.7, fontSize: 12, borderTop: `1px solid ${t.borderDim}`, paddingTop: 14 }}>
@@ -2336,7 +2336,7 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
     return shell(
       <section className="fo-page-section" style={{ padding: 26, borderTop: `2px solid ${accent}` }}>
         <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: 11, marginBottom: 12 }}>Signal Brief</div>
-        <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(46px, 8vw, 92px)', lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', textTransform: 'uppercase' }}>Plain-English market reports.</h1>
+        <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(46px, 8vw, 92px)', lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', textTransform: 'uppercase' }}>Signal-driven market reports.</h1>
         <p style={{ color: t.textSecondary, lineHeight: 1.7, maxWidth: 760 }}>News reports that translate policy, markets, technology, IPOs, crypto, and macro shifts into what changed, why it matters, where to research, and what could prove the story wrong.</p>
         <div style={{ color: t.textDim, fontSize: 12, margin: '18px 0 24px' }}>Educational only. Company names are research starting points, not endorsements.</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 2 }}>
@@ -2358,14 +2358,14 @@ function WealthAtlasView({ t, isDark, onToggleTheme, onHome, onDashboard, onMacr
       ['01', 'Opportunity Lanes', 'The research grid: Bitcoin, Energy, Defense, Healthcare, Real Assets, Commodities, Alternatives, Space, and the AI flagship.', '#wealth-atlas-opportunities'],
       ['02', 'AI Frontier Portfolio', 'The live visual command page for the Aschenbrenner hierarchy and AI infrastructure watchlist.', '#ai-portfolio'],
       ['03', 'Wealth Architecture', 'The protection layer: trusts, insurance, taxes, custody, asset protection, and transfer.', '#wealth-architecture'],
-      ['04', 'Signal Brief', 'Plain-English article reports with TL;DR, risks, watchlists, glossary, and lane cross-links.', '#signal-brief'],
+      ['04', 'Signal Brief', 'Market reports with TL;DR, risks, watchlists, glossary, and lane cross-links.', '#signal-brief'],
       ['05', 'Field Manual', 'Keep this top-level for now; the structure is ready if the owner later nests it here.', '#field-manual'],
     ];
     return shell(
       <section className="fo-page-section" style={{ padding: 26, borderTop: `2px solid ${accent}` }}>
         <div style={{ color: accent, textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: 11, marginBottom: 12 }}>FortifyOS Wealth Atlas</div>
         <h1 style={{ fontFamily: "'Times New Roman', Georgia, serif", fontSize: 'clamp(48px, 8vw, 94px)', lineHeight: 0.86, letterSpacing: '-0.07em', margin: '0 0 18px', textTransform: 'uppercase' }}>The map of what to build, study, and protect.</h1>
-        <p style={{ color: t.textSecondary, lineHeight: 1.7, maxWidth: 820 }}>Choose a lane: opportunity research, wealth protection, or plain-English signal reports. The goal is not to chase headlines — it is to build fluency.</p>
+        <p style={{ color: t.textSecondary, lineHeight: 1.7, maxWidth: 820 }}>Choose a lane: opportunity research, wealth protection, or signal-driven market reports. The goal is not to chase headlines — it is to build fluency.</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2, marginTop: 24 }}>
           {atlasCards.map(([num, title, desc, hash]) => (
             <button key={title} onClick={() => hash === '#field-manual' ? onDocs() : goAtlas(hash)} style={{ minHeight: 210, textAlign: 'left', border: `1px solid ${hash === '#signal-brief' ? t.warn : t.borderDim}`, background: t.surface, color: t.textPrimary, padding: 18, cursor: 'pointer', fontFamily: mono }}>
@@ -9516,8 +9516,24 @@ function FortifyOSApp() {
           min-width: 0;
           grid-column: 2;
           justify-content: center;
-          overflow-x: auto;
+          /*
+           * Keep desktop nested navigation outside the tab row's paint box.
+           * overflow-x:auto implicitly clips overflow-y, which made the
+           * Wealth Atlas dropdown appear to never open on desktop.
+           */
+          overflow: visible;
           scrollbar-width: none;
+        }
+        .fo-nav-nest {
+          position: relative;
+          z-index: 1;
+        }
+        .fo-nav-nest:hover,
+        .fo-nav-nest:focus-within {
+          z-index: 10060;
+        }
+        .fo-nav-nest-pop {
+          pointer-events: auto;
         }
         .fo-pagebar-tabs::-webkit-scrollbar { display: none; }
         .fo-pagebar-tabs button {
