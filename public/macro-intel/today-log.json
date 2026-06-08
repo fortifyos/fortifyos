@@ -56,8 +56,38 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-06-08T16:10:29.126032-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Growth Health moderately suppressed (score: -1); Volatility Stress moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 down 0.57% since last checkpoint (-42.83)",
+        "Bitcoin down 0.75% since last checkpoint (-476)",
+        "CBOE VIX up 2.63% since last checkpoint (+0.48)",
+        "WTI Crude Oil down 0.60% since last checkpoint (-0.55)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-06-08T11:42:39.451171-04:00"
+  "entryCount": 3,
+  "lastUpdated": "2026-06-08T16:10:29.126965-04:00"
 }
