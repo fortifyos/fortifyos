@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 68.27,
-    "change": -1.213
+    "value": 68.28,
+    "change": -0.445
   },
   "gold": {
-    "value": 4351.7,
-    "change": -0.312
+    "value": 4349.7,
+    "change": -0.314
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 63353,
-    "change": 3.011
+    "value": 63280,
+    "change": 0.475
   },
   "eth": {
-    "value": 1686.22,
-    "change": 4.253
+    "value": 1691.57,
+    "change": 0.958
   },
   "oil": {
-    "value": 91.13,
-    "change": 0.652
+    "value": 91.39,
+    "change": 0.099
   },
   "spy": {
-    "value": 739.27,
-    "change": -2.354
+    "value": 739.22,
+    "change": -2.36
   },
   "vix": {
-    "value": 18.76,
-    "change": -12.785
+    "value": 18.92,
+    "change": -12.041
   },
   "sp500": {
     "value": 7405.73,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 67.41,
-    "change": 5.445
+    "value": 66.96,
+    "change": 0.124
   },
   "xrp": {
-    "value": 1.18,
-    "change": 4.831
+    "value": 1.17,
+    "change": 1.377
   },
   "doge": {
-    "value": 0.0867,
-    "change": 4.013
+    "value": 0.08679,
+    "change": 0.9
   },
   "ada": {
-    "value": 0.17099,
-    "change": 7.505
+    "value": 0.17088,
+    "change": 3.111
   },
   "avax": {
-    "value": 6.8,
-    "change": 3.775
+    "value": 6.78,
+    "change": -0.406
   },
   "link": {
-    "value": 8.05,
-    "change": 5.708
+    "value": 8.02,
+    "change": 1.537
   },
   "tickers": {
     "AAPL": {
@@ -215,13 +215,13 @@
       "asOf": "2026-06-08"
     },
     "IWM": {
-      "value": 284.16,
-      "change": 0.891,
+      "value": 284.11,
+      "change": 0.873,
       "asOf": "2026-06-08"
     },
     "GLD": {
-      "value": 397.24,
-      "change": 0.252,
+      "value": 397.27,
+      "change": 0.26,
       "asOf": "2026-06-08"
     },
     "SLV": {
@@ -240,8 +240,8 @@
       "asOf": "2026-06-08"
     },
     "SOL": {
-      "value": 67.4,
-      "change": 1.643,
+      "value": 67.23,
+      "change": 1.387,
       "asOf": "2026-06-08"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.09,
-      "change": 0.605,
+      "change": 1.128,
       "asOf": "2026-06-08"
     }
   },
   "dxy": {
-    "value": 100.02,
-    "change": -0.049
+    "value": 100,
+    "change": -0.069
   },
   "tnx": {
     "value": 4.55,
