@@ -1,14 +1,14 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-06-10T13:56:24.192129-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-06-10T16:25:37.759366-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
-    "growthHealth": 0,
+    "growthHealth": -1,
     "volatilityStress": 1,
     "dollarPressure": 0,
     "breadthQuality": -1,
@@ -17,15 +17,17 @@
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
+    "Growth Health moderately suppressed (score: -1)",
     "Volatility Stress moderately elevated (score: +1)",
-    "Breadth Quality moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Breadth Quality moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
+    "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+    "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
