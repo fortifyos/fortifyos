@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 67.37,
-    "change": 4.29
+    "value": 67.5,
+    "change": 4.499
   },
   "gold": {
-    "value": 4230.9,
-    "change": 2.987
+    "value": 4233.2,
+    "change": 3.043
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 63458,
-    "change": 2.717
+    "value": 63422,
+    "change": 3.314
   },
   "eth": {
-    "value": 1677.63,
-    "change": 3.182
+    "value": 1674.14,
+    "change": 3.561
   },
   "oil": {
-    "value": 86.11,
-    "change": -4.354
+    "value": 85.95,
+    "change": -4.532
   },
   "spy": {
     "value": 737.76,
     "change": 0.096
   },
   "vix": {
-    "value": 19.58,
-    "change": -11.881
+    "value": 19.44,
+    "change": -12.511
   },
   "sp500": {
     "value": 7394.3,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 66.79,
-    "change": 5.427
+    "value": 66.87,
+    "change": 6.343
   },
   "xrp": {
     "value": 1.14,
-    "change": 3.842
+    "change": 4.079
   },
   "doge": {
-    "value": 0.08637,
-    "change": 4.105
+    "value": 0.08631,
+    "change": 4.753
   },
   "ada": {
-    "value": 0.16913,
-    "change": 5.531
+    "value": 0.1704,
+    "change": 5.958
   },
   "avax": {
-    "value": 6.65,
-    "change": 3.245
+    "value": 6.63,
+    "change": 4.099
   },
   "link": {
-    "value": 7.93,
-    "change": 4.421
+    "value": 7.91,
+    "change": 4.812
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-06-11"
     },
     "SOL": {
-      "value": 66.78,
-      "change": 5.73,
+      "value": 66.85,
+      "change": 5.841,
       "asOf": "2026-06-11"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.09,
-      "change": 4.093,
+      "change": 3.924,
       "asOf": "2026-06-11"
     }
   },
   "dxy": {
-    "value": 99.65,
-    "change": -0.302
+    "value": 99.67,
+    "change": -0.275
   },
   "tnx": {
     "value": 4.46,
