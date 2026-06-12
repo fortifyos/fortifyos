@@ -1,25 +1,25 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-06-12T13:36:22.704087-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-06-12T16:06:10.569629-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 2,
-    "cryptoRiskAppetite": 0
+    "breadthQuality": 1,
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly elevated (score: +2)",
     "Growth Health moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Breadth Quality moderately elevated (score: +1)",
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Growth proxies constructive — SPX trending and volatility contained",
