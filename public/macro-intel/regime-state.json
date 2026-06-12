@@ -1,32 +1,30 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-06-11T23:35:33.727676-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-06-12T06:06:09.220089-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.5,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
-    "volatilityStress": -1,
+    "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 1,
-    "cryptoRiskAppetite": 1
+    "breadthQuality": 0,
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Volatility Stress moderately suppressed (score: -1)",
-    "Breadth Quality moderately elevated (score: +1)",
-    "Crypto Risk Appetite moderately elevated (score: +1)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)",
+    "Growth Health neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Mixed signals across dimensions — no strong directional confirmation"
   ],
   "watchLevels": [
-    "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
