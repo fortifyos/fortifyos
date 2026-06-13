@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-06-12",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 6,
+    "archivePath": "archive/2026-06-12.json",
+    "archivedAt": "2026-06-13T04:53:56.414843-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-06-11",
     "regimeMode": "mixed",
     "dominantDrivers": [],
@@ -816,21 +825,6 @@
       "risk_off",
       "dollar",
       "vix_spike"
-    ]
-  },
-  {
-    "date": "2026-03-06",
-    "regimeMode": "mixed",
-    "dominantDrivers": [
-      "liquidity_pressure",
-      "inflation_shock"
-    ],
-    "entryCount": 4,
-    "tags": [
-      "mixed",
-      "liquidity",
-      "inflation",
-      "fomc_hold"
     ]
   }
 ]
