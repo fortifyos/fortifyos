@@ -1,7 +1,7 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-06-14T12:20:02.495088-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-06-14T15:21:30.434913-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,19 +11,19 @@
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 1,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Growth Health moderately elevated (score: +1)",
-    "Breadth Quality moderately elevated (score: +1)",
+    "Breadth Quality moderately suppressed (score: -1)",
     "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Growth proxies constructive — SPX trending and volatility contained",
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
