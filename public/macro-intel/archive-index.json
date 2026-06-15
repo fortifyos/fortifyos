@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-06-14",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 6,
+    "archivePath": "archive/2026-06-14.json",
+    "archivedAt": "2026-06-15T07:57:17.117425-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-06-13",
     "regimeMode": "mixed",
     "dominantDrivers": [],
@@ -805,21 +814,6 @@
       "risk_off",
       "vix_elevated",
       "dollar_strength"
-    ]
-  },
-  {
-    "date": "2026-03-08",
-    "regimeMode": "mixed",
-    "dominantDrivers": [
-      "inflation_shock",
-      "growth_uncertainty"
-    ],
-    "entryCount": 4,
-    "tags": [
-      "mixed",
-      "inflation",
-      "fomc_watch",
-      "breadth_recovering"
     ]
   }
 ]
