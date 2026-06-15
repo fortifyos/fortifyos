@@ -28,8 +28,37 @@
         "Low confidence — regime classification may shift on next checkpoint",
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-06-15T13:14:12.071662-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 1.85% since last checkpoint (+137.5)",
+        "Bitcoin up 0.91% since last checkpoint (+605)",
+        "CBOE VIX down 4.08% since last checkpoint (-0.68)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 1,
-  "lastUpdated": "2026-06-15T07:57:17.119941-04:00"
+  "entryCount": 2,
+  "lastUpdated": "2026-06-15T13:14:12.072604-04:00"
 }
