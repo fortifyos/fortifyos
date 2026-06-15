@@ -1,6 +1,6 @@
 {
-  "session": "mid_session",
-  "timestamp": "2026-06-14T18:06:41.362693-04:00",
+  "session": "evening_wrap",
+  "timestamp": "2026-06-14T23:53:45.012607-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,12 +16,12 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 65407.0,
-      "changeSinceLast": 1601.0,
-      "pctSinceLast": 2.5092,
-      "changeVsClose": 1006.578587,
-      "pctVsClose": 1.563,
-      "impactTag": "bullish",
+      "value": 65887.0,
+      "changeSinceLast": 480.0,
+      "pctSinceLast": 0.7339,
+      "changeVsClose": 1398.750139,
+      "pctVsClose": 2.169,
+      "impactTag": "strongly_bullish",
       "meta": {}
     },
     {
@@ -38,33 +38,33 @@
     {
       "key": "gold",
       "label": "Gold (XAU/USD)",
-      "value": 4238.8,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 23.814667,
-      "pctVsClose": 0.565,
-      "impactTag": "neutral",
+      "value": 4345.3,
+      "changeSinceLast": 106.5,
+      "pctSinceLast": 2.5125,
+      "changeVsClose": 130.28608,
+      "pctVsClose": 3.091,
+      "impactTag": "strongly_bullish",
       "meta": {}
     },
     {
       "key": "wti",
       "label": "WTI Crude Oil",
-      "value": 84.88,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.0,
-      "pctVsClose": 0.0,
-      "impactTag": "neutral",
+      "value": 80.45,
+      "changeSinceLast": -4.43,
+      "pctSinceLast": -5.2191,
+      "changeVsClose": -4.429881,
+      "pctVsClose": -5.219,
+      "impactTag": "strongly_bearish",
       "meta": {}
     },
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 99.81,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.056859,
-      "pctVsClose": 0.057,
+      "value": 99.51,
+      "changeSinceLast": -0.3,
+      "pctSinceLast": -0.3006,
+      "changeVsClose": -0.236399,
+      "pctVsClose": -0.237,
       "impactTag": "neutral",
       "meta": {}
     },
