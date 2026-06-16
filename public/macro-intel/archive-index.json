@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-06-15",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 5,
+    "archivePath": "archive/2026-06-15.json",
+    "archivedAt": "2026-06-16T07:05:29.719789-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-06-14",
     "regimeMode": "mixed",
     "dominantDrivers": [],
@@ -799,21 +808,5 @@
     "archivePath": "archive/2026-03-16.json",
     "archivedAt": "2026-03-17T01:14:31.374695-04:00",
     "status": "archived"
-  },
-  {
-    "date": "2026-03-09",
-    "regimeMode": "risk_off",
-    "dominantDrivers": [
-      "oil_shock",
-      "dollar_strength",
-      "breadth_weakness"
-    ],
-    "entryCount": 4,
-    "tags": [
-      "oil_shock",
-      "risk_off",
-      "vix_elevated",
-      "dollar_strength"
-    ]
   }
 ]

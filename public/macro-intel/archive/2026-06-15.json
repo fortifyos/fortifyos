@@ -1,0 +1,148 @@
+{
+  "date": "2026-06-15",
+  "status": "archived",
+  "entries": [
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-06-15T07:57:17.119178-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX down 5.71% since last checkpoint (-1.01)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-06-15T13:14:12.071662-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 1.85% since last checkpoint (+137.5)",
+        "Bitcoin up 0.91% since last checkpoint (+605)",
+        "CBOE VIX down 4.08% since last checkpoint (-0.68)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-06-15T16:52:28.522459-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX up 1.31% since last checkpoint (+0.21)",
+        "Gold (XAU/USD) down 0.53% since last checkpoint (-23.3)",
+        "WTI Crude Oil up 0.76% since last checkpoint (+0.61)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-06-15T19:00:39.853924-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "No significant changes detected since last checkpoint"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-06-15T23:42:55.245892-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "WTI Crude Oil down 0.88% since last checkpoint (-0.72)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    }
+  ],
+  "entryCount": 5,
+  "lastUpdated": "2026-06-15T23:42:55.246789-04:00",
+  "archivedAt": "2026-06-16T07:05:29.717761-04:00"
+}
