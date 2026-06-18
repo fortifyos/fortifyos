@@ -61,8 +61,36 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-06-18T14:08:07.024960-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Dollar Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin down 1.74% since last checkpoint (-1108)",
+        "CBOE VIX down 2.86% since last checkpoint (-0.49)",
+        "WTI Crude Oil up 1.66% since last checkpoint (+1.22)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-06-18T10:59:03.369689-04:00"
+  "entryCount": 3,
+  "lastUpdated": "2026-06-18T14:08:07.026174-04:00"
 }
