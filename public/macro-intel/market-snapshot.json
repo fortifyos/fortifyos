@@ -1,6 +1,6 @@
 {
   "session": "mid_session",
-  "timestamp": "2026-06-19T15:44:39.101187-04:00",
+  "timestamp": "2026-06-19T18:01:14.390134-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 62941.0,
-      "changeSinceLast": -29.0,
-      "pctSinceLast": -0.0461,
-      "changeVsClose": 87.36655,
-      "pctVsClose": 0.139,
+      "value": 63020.0,
+      "changeSinceLast": 79.0,
+      "pctSinceLast": 0.1255,
+      "changeVsClose": 133.947292,
+      "pctVsClose": 0.213,
       "impactTag": "neutral",
       "meta": {}
     },
@@ -60,12 +60,12 @@
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 100.72,
-      "changeSinceLast": -0.04,
-      "pctSinceLast": -0.0397,
-      "changeVsClose": 0.627579,
-      "pctVsClose": 0.627,
-      "impactTag": "neutral",
+      "value": 100.85,
+      "changeSinceLast": 0.13,
+      "pctSinceLast": 0.1291,
+      "changeVsClose": 0.758692,
+      "pctVsClose": 0.758,
+      "impactTag": "bullish",
       "meta": {}
     },
     {
