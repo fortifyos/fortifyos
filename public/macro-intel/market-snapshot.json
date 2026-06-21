@@ -1,6 +1,6 @@
 {
-  "session": "evening_wrap",
-  "timestamp": "2026-06-20T23:44:28.631684-04:00",
+  "session": "global_markets",
+  "timestamp": "2026-06-21T05:43:38.018551-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,12 +16,12 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 64345.0,
-      "changeSinceLast": 430.0,
-      "pctSinceLast": 0.6728,
-      "changeVsClose": 933.41848,
-      "pctVsClose": 1.472,
-      "impactTag": "bullish",
+      "value": 64086.0,
+      "changeSinceLast": -259.0,
+      "pctSinceLast": -0.4025,
+      "changeVsClose": 455.593709,
+      "pctVsClose": 0.716,
+      "impactTag": "neutral",
       "meta": {}
     },
     {
@@ -41,9 +41,9 @@
       "value": 4172.9,
       "changeSinceLast": 0.0,
       "pctSinceLast": 0.0,
-      "changeVsClose": -185.994007,
-      "pctVsClose": -4.267,
-      "impactTag": "strongly_bearish",
+      "changeVsClose": -51.196044,
+      "pctVsClose": -1.212,
+      "impactTag": "bearish",
       "meta": {}
     },
     {
@@ -52,20 +52,20 @@
       "value": 76.54,
       "changeSinceLast": 0.0,
       "pctSinceLast": 0.0,
-      "changeVsClose": -0.250336,
-      "pctVsClose": -0.326,
+      "changeVsClose": -0.059748,
+      "pctVsClose": -0.078,
       "impactTag": "neutral",
       "meta": {}
     },
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 100.85,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.758692,
-      "pctVsClose": 0.758,
-      "impactTag": "bullish",
+      "value": 100.76,
+      "changeSinceLast": -0.09,
+      "pctSinceLast": -0.0892,
+      "changeVsClose": -0.089756,
+      "pctVsClose": -0.089,
+      "impactTag": "neutral",
       "meta": {}
     },
     {
