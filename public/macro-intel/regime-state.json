@@ -1,32 +1,31 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-06-24T07:42:21.542043-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-06-24T10:22:45.813349-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": -1,
-    "growthHealth": -1,
+    "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 0,
-    "cryptoRiskAppetite": 0
+    "breadthQuality": -1,
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Inflation Pressure moderately suppressed (score: -1)",
-    "Growth Health moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Breadth Quality moderately suppressed (score: -1)",
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Commodity complex softening — disinflationary read on demand outlook",
-    "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
-    "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
