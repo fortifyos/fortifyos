@@ -173,8 +173,38 @@
         "Low confidence — regime classification may shift on next checkpoint",
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-06-24T22:51:52.926588-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure strongly suppressed (score: -2); Growth Health moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin down 0.54% since last checkpoint (-327)",
+        "Gold (XAU/USD) down 0.74% since last checkpoint (-29.8)",
+        "WTI Crude Oil down 0.79% since last checkpoint (-0.55)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 6,
-  "lastUpdated": "2026-06-24T18:13:41.747878-04:00"
+  "entryCount": 7,
+  "lastUpdated": "2026-06-24T22:51:52.927718-04:00"
 }
