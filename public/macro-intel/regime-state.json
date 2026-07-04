@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-07-03T18:01:58.717857-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-07-03T22:32:55.787164-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
