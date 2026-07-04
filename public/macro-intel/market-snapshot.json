@@ -1,6 +1,6 @@
 {
   "session": "mid_session",
-  "timestamp": "2026-07-04T15:05:13.607841-04:00",
+  "timestamp": "2026-07-04T17:55:37.712754-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 63183.0,
-      "changeSinceLast": 305.0,
-      "pctSinceLast": 0.4851,
-      "changeVsClose": 1004.799717,
-      "pctVsClose": 1.616,
+      "value": 63255.0,
+      "changeSinceLast": 72.0,
+      "pctSinceLast": 0.114,
+      "changeVsClose": 564.838356,
+      "pctVsClose": 0.901,
       "impactTag": "bullish",
       "meta": {}
     },
