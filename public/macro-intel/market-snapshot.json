@@ -1,6 +1,6 @@
 {
-  "session": "pre_market",
-  "timestamp": "2026-07-05T12:03:58.176953-04:00",
+  "session": "mid_session",
+  "timestamp": "2026-07-05T15:11:10.237299-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 62696.0,
-      "changeSinceLast": 9.0,
-      "pctSinceLast": 0.0144,
-      "changeVsClose": -182.347207,
-      "pctVsClose": -0.29,
+      "value": 62749.0,
+      "changeSinceLast": 53.0,
+      "pctSinceLast": 0.0845,
+      "changeVsClose": -419.438431,
+      "pctVsClose": -0.664,
       "impactTag": "neutral",
       "meta": {}
     },
@@ -60,21 +60,21 @@
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 100.86,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": -0.003026,
-      "pctVsClose": -0.003,
+      "value": 100.88,
+      "changeSinceLast": 0.02,
+      "pctSinceLast": 0.0198,
+      "changeVsClose": 0.019164,
+      "pctVsClose": 0.019,
       "impactTag": "neutral",
       "meta": {}
     },
     {
       "key": "tnx",
       "label": "10Y Treasury Yield",
-      "value": 4.48,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.009968,
+      "value": 4.49,
+      "changeSinceLast": 0.01,
+      "pctSinceLast": 0.2232,
+      "changeVsClose": 0.00999,
       "pctVsClose": 0.223,
       "impactTag": "neutral",
       "meta": {}
