@@ -1,6 +1,6 @@
 {
   "session": "evening_wrap",
-  "timestamp": "2026-07-04T22:42:56.989604-04:00",
+  "timestamp": "2026-07-05T02:37:29.961745-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 62729.0,
-      "changeSinceLast": -526.0,
-      "pctSinceLast": -0.8316,
-      "changeVsClose": 296.554118,
-      "pctVsClose": 0.475,
+      "value": 62757.0,
+      "changeSinceLast": 28.0,
+      "pctSinceLast": 0.0446,
+      "changeVsClose": 353.825997,
+      "pctVsClose": 0.567,
       "impactTag": "neutral",
       "meta": {}
     },
@@ -41,9 +41,9 @@
       "value": 4187.3,
       "changeSinceLast": 0.0,
       "pctSinceLast": 0.0,
-      "changeVsClose": 118.997838,
-      "pctVsClose": 2.925,
-      "impactTag": "strongly_bullish",
+      "changeVsClose": 74.6043,
+      "pctVsClose": 1.814,
+      "impactTag": "bullish",
       "meta": {}
     },
     {
@@ -52,8 +52,8 @@
       "value": 68.78,
       "changeSinceLast": 0.0,
       "pctSinceLast": 0.0,
-      "changeVsClose": 0.200253,
-      "pctVsClose": 0.292,
+      "changeVsClose": 0.089984,
+      "pctVsClose": 0.131,
       "impactTag": "neutral",
       "meta": {}
     },
@@ -63,8 +63,8 @@
       "value": 100.86,
       "changeSinceLast": 0.0,
       "pctSinceLast": 0.0,
-      "changeVsClose": -0.533329,
-      "pctVsClose": -0.526,
+      "changeVsClose": -0.003026,
+      "pctVsClose": -0.003,
       "impactTag": "neutral",
       "meta": {}
     },

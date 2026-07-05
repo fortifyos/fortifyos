@@ -1,7 +1,7 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-07-04T22:42:56.990218-04:00",
+  "timestamp": "2026-07-05T02:37:29.962242-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -10,7 +10,7 @@
     "inflationPressure": 1,
     "growthHealth": 0,
     "volatilityStress": 0,
-    "dollarPressure": -1,
+    "dollarPressure": 0,
     "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
@@ -18,17 +18,15 @@
   "regimeChanged": false,
   "dominantDrivers": [
     "Inflation Pressure moderately elevated (score: +1)",
-    "Dollar Pressure moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Growth Health neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Dollar weakening — relief for dollar-denominated risk assets and commodities"
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher"
   ],
   "watchLevels": [
     "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
     "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
