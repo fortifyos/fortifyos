@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 60.47,
-    "change": 3.956
+    "value": 60.76,
+    "change": 4.463
   },
   "gold": {
-    "value": 4132.9,
-    "change": 1.523
+    "value": 4137.4,
+    "change": 1.634
   },
   "yieldCurve": null,
   "source": {
@@ -38,32 +38,32 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 62928,
-    "change": 1.894
+    "value": 62685,
+    "change": 1.077
   },
   "eth": {
-    "value": 1740.46,
-    "change": 0.884
+    "value": 1738.67,
+    "change": 0.294
   },
   "oil": {
-    "value": 72.71,
-    "change": -1.102
+    "value": 71.94,
+    "change": -2.149
   },
   "spy": {
-    "value": 748.04,
-    "change": 0.044
+    "value": 751.51,
+    "change": 0.508
   },
   "vix": {
-    "value": 16.67,
-    "change": -1.361
+    "value": 15.98,
+    "change": -5.444
   },
   "sp500": {
-    "value": 7506.95,
-    "change": 0.041
+    "value": 7541.7,
+    "change": 0.504
   },
   "nasdaq": {
-    "value": 25972.17,
-    "change": 0.594
+    "value": 26167.92,
+    "change": 1.353
   },
   "fedWatchCut": {
     "value": 0
@@ -75,88 +75,88 @@
     "value": "—"
   },
   "sol": {
-    "value": 77.78,
-    "change": 1.177
+    "value": 77.7,
+    "change": 0.801
   },
   "xrp": {
     "value": 1.09,
-    "change": 1.557
+    "change": 0.531
   },
   "doge": {
-    "value": 0.07258,
-    "change": 1.249
+    "value": 0.07269,
+    "change": 0.549
   },
   "ada": {
-    "value": 0.16883,
-    "change": 1.369
+    "value": 0.16516,
+    "change": -0.802
   },
   "avax": {
-    "value": 6.73,
-    "change": 5.054
+    "value": 6.7,
+    "change": 4.323
   },
   "link": {
-    "value": 7.71,
-    "change": 1.892
+    "value": 7.69,
+    "change": 1.047
   },
   "tickers": {
     "AAPL": {
-      "value": 310.81,
-      "change": -0.823,
+      "value": 314.73,
+      "change": 0.428,
       "asOf": "2026-07-09"
     },
     "MSFT": {
-      "value": 377.42,
-      "change": -1.544,
+      "value": 380.16,
+      "change": -0.83,
       "asOf": "2026-07-09"
     },
     "NVDA": {
-      "value": 201.13,
-      "change": -1.465,
+      "value": 203.01,
+      "change": -0.544,
       "asOf": "2026-07-09"
     },
     "GOOGL": {
-      "value": 353.06,
-      "change": -2.448,
+      "value": 355.41,
+      "change": -1.799,
       "asOf": "2026-07-09"
     },
     "META": {
-      "value": 596.13,
-      "change": -1.159,
+      "value": 612.77,
+      "change": 1.6,
       "asOf": "2026-07-09"
     },
     "AMZN": {
-      "value": 240.9,
-      "change": -1.117,
+      "value": 243.39,
+      "change": -0.094,
       "asOf": "2026-07-09"
     },
     "TSLA": {
-      "value": 394.7,
-      "change": 0.162,
+      "value": 404.71,
+      "change": 2.703,
       "asOf": "2026-07-09"
     },
     "AMD": {
-      "value": 557.72,
-      "change": 7.792,
+      "value": 551.5,
+      "change": 6.59,
       "asOf": "2026-07-09"
     },
     "JPM": {
-      "value": 335.67,
-      "change": 1.527,
+      "value": 335.71,
+      "change": 1.54,
       "asOf": "2026-07-09"
     },
     "V": {
-      "value": 346.79,
-      "change": -0.213,
+      "value": 347.76,
+      "change": 0.066,
       "asOf": "2026-07-09"
     },
     "PYPL": {
-      "value": 44.72,
-      "change": 0.427,
+      "value": 45.04,
+      "change": 1.145,
       "asOf": "2026-07-09"
     },
     "HOOD": {
-      "value": 115.31,
-      "change": 1.568,
+      "value": 116.67,
+      "change": 2.766,
       "asOf": "2026-07-09"
     },
     "COIN": {
@@ -165,18 +165,18 @@
       "asOf": "2026-07-09"
     },
     "MSTR": {
-      "value": 95.25,
-      "change": 1.47,
+      "value": 94.83,
+      "change": 1.023,
       "asOf": "2026-07-09"
     },
     "RIOT": {
-      "value": 22.28,
-      "change": 5.643,
+      "value": 21.88,
+      "change": 3.746,
       "asOf": "2026-07-09"
     },
     "MARA": {
-      "value": 14.2,
-      "change": 18.136,
+      "value": 13.39,
+      "change": 11.398,
       "asOf": "2026-07-09"
     },
     "CLSK": {
@@ -185,82 +185,82 @@
       "asOf": "2026-07-09"
     },
     "PLTR": {
-      "value": 125.78,
-      "change": -4.871,
+      "value": 127.74,
+      "change": -3.388,
       "asOf": "2026-07-09"
     },
     "SOFI": {
-      "value": 18.25,
-      "change": 2.933,
+      "value": 18.32,
+      "change": 3.328,
       "asOf": "2026-07-09"
     },
     "UPST": {
-      "value": 33.18,
-      "change": 4.307,
+      "value": 33.5,
+      "change": 5.313,
       "asOf": "2026-07-09"
     },
     "AFRM": {
-      "value": 85.01,
-      "change": 4.589,
+      "value": 84.63,
+      "change": 4.122,
       "asOf": "2026-07-09"
     },
     "QQQ": {
-      "value": 719.47,
-      "change": 1.129,
+      "value": 723.73,
+      "change": 1.728,
       "asOf": "2026-07-09"
     },
     "ARKK": {
-      "value": 81.51,
-      "change": 1.684,
+      "value": 81.67,
+      "change": 1.884,
       "asOf": "2026-07-09"
     },
     "IWM": {
-      "value": 297.3,
-      "change": 1.302,
+      "value": 297.57,
+      "change": 1.394,
       "asOf": "2026-07-09"
     },
     "GLD": {
-      "value": 378.16,
-      "change": 0.991,
+      "value": 378.56,
+      "change": 1.098,
       "asOf": "2026-07-09"
     },
     "SLV": {
-      "value": 54.3,
-      "change": 2.783,
+      "value": 54.45,
+      "change": 3.066,
       "asOf": "2026-07-09"
     },
     "BTC": {
-      "value": 27.83,
-      "change": 1.163,
+      "value": 27.74,
+      "change": 0.836,
       "asOf": "2026-07-09"
     },
     "ETH": {
-      "value": 16.59,
-      "change": 0.121,
+      "value": 16.58,
+      "change": 0.06,
       "asOf": "2026-07-09"
     },
     "SOL": {
-      "value": 77.73,
-      "change": -0.073,
+      "value": 77.93,
+      "change": 0.184,
       "asOf": "2026-07-09"
     },
     "XRP": {
-      "value": 12.22,
-      "change": 0.246,
+      "value": 12.21,
+      "change": 0.164,
       "asOf": "2026-07-09"
     },
     "DOGE": {
       "value": 0.07,
-      "change": 0.372,
+      "change": 0.732,
       "asOf": "2026-07-09"
     }
   },
   "dxy": {
-    "value": 100.9,
-    "change": -0.145
+    "value": 100.89,
+    "change": -0.156
   },
   "tnx": {
-    "value": 4.56,
-    "change": -0.219
+    "value": 4.54,
+    "change": -0.657
   }
 }
