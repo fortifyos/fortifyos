@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-07-12T17:44:18.124924-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-07-12T22:25:49.746559-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -12,14 +12,14 @@
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": -1,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)"
+    "Crypto Risk Appetite moderately suppressed (score: -1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
