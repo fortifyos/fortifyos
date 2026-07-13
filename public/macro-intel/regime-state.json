@@ -1,7 +1,7 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-07-13T10:37:40.825131-04:00",
+  "timestamp": "2026-07-13T13:10:18.473670-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -9,7 +9,7 @@
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
-    "volatilityStress": 0,
+    "volatilityStress": 1,
     "dollarPressure": 0,
     "breadthQuality": -1,
     "cryptoRiskAppetite": -1
@@ -17,14 +17,15 @@
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
+    "Volatility Stress moderately elevated (score: +1)",
     "Breadth Quality moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
+    "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
