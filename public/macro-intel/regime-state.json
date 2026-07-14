@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-07-13T17:52:32.965998-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-07-13T22:05:11.655772-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -10,7 +10,7 @@
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 1,
-    "dollarPressure": 1,
+    "dollarPressure": 0,
     "breadthQuality": -2,
     "cryptoRiskAppetite": -1
   },
@@ -19,15 +19,13 @@
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
     "Volatility Stress moderately elevated (score: +1)",
-    "Dollar Pressure moderately elevated (score: +1)"
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-    "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
