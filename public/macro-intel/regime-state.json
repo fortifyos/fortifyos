@@ -1,28 +1,28 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-07-16T09:41:30.360514-04:00",
+  "timestamp": "2026-07-16T12:14:21.203514-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": -1,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": 0,
-    "cryptoRiskAppetite": -1
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Crypto Risk Appetite moderately suppressed (score: -1)",
+    "Inflation Pressure moderately suppressed (score: -1)",
     "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)"
+    "Growth Health neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Mixed signals across dimensions — no strong directional confirmation"
+    "Commodity complex softening — disinflationary read on demand outlook"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
