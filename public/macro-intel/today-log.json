@@ -31,8 +31,36 @@
         "No dominant regime — cross-asset signals contradictory",
         "Elevated volatility increases path uncertainty on all price targets"
       ]
+    },
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-07-20T07:41:10.561403-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Growth Health moderately suppressed (score: -1); Crypto Risk Appetite moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 1.11% since last checkpoint (+710)",
+        "CBOE VIX down 2.82% since last checkpoint (-0.53)",
+        "Gold (XAU/USD) up 0.53% since last checkpoint (+21.1)",
+        "WTI Crude Oil down 3.77% since last checkpoint (-3.16)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 1,
-  "lastUpdated": "2026-07-20T02:13:37.052794-04:00"
+  "entryCount": 2,
+  "lastUpdated": "2026-07-20T07:41:10.562397-04:00"
 }
