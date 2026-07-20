@@ -111,8 +111,35 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-07-20T15:39:07.905823-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Crypto Risk Appetite moderately elevated (score: +1); Net Fed Liquidity neutral (score: +0).",
+      "crossAssetConnections": [
+        "Mixed signals across dimensions — no strong directional confirmation"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 down 0.52% since last checkpoint (-39.12)",
+        "Bitcoin down 0.61% since last checkpoint (-397)",
+        "CBOE VIX up 6.09% since last checkpoint (+1.07)",
+        "WTI Crude Oil up 1.65% since last checkpoint (+1.34)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 4,
-  "lastUpdated": "2026-07-20T12:21:40.362245-04:00"
+  "entryCount": 5,
+  "lastUpdated": "2026-07-20T15:39:07.906410-04:00"
 }
