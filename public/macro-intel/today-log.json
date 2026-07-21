@@ -76,8 +76,37 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-07-21T09:38:53.255398-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Breadth Quality moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 0.51% since last checkpoint (+38.24)",
+        "CBOE VIX up 0.57% since last checkpoint (+0.1)",
+        "WTI Crude Oil up 1.70% since last checkpoint (+1.41)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-07-21T07:04:02.832292-04:00"
+  "entryCount": 4,
+  "lastUpdated": "2026-07-21T09:38:53.293856-04:00"
 }
