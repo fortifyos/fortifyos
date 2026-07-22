@@ -1,24 +1,24 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-07-22T07:05:20.640346-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-07-22T09:42:10.985104-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 1,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": -2,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
+    "Breadth Quality strongly suppressed (score: -2)",
     "Inflation Pressure moderately elevated (score: +1)",
-    "Breadth Quality moderately suppressed (score: -1)",
     "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
