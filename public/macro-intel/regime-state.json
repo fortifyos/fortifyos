@@ -1,7 +1,7 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-07-22T01:45:36.533909-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-07-22T04:21:49.264681-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -11,19 +11,19 @@
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 2,
+    "breadthQuality": -2,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly elevated (score: +2)",
+    "Breadth Quality strongly suppressed (score: -2)",
     "Inflation Pressure moderately elevated (score: +1)",
     "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
