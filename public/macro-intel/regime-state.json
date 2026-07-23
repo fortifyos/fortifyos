@@ -1,7 +1,7 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-07-23T09:47:54.439507-04:00",
+  "timestamp": "2026-07-23T12:23:40.246820-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -12,14 +12,14 @@
     "volatilityStress": 1,
     "dollarPressure": 0,
     "breadthQuality": -2,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
     "Volatility Stress moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
