@@ -1,6 +1,6 @@
 {
   "session": "evening_wrap",
-  "timestamp": "2026-07-22T22:24:34.377848-04:00",
+  "timestamp": "2026-07-23T01:50:10.279759-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,12 +16,12 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 65712.0,
-      "changeSinceLast": -294.0,
-      "pctSinceLast": -0.4454,
-      "changeVsClose": -704.680985,
-      "pctVsClose": -1.061,
-      "impactTag": "bearish",
+      "value": 65702.0,
+      "changeSinceLast": -10.0,
+      "pctSinceLast": -0.0152,
+      "changeVsClose": -234.073059,
+      "pctVsClose": -0.355,
+      "impactTag": "neutral",
       "meta": {}
     },
     {
@@ -38,33 +38,33 @@
     {
       "key": "gold",
       "label": "Gold (XAU/USD)",
-      "value": 4119.1,
-      "changeSinceLast": -15.9,
-      "pctSinceLast": -0.3845,
-      "changeVsClose": 47.998289,
-      "pctVsClose": 1.179,
-      "impactTag": "bullish",
+      "value": 4129.3,
+      "changeSinceLast": 10.2,
+      "pctSinceLast": 0.2476,
+      "changeVsClose": -17.582783,
+      "pctVsClose": -0.424,
+      "impactTag": "neutral",
       "meta": {}
     },
     {
       "key": "wti",
       "label": "WTI Crude Oil",
-      "value": 88.06,
-      "changeSinceLast": 1.58,
-      "pctSinceLast": 1.827,
-      "changeVsClose": 3.150155,
-      "pctVsClose": 3.71,
-      "impactTag": "strongly_bullish",
+      "value": 87.96,
+      "changeSinceLast": -0.1,
+      "pctSinceLast": -0.1136,
+      "changeVsClose": 1.129663,
+      "pctVsClose": 1.301,
+      "impactTag": "bullish",
       "meta": {}
     },
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 101.06,
-      "changeSinceLast": -0.08,
-      "pctSinceLast": -0.0791,
-      "changeVsClose": -0.124457,
-      "pctVsClose": -0.123,
+      "value": 100.99,
+      "changeSinceLast": -0.07,
+      "pctSinceLast": -0.0693,
+      "changeVsClose": -0.153738,
+      "pctVsClose": -0.152,
       "impactTag": "neutral",
       "meta": {}
     },

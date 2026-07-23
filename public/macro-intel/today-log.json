@@ -1,227 +1,24 @@
 {
-  "date": "2026-07-22",
+  "date": "2026-07-23",
   "status": "active",
   "entries": [
     {
       "session": "evening_wrap",
       "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-07-22T01:45:36.534057-04:00",
+      "timestamp": "2026-07-23T01:50:10.280276-04:00",
       "regimeMode": "mixed",
       "confidence": 0.3,
       "source": "rule_based",
       "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Inflation Pressure moderately elevated (score: +1).",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Net Fed Liquidity neutral (score: +0).",
       "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Broad participation — cross-asset confirmation across equities and crypto"
-      ],
-      "whatChangedSinceLastReport": [
-        "Bitcoin down 0.64% since last checkpoint (-424)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "global_markets",
-      "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-07-22T04:21:49.264779-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.3,
-      "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
         "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
       ],
       "whatChangedSinceLastReport": [
-        "CBOE VIX up 2.58% since last checkpoint (+0.44)",
-        "WTI Crude Oil up 2.34% since last checkpoint (+2)"
+        "No significant changes detected since last checkpoint"
       ],
       "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
       "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "global_markets",
-      "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-07-22T07:05:20.640413-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Breadth Quality moderately suppressed (score: -1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX down 0.80% since last checkpoint (-0.14)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "pre_market",
-      "sessionLabel": "Pre-Market (08:00 ET)",
-      "timestamp": "2026-07-22T09:42:10.985218-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.3,
-      "source": "rule_based",
-      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "WTI Crude Oil down 0.79% since last checkpoint (-0.69)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "pre_market",
-      "sessionLabel": "Pre-Market (08:00 ET)",
-      "timestamp": "2026-07-22T12:17:36.499249-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.3,
-      "source": "rule_based",
-      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX down 3.34% since last checkpoint (-0.58)",
-        "Gold (XAU/USD) up 0.68% since last checkpoint (+28)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-07-22T15:09:13.622218-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.3,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX up 0.72% since last checkpoint (+0.12)",
-        "Gold (XAU/USD) down 0.53% since last checkpoint (-21.9)",
-        "WTI Crude Oil up 1.24% since last checkpoint (+1.07)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-07-22T18:01:08.310042-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.3,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX down 1.48% since last checkpoint (-0.25)",
-        "WTI Crude Oil down 0.68% since last checkpoint (-0.59)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "evening_wrap",
-      "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-07-22T22:24:34.378594-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.3,
-      "source": "rule_based",
-      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "WTI Crude Oil up 1.83% since last checkpoint (+1.58)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
         "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
       ],
       "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
@@ -231,6 +28,6 @@
       ]
     }
   ],
-  "entryCount": 8,
-  "lastUpdated": "2026-07-22T22:24:34.379577-04:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-07-23T01:50:10.281264-04:00"
 }
