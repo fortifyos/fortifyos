@@ -1,13 +1,13 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-07-27T15:20:52.769948-04:00",
+  "timestamp": "2026-07-27T18:03:07.996302-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.5,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
@@ -17,12 +17,12 @@
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Inflation Pressure moderately suppressed (score: -1)",
     "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)",
     "Growth Health neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook"
+    "Mixed signals across dimensions — no strong directional confirmation"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
