@@ -1,29 +1,28 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-07-28T15:16:41.751028-04:00",
+  "timestamp": "2026-07-28T18:00:13.952587-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": -1,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -2,
-    "cryptoRiskAppetite": -1
+    "breadthQuality": 0,
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
     "Inflation Pressure moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Growth Health neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Commodity complex softening — disinflationary read on demand outlook"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
