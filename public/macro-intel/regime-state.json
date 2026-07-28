@@ -1,7 +1,7 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-07-28T07:13:48.856552-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-07-28T09:56:08.214473-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,18 +11,19 @@
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 0,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Inflation Pressure moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Breadth Quality moderately suppressed (score: -1)",
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook"
+    "Commodity complex softening — disinflationary read on demand outlook",
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
