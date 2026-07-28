@@ -25,8 +25,33 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-07-28T04:26:52.581497-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Crypto Risk Appetite moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX up 2.84% since last checkpoint (+0.53)",
+        "WTI Crude Oil down 1.62% since last checkpoint (-1.33)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 1,
-  "lastUpdated": "2026-07-28T01:43:07.576512-04:00"
+  "entryCount": 2,
+  "lastUpdated": "2026-07-28T04:26:52.582390-04:00"
 }
