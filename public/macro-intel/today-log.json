@@ -201,8 +201,38 @@
         "No dominant regime — cross-asset signals contradictory",
         "Elevated volatility increases path uncertainty on all price targets"
       ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-07-29T22:00:55.878178-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Volatility Stress moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Dollar weakening — relief for dollar-denominated risk assets and commodities",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 0.83% since last checkpoint (+528)",
+        "WTI Crude Oil down 0.98% since last checkpoint (-0.83)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory",
+        "Elevated volatility increases path uncertainty on all price targets"
+      ]
     }
   ],
-  "entryCount": 7,
-  "lastUpdated": "2026-07-29T17:56:43.209078-04:00"
+  "entryCount": 8,
+  "lastUpdated": "2026-07-29T22:00:55.879407-04:00"
 }
