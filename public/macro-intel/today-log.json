@@ -53,8 +53,40 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-07-31T09:54:55.503719-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin down 1.01% since last checkpoint (-648)",
+        "CBOE VIX up 1.43% since last checkpoint (+0.24)",
+        "Gold (XAU/USD) down 0.76% since last checkpoint (-31.2)",
+        "WTI Crude Oil up 0.99% since last checkpoint (+0.84)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-07-31T07:26:33.555788-04:00"
+  "entryCount": 3,
+  "lastUpdated": "2026-07-31T09:54:55.504750-04:00"
 }
