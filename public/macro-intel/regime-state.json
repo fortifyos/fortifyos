@@ -1,29 +1,29 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-01T17:50:52.742090-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-08-01T22:24:30.395223-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
-    "cryptoRiskAppetite": -1
+    "breadthQuality": 2,
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
+    "Breadth Quality strongly elevated (score: +2)",
     "Growth Health moderately elevated (score: +1)",
-    "Breadth Quality moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)"
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
     "Growth proxies constructive — SPX trending and volatility contained",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
     "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
