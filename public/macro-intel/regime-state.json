@@ -1,27 +1,28 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-03T02:17:37.811794-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-08-03T08:18:12.775522-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": -1,
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": -2,
     "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Growth Health moderately elevated (score: +1)",
-    "Breadth Quality moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)"
+    "Breadth Quality strongly suppressed (score: -2)",
+    "Inflation Pressure moderately suppressed (score: -1)",
+    "Growth Health moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
+    "Commodity complex softening — disinflationary read on demand outlook",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
