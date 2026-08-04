@@ -1,31 +1,34 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-03T18:04:38.641969-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-08-03T22:07:13.795051-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": 1,
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
-    "cryptoRiskAppetite": -1
+    "breadthQuality": 1,
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
+    "Inflation Pressure moderately elevated (score: +1)",
     "Growth Health moderately elevated (score: +1)",
-    "Breadth Quality moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)"
+    "Breadth Quality moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "Growth proxies constructive — SPX trending and volatility contained",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
