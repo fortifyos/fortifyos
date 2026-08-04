@@ -1,7 +1,7 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-03T22:07:13.795051-04:00",
+  "timestamp": "2026-08-04T01:43:22.192566-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -12,7 +12,7 @@
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": 1,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
