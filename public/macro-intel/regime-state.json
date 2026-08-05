@@ -1,7 +1,7 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-05T09:58:44.230838-04:00",
+  "timestamp": "2026-08-05T12:28:46.981953-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,7 +11,7 @@
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 0,
+    "breadthQuality": 1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
@@ -19,11 +19,12 @@
   "dominantDrivers": [
     "Inflation Pressure moderately elevated (score: +1)",
     "Growth Health moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Breadth Quality moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Growth proxies constructive — SPX trending and volatility contained"
+    "Growth proxies constructive — SPX trending and volatility contained",
+    "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
     "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
