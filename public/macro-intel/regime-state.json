@@ -1,7 +1,7 @@
 {
   "session": "global_markets",
   "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-08-07T03:08:06.426522-04:00",
+  "timestamp": "2026-08-07T05:57:28.067083-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,19 +11,18 @@
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Inflation Pressure moderately elevated (score: +1)",
-    "Breadth Quality moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Growth Health neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher"
   ],
   "watchLevels": [
     "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
