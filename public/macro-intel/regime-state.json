@@ -1,7 +1,7 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-08T02:43:01.554613-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-08-08T05:33:14.527204-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,7 +11,7 @@
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": -1,
-    "breadthQuality": 1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
@@ -25,8 +25,7 @@
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Dollar weakening — relief for dollar-denominated risk assets and commodities",
-    "Growth proxies constructive — SPX trending and volatility contained",
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Growth proxies constructive — SPX trending and volatility contained"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
