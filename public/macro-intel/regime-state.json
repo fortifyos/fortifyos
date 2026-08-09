@@ -1,25 +1,25 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-09T02:49:24.483095-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-08-09T05:34:44.219363-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": -2,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
+    "Breadth Quality strongly suppressed (score: -2)",
     "Growth Health moderately elevated (score: +1)",
-    "Volatility Stress moderately suppressed (score: -1)",
-    "Breadth Quality moderately suppressed (score: -1)"
+    "Volatility Stress moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
