@@ -1,38 +1,35 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-08T21:20:51.343683-04:00",
+  "timestamp": "2026-08-09T00:14:44.311200-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 1,
+    "inflationPressure": 0,
     "growthHealth": 1,
     "volatilityStress": -1,
-    "dollarPressure": -1,
-    "breadthQuality": 0,
+    "dollarPressure": 0,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Inflation Pressure moderately elevated (score: +1)",
     "Growth Health moderately elevated (score: +1)",
-    "Volatility Stress moderately suppressed (score: -1)"
+    "Volatility Stress moderately suppressed (score: -1)",
+    "Breadth Quality moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
-    "Growth proxies constructive — SPX trending and volatility contained"
+    "Growth proxies constructive — SPX trending and volatility contained",
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-    "DXY 100 — psychological support; break below could accelerate commodity repricing",
-    "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+    "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+    "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
     "Any two dimensions align strongly in one direction — regime will clarify",
