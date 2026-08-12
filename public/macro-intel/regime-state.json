@@ -1,13 +1,13 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-12T14:56:07.981355-04:00",
+  "timestamp": "2026-08-12T17:40:18.063809-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 1,
+    "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": -1,
     "dollarPressure": 0,
@@ -17,18 +17,15 @@
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Inflation Pressure moderately elevated (score: +1)",
     "Volatility Stress moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
