@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 66.59,
-    "change": 2.819
+    "value": 66.44,
+    "change": 2.58
   },
   "gold": {
-    "value": 4473.3,
-    "change": 2.06
+    "value": 4483,
+    "change": 2.282
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 64004,
-    "change": -0.314
+    "value": 64062,
+    "change": -0.371
   },
   "eth": {
-    "value": 1901.97,
-    "change": 1.131
+    "value": 1909.16,
+    "change": 1.111
   },
   "oil": {
-    "value": 82.66,
-    "change": -0.649
+    "value": 83.31,
+    "change": 0.132
   },
   "spy": {
     "value": 770.56,
     "change": -0.349
   },
   "vix": {
-    "value": 15.4,
-    "change": 0.785
+    "value": 15.09,
+    "change": -1.243
   },
   "sp500": {
     "value": 7728.2,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 76.64,
-    "change": 1.218
+    "value": 76.57,
+    "change": 0.897
   },
   "xrp": {
     "value": 1.02,
-    "change": 1.713
+    "change": 1.156
   },
   "doge": {
-    "value": 0.07194,
-    "change": 2.054
+    "value": 0.0716,
+    "change": 1.401
   },
   "ada": {
-    "value": 0.18713,
-    "change": -0.832
+    "value": 0.18434,
+    "change": -1.266
   },
   "avax": {
-    "value": 6.24,
-    "change": -4.089
+    "value": 6.4,
+    "change": -1.22
   },
   "link": {
-    "value": 8.79,
-    "change": 1.317
+    "value": 8.84,
+    "change": 2.135
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-08-12"
     },
     "SOL": {
-      "value": 76.67,
-      "change": 0.623,
+      "value": 76.56,
+      "change": 0.479,
       "asOf": "2026-08-12"
     },
     "XRP": {
@@ -251,16 +251,16 @@
     },
     "DOGE": {
       "value": 0.07,
-      "change": 0.152,
+      "change": -0.349,
       "asOf": "2026-08-12"
     }
   },
   "dxy": {
-    "value": 99.84,
-    "change": 0.016
+    "value": 99.68,
+    "change": -0.139
   },
   "tnx": {
-    "value": 4.68,
-    "change": -0.319
+    "value": 4.65,
+    "change": -0.64
   }
 }
