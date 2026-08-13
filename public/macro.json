@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 64.85,
-    "change": -1.075
+    "value": 64.75,
+    "change": -1.228
   },
   "gold": {
-    "value": 4433.9,
-    "change": 0.567
+    "value": 4435.8,
+    "change": 0.61
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 63818,
-    "change": 0.205
+    "value": 63708,
+    "change": -0.512
   },
   "eth": {
-    "value": 1895.08,
-    "change": 0.356
+    "value": 1888.08,
+    "change": -0.795
   },
   "oil": {
-    "value": 82.78,
-    "change": -0.588
+    "value": 81.83,
+    "change": -1.729
   },
   "spy": {
     "value": 772.49,
     "change": -0.07
   },
   "vix": {
-    "value": 14.55,
-    "change": 0
+    "value": 14.66,
+    "change": 0.756
   },
   "sp500": {
     "value": 7748.5,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 76.36,
-    "change": 0.473
+    "value": 76.09,
+    "change": -0.744
   },
   "xrp": {
     "value": 1.01,
-    "change": -0.695
+    "change": -1.077
   },
   "doge": {
-    "value": 0.07069,
-    "change": -1.283
+    "value": 0.07046,
+    "change": -2.068
   },
   "ada": {
-    "value": 0.18409,
-    "change": -0.653
+    "value": 0.1854,
+    "change": -0.949
   },
   "avax": {
-    "value": 6.53,
-    "change": 4.611
+    "value": 6.49,
+    "change": 3.992
   },
   "link": {
-    "value": 8.76,
-    "change": 0.281
+    "value": 8.71,
+    "change": -0.938
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-08-13"
     },
     "SOL": {
-      "value": 76.33,
-      "change": 1.065,
+      "value": 76.08,
+      "change": 0.734,
       "asOf": "2026-08-13"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.07,
-      "change": 1.563,
+      "change": 1.247,
       "asOf": "2026-08-13"
     }
   },
   "dxy": {
-    "value": 100.02,
-    "change": 0.014
+    "value": 99.93,
+    "change": -0.081
   },
   "tnx": {
     "value": 4.68,
