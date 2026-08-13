@@ -103,8 +103,37 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-08-13T11:55:14.099216-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Growth Health moderately elevated (score: +1); Volatility Stress moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Growth proxies constructive — SPX trending and volatility contained"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX up 1.38% since last checkpoint (+0.2)",
+        "Gold (XAU/USD) down 0.58% since last checkpoint (-25.9)",
+        "WTI Crude Oil up 1.29% since last checkpoint (+1.05)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 4,
-  "lastUpdated": "2026-08-13T09:00:23.129182-04:00"
+  "entryCount": 5,
+  "lastUpdated": "2026-08-13T11:55:14.100292-04:00"
 }
