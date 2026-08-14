@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 64.11,
-    "change": -1.184
+    "value": 64.52,
+    "change": -0.552
   },
   "gold": {
-    "value": 4379.6,
-    "change": 0.367
+    "value": 4389.8,
+    "change": 0.6
   },
   "yieldCurve": null,
   "source": {
@@ -38,16 +38,16 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 63342,
-    "change": -0.464
+    "value": 63015,
+    "change": -1.261
   },
   "eth": {
-    "value": 1884.47,
-    "change": -0.235
+    "value": 1873.51,
+    "change": -1.159
   },
   "oil": {
-    "value": 81.34,
-    "change": 0.111
+    "value": 82.65,
+    "change": 1.723
   },
   "spy": {
     "value": 777.88,
@@ -55,7 +55,7 @@
   },
   "vix": {
     "value": 14.63,
-    "change": 0.55
+    "change": 0
   },
   "sp500": {
     "value": 7798.99,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 75.87,
-    "change": -0.281
+    "value": 75.56,
+    "change": -1.068
   },
   "xrp": {
-    "value": 1.01,
-    "change": -0.109
+    "value": 1,
+    "change": -1
   },
   "doge": {
-    "value": 0.06995,
-    "change": -0.404
+    "value": 0.06964,
+    "change": -1.493
   },
   "ada": {
-    "value": 0.18257,
-    "change": -0.702
+    "value": 0.18139,
+    "change": -1.465
   },
   "avax": {
-    "value": 6.43,
-    "change": -1.155
+    "value": 6.39,
+    "change": -2.143
   },
   "link": {
-    "value": 8.8,
-    "change": 0.556
+    "value": 8.76,
+    "change": -0.037
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-08-14"
     },
     "SOL": {
-      "value": 75.85,
-      "change": -0.435,
+      "value": 75.58,
+      "change": -0.789,
       "asOf": "2026-08-14"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.07,
-      "change": -0.213,
+      "change": -0.613,
       "asOf": "2026-08-14"
     }
   },
   "dxy": {
-    "value": 99.87,
-    "change": -0.09
+    "value": 99.82,
+    "change": -0.142
   },
   "tnx": {
     "value": 4.64,
