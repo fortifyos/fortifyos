@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-13T17:39:47.600631-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-08-13T21:37:53.733484-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,7 +11,7 @@
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
@@ -24,8 +24,7 @@
   "supportingEvidence": [
     "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Growth proxies constructive — SPX trending and volatility contained",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Growth proxies constructive — SPX trending and volatility contained"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
