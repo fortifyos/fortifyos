@@ -1,7 +1,7 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-14T11:46:29.511088-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-08-14T14:47:06.643210-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -10,7 +10,7 @@
     "inflationPressure": 1,
     "growthHealth": 1,
     "volatilityStress": -1,
-    "dollarPressure": -1,
+    "dollarPressure": 0,
     "breadthQuality": -2,
     "cryptoRiskAppetite": 0
   },
@@ -24,7 +24,6 @@
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
@@ -32,8 +31,8 @@
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
     "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
     "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-    "DXY 100 — psychological support; break below could accelerate commodity repricing",
-    "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+    "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+    "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
     "Any two dimensions align strongly in one direction — regime will clarify",
