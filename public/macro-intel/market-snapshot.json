@@ -1,6 +1,6 @@
 {
   "session": "evening_wrap",
-  "timestamp": "2026-08-14T23:34:38.493841-04:00",
+  "timestamp": "2026-08-15T02:30:41.261566-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 63032.0,
-      "changeSinceLast": 74.0,
-      "pctSinceLast": 0.1175,
-      "changeVsClose": -349.23058,
-      "pctVsClose": -0.551,
+      "value": 62985.0,
+      "changeSinceLast": -47.0,
+      "pctSinceLast": -0.0746,
+      "changeVsClose": -152.160557,
+      "pctVsClose": -0.241,
       "impactTag": "neutral",
       "meta": {}
     },
@@ -38,11 +38,11 @@
     {
       "key": "gold",
       "label": "Gold (XAU/USD)",
-      "value": 4432.0,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 68.42092,
-      "pctVsClose": 1.568,
+      "value": 4437.3,
+      "changeSinceLast": 5.3,
+      "pctSinceLast": 0.1196,
+      "changeVsClose": 73.701184,
+      "pctVsClose": 1.689,
       "impactTag": "bullish",
       "meta": {}
     },

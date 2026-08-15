@@ -1,25 +1,25 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-14T23:34:38.494460-04:00",
+  "timestamp": "2026-08-15T02:30:41.261906-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 1,
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": -1,
-    "breadthQuality": -2,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
     "Inflation Pressure moderately elevated (score: +1)",
-    "Growth Health moderately elevated (score: +1)"
+    "Growth Health moderately elevated (score: +1)",
+    "Volatility Stress moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
