@@ -1,7 +1,7 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-16T14:21:45.104754-04:00",
+  "timestamp": "2026-08-16T17:15:08.783558-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,7 +11,7 @@
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 0,
-    "breadthQuality": 0,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
@@ -19,11 +19,12 @@
   "dominantDrivers": [
     "Growth Health moderately elevated (score: +1)",
     "Volatility Stress moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Breadth Quality moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Growth proxies constructive — SPX trending and volatility contained"
+    "Growth proxies constructive — SPX trending and volatility contained",
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
