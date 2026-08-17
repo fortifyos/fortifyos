@@ -1,34 +1,32 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-17T08:35:00.976021-04:00",
+  "timestamp": "2026-08-17T11:20:30.885538-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
-    "growthHealth": 1,
+    "growthHealth": 0,
     "volatilityStress": -1,
     "dollarPressure": 0,
-    "breadthQuality": 1,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Growth Health moderately elevated (score: +1)",
     "Volatility Stress moderately suppressed (score: -1)",
-    "Breadth Quality moderately elevated (score: +1)"
+    "Breadth Quality moderately suppressed (score: -1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Growth proxies constructive — SPX trending and volatility contained",
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-    "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [

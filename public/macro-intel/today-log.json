@@ -86,8 +86,34 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-08-17T11:20:30.885701-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Volatility Stress moderately suppressed (score: -1); Breadth Quality moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+      ],
+      "whatChangedSinceLastReport": [
+        "Gold (XAU/USD) up 0.62% since last checkpoint (+27.4)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-08-17T08:35:00.977203-04:00"
+  "entryCount": 4,
+  "lastUpdated": "2026-08-17T11:20:30.886702-04:00"
 }
