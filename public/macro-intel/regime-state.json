@@ -1,32 +1,33 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-17T11:20:30.885538-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-08-17T14:32:03.061980-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": 1,
     "growthHealth": 0,
-    "volatilityStress": -1,
+    "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": -1,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Volatility Stress moderately suppressed (score: -1)",
+    "Inflation Pressure moderately elevated (score: +1)",
     "Breadth Quality moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Crypto Risk Appetite moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "VIX compressed — low implied volatility supporting risk-carrying capacity",
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
-    "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
