@@ -1,7 +1,7 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-16T21:00:27.351731-04:00",
+  "timestamp": "2026-08-16T23:45:31.519476-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,7 +11,7 @@
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
@@ -25,7 +25,7 @@
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Growth proxies constructive — SPX trending and volatility contained",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
