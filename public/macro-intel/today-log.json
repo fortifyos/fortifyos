@@ -134,8 +134,38 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-08-19T17:20:41.209617-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.14,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 14%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Volatility Stress moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar weakening — relief for dollar-denominated risk assets and commodities",
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 1.54% since last checkpoint (+1053)",
+        "CBOE VIX down 1.85% since last checkpoint (-0.28)",
+        "Gold (XAU/USD) up 0.86% since last checkpoint (+38.9)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 100 — psychological support; break below could accelerate commodity repricing",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 14%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 5,
-  "lastUpdated": "2026-08-19T14:27:53.300571-04:00"
+  "entryCount": 6,
+  "lastUpdated": "2026-08-19T17:20:41.210640-04:00"
 }
