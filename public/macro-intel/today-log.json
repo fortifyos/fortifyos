@@ -75,8 +75,38 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-08-19T11:26:15.311270-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Dollar Pressure moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Dollar weakening — relief for dollar-denominated risk assets and commodities"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 3.71% since last checkpoint (+2392)",
+        "CBOE VIX down 3.38% since last checkpoint (-0.53)",
+        "Gold (XAU/USD) up 2.77% since last checkpoint (+122.5)",
+        "WTI Crude Oil up 1.04% since last checkpoint (+0.88)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "DXY 100 — psychological support; break below could accelerate commodity repricing"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-08-19T08:37:34.072793-04:00"
+  "entryCount": 4,
+  "lastUpdated": "2026-08-19T11:26:15.312422-04:00"
 }

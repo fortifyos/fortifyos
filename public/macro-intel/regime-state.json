@@ -1,30 +1,34 @@
 {
   "session": "pre_market",
   "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-19T08:37:34.071576-04:00",
+  "timestamp": "2026-08-19T11:26:15.311126-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.5,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": 1,
     "growthHealth": 0,
     "volatilityStress": 0,
-    "dollarPressure": 0,
+    "dollarPressure": -1,
     "breadthQuality": 0,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)",
-    "Growth Health neutral (score: +0)"
+    "Inflation Pressure moderately elevated (score: +1)",
+    "Dollar Pressure moderately suppressed (score: -1)",
+    "Crypto Risk Appetite moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "Mixed signals across dimensions — no strong directional confirmation"
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+    "Dollar weakening — relief for dollar-denominated risk assets and commodities"
   ],
   "watchLevels": [
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
