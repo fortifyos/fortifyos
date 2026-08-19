@@ -1,10 +1,10 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-19T11:26:15.311126-04:00",
-  "regimeMode": "mixed",
-  "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-08-19T14:27:53.299392-04:00",
+  "regimeMode": "crypto_speculation",
+  "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
+  "confidence": 0.23,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 1,
@@ -12,18 +12,19 @@
     "volatilityStress": 0,
     "dollarPressure": -1,
     "breadthQuality": 0,
-    "cryptoRiskAppetite": 1
+    "cryptoRiskAppetite": 2
   },
   "priorRegimeMode": "mixed",
-  "regimeChanged": false,
+  "regimeChanged": true,
   "dominantDrivers": [
+    "Crypto Risk Appetite strongly elevated (score: +2)",
     "Inflation Pressure moderately elevated (score: +1)",
-    "Dollar Pressure moderately suppressed (score: -1)",
-    "Crypto Risk Appetite moderately elevated (score: +1)"
+    "Dollar Pressure moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Dollar weakening — relief for dollar-denominated risk assets and commodities"
+    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
+    "BTC leading risk assets — crypto risk appetite outpacing equity moves"
   ],
   "watchLevels": [
     "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
@@ -32,7 +33,7 @@
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
-    "Any two dimensions align strongly in one direction — regime will clarify",
-    "VIX spikes above 30 — even mixed regime becomes risk-off if vol escalates"
+    "BTC drops >5% on volume — risk appetite reversal",
+    "SPX diverges down while BTC up — warns of crypto-specific risk, not macro risk-on"
   ]
 }
