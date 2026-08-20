@@ -1,16 +1,16 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-19T23:42:11.334054-04:00",
+  "timestamp": "2026-08-20T02:38:10.001775-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.14,
+  "confidence": 0.13,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": -1,
-    "dollarPressure": -1,
+    "dollarPressure": 0,
     "breadthQuality": 0,
     "cryptoRiskAppetite": 2
   },
@@ -19,16 +19,14 @@
   "dominantDrivers": [
     "Crypto Risk Appetite strongly elevated (score: +2)",
     "Volatility Stress moderately suppressed (score: -1)",
-    "Dollar Pressure moderately suppressed (score: -1)"
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
     "BTC leading risk assets — crypto risk appetite outpacing equity moves"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
