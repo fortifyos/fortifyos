@@ -87,8 +87,39 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-08-20T11:28:41.051242-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.23,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 23%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Inflation Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible",
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 0.55% since last checkpoint (+397)",
+        "CBOE VIX down 1.38% since last checkpoint (-0.22)",
+        "Gold (XAU/USD) up 1.75% since last checkpoint (+79.1)",
+        "WTI Crude Oil down 1.29% since last checkpoint (-1.13)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 23%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-08-20T08:38:44.419396-04:00"
+  "entryCount": 4,
+  "lastUpdated": "2026-08-20T11:28:41.051779-04:00"
 }
