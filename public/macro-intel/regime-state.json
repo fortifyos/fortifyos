@@ -1,13 +1,13 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-19T20:59:13.099101-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-08-19T23:42:11.334054-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.24,
+  "confidence": 0.14,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 1,
+    "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": -1,
     "dollarPressure": -1,
@@ -18,19 +18,16 @@
   "regimeChanged": false,
   "dominantDrivers": [
     "Crypto Risk Appetite strongly elevated (score: +2)",
-    "Inflation Pressure moderately elevated (score: +1)",
-    "Volatility Stress moderately suppressed (score: -1)"
+    "Volatility Stress moderately suppressed (score: -1)",
+    "Dollar Pressure moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Dollar weakening — relief for dollar-denominated risk assets and commodities",
     "BTC leading risk assets — crypto risk appetite outpacing equity moves"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],

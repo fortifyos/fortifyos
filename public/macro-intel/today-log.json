@@ -192,8 +192,36 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-08-19T23:42:11.334177-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.14,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 14%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Volatility Stress moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar weakening — relief for dollar-denominated risk assets and commodities",
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin down 0.57% since last checkpoint (-395)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 100 — psychological support; break below could accelerate commodity repricing",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 14%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 7,
-  "lastUpdated": "2026-08-19T20:59:13.100015-04:00"
+  "entryCount": 8,
+  "lastUpdated": "2026-08-19T23:42:11.335396-04:00"
 }
