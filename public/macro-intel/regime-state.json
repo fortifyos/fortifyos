@@ -1,15 +1,15 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-20T02:38:10.001775-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-08-20T05:29:02.716482-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.13,
+  "confidence": 0.21,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": 1,
     "growthHealth": 0,
-    "volatilityStress": -1,
+    "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": 0,
     "cryptoRiskAppetite": 2
@@ -18,15 +18,16 @@
   "regimeChanged": false,
   "dominantDrivers": [
     "Crypto Risk Appetite strongly elevated (score: +2)",
-    "Volatility Stress moderately suppressed (score: -1)",
+    "Inflation Pressure moderately elevated (score: +1)",
     "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "VIX compressed — low implied volatility supporting risk-carrying capacity",
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "BTC leading risk assets — crypto risk appetite outpacing equity moves"
   ],
   "watchLevels": [
-    "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [

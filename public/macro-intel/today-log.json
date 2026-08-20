@@ -27,8 +27,37 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-08-20T05:29:02.716608-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.21,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 21%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Inflation Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 3.26% since last checkpoint (+2274)",
+        "CBOE VIX up 1.81% since last checkpoint (+0.27)",
+        "WTI Crude Oil up 2.16% since last checkpoint (+1.83)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 21%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 1,
-  "lastUpdated": "2026-08-20T02:38:10.003079-04:00"
+  "entryCount": 2,
+  "lastUpdated": "2026-08-20T05:29:02.717548-04:00"
 }
