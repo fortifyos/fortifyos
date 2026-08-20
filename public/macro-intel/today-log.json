@@ -56,8 +56,39 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-08-20T08:38:44.418281-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.23,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 23%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Inflation Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible",
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX up 5.41% since last checkpoint (+0.82)",
+        "Gold (XAU/USD) down 0.72% since last checkpoint (-32.8)",
+        "WTI Crude Oil up 1.28% since last checkpoint (+1.11)",
+        "10Y Treasury Yield up 1.08% since last checkpoint (+0.05)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 23%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-08-20T05:29:02.717548-04:00"
+  "entryCount": 3,
+  "lastUpdated": "2026-08-20T08:38:44.419396-04:00"
 }
