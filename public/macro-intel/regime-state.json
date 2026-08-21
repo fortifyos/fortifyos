@@ -1,7 +1,7 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-20T21:02:48.257989-04:00",
+  "timestamp": "2026-08-20T23:46:09.924644-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
   "confidence": 0.23,
@@ -14,8 +14,8 @@
     "breadthQuality": -1,
     "cryptoRiskAppetite": 2
   },
-  "priorRegimeMode": "mixed",
-  "regimeChanged": true,
+  "priorRegimeMode": "crypto_speculation",
+  "regimeChanged": false,
   "dominantDrivers": [
     "Crypto Risk Appetite strongly elevated (score: +2)",
     "Inflation Pressure moderately elevated (score: +1)",
