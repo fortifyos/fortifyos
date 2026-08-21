@@ -174,8 +174,36 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-08-20T21:02:48.258166-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.23,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 23%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Inflation Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible",
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 1.33% since last checkpoint (+968)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 23%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 6,
-  "lastUpdated": "2026-08-20T17:23:08.652087-04:00"
+  "entryCount": 7,
+  "lastUpdated": "2026-08-20T21:02:48.259323-04:00"
 }
