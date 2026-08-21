@@ -106,8 +106,33 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-08-21T14:30:30.743406-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.11,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 11%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Net Fed Liquidity neutral (score: +0).",
+      "crossAssetConnections": [
+        "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+      ],
+      "whatChangedSinceLastReport": [
+        "Gold (XAU/USD) up 0.65% since last checkpoint (+30.2)",
+        "WTI Crude Oil up 0.67% since last checkpoint (+0.58)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 11%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 4,
-  "lastUpdated": "2026-08-21T11:28:05.288774-04:00"
+  "entryCount": 5,
+  "lastUpdated": "2026-08-21T14:30:30.752400-04:00"
 }
