@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-08-21",
+  "asOf": "2026-08-22",
   "walcl": {
     "date": "2026-02-18",
     "value": 6613395,
@@ -38,12 +38,12 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 77639,
-    "change": 6.753
+    "value": 77935,
+    "change": 5.803
   },
   "eth": {
-    "value": 2449.81,
-    "change": 5.534
+    "value": 2519.13,
+    "change": 7.706
   },
   "oil": {
     "value": 86.64,
@@ -75,184 +75,184 @@
     "value": "—"
   },
   "sol": {
-    "value": 92.24,
-    "change": 5.266
+    "value": 93.81,
+    "change": 6.534
   },
   "xrp": {
-    "value": 1.38,
-    "change": 10.419
+    "value": 1.45,
+    "change": 14.571
   },
   "doge": {
-    "value": 0.088,
-    "change": 9.637
+    "value": 0.09163,
+    "change": 12.864
   },
   "ada": {
-    "value": 0.22033,
-    "change": 11.354
+    "value": 0.22874,
+    "change": 11.631
   },
   "avax": {
-    "value": 7.66,
-    "change": 6.413
+    "value": 7.86,
+    "change": 8.068
   },
   "link": {
-    "value": 11.93,
-    "change": 12.489
+    "value": 12.07,
+    "change": 12.402
   },
   "tickers": {
     "AAPL": {
       "value": 309.35,
       "change": -0.626,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "MSFT": {
       "value": 483.24,
       "change": 0.434,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "NVDA": {
       "value": 214.72,
       "change": -0.982,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "GOOGL": {
       "value": 344.82,
       "change": 1.218,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "META": {
       "value": 549.9,
       "change": 0.746,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "AMZN": {
       "value": 258.63,
       "change": -0.569,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "TSLA": {
       "value": 362.86,
       "change": 5.137,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "AMD": {
       "value": 473.25,
       "change": 0.808,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "JPM": {
       "value": 351.58,
       "change": 0.009,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "V": {
       "value": 371.04,
       "change": 1.452,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "PYPL": {
       "value": 61.55,
       "change": -1.204,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "HOOD": {
       "value": 108.13,
       "change": 13.701,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "COIN": {
       "value": 186.49,
       "change": 8.204,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "MSTR": {
       "value": 119.25,
       "change": 6.104,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "RIOT": {
       "value": 19.83,
       "change": -5.481,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "MARA": {
       "value": 11.26,
       "change": 0.987,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "CLSK": {
       "value": 11.98,
       "change": -4.921,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "PLTR": {
       "value": 179.94,
       "change": 3.438,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "SOFI": {
       "value": 18.91,
       "change": 5.525,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "UPST": {
       "value": 30.3,
       "change": 4.99,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "AFRM": {
       "value": 77.03,
       "change": 2.638,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "QQQ": {
       "value": 713.44,
       "change": 0.353,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "ARKK": {
       "value": 86.21,
       "change": 3.531,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "IWM": {
       "value": 299.96,
       "change": 0.769,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "GLD": {
       "value": 423.36,
       "change": 1.951,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "SLV": {
       "value": 62.72,
       "change": 1.719,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "BTC": {
       "value": 34.08,
       "change": 6.003,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "ETH": {
       "value": 23.04,
       "change": 3.877,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "SOL": {
-      "value": 92.34,
-      "change": 5.367,
-      "asOf": "2026-08-21"
+      "value": 93.89,
+      "change": 0.244,
+      "asOf": "2026-08-22"
     },
     "XRP": {
       "value": 15.34,
       "change": 11.24,
-      "asOf": "2026-08-21"
+      "asOf": "2026-08-22"
     },
     "DOGE": {
       "value": 0.09,
-      "change": 9.97,
-      "asOf": "2026-08-21"
+      "change": 0.154,
+      "asOf": "2026-08-22"
     }
   },
   "dxy": {
