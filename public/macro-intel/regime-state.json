@@ -1,10 +1,10 @@
 {
   "session": "evening_wrap",
   "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-21T23:37:18.279650-04:00",
-  "regimeMode": "crypto_speculation",
-  "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.11,
+  "timestamp": "2026-08-22T02:32:18.550045-04:00",
+  "regimeMode": "mixed",
+  "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
@@ -12,23 +12,23 @@
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": 0,
-    "cryptoRiskAppetite": 2
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "crypto_speculation",
-  "regimeChanged": false,
+  "regimeChanged": true,
   "dominantDrivers": [
-    "Crypto Risk Appetite strongly elevated (score: +2)",
+    "Crypto Risk Appetite moderately elevated (score: +1)",
     "Net Fed Liquidity neutral (score: +0)",
     "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+    "Mixed signals across dimensions — no strong directional confirmation"
   ],
   "watchLevels": [
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
-    "BTC drops >5% on volume — risk appetite reversal",
-    "SPX diverges down while BTC up — warns of crypto-specific risk, not macro risk-on"
+    "Any two dimensions align strongly in one direction — regime will clarify",
+    "VIX spikes above 30 — even mixed regime becomes risk-off if vol escalates"
   ]
 }
