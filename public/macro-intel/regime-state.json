@@ -1,30 +1,33 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-08-26T20:24:19.597826-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-08-27T09:41:13.248925-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.5,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": 1,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": 0,
+    "breadthQuality": 1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)",
-    "Growth Health neutral (score: +0)"
+    "Inflation Pressure moderately elevated (score: +1)",
+    "Breadth Quality moderately elevated (score: +1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Mixed signals across dimensions — no strong directional confirmation"
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+    "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
