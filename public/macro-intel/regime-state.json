@@ -1,13 +1,13 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-08-28T10:50:43.393537-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-08-28T19:50:07.991768-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": -1,
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 1,
@@ -18,10 +18,11 @@
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
-    "Growth Health moderately elevated (score: +1)",
-    "Volatility Stress moderately suppressed (score: -1)"
+    "Inflation Pressure moderately suppressed (score: -1)",
+    "Growth Health moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
+    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Growth proxies constructive — SPX trending and volatility contained",
