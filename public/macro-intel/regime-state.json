@@ -1,36 +1,33 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-08-29T23:21:51.821884-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-08-30T07:08:51.792042-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 0,
     "growthHealth": 1,
     "volatilityStress": -1,
-    "dollarPressure": 1,
+    "dollarPressure": 0,
     "breadthQuality": 1,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Inflation Pressure moderately suppressed (score: -1)",
     "Growth Health moderately elevated (score: +1)",
-    "Volatility Stress moderately suppressed (score: -1)"
+    "Volatility Stress moderately suppressed (score: -1)",
+    "Breadth Quality moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
-    "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-    "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],

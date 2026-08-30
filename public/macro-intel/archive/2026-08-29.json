@@ -1,0 +1,151 @@
+{
+  "date": "2026-08-29",
+  "status": "archived",
+  "entries": [
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-08-29T01:25:59.639999-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "Gold (XAU/USD) up 0.57% since last checkpoint (+25.8)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-08-29T08:12:19.308257-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly suppressed (score: -2); Inflation Pressure moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "No significant changes detected since last checkpoint"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-08-29T14:08:45.842861-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 0.64% since last checkpoint (+494)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-08-29T18:58:05.578948-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "No significant changes detected since last checkpoint"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-08-29T23:21:51.821976-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Growth Health moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "No significant changes detected since last checkpoint"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    }
+  ],
+  "entryCount": 5,
+  "lastUpdated": "2026-08-29T23:21:51.822808-04:00",
+  "archivedAt": "2026-08-30T07:08:51.788260-04:00"
+}
