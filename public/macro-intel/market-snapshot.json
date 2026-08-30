@@ -1,6 +1,6 @@
 {
-  "session": "global_markets",
-  "timestamp": "2026-08-30T07:08:51.791603-04:00",
+  "session": "pre_market",
+  "timestamp": "2026-08-30T11:57:26.916789-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,12 +16,12 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 78179.0,
-      "changeSinceLast": 104.0,
-      "pctSinceLast": 0.1332,
-      "changeVsClose": 548.074335,
-      "pctVsClose": 0.706,
-      "impactTag": "neutral",
+      "value": 78794.0,
+      "changeSinceLast": 615.0,
+      "pctSinceLast": 0.7867,
+      "changeVsClose": 975.071178,
+      "pctVsClose": 1.253,
+      "impactTag": "bullish",
       "meta": {}
     },
     {
