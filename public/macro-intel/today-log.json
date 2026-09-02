@@ -80,8 +80,35 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-09-02T18:57:22.481160-04:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Net Fed Liquidity neutral (score: +0).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin down 0.50% since last checkpoint (-387)",
+        "WTI Crude Oil down 0.64% since last checkpoint (-0.58)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-09-02T14:23:35.783240-04:00"
+  "entryCount": 4,
+  "lastUpdated": "2026-09-02T18:57:22.482040-04:00"
 }
