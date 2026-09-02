@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-09-01",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 5,
+    "archivePath": "archive/2026-09-01.json",
+    "archivedAt": "2026-09-02T03:34:06.079330-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-08-31",
     "regimeMode": "mixed",
     "dominantDrivers": [],
@@ -798,15 +807,6 @@
     "entryCount": 6,
     "archivePath": "archive/2026-06-04.json",
     "archivedAt": "2026-06-05T05:40:28.696283-04:00",
-    "status": "archived"
-  },
-  {
-    "date": "2026-06-03",
-    "regimeMode": "mixed",
-    "dominantDrivers": [],
-    "entryCount": 5,
-    "archivePath": "archive/2026-06-03.json",
-    "archivedAt": "2026-06-04T05:52:03.826130-04:00",
     "status": "archived"
   }
 ]
