@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-09-01T18:57:44.823143-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-09-01T22:38:49.120710-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -10,21 +10,23 @@
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
-    "dollarPressure": 0,
+    "dollarPressure": 1,
     "breadthQuality": -2,
-    "cryptoRiskAppetite": -1
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
-    "Crypto Risk Appetite moderately suppressed (score: -1)",
+    "Dollar Pressure moderately elevated (score: +1)",
     "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
+    "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
+    "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
