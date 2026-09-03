@@ -1,32 +1,31 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-09-02T22:44:40.800432-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-09-03T03:42:31.147150-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 1,
+    "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
-    "dollarPressure": 0,
+    "dollarPressure": -1,
     "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Inflation Pressure moderately elevated (score: +1)",
+    "Dollar Pressure moderately suppressed (score: -1)",
     "Net Fed Liquidity neutral (score: +0)",
-    "Growth Health neutral (score: +0)"
+    "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher"
+    "Dollar weakening — relief for dollar-denominated risk assets and commodities"
   ],
   "watchLevels": [
-    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [

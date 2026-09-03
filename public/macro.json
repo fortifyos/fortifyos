@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 66.39,
-    "change": 2.742
+    "value": 66.5,
+    "change": 2.746
   },
   "gold": {
-    "value": 4461.5,
-    "change": 2.61
+    "value": 4473.3,
+    "change": 2.451
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 77791,
-    "change": 0.826
+    "value": 77927,
+    "change": 0.446
   },
   "eth": {
-    "value": 2404.39,
-    "change": -0.011
+    "value": 2407.98,
+    "change": -0.598
   },
   "oil": {
-    "value": 91.1,
-    "change": 0.975
+    "value": 90.53,
+    "change": -0.527
   },
   "spy": {
     "value": 765.16,
     "change": -0.246
   },
   "vix": {
-    "value": 15.2,
-    "change": -6.977
+    "value": 15.3,
+    "change": 0.658
   },
   "sp500": {
     "value": 7666.6,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 100.72,
-    "change": 1.008
+    "value": 100.87,
+    "change": 0.848
   },
   "xrp": {
     "value": 1.37,
-    "change": 1.991
+    "change": 1.771
   },
   "doge": {
-    "value": 0.08312,
-    "change": 2.509
+    "value": 0.08316,
+    "change": 1.636
   },
   "ada": {
-    "value": 0.20674,
-    "change": 4.845
+    "value": 0.2061,
+    "change": 4.45
   },
   "avax": {
-    "value": 7.25,
-    "change": 1.021
+    "value": 7.29,
+    "change": 0.891
   },
   "link": {
-    "value": 11.2,
-    "change": 0.244
+    "value": 11.25,
+    "change": 0.015
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-09-03"
     },
     "SOL": {
-      "value": 100.72,
-      "change": 0.32,
+      "value": 101.03,
+      "change": 0.642,
       "asOf": "2026-09-03"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.08,
-      "change": 1.715,
+      "change": 2.124,
       "asOf": "2026-09-03"
     }
   },
   "dxy": {
-    "value": 99.47,
-    "change": -0.203
+    "value": 99.26,
+    "change": -0.303
   },
   "tnx": {
     "value": 4.8,
