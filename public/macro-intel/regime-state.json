@@ -1,10 +1,10 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-09-03T19:04:13.001472-04:00",
-  "regimeMode": "crypto_speculation",
-  "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.47,
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-09-03T22:42:09.672278-04:00",
+  "regimeMode": "mixed",
+  "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 1,
@@ -12,22 +12,21 @@
     "volatilityStress": -1,
     "dollarPressure": -1,
     "breadthQuality": 2,
-    "cryptoRiskAppetite": 2
+    "cryptoRiskAppetite": 1
   },
-  "priorRegimeMode": "mixed",
+  "priorRegimeMode": "crypto_speculation",
   "regimeChanged": true,
   "dominantDrivers": [
     "Growth Health strongly elevated (score: +2)",
     "Breadth Quality strongly elevated (score: +2)",
-    "Crypto Risk Appetite strongly elevated (score: +2)"
+    "Inflation Pressure moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Dollar weakening — relief for dollar-denominated risk assets and commodities",
     "Growth proxies constructive — SPX trending and volatility contained",
-    "Broad participation — cross-asset confirmation across equities and crypto",
-    "BTC leading risk assets — crypto risk appetite outpacing equity moves"
+    "Broad participation — cross-asset confirmation across equities and crypto"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
@@ -37,7 +36,7 @@
     "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
   ],
   "invalidationConditions": [
-    "BTC drops >5% on volume — risk appetite reversal",
-    "SPX diverges down while BTC up — warns of crypto-specific risk, not macro risk-on"
+    "Any two dimensions align strongly in one direction — regime will clarify",
+    "VIX spikes above 30 — even mixed regime becomes risk-off if vol escalates"
   ]
 }
