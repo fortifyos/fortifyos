@@ -1,27 +1,28 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-09-04T03:39:45.269339-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-09-04T09:06:15.875505-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": -1,
     "growthHealth": 2,
     "volatilityStress": -1,
     "dollarPressure": 0,
     "breadthQuality": 1,
-    "cryptoRiskAppetite": 1
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Growth Health strongly elevated (score: +2)",
-    "Volatility Stress moderately suppressed (score: -1)",
-    "Breadth Quality moderately elevated (score: +1)"
+    "Inflation Pressure moderately suppressed (score: -1)",
+    "Volatility Stress moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
+    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Broad participation — cross-asset confirmation across equities and crypto"
