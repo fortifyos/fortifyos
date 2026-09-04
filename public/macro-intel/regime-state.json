@@ -1,31 +1,30 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-09-04T09:06:15.875505-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-09-04T14:01:47.887963-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
-    "growthHealth": 2,
+    "inflationPressure": 0,
+    "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 0,
-    "breadthQuality": 1,
-    "cryptoRiskAppetite": 0
+    "breadthQuality": -2,
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Growth Health strongly elevated (score: +2)",
-    "Inflation Pressure moderately suppressed (score: -1)",
+    "Breadth Quality strongly suppressed (score: -2)",
+    "Growth Health moderately elevated (score: +1)",
     "Volatility Stress moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Growth proxies constructive — SPX trending and volatility contained",
-    "Broad participation — cross-asset confirmation across equities and crypto"
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
