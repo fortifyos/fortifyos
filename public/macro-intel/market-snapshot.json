@@ -1,6 +1,6 @@
 {
-  "session": "pre_market",
-  "timestamp": "2026-09-05T13:05:42.397637-04:00",
+  "session": "mid_session",
+  "timestamp": "2026-09-05T15:51:57.161932-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 80091.0,
-      "changeSinceLast": 427.0,
-      "pctSinceLast": 0.536,
-      "changeVsClose": 404.013024,
-      "pctVsClose": 0.507,
+      "value": 79734.0,
+      "changeSinceLast": -357.0,
+      "pctSinceLast": -0.4457,
+      "changeVsClose": 15.146582,
+      "pctVsClose": 0.019,
       "impactTag": "neutral",
       "meta": {}
     },
