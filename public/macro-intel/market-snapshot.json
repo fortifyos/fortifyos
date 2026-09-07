@@ -1,6 +1,6 @@
 {
-  "session": "evening_wrap",
-  "timestamp": "2026-09-06T22:39:14.633875-04:00",
+  "session": "global_markets",
+  "timestamp": "2026-09-07T03:52:12.724626-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,23 +16,23 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 80097.0,
-      "changeSinceLast": 123.0,
-      "pctSinceLast": 0.1538,
-      "changeVsClose": 183.800359,
-      "pctVsClose": 0.23,
+      "value": 79339.0,
+      "changeSinceLast": -758.0,
+      "pctSinceLast": -0.9464,
+      "changeVsClose": -498.184028,
+      "pctVsClose": -0.624,
       "impactTag": "neutral",
       "meta": {}
     },
     {
       "key": "vix",
       "label": "CBOE VIX",
-      "value": 14.53,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.209932,
-      "pctVsClose": 1.466,
-      "impactTag": "bullish",
+      "value": 15.02,
+      "changeSinceLast": 0.49,
+      "pctSinceLast": 3.3723,
+      "changeVsClose": 0.489953,
+      "pctVsClose": 3.372,
+      "impactTag": "strongly_bullish",
       "meta": {}
     },
     {
@@ -60,11 +60,11 @@
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 99.17,
-      "changeSinceLast": 0.01,
-      "pctSinceLast": 0.0101,
-      "changeVsClose": 0.014873,
-      "pctVsClose": 0.015,
+      "value": 99.12,
+      "changeSinceLast": -0.05,
+      "pctSinceLast": -0.0504,
+      "changeVsClose": -0.041648,
+      "pctVsClose": -0.042,
       "impactTag": "neutral",
       "meta": {}
     },
