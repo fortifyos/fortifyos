@@ -94,8 +94,6 @@ const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const SELLERS={
 'Momodora Moonlit Farewell':['Limited Run Games','https://limitedrungames.com/products/momodora-moonlit-farewell-standard-edition-switch-ps5'],
 'Hollow Knight':['Fangamer','https://www.fangamer.com/collections/hollow-knight/products/hollow-knight-switch-ps4-pc-game'],
-'Sea of Stars':['iam8bit','https://www.iam8bit.com/products/sea-of-stars-nintendo-switch-exclusive-edition'],
-'UFO 50':['Fangamer','https://www.fangamer.com/products/ufo-50-game-nintendo-switch'],
 '1000xRESIST':['Fangamer','https://www.fangamer.com/search?q=1000xRESIST']
 };
 const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
