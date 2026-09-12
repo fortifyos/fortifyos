@@ -14,8 +14,10 @@
 <style>:root{--b:#0a0b0f;--p:#12141a;--l:#272c36;--t:#f5f7fa;--m:#9ba3af}*{box-sizing:border-box}html{background:var(--b)}body{margin:0;background:var(--b);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}.w{max-width:1500px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap;margin-bottom:22px}h1{margin:0;font-size:30px;letter-spacing:-.04em}header p{margin:6px 0 0;color:var(--m);font-size:13px}.f{display:flex;gap:8px;flex-wrap:wrap}button{border:1px solid var(--l);background:#11141a;color:#dfe3ea;padding:9px 13px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}button.a{background:#fff;color:#090a0d;border-color:#fff}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}.c{background:var(--p);border:1px solid var(--l);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}.v{position:relative;aspect-ratio:3/4.25;background:linear-gradient(180deg,#11141a,#0d0f14);overflow:hidden;border-bottom:1px solid #1e232d}.v img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;transform:scale(1.01);transition:transform .2s ease}.v img.mid{transform:scale(1.055)}.v img.square{transform:scale(1.16)}.v img.wide{transform:scale(1.24)}.i{padding:13px;display:flex;flex:1;flex-direction:column;min-height:128px}.p{font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:9px}.sw{color:#ff5260}.s2{color:#ff7b86}.ps{color:#77a0ff}h2{font-size:15px;line-height:1.28;margin:0;min-height:38px}.r{margin-top:auto;padding-top:12px;font-size:24px;font-weight:850}.r span{font-size:12px;color:var(--m);font-weight:600}.x{display:none}.ph{width:100%;height:100%;display:grid;place-items:center;padding:22px;text-align:center;font-weight:800;color:#dfe3ea;background:radial-gradient(circle at 50% 30%,#1c2230,#0d1016 70%)}footer{color:#6f7783;font-size:11px;margin-top:22px;padding-bottom:30px}@media(hover:hover){.c:hover .v img{transform:scale(1.045)}.c:hover .v img.mid{transform:scale(1.08)}.c:hover .v img.square{transform:scale(1.19)}.c:hover .v img.wide{transform:scale(1.27)}}@media(max-width:600px){.w{padding:16px 14px}header{margin-bottom:18px}h1{font-size:25px}.g{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.i{padding:10px;min-height:118px}h2{font-size:13px;min-height:34px}.r{font-size:21px}button{padding:8px 11px;font-size:12px}}</style>
 <style>
 .c{background:#111319;border-color:#252a33;border-radius:14px;transition:border-color .18s ease,transform .18s ease}
-.v{width:auto;aspect-ratio:2/3;margin:12px 12px 0;background:#080a0e;border:1px solid #343a45;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
-.v img,.v img.mid,.v img.square,.v img.wide{object-fit:contain;transform:none;background:#080a0e}
+.v{width:auto;margin:12px 12px 0;background:#080a0e;border:1px solid #343a45;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
+.c[data-p="sw"] .v,.c[data-p="s2"] .v{aspect-ratio:31/50}
+.c[data-p="ps"] .v{aspect-ratio:39/50}
+.v img,.v img.mid,.v img.square,.v img.wide{object-fit:cover;object-position:center;transform:none;background:#080a0e}
 @media(hover:hover){.c:hover{border-color:#3a414d;transform:translateY(-2px)}.c:hover .v img,.c:hover .v img.mid,.c:hover .v img.square,.c:hover .v img.wide{transform:none}}
 @media(max-width:600px){.v{margin:8px 8px 0}.i{padding-left:9px;padding-right:9px}}
 </style>
@@ -88,7 +90,7 @@
 ['ps','PlayStation 5','Final Fantasy VII Rebirth',9.2]
 ];
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const COVER_VERSION='20260912c';
+const COVER_VERSION='20260912d';
 const g=document.getElementById('g');
 D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.webp?v=${COVER_VERSION}`;a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="lazy">
