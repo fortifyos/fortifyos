@@ -18,8 +18,9 @@
 .c[data-p="sw"] .v,.c[data-p="s2"] .v{aspect-ratio:31/50}
 .c[data-p="ps"] .v{aspect-ratio:39/50}
 .v img,.v img.mid,.v img.square,.v img.wide{object-fit:cover;object-position:center;transform:none;background:#080a0e}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:8px 10px;border:1px solid #303641;border-radius:8px;color:#e8ebf0;text-decoration:none;font-size:11px;font-weight:750;background:#171a21;transition:border-color .18s ease,background .18s ease}.buy span{color:#8f98a6;font-size:10px;font-weight:650;white-space:nowrap}.buy:hover{background:#1c2028;border-color:#4a5260}
 @media(hover:hover){.c:hover{border-color:#3a414d;transform:translateY(-2px)}.c:hover .v img,.c:hover .v img.mid,.c:hover .v img.square,.c:hover .v img.wide{transform:none}}
-@media(max-width:600px){.v{margin:8px 8px 0}.i{padding-left:9px;padding-right:9px}}
+@media(max-width:600px){.v{margin:8px 8px 0}.i{padding-left:9px;padding-right:9px}.buy{padding:7px 8px}.buy span{display:none}}
 </style>
 </head>
 <body>
@@ -90,9 +91,17 @@
 ['ps','PlayStation 5','Final Fantasy VII Rebirth',9.2]
 ];
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const COVER_VERSION='20260912d';
+const SELLERS={
+'Momodora Moonlit Farewell':['Limited Run Games','https://limitedrungames.com/products/momodora-moonlit-farewell-standard-edition-switch-ps5'],
+'Hollow Knight':['Fangamer','https://www.fangamer.com/collections/hollow-knight/products/hollow-knight-switch-ps4-pc-game'],
+'Sea of Stars':['iam8bit','https://www.iam8bit.com/products/sea-of-stars-nintendo-switch-exclusive-edition'],
+'UFO 50':['Fangamer','https://www.fangamer.com/products/ufo-50-game-nintendo-switch'],
+'1000xRESIST':['Fangamer','https://www.fangamer.com/search?q=1000xRESIST']
+};
+const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
+const COVER_VERSION='20260912e';
 const g=document.getElementById('g');
-D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.webp?v=${COVER_VERSION}`;a.innerHTML=`<div class="v">
+D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.webp?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="lazy">
 </div>
 <div class="i">
@@ -100,6 +109,7 @@ D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';
 <h2>${t}</h2>
 <div class="r">${r.toFixed(1)}<span>/10</span>
 </div>
+<a class="buy" href="${s[1]}" target="_blank" rel="noopener">Buy physical <span>${s[0]} ↗</span></a>
 </div>`;const img=a.querySelector('img');img.addEventListener('error',()=>{img.parentElement.innerHTML=`<div class="ph">${t}</div>`});g.appendChild(a)});
 document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-f]').forEach(x=>x.classList.remove('a'));b.classList.add('a');document.querySelectorAll('.c').forEach(c=>c.classList.toggle('x',b.dataset.f!=='all'&&c.dataset.p!==b.dataset.f))});</script>
 </body>
