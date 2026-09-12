@@ -40,8 +40,9 @@
 </main>
 <script>const D=[['sw','Nintendo Switch','SIGNALIS',8.4],['sw','Nintendo Switch','Animal Well',9.0],['sw','Nintendo Switch','Crow Country',8.1],['sw','Nintendo Switch','Lorelei and the Laser Eyes',8.8],['sw','Nintendo Switch','Chained Echoes Complete Edition',9.0],['sw','Nintendo Switch','Momodora Moonlit Farewell',8.1],['sw','Nintendo Switch','TUNIC',8.5],['sw','Nintendo Switch','Inscryption',8.7],['sw','Nintendo Switch','OMORI',8.8],['sw','Nintendo Switch','ENDER LILIES Quietus of the Knights',8.4],['sw','Nintendo Switch','A Space for the Unbound',8.5],['sw','Nintendo Switch','Sea of Stars',9.0],['sw','Nintendo Switch','Persona 4 Golden',9.0],['s2','Nintendo Switch 2','Hades II',9.5],['s2','Nintendo Switch 2','The Legend of Zelda Tears of the Kingdom Switch 2 Edition',9.5],['s2','Nintendo Switch 2','Donkey Kong Bananza',9.1],['s2','Nintendo Switch 2','Hollow Knight Silksong',9.1],['s2','Nintendo Switch 2','Metroid Prime 4 Beyond',7.8],['ps','PlayStation 5','Clair Obscur Expedition 33',9.2],['ps','PlayStation 5','Silent Hill 2',8.6],['ps','PlayStation 5','Silent Hill f',8.6],['ps','PlayStation 5','Stellar Blade',8.1],['ps','PlayStation 5','Lies of P',8.0],['ps','PlayStation 5','Cyberpunk 2077 Ultimate Edition',8.5],['ps','PlayStation 5','Resident Evil Requiem',9.0],['ps','PlayStation 5','Metaphor ReFantazio',9.4],['ps','PlayStation 5','Armored Core VI Fires of Rubicon',8.6],['ps','PlayStation 5','Final Fantasy VII Rebirth',9.2]];
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const COVER_VERSION='a063586';
 const g=document.getElementById('g');
-D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.webp`;a.innerHTML=`<div class="v">
+D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.webp?v=${COVER_VERSION}`;a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="lazy">
 </div>
 <div class="i">
