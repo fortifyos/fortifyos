@@ -32,6 +32,7 @@
 </div>
 <nav class="f" aria-label="Platform filter">
 <a class="report" href="./research.html">Collector report</a>
+<a class="report" href="./sources.html">Release sources</a>
 <button class="a" data-f="all">All</button>
 <button data-f="ps">PS5</button>
 <button data-f="sw">Switch</button>
@@ -80,6 +81,8 @@
 ['s2','Nintendo Switch 2','Cyberpunk 2077 Ultimate Edition Switch 2',8.9],
 ['s2','Nintendo Switch 2','Blue Prince',9.2],
 ['s2','Nintendo Switch 2','Stellar Blade Complete Edition',8.1],
+['s2','Nintendo Switch 2','Mewgenics',8.9],
+['s2','Nintendo Switch 2','The Binding of Isaac Repentance+',8.9],
 ['ps','PlayStation 5','Tetris Effect Connected',9.3],
 ['ps','PlayStation 5','Cocoon',9.2],
 ['ps','PlayStation 5','Disco Elysium The Final Cut',8.9],
@@ -114,13 +117,15 @@ const SELLERS={
 'Cyberpunk 2077 Ultimate Edition Switch 2':['Amazon','https://www.amazon.com/s?k=Cyberpunk+2077+Ultimate+Edition+Nintendo+Switch+2+physical'],
 'Blue Prince':['VGP','https://videogamesplus.ca/products/blue-prince-nintendo-switch-2-pre-order'],
 'Stellar Blade Complete Edition':['PNP Games','https://pnpgamesonline.com/product/stellar-blade-complete-edition-switch-2-m/'],
+'Mewgenics':['VGP','https://videogamesplus.ca/products/mewgenics-nintendo-switch-2-pre-order'],
+'The Binding of Isaac Repentance+':['Nicalis','https://store.nicalis.com/products/repplus'],
 'Resident Evil 4':['Amazon','https://www.amazon.com/s?k=Resident+Evil+4+PS5+physical'],
 'Astro Bot':['Amazon','https://www.amazon.com/s?k=Astro+Bot+PS5+physical'],
 'Alan Wake 2 Deluxe Edition':['Amazon','https://www.amazon.com/s?k=Alan+Wake+2+Deluxe+Edition+PS5+physical'],
 'Nine Sols':['Fangamer','https://www.fangamer.com/search?q=Nine+Sols']
 };
 const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
-const COVER_VERSION='20260913a';
+const COVER_VERSION='20260913b';
 const g=document.getElementById('g');
 D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.webp?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="lazy">
