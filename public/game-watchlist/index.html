@@ -30,7 +30,7 @@
 <span class="kicker">Quality first · scarcity verified</span>
 <h1>Physical Game Watchlist</h1>
 <p>PS5 · Nintendo Switch · Nintendo Switch 2 · Updated September 14, 2026</p>
-<div class="hero-stats"><div><strong>60</strong><span>Curated games</span></div><div><strong>3</strong><span>Active platforms</span></div><div><strong>Weekly</strong><span>Collector intelligence</span></div></div>
+<div class="hero-stats"><div><strong>62</strong><span>Curated games</span></div><div><strong>3</strong><span>Active platforms</span></div><div><strong>Weekly</strong><span>Collector intelligence</span></div></div>
 </div>
 <nav class="f" aria-label="Platform filter">
 <a class="report" href="./research.html">Collector report</a>
@@ -47,11 +47,13 @@
 <footer>North American and English-friendly Japanese physical releases · Curated for quality, scarcity, and near-retail opportunity.</footer>
 </main>
 <script>const D=[
+['sw','Nintendo Switch','Super Mario Odyssey',9.7],
 ['sw','Nintendo Switch','The House in Fata Morgana Dreams of the Revenants Edition',9.6],
 ['sw','Nintendo Switch','Hades',9.3],
 ['sw','Nintendo Switch','Ori and the Will of the Wisps',9.3],
 ['sw','Nintendo Switch','Undertale',9.3],
 ['sw','Nintendo Switch','Celeste',9.2],
+['sw','Nintendo Switch','Mario Kart 8 Deluxe',9.1],
 ['sw','Nintendo Switch','Shovel Knight Treasure Trove',9.1],
 ['sw','Nintendo Switch','UFO 50',9.1],
 ['sw','Nintendo Switch','Hollow Knight',9.0],
@@ -110,6 +112,8 @@
 ];
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const SELLERS={
+'Super Mario Odyssey':['Best Buy','https://www.bestbuy.com/product/super-mario-odyssey-nintendo-switch/J7GSL48ZXH'],
+'Mario Kart 8 Deluxe':['Nintendo','https://www.nintendo.com/us/store/products/mario-kart-8-deluxe-switch/'],
 'Momodora Moonlit Farewell':['Limited Run Games','https://limitedrungames.com/products/momodora-moonlit-farewell-standard-edition-switch-ps5'],
 'Hollow Knight':['Fangamer','https://www.fangamer.com/collections/hollow-knight/products/hollow-knight-switch-ps4-pc-game'],
 '1000xRESIST':['Fangamer','https://www.fangamer.com/search?q=1000xRESIST'],
@@ -128,7 +132,7 @@ const SELLERS={
 'Nine Sols':['Fangamer','https://www.fangamer.com/search?q=Nine+Sols']
 };
 const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
-const COVER_VERSION='20260914a';
+const COVER_VERSION='20260914b';
 const g=document.getElementById('g');
 D.forEach(([k,p,t,r])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let u=`./covers/${slug(t)}.jpg?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="lazy">
