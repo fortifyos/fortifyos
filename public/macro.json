@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 64.46,
-    "change": -0.146
+    "value": 63.58,
+    "change": -2.474
   },
   "gold": {
-    "value": 4374.3,
-    "change": 0.186
+    "value": 4336.2,
+    "change": -1.649
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 77624,
-    "change": 0.454
+    "value": 77707,
+    "change": 1.309
   },
   "eth": {
-    "value": 2512.15,
-    "change": -0.313
+    "value": 2511.91,
+    "change": 1.412
   },
   "oil": {
-    "value": 102.81,
-    "change": 2.759
+    "value": 103.05,
+    "change": 2.999
   },
   "spy": {
     "value": 764.29,
     "change": 0.248
   },
   "vix": {
-    "value": 15.84,
-    "change": -11.211
+    "value": 17.53,
+    "change": 10.669
   },
   "sp500": {
     "value": 7656.98,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 100.98,
-    "change": -0.926
+    "value": 101.56,
+    "change": 1.8
   },
   "xrp": {
-    "value": 1.37,
-    "change": 0.099
+    "value": 1.4,
+    "change": 4.312
   },
   "doge": {
-    "value": 0.08408,
-    "change": -1.101
+    "value": 0.08415,
+    "change": 0.782
   },
   "ada": {
-    "value": 0.20746,
-    "change": -0.16
+    "value": 0.21038,
+    "change": 2.926
   },
   "avax": {
-    "value": 7.41,
-    "change": -0.046
+    "value": 7.38,
+    "change": 0.839
   },
   "link": {
     "value": 11.38,
-    "change": -1.165
+    "change": 0.774
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-09-14"
     },
     "SOL": {
-      "value": 100.96,
-      "change": 1.723,
+      "value": 101.57,
+      "change": 2.342,
       "asOf": "2026-09-14"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.08,
-      "change": 2.03,
+      "change": 2.122,
       "asOf": "2026-09-14"
     }
   },
   "dxy": {
-    "value": 99.25,
-    "change": 0.128
+    "value": 99.5,
+    "change": 0.381
   },
   "tnx": {
     "value": 4.97,
