@@ -97,7 +97,7 @@ const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeUR
 const COVER_VERSION='20260913b';
 const g=document.getElementById('g');
 D.forEach(([k,p,t,status])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let file=slug(t),u=`./covers/${file}.jpg?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
-<img src="${u}" alt="${t} cover" loading="lazy">
+<img src="${u}" alt="${t} cover" loading="eager" decoding="async">
 </div>
 <div class="i">
 <div class="p ${k}">${p}</div>
