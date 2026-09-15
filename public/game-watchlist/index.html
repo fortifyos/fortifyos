@@ -95,9 +95,8 @@ const SELLERS={
 };
 const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
 const COVER_VERSION='20260913b';
-const JPG=new Set(['metroid-prime-4-beyond-switch-2-edition','pokemon-legends-z-a-switch-2-edition','the-legend-of-zelda-ocarina-of-time','fire-emblem-fortune-s-weave','metroid-ravenous','professor-layton-and-the-new-world-of-steam','onimusha-way-of-the-sword','indiana-jones-and-the-great-circle']);
 const g=document.getElementById('g');
-D.forEach(([k,p,t,status])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let file=slug(t),u=`./covers/${file}.${JPG.has(file)?'jpg':'webp'}?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
+D.forEach(([k,p,t,status])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let file=slug(t),u=`./covers/${file}.jpg?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="lazy">
 </div>
 <div class="i">
