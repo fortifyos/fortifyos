@@ -43,7 +43,7 @@ a,button{transition:color .18s ease,border-color .18s ease,background .18s ease,
 .watchlist .c{position:relative;border-color:#2c3037;border-radius:2px;background:linear-gradient(180deg,#121419,#0e1014);box-shadow:0 10px 30px rgba(0,0,0,.2)}
 .watchlist .c:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--editorial-red);transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
 .watchlist .c:hover{border-color:#5a606b;transform:translateY(-3px)}.watchlist .c:hover:after{transform:scaleX(1)}
-.watchlist .v{aspect-ratio:7/10!important;margin:0;border:0;border-bottom:1px solid #353a43;border-radius:0;background:#050609}.watchlist .v img,.watchlist .v img.mid,.watchlist .v img.square,.watchlist .v img.wide{width:100%;height:100%;object-fit:cover;object-position:center;transform:none}
+.watchlist .v{aspect-ratio:7/10!important;margin:0;border:0;border-bottom:1px solid #353a43;border-radius:0;background:#050609}.watchlist .v img,.watchlist .v img.mid,.watchlist .v img.square,.watchlist .v img.wide{width:100%;height:100%;object-fit:contain;object-position:center;transform:none;background:#050609}
 .watchlist .i{padding:13px 12px 15px}.watchlist .p{letter-spacing:.14em}.watchlist h2{font-size:14px;letter-spacing:-.01em}.watchlist .r{font-family:"Arial Narrow",Impact,sans-serif;font-size:28px;letter-spacing:-.03em}
 .watchlist .buy{border-radius:1px;border-color:#343942;background:#17191e;text-transform:uppercase;letter-spacing:.035em}.watchlist .buy:hover{border-color:var(--editorial-red);background:#1b1d23}
 
@@ -70,6 +70,28 @@ a,button{transition:color .18s ease,border-color .18s ease,background .18s ease,
 .sources-page section{margin-top:34px}.sources-page .card p,.sources-page .opportunity p{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}.sources-page .card{min-height:220px}.sources-page .opportunity{min-height:220px}
 .deadlines-page .case{border-left:4px solid var(--editorial-red)}
 .deadlines-page .method{border-left-color:var(--editorial-red)}
+
+/* Readable display type: avoid condensed local-font substitutions and collisions. */
+.site-brand span,.home-grid span,
+.watchlist h1,.watchlist .r,
+.report-page h1,.sources-page h1,.deadlines-page h1,
+.report-page h2,.sources-page h2,.deadlines-page h2,
+.report-page .stat strong,.sources-page .summary strong,.deadlines-page .summary strong,
+.ultimate .hero h1,.ultimate .numbers strong,
+.ultimate .charter-card h2,.ultimate .section-head h2{
+  font-family:Arial,Helvetica,sans-serif!important;
+  font-stretch:normal!important;
+  font-weight:900!important;
+}
+.watchlist h1,.report-page h1,.sources-page h1,.deadlines-page h1,.ultimate .hero h1{
+  line-height:1.02!important;
+  letter-spacing:-.025em!important;
+}
+.watchlist .r,.report-page .stat strong,.sources-page .summary strong,.deadlines-page .summary strong,.ultimate .numbers strong{
+  line-height:1.05!important;
+  letter-spacing:-.02em!important;
+}
+.ultimate .cover-frame img{object-fit:contain!important;object-position:center!important;background:#050609}
 
 @media(max-width:700px){
   body:before{background-size:28px 28px}
