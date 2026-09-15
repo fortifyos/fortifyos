@@ -46,7 +46,7 @@
 <span class="kicker">Future releases · open preorders</span>
 <h1>Upcoming</h1>
 <p>Games not on the shelf yet.</p>
-<div class="hero-stats"><div><strong>13</strong><span>Tracked releases</span></div><div><strong>3</strong><span>Platforms</span></div><div><strong>Weekly</strong><span>Review</span></div></div>
+<div class="hero-stats"><div><strong>18</strong><span>Tracked releases</span></div><div><strong>3</strong><span>Platforms</span></div><div><strong>Weekly</strong><span>Review</span></div></div>
 </div>
 <nav class="f" aria-label="Platform filter">
 <button class="a" data-f="all">All</button>
@@ -72,7 +72,12 @@
 ['s2','Nintendo Switch 2','Mewgenics','Preorder'],
 ['s2','Nintendo Switch 2','The Binding of Isaac Repentance','Preorder'],
 ['s2','Nintendo Switch 2','Stellar Blade Complete Edition','Preorder'],
-['ps','PlayStation 5','Resident Evil Requiem','Watch']
+['s2','Nintendo Switch 2','Hollow Knight Nintendo Switch 2 Edition','Full-cart preorder'],
+['s2','Nintendo Switch 2','Hollow Knight Silksong Nintendo Switch 2 Edition','Full-cart preorder'],
+['s2','Nintendo Switch 2','Xenoblade Chronicles 2 Nintendo Switch 2 Edition','Full-cart preorder'],
+['s2','Nintendo Switch 2','Dave the Diver Complete Edition','Full-cart preorder'],
+['ps','PlayStation 5','Resident Evil Requiem','Watch'],
+['ps','PlayStation 5','Ghost of Yotei Complete Edition','Verify disc']
 ];
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const SELLERS={
@@ -91,12 +96,25 @@ const SELLERS={
 'Resident Evil 4':['Amazon','https://www.amazon.com/s?k=Resident+Evil+4+PS5+physical'],
 'Astro Bot':['Amazon','https://www.amazon.com/s?k=Astro+Bot+PS5+physical'],
 'Alan Wake 2 Deluxe Edition':['Amazon','https://www.amazon.com/s?k=Alan+Wake+2+Deluxe+Edition+PS5+physical'],
-'Nine Sols':['Fangamer','https://www.fangamer.com/search?q=Nine+Sols']
+'Nine Sols':['Fangamer','https://www.fangamer.com/search?q=Nine+Sols'],
+'Hollow Knight Nintendo Switch 2 Edition':['Play-Asia','https://www.play-asia.com/en/hollow-knight-nintendo-switch-2-edition/13/70jfhv'],
+'Hollow Knight Silksong Nintendo Switch 2 Edition':['Play-Asia','https://www.play-asia.com/en/hollow-knight-silksong-nintendo-switch-2-edition/13/70jzld'],
+'Xenoblade Chronicles 2 Nintendo Switch 2 Edition':['Play-Asia','https://www.play-asia.com/en/xenoblade-chronicles-2-nintendo-switch-2-edition/13/70k1db'],
+'Dave the Diver Complete Edition':['Play-Asia','https://www.play-asia.com/en/dave-the-diver-complete-edition/13/70jqev'],
+'Ghost of Yotei Complete Edition':['Play-Asia','https://www.play-asia.com/en/ghost-of-yotei-complete-edition-multi-language/13/70kcc7']
 };
 const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
+const COVER_FILES={
+'Blue Prince':'blue-prince.webp',
+'Hollow Knight Nintendo Switch 2 Edition':'hollow-knight.webp',
+'Hollow Knight Silksong Nintendo Switch 2 Edition':'hollow-knight-silksong.webp',
+'Xenoblade Chronicles 2 Nintendo Switch 2 Edition':'xenoblade-chronicles-2.jpg',
+'Dave the Diver Complete Edition':'dave-the-diver-anniversary-edition.webp',
+'Ghost of Yotei Complete Edition':'ghost-of-yotei.jpg'
+};
 const COVER_VERSION='20260913b';
 const g=document.getElementById('g');
-D.forEach(([k,p,t,status])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let file=slug(t),u=`./covers/${file}.jpg?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
+D.forEach(([k,p,t,status])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let file=COVER_FILES[t]||`${slug(t)}.jpg`,u=`./covers/${file}?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
 <img src="${u}" alt="${t} cover" loading="eager" decoding="async">
 </div>
 <div class="i">
