@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 63.66,
-    "change": 0.663
+    "value": 64.42,
+    "change": 0.205
   },
   "gold": {
-    "value": 4316.5,
-    "change": -0.376
+    "value": 4354.6,
+    "change": -0.75
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 76394,
-    "change": 0.778
+    "value": 76244,
+    "change": 0.459
   },
   "eth": {
-    "value": 2431.8,
-    "change": 1.284
+    "value": 2429.89,
+    "change": 1.091
   },
   "oil": {
-    "value": 102.35,
-    "change": -3.288
+    "value": 100.69,
+    "change": -1.699
   },
   "spy": {
     "value": 754.05,
     "change": -0.898
   },
   "vix": {
-    "value": 17.71,
-    "change": 2.965
+    "value": 15.97,
+    "change": -9.825
   },
   "sp500": {
     "value": 7551.81,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 99.46,
-    "change": 2.455
+    "value": 99.61,
+    "change": 2.41
   },
   "xrp": {
-    "value": 1.3,
-    "change": 0.844
+    "value": 1.29,
+    "change": 0.284
   },
   "doge": {
-    "value": 0.081,
-    "change": 1.28
+    "value": 0.08064,
+    "change": 0.986
   },
   "ada": {
-    "value": 0.19554,
-    "change": 0.59
+    "value": 0.19762,
+    "change": 1.689
   },
   "avax": {
-    "value": 7.53,
-    "change": 3.548
+    "value": 7.52,
+    "change": 3.661
   },
   "link": {
-    "value": 11.14,
-    "change": 2.587
+    "value": 11.1,
+    "change": 2.692
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-09-17"
     },
     "SOL": {
-      "value": 99.45,
-      "change": 0.827,
+      "value": 99.63,
+      "change": 1.002,
       "asOf": "2026-09-17"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.08,
-      "change": 0.124,
+      "change": -0.255,
       "asOf": "2026-09-17"
     }
   },
   "dxy": {
-    "value": 100.34,
-    "change": 0.695
+    "value": 100.17,
+    "change": -0.136
   },
   "tnx": {
     "value": 5.01,
