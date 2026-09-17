@@ -22,6 +22,8 @@
 @media(hover:hover){.c:hover{border-color:#3a414d;transform:translateY(-2px)}.c:hover .v img,.c:hover .v img.mid,.c:hover .v img.square,.c:hover .v img.wide{transform:none}}
 @media(max-width:600px){.v{margin:8px 8px 0}.i{padding-left:9px;padding-right:9px}.buy{padding:7px 8px}.buy span{display:none}}
 .up-status{margin:10px 0 2px;color:#ff778f;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.catalog-tools{display:grid;grid-template-columns:minmax(240px,1fr) auto auto;gap:9px;margin:0 0 12px}.catalog-tools input,.catalog-tools select{min-height:43px;border:1px solid #353a43;border-radius:1px;background:#11141a;color:#f5f7fa;padding:0 13px;font:inherit;font-size:13px}.catalog-tools input:focus,.catalog-tools select:focus{outline:2px solid #f20f45;outline-offset:1px}.catalog-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 18px;color:#8f98a6;font-size:12px}.catalog-summary p{margin:0}.catalog-summary strong{color:#f3f5f8}.preorder-card .v{position:relative}.availability{position:absolute;top:9px;right:9px;padding:6px 8px;background:rgba(5,7,10,.9);border:1px solid #404650;color:#fff;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.availability.open{border-color:#4fa978;color:#8de7b2}.availability.restock{border-color:#b77d43;color:#f0bb79}.preorder-card .i{min-height:230px}.preorder-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 8px}.preorder-meta span{min-width:0;padding-top:6px;border-top:1px solid #292e37;color:#aeb6c1;font-size:10px;line-height:1.3}.preorder-meta .warning{color:#ff9b72}.language{margin-top:auto;color:#747d89;font-size:9px;line-height:1.4}.preorder-card .buy{margin-top:9px}.load-more-wrap{display:flex;justify-content:center;padding:26px 0 6px}.load-more{min-width:210px;border-radius:1px!important;border-color:#4a505b!important}.catalog-error{grid-column:1/-1;padding:36px;border:1px solid #353a43;color:#c3c9d2;text-align:center}
+@media(max-width:700px){.catalog-tools{grid-template-columns:1fr 1fr}.catalog-tools input{grid-column:1/-1}.catalog-summary{align-items:flex-start;flex-direction:column}.preorder-card .i{min-height:245px}.preorder-meta{grid-template-columns:1fr}.preorder-meta span:nth-child(2){display:none}}
 </style>
 <link rel="stylesheet" href="./editorial.css?v=20260915c">
 </head>
@@ -43,10 +45,10 @@
 </section>
 <header id="watchlist" class="watchlist-hero">
 <div>
-<span class="kicker">Future releases · open preorders</span>
-<h1>Upcoming</h1>
-<p>Games not on the shelf yet.</p>
-<div class="hero-stats"><div><strong>18</strong><span>Tracked releases</span></div><div><strong>3</strong><span>Platforms</span></div><div><strong>Weekly</strong><span>Review</span></div></div>
+<span class="kicker">Physical releases · preorder research</span>
+<h1>Preorder index</h1>
+<p>Every tracked physical edition is listed separately so standard, collector, limited, import, and reprint versions are easy to compare.</p>
+<div class="hero-stats"><div><strong id="tracked-total">—</strong><span>Tracked editions</span></div><div><strong id="open-total">—</strong><span>Open preorders</span></div><div><strong>3</strong><span>Platforms</span></div></div>
 </div>
 <nav class="f" aria-label="Platform filter">
 <button class="a" data-f="all">All</button>
@@ -55,79 +57,17 @@
 <button data-f="s2">Switch 2</button>
 </nav>
 </header>
+<section class="catalog-tools" aria-label="Preorder search and filters">
+<input id="preorder-search" type="search" placeholder="Search title, edition, region, or media type" aria-label="Search preorders">
+<select id="edition-filter" aria-label="Filter by edition"><option value="all">All editions</option><option>Standard</option><option>Collector</option><option>Limited</option><option>Steelbook</option><option>Complete / Deluxe</option><option>Reprint</option></select>
+<select id="availability-filter" aria-label="Filter by availability"><option value="all">Open + restock watch</option><option value="open">Preorder open</option><option value="restock">Sold out / restock watch</option></select>
+</section>
+<div class="catalog-summary"><strong id="result-count">Loading catalog…</strong><p>Retailer snapshot <span id="catalog-date">—</span> · “Verify” means the listing does not yet prove English support or full-on-media status.</p></div>
 <section class="g" id="g">
 </section>
-<footer>Future releases and physical preorders · Updated weekly.</footer>
+<div class="load-more-wrap"><button id="load-more" class="load-more" hidden>Show more</button></div>
+<footer>Physical preorder catalog · Standard and collector editions are separate · Sold-out listings remain visible for restock research.</footer>
 </main>
-<script>const D=[
-['s2','Nintendo Switch 2','Metroid Prime 4 Beyond Switch 2 Edition','Announced'],
-['s2','Nintendo Switch 2','Pokemon Legends Z-A Switch 2 Edition','Announced'],
-['s2','Nintendo Switch 2','The Legend of Zelda Ocarina of Time','Preorder'],
-['s2','Nintendo Switch 2','Fire Emblem Fortune\'s Weave','Announced'],
-['s2','Nintendo Switch 2','Metroid Ravenous','Announced'],
-['s2','Nintendo Switch 2','Professor Layton and the New World of Steam','Watch'],
-['s2','Nintendo Switch 2','Onimusha Way of the Sword','Watch'],
-['s2','Nintendo Switch 2','Indiana Jones and the Great Circle','Announced'],
-['s2','Nintendo Switch 2','Blue Prince','Preorder'],
-['s2','Nintendo Switch 2','Mewgenics','Preorder'],
-['s2','Nintendo Switch 2','The Binding of Isaac Repentance','Preorder'],
-['s2','Nintendo Switch 2','Stellar Blade Complete Edition','Preorder'],
-['s2','Nintendo Switch 2','Hollow Knight Nintendo Switch 2 Edition','Full-cart preorder'],
-['s2','Nintendo Switch 2','Hollow Knight Silksong Nintendo Switch 2 Edition','Full-cart preorder'],
-['s2','Nintendo Switch 2','Xenoblade Chronicles 2 Nintendo Switch 2 Edition','Full-cart preorder'],
-['s2','Nintendo Switch 2','Dave the Diver Complete Edition','Full-cart preorder'],
-['ps','PlayStation 5','Resident Evil Requiem','Watch'],
-['ps','PlayStation 5','Ghost of Yotei Complete Edition','Verify disc']
-];
-const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const SELLERS={
-'Momodora Moonlit Farewell':['Limited Run Games','https://limitedrungames.com/products/momodora-moonlit-farewell-standard-edition-switch-ps5'],
-'Hollow Knight':['Fangamer','https://www.fangamer.com/collections/hollow-knight/products/hollow-knight-switch-ps4-pc-game'],
-'1000xRESIST':['Fangamer','https://www.fangamer.com/search?q=1000xRESIST'],
-'Divinity Original Sin II Definitive Edition':['eBay','https://www.ebay.com/sch/i.html?_nkw=Divinity+Original+Sin+II+Definitive+Edition+Nintendo+Switch+Limited+Run'],
-'The Messenger':['eBay','https://www.ebay.com/sch/i.html?_nkw=The+Messenger+Nintendo+Switch+physical'],
-'Ikaruga':['Nicalis','https://store.nicalis.com/products/ikaruga'],
-'Dave the Diver Anniversary Edition':['PNP Games','https://pnpgamesonline.com/product/dave-the-diver-anniversary-edition-multi-language-jpim-switch-rp/'],
-'Cyberpunk 2077 Ultimate Edition Switch 2':['Amazon','https://www.amazon.com/s?k=Cyberpunk+2077+Ultimate+Edition+Nintendo+Switch+2+physical'],
-'Blue Prince':['VGP','https://videogamesplus.ca/products/blue-prince-nintendo-switch-2-pre-order'],
-'Stellar Blade Complete Edition':['PNP Games','https://pnpgamesonline.com/product/stellar-blade-complete-edition-switch-2-m/'],
-'Mewgenics':['VGP','https://videogamesplus.ca/products/mewgenics-nintendo-switch-2-pre-order'],
-'The Binding of Isaac Repentance+':['Nicalis','https://store.nicalis.com/products/repplus'],
-'The Binding of Isaac Repentance':['Nicalis','https://store.nicalis.com/products/repplus'],
-'Resident Evil 4':['Amazon','https://www.amazon.com/s?k=Resident+Evil+4+PS5+physical'],
-'Astro Bot':['Amazon','https://www.amazon.com/s?k=Astro+Bot+PS5+physical'],
-'Alan Wake 2 Deluxe Edition':['Amazon','https://www.amazon.com/s?k=Alan+Wake+2+Deluxe+Edition+PS5+physical'],
-'Nine Sols':['Fangamer','https://www.fangamer.com/search?q=Nine+Sols'],
-'Hollow Knight Nintendo Switch 2 Edition':['Play-Asia','https://www.play-asia.com/en/hollow-knight-nintendo-switch-2-edition/13/70jfhv'],
-'Hollow Knight Silksong Nintendo Switch 2 Edition':['Play-Asia','https://www.play-asia.com/en/hollow-knight-silksong-nintendo-switch-2-edition/13/70jzld'],
-'Xenoblade Chronicles 2 Nintendo Switch 2 Edition':['Play-Asia','https://www.play-asia.com/en/xenoblade-chronicles-2-nintendo-switch-2-edition/13/70k1db'],
-'Dave the Diver Complete Edition':['Play-Asia','https://www.play-asia.com/en/dave-the-diver-complete-edition/13/70jqev'],
-'Ghost of Yotei Complete Edition':['Play-Asia','https://www.play-asia.com/en/ghost-of-yotei-complete-edition-multi-language/13/70kcc7']
-};
-const seller=(t,p)=>SELLERS[t]||['Amazon',`https://www.amazon.com/s?k=${encodeURIComponent(`${t} ${p} physical game`)}`];
-const COVER_FILES={
-'Blue Prince':'blue-prince.jpg',
-'Mewgenics':'mewgenics.jpg',
-'The Binding of Isaac Repentance':'the-binding-of-isaac-repentance.jpg',
-'Stellar Blade Complete Edition':'stellar-blade-complete-edition.jpg',
-'Resident Evil Requiem':'resident-evil-requiem.jpg',
-'Hollow Knight Nintendo Switch 2 Edition':'hollow-knight.jpg',
-'Hollow Knight Silksong Nintendo Switch 2 Edition':'hollow-knight-silksong.jpg',
-'Xenoblade Chronicles 2 Nintendo Switch 2 Edition':'xenoblade-chronicles-2.jpg',
-'Dave the Diver Complete Edition':'dave-the-diver-anniversary-edition.jpg',
-'Ghost of Yotei Complete Edition':'ghost-of-yotei.jpg'
-};
-const COVER_VERSION='20260913b';
-const g=document.getElementById('g');
-D.forEach(([k,p,t,status])=>{let a=document.createElement('article');a.className='c';a.dataset.p=k;let file=COVER_FILES[t]||`${slug(t)}.jpg`,u=`./covers/${file}?v=${COVER_VERSION}`,s=seller(t,p);a.innerHTML=`<div class="v">
-<img src="${u}" alt="${t} cover" loading="eager" decoding="async">
-</div>
-<div class="i">
-<div class="p ${k}">${p}</div>
-<h2>${t}</h2>
-<div class="up-status">${status}</div>
-<a class="buy" href="${s[1]}" target="_blank" rel="noopener">Find physical <span>${s[0]} ↗</span></a>
-</div>`;const img=a.querySelector('img');img.addEventListener('error',()=>{img.parentElement.innerHTML=`<div class="ph">${t}</div>`});g.appendChild(a)});
-document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-f]').forEach(x=>x.classList.remove('a'));b.classList.add('a');document.querySelectorAll('.c').forEach(c=>c.classList.toggle('x',b.dataset.f!=='all'&&c.dataset.p!==b.dataset.f))});</script>
+<script src="./preorders.js?v=20260917a"></script>
 </body>
 </html>
