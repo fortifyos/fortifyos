@@ -1,31 +1,35 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-09-18T14:02:03.994025-04:00",
+  "timestamp": "2026-09-18T18:58:42.000515-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.21,
+  "confidence": 0.33,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
-    "growthHealth": 0,
-    "volatilityStress": 0,
+    "growthHealth": 1,
+    "volatilityStress": -1,
     "dollarPressure": 0,
     "breadthQuality": 1,
     "cryptoRiskAppetite": 2
   },
-  "priorRegimeMode": "mixed",
-  "regimeChanged": true,
+  "priorRegimeMode": "crypto_speculation",
+  "regimeChanged": false,
   "dominantDrivers": [
     "Crypto Risk Appetite strongly elevated (score: +2)",
-    "Breadth Quality moderately elevated (score: +1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Growth Health moderately elevated (score: +1)",
+    "Volatility Stress moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
+    "VIX compressed — low implied volatility supporting risk-carrying capacity",
+    "Growth proxies constructive — SPX trending and volatility contained",
     "Broad participation — cross-asset confirmation across equities and crypto",
     "BTC leading risk assets — crypto risk appetite outpacing equity moves"
   ],
   "watchLevels": [
+    "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+    "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
