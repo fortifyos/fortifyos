@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-09-18T18:58:42.000515-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-09-18T22:56:07.034708-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
   "confidence": 0.33,
