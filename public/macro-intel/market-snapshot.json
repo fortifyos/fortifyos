@@ -1,6 +1,6 @@
 {
   "session": "mid_session",
-  "timestamp": "2026-09-19T15:58:35.328948-04:00",
+  "timestamp": "2026-09-19T18:38:09.047241-04:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 81327.0,
-      "changeSinceLast": -131.0,
-      "pctSinceLast": -0.1608,
-      "changeVsClose": 133.968502,
-      "pctVsClose": 0.165,
+      "value": 81085.0,
+      "changeSinceLast": -242.0,
+      "pctSinceLast": -0.2976,
+      "changeVsClose": -17.031427,
+      "pctVsClose": -0.021,
       "impactTag": "neutral",
       "meta": {}
     },
