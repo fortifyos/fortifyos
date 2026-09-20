@@ -1,13 +1,13 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-09-19T23:09:23.175864-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-09-20T06:32:30.235547-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": -1,
     "growthHealth": 1,
     "volatilityStress": -1,
     "dollarPressure": 0,
@@ -18,10 +18,11 @@
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
-    "Growth Health moderately elevated (score: +1)",
-    "Volatility Stress moderately suppressed (score: -1)"
+    "Inflation Pressure moderately suppressed (score: -1)",
+    "Growth Health moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
+    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"

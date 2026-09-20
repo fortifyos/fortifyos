@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-09-19",
+    "regimeMode": "mixed",
+    "dominantDrivers": [],
+    "entryCount": 6,
+    "archivePath": "archive/2026-09-19.json",
+    "archivedAt": "2026-09-20T06:32:30.233230-04:00",
+    "status": "archived"
+  },
+  {
     "date": "2026-09-18",
     "regimeMode": "crypto_speculation",
     "dominantDrivers": [],
@@ -798,15 +807,6 @@
     "entryCount": 5,
     "archivePath": "archive/2026-06-22.json",
     "archivedAt": "2026-06-23T02:48:16.788554-04:00",
-    "status": "archived"
-  },
-  {
-    "date": "2026-06-21",
-    "regimeMode": "mixed",
-    "dominantDrivers": [],
-    "entryCount": 6,
-    "archivePath": "archive/2026-06-21.json",
-    "archivedAt": "2026-06-22T07:46:28.940277-04:00",
     "status": "archived"
   }
 ]
