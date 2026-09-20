@@ -1,0 +1,57 @@
+{
+  "items": [
+    {
+      "id": "s2-mewgenics-vgp-direct",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Mewgenics",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English listed",
+      "media": "Physical media · verify",
+      "release": "March 31, 2027",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/mewgenics-nintendo-switch-2-pre-order",
+      "cover": "./covers/mewgenics.jpg"
+    },
+    {
+      "id": "s2-binding-of-isaac-repentance-plus-nicalis",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "The Binding of Isaac: Repentance+",
+      "edition": "Complete / Deluxe",
+      "region": "North America",
+      "language": "Verify",
+      "media": "Physical media · verify",
+      "release": "November 19, 2026",
+      "availability": "Preorder open",
+      "seller": "Nicalis Store",
+      "url": "https://store.nicalis.com/products/repplus",
+      "cover": "./covers/the-binding-of-isaac-repentance.jpg"
+    },
+    {
+      "id": "s2-metroid-ravenous-special-official",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Metroid Ravenous: Special Edition",
+      "edition": "Limited",
+      "region": "North America",
+      "language": "English listed",
+      "media": "Physical media · verify",
+      "release": "January 28, 2027",
+      "availability": "Announced · preorder TBD",
+      "seller": "Nintendo",
+      "url": "https://www.nintendo.com/us/store/products/metroid-ravenous-switch-2/",
+      "cover": "./covers/metroid-ravenous.jpg"
+    }
+  ],
+  "alternatives": {
+    "s2-hollow-knight-nintendo-switch-2-edition-nintendo-switch-2-pre-order": [
+      { "seller": "Play-Asia", "url": "https://www.play-asia.com/en/hollow-knight-nintendo-switch-2-edition/13/70jfhv" }
+    ],
+    "s2-hollow-knight-silksong-nintendo-switch-2-edition-nintendo-switch-2-pre-order": [
+      { "seller": "Play-Asia", "url": "https://www.play-asia.com/en/hollow-knight-silksong-nintendo-switch-2-edition/13/70jzld" }
+    ]
+  }
+}

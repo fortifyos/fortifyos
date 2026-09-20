@@ -22,7 +22,7 @@
 @media(hover:hover){.c:hover{border-color:#3a414d;transform:translateY(-2px)}.c:hover .v img,.c:hover .v img.mid,.c:hover .v img.square,.c:hover .v img.wide{transform:none}}
 @media(max-width:600px){.v{margin:8px 8px 0}.i{padding-left:9px;padding-right:9px}.buy{padding:7px 8px}.buy span{display:none}}
 .up-status{margin:10px 0 2px;color:#ff778f;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
-.catalog-tools{display:grid;grid-template-columns:minmax(240px,1fr) auto auto;gap:9px;margin:0 0 12px}.catalog-tools input,.catalog-tools select{min-height:43px;border:1px solid #353a43;border-radius:1px;background:#11141a;color:#f5f7fa;padding:0 13px;font:inherit;font-size:13px}.catalog-tools input:focus,.catalog-tools select:focus{outline:2px solid #f20f45;outline-offset:1px}.catalog-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 18px;color:#8f98a6;font-size:12px}.catalog-summary p{margin:0}.catalog-summary strong{color:#f3f5f8}.preorder-card .v{position:relative}.availability{position:absolute;top:9px;right:9px;padding:6px 8px;background:rgba(5,7,10,.9);border:1px solid #404650;color:#fff;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.availability.open{border-color:#4fa978;color:#8de7b2}.availability.restock{border-color:#b77d43;color:#f0bb79}.preorder-card .i{min-height:230px}.preorder-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 8px}.preorder-meta span{min-width:0;padding-top:6px;border-top:1px solid #292e37;color:#aeb6c1;font-size:10px;line-height:1.3}.preorder-meta .warning{color:#ff9b72}.language{margin-top:auto;color:#747d89;font-size:9px;line-height:1.4}.preorder-card .buy{margin-top:9px}.load-more-wrap{display:flex;justify-content:center;padding:26px 0 6px}.load-more{min-width:210px;border-radius:1px!important;border-color:#4a505b!important}.catalog-error{grid-column:1/-1;padding:36px;border:1px solid #353a43;color:#c3c9d2;text-align:center}
+.catalog-tools{display:grid;grid-template-columns:minmax(240px,1fr) auto auto;gap:9px;margin:0 0 12px}.catalog-tools input,.catalog-tools select{min-height:43px;border:1px solid #353a43;border-radius:1px;background:#11141a;color:#f5f7fa;padding:0 13px;font:inherit;font-size:13px}.catalog-tools input:focus,.catalog-tools select:focus{outline:2px solid #f20f45;outline-offset:1px}.catalog-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 18px;color:#8f98a6;font-size:12px}.catalog-summary p{margin:0}.catalog-summary strong{color:#f3f5f8}.preorder-card .v{position:relative}.availability{position:absolute;top:9px;right:9px;padding:6px 8px;background:rgba(5,7,10,.9);border:1px solid #404650;color:#fff;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.availability.open{border-color:#4fa978;color:#8de7b2}.availability.restock{border-color:#b77d43;color:#f0bb79}.availability.announced{border-color:#7a7ccc;color:#c2c5ff}.preorder-card .i{min-height:230px}.preorder-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 8px}.preorder-meta span{min-width:0;padding-top:6px;border-top:1px solid #292e37;color:#aeb6c1;font-size:10px;line-height:1.3}.preorder-meta .warning{color:#ff9b72}.language{margin-top:auto;color:#747d89;font-size:9px;line-height:1.4}.preorder-card .buy{margin-top:9px}.preorder-card .alternate{display:inline-block;margin-top:8px;color:#adbce0;font-size:11px;text-decoration:underline;text-underline-offset:3px}.load-more-wrap{display:flex;justify-content:center;padding:26px 0 6px}.load-more{min-width:210px;border-radius:1px!important;border-color:#4a505b!important}.catalog-error{grid-column:1/-1;padding:36px;border:1px solid #353a43;color:#c3c9d2;text-align:center}
 @media(max-width:700px){.catalog-tools{grid-template-columns:1fr 1fr}.catalog-tools input{grid-column:1/-1}.catalog-summary{align-items:flex-start;flex-direction:column}.preorder-card .i{min-height:245px}.preorder-meta{grid-template-columns:1fr}.preorder-meta span:nth-child(2){display:none}}
 </style>
 <link rel="stylesheet" href="./editorial.css?v=20260915c">
@@ -47,7 +47,7 @@
 <div>
 <span class="kicker">Physical releases · preorder research</span>
 <h1>Preorder index</h1>
-<p>Every tracked physical edition is listed separately so standard, collector, limited, import, and reprint versions are easy to compare.</p>
+<p>Compare tracked physical editions across PS5, Switch, and Switch 2. This retailer snapshot also includes selected verified publisher listings and announced editions; it is not an exhaustive release list.</p>
 <div class="hero-stats"><div><strong id="tracked-total">—</strong><span>Tracked editions</span></div><div><strong id="open-total">—</strong><span>Open preorders</span></div><div><strong>3</strong><span>Platforms</span></div></div>
 </div>
 <nav class="f" aria-label="Platform filter">
@@ -60,14 +60,14 @@
 <section class="catalog-tools" aria-label="Preorder search and filters">
 <input id="preorder-search" type="search" placeholder="Search title, edition, region, or media type" aria-label="Search preorders">
 <select id="edition-filter" aria-label="Filter by edition"><option value="all">All editions</option><option>Standard</option><option>Collector</option><option>Limited</option><option>Steelbook</option><option>Complete / Deluxe</option><option>Reprint</option></select>
-<select id="availability-filter" aria-label="Filter by availability"><option value="all">Open + restock watch</option><option value="open">Preorder open</option><option value="restock">Sold out / restock watch</option></select>
+<select id="availability-filter" aria-label="Filter by availability"><option value="all">All availability</option><option value="open">Preorder open</option><option value="restock">Sold out / restock watch</option><option value="announced">Announced · preorder TBD</option></select>
 </section>
-<div class="catalog-summary"><strong id="result-count">Loading catalog…</strong><p>Retailer snapshot <span id="catalog-date">—</span> · “Verify” means the listing does not yet prove English support or full-on-media status.</p></div>
+<div class="catalog-summary"><strong id="result-count">Loading catalog…</strong><p>Listings checked <span id="catalog-date">—</span> · “Verify” means English support or full-on-media status is unconfirmed. Check each seller for current availability.</p></div>
 <section class="g" id="g">
 </section>
 <div class="load-more-wrap"><button id="load-more" class="load-more" hidden>Show more</button></div>
 <footer>Physical preorder catalog · Standard and collector editions are separate · Sold-out listings remain visible for restock research.</footer>
 </main>
-<script src="./preorders.js?v=20260917a"></script>
+<script src="./preorders.js?v=20260920a"></script>
 </body>
 </html>

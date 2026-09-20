@@ -1,4 +1,4 @@
-import { mkdir, writeFile, access } from 'node:fs/promises';
+import { mkdir, writeFile, access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const ROOT = path.resolve('public/game-watchlist');
@@ -11,10 +11,10 @@ const collections = [
 ];
 
 const clean = (value = '') => value
-  .replace(/\s*[-–]\s*(?:PlayStation 5|Playstation 5|PS5|Nintendo Switch 2|Nintendo Switch|SWITCH)\b/gi, '')
   .replace(/\s*\((?:PRE-?ORDER)\)/gi, '')
   .replace(/\s*\[(?:PRE-?ORDER|FREE SHIPPING)\]/gi, '')
   .replace(/\s*\((?:FREE SHIPPING|VGP Exclusive|Exclusive Canadian Retailer)\)/gi, '')
+  .replace(/\s*[-–]\s*(?:PlayStation 5|Playstation 5|PS5|Nintendo Switch 2|Nintendo Switch|SWITCH)\s*$/i, '')
   .replace(/\s+/g, ' ').trim();
 
 const stripHtml = (html = '') => html.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
@@ -99,7 +99,7 @@ for (const source of collections) {
       rawTitle: product.title,
       edition: edition(product.title),
       region: region(product.title),
-      language: /multi-language/i.test(product.title) ? 'English listed' : 'Verify',
+      language: 'Verify',
       media: media(product.title, product.body_html),
       release: releaseDate(product.body_html),
       availability: available ? 'Preorder open' : 'Sold out / restock watch',
@@ -123,6 +123,18 @@ const workers = Array.from({ length: 18 }, async () => {
   }
 });
 await Promise.all(workers);
+// Direct publisher and retailer listings cover editions missing from the collection feed.
+// Keep these editorial entries separate so subsequent refreshes preserve their provenance.
+const supplemental = JSON.parse(await readFile(path.join(ROOT, 'supplemental-preorders.json'), 'utf8'));
+const byId = new Map(rows.map(item => [item.id, item]));
+for (const item of supplemental.items) {
+  if (byId.has(item.id)) continue;
+  rows.push({ ...item, verified: TODAY });
+}
+for (const [id, alternatives] of Object.entries(supplemental.alternatives)) {
+  const item = byId.get(id);
+  if (item) item.alternatives = alternatives;
+}
 rows.sort((a, b) => a.platform.localeCompare(b.platform) || a.title.localeCompare(b.title) || a.edition.localeCompare(b.edition));
-await writeFile(path.join(ROOT, 'preorders.json'), JSON.stringify({ updated: TODAY, source: 'Video Games Plus preorder collections', count: rows.length, items: rows }, null, 2) + '\n');
+await writeFile(path.join(ROOT, 'preorders.json'), JSON.stringify({ updated: TODAY, source: 'Video Games Plus collections and verified direct listings', count: rows.length, items: rows }, null, 2) + '\n');
 console.log(`Wrote ${rows.length} preorder editions (${rows.filter(x => x.availability === 'Preorder open').length} open).`);
