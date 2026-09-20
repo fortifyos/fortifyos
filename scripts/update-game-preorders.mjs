@@ -5,6 +5,7 @@ const ROOT = path.resolve('public/game-watchlist');
 const COVER_ROOT = path.join(ROOT, 'covers', 'preorders');
 const TODAY = new Date().toISOString().slice(0, 10);
 const collections = [
+  { key: 'ps4', platform: 'PlayStation 4', handle: 'ps4-pre-orders', match: /playstation 4|ps4/i },
   { key: 'ps', platform: 'PlayStation 5', handle: 'ps5-pre-orders', match: /playstation 5|ps5/i },
   { key: 'sw', platform: 'Nintendo Switch', handle: 'nintendo-switch-pre-orders', match: /nintendo switch|switch/i },
   { key: 's2', platform: 'Nintendo Switch 2', handle: 'nintendo-switch-2-pre-orders', match: /nintendo switch 2|switch 2/i },
@@ -14,7 +15,7 @@ const clean = (value = '') => value
   .replace(/\s*\((?:PRE-?ORDER)\)/gi, '')
   .replace(/\s*\[(?:PRE-?ORDER|FREE SHIPPING)\]/gi, '')
   .replace(/\s*\((?:FREE SHIPPING|VGP Exclusive|Exclusive Canadian Retailer)\)/gi, '')
-  .replace(/\s*[-–]\s*(?:PlayStation 5|Playstation 5|PS5|Nintendo Switch 2|Nintendo Switch|SWITCH)\s*$/i, '')
+  .replace(/\s*[-–]\s*(?:PlayStation 4|Playstation 4|PS4|PlayStation 5|Playstation 5|PS5|Nintendo Switch 2|Nintendo Switch|SWITCH)\s*$/i, '')
   .replace(/\s+/g, ' ').trim();
 
 const stripHtml = (html = '') => html.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
@@ -112,6 +113,19 @@ for (const source of collections) {
     rows.push(item);
   }
 }
+
+// The PS4 lane is curated: retain a PS4 retailer edition only when a matching
+// PS5 edition is in the live catalog. Exceptional PS4-only picks can be added
+// individually to supplemental-preorders.json after editorial review.
+const comparableTitle = title => title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const ps5ByTitle = new Map(rows.filter(item => item.platformKey === 'ps').map(item => [comparableTitle(item.title), item]));
+rows.splice(0, rows.length, ...rows.filter(item => {
+  if (item.platformKey !== 'ps4') return true;
+  const ps5Edition = ps5ByTitle.get(comparableTitle(item.title));
+  if (!ps5Edition) return false;
+  item.ps5Url = ps5Edition.url;
+  return true;
+}));
 
 const workers = Array.from({ length: 18 }, async () => {
   while (true) {

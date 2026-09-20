@@ -29,6 +29,7 @@ function card(item) {
   const announced = item.availability === 'Announced · preorder TBD';
   const mediaClass = item.media === 'Game-Key Card' || item.media === 'Download code' ? 'warning' : '';
   const alternatives = (item.alternatives || []).map(link => `<a class="alternate" href="${escapeHtml(link.url)}" target="_blank" rel="noopener">Also at ${escapeHtml(link.seller)} ↗</a>`).join('');
+  const ps5Edition = item.ps5Url ? `<a class="alternate" href="${escapeHtml(item.ps5Url)}" target="_blank" rel="noopener">Compare PS5 edition ↗</a>` : '';
   return `<article class="c preorder-card" data-p="${item.platformKey}">
     <div class="v"><img src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.title)} physical cover" loading="lazy" decoding="async"><span class="availability ${open ? 'open' : announced ? 'announced' : 'restock'}">${open ? 'Open' : announced ? 'Preorder TBD' : 'Restock watch'}</span></div>
     <div class="i">
@@ -36,7 +37,7 @@ function card(item) {
       <h2>${escapeHtml(item.title)}</h2>
       <div class="preorder-meta"><span>${escapeHtml(item.edition)}</span><span>${escapeHtml(item.region)}</span><span class="${mediaClass}">${escapeHtml(item.media)}</span><span>Release ${escapeHtml(item.release)}</span></div>
       <div class="language">English: ${escapeHtml(item.language)} · Checked ${escapeHtml(item.verified)}</div>
-      <a class="buy" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${open ? 'View preorder' : announced ? 'Official details' : 'Check restock'} <span>${escapeHtml(item.seller)} ↗</span></a>${alternatives}
+      <a class="buy" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${open ? 'View preorder' : announced ? 'Official details' : 'Check restock'} <span>${escapeHtml(item.seller)} ↗</span></a>${ps5Edition}${alternatives}
     </div>
   </article>`;
 }
