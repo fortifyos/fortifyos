@@ -1,8 +1,66 @@
 {
-  "updated": "2026-09-20",
-  "source": "Video Games Plus collections and verified direct listings",
-  "count": 533,
+  "updated": "2026-09-21",
+  "source": "Deku Deals, Video Games Plus, official publisher pages, and verified direct listings",
+  "count": 536,
   "items": [
+    {
+      "id": "s2-kingdom-come-deliverance-ii-royal-edition-game-key-card-nintendo-switch-2-pre-order",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Kingdom Come: Deliverance II – Royal Edition",
+      "rawTitle": "Kingdom Come: Deliverance II – Royal Edition [Game-Key Card] - Nintendo Switch 2 (PRE-ORDER)",
+      "edition": "Complete / Deluxe",
+      "region": "North America",
+      "language": "English listed",
+      "media": "Game-Key Card",
+      "release": "2027 · date TBD (12/31 retailer placeholder)",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/kingdom-come-deliverance-ii-royal-edition-game-key-card-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-kingdom-come-deliverance-ii-royal-edition-game-key-card-nintendo-switch-2-pre-order.png",
+      "verified": "2026-09-21"
+    },
+    {
+      "id": "s2-clive-barkers-hellraiser-revival-game-key-card-nintendo-switch-2-pre-order",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Clive Barker’s Hellraiser: Revival",
+      "rawTitle": "Clive Barker's Hellraiser: Revival [Game-Key Card] - Nintendo Switch 2 (PRE-ORDER)",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English listed",
+      "media": "Game-Key Card",
+      "release": "October 30, 2026 · physical retailer date",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/clive-barkers-hellraiser-revival-game-key-card-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/ps/ps-clive-barkers-hellraiser-revival-playstation-5-pre-order.jpg",
+      "verified": "2026-09-21",
+      "ps5Url": "https://videogamesplus.ca/products/clive-barkers-hellraiser-revival-playstation-5-pre-order"
+    },
+    {
+      "id": "s2-metroid-ravenous-standard-walmart",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Metroid Ravenous",
+      "rawTitle": "Metroid Ravenous - Nintendo Switch 2 (PHYSICAL PREORDER)",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English confirmed",
+      "media": "Physical media · card type verify",
+      "release": "January 28, 2027",
+      "availability": "Preorder open",
+      "seller": "Walmart",
+      "url": "https://www.walmart.com/ip/Metroid-Ravenous-Nintendo-Switch-2/20973300457",
+      "cover": "./covers/metroid-ravenous.jpg",
+      "verified": "2026-09-21",
+      "alternatives": [
+        {
+          "seller": "Nintendo details",
+          "url": "https://www.nintendo.com/us/store/products/metroid-ravenous-switch-2/"
+        }
+      ]
+    },
     {
       "id": "sw-9-r-i-p-sequel-nintendo-switch-pre-order-free-shipping",
       "platformKey": "sw",
@@ -4338,14 +4396,24 @@
       "rawTitle": "The Legend of Zelda™: Ocarina of Time - Nintendo Switch 2 [FOIL COVER] (PRE-ORDER)",
       "edition": "Standard",
       "region": "North America",
-      "language": "Verify",
+      "language": "English confirmed",
       "media": "Physical media · verify",
       "release": "NOVEMBER 5, 2026",
       "availability": "Preorder open",
-      "seller": "Video Games Plus",
-      "url": "https://videogamesplus.ca/products/the-legend-of-zelda™-ocarina-of-time-nintendo-switch-2-pre-order",
+      "seller": "Walmart",
+      "url": "https://www.walmart.com/ip/The-Legend-of-Zelda-Ocarina-of-Time/20910716558",
       "cover": "./covers/preorders/s2/s2-the-legend-of-zelda-ocarina-of-time-nintendo-switch-2-pre-order.jpg",
-      "verified": "2026-09-20"
+      "verified": "2026-09-21",
+      "alternatives": [
+        {
+          "seller": "Video Games Plus",
+          "url": "https://videogamesplus.ca/products/the-legend-of-zelda™-ocarina-of-time-nintendo-switch-2-pre-order"
+        },
+        {
+          "seller": "Nintendo",
+          "url": "https://www.nintendo.com/us/store/products/the-legend-of-zelda-ocarina-of-time-125697/"
+        }
+      ]
     },
     {
       "id": "s2-toy-story-retro-roundup-and-toy-story-3-complete-edition-nintendo-switch-2-pre-order",
@@ -7899,13 +7967,13 @@
       "edition": "Standard",
       "region": "North America",
       "language": "Verify",
-      "media": "Game-Key Card",
+      "media": "Physical disc · verify",
       "release": "DECEMBER 31, 2026",
       "availability": "Preorder open",
       "seller": "Video Games Plus",
       "url": "https://videogamesplus.ca/products/shenmue-iii-enhanced-playstation-5-pre-order",
       "cover": "./covers/preorders/ps/ps-shenmue-iii-enhanced-playstation-5-pre-order.jpg",
-      "verified": "2026-09-20"
+      "verified": "2026-09-21"
     },
     {
       "id": "ps-shenmue-iii-enhanced-collectors-edition-playstation-5-pre-order",
