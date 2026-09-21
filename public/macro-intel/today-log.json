@@ -59,8 +59,37 @@
       "uncertaintyFlags": [
         "Low confidence — regime classification may shift on next checkpoint"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-09-21T17:38:51.584346-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.36,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 36%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Growth Health strongly elevated (score: +2); Crypto Risk Appetite strongly elevated (score: +2).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Growth proxies constructive — SPX trending and volatility contained"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 1.00% since last checkpoint (+857)",
+        "CBOE VIX down 1.06% since last checkpoint (-0.16)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 36%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-09-21T13:46:52.198664-04:00"
+  "entryCount": 3,
+  "lastUpdated": "2026-09-21T17:38:51.585428-04:00"
 }
