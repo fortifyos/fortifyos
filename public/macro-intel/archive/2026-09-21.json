@@ -1,0 +1,125 @@
+{
+  "date": "2026-09-21",
+  "status": "archived",
+  "entries": [
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-09-21T07:52:10.148605-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.34,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 34%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Inflation Pressure moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Growth proxies constructive — SPX trending and volatility contained"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 4.28% since last checkpoint (+3480)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 34%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-09-21T13:46:52.197736-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.33,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 33%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Crypto Risk Appetite strongly elevated (score: +2); Inflation Pressure moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 1.45% since last checkpoint (+110.9)",
+        "Bitcoin up 1.28% since last checkpoint (+1087)",
+        "CBOE VIX up 1.21% since last checkpoint (+0.18)",
+        "Gold (XAU/USD) down 0.50% since last checkpoint (-22.1)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 33%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-09-21T17:38:51.584346-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.36,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 36%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Growth Health strongly elevated (score: +2); Crypto Risk Appetite strongly elevated (score: +2).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Growth proxies constructive — SPX trending and volatility contained"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 1.00% since last checkpoint (+857)",
+        "CBOE VIX down 1.06% since last checkpoint (-0.16)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 36%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-09-21T23:05:14.107368-04:00",
+      "regimeMode": "crypto_speculation",
+      "confidence": 0.34,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Crypto speculation — digital assets leading and diverging from traditional risk",
+      "dominantStory": "Regime classification: crypto_speculation (confidence 34%). Crypto speculation — digital assets leading and diverging from traditional risk. Primary drivers: Growth Health strongly elevated (score: +2); Crypto Risk Appetite strongly elevated (score: +2).",
+      "crossAssetConnections": [
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin down 1.28% since last checkpoint (-1112)",
+        "WTI Crude Oil up 1.21% since last checkpoint (+1.11)"
+      ],
+      "operatorPosture": "Selective crypto exposure — momentum-driven; tight stops given volatility",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 34%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
+    }
+  ],
+  "entryCount": 4,
+  "lastUpdated": "2026-09-21T23:05:14.108290-04:00",
+  "archivedAt": "2026-09-22T06:53:02.679927-04:00"
+}
