@@ -1,13 +1,13 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-09-21T17:38:51.584152-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-09-21T23:05:14.107236-04:00",
   "regimeMode": "crypto_speculation",
   "regimeDescription": "Crypto speculation — digital assets leading and diverging from traditional risk",
-  "confidence": 0.36,
+  "confidence": 0.34,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 0,
     "growthHealth": 2,
     "volatilityStress": -1,
     "dollarPressure": 0,
@@ -19,10 +19,9 @@
   "dominantDrivers": [
     "Growth Health strongly elevated (score: +2)",
     "Crypto Risk Appetite strongly elevated (score: +2)",
-    "Inflation Pressure moderately suppressed (score: -1)"
+    "Volatility Stress moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Broad participation — cross-asset confirmation across equities and crypto",
