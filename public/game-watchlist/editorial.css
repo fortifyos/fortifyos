@@ -104,3 +104,52 @@ a,button{transition:color .18s ease,border-color .18s ease,background .18s ease,
 }
 
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Deal desk */
+.deals-page .site-nav{margin-top:16px}
+.deals-page .w{max-width:1500px;padding:18px 24px 60px}
+.deals-page .deals-hero{min-height:410px;background-image:linear-gradient(90deg,rgba(5,6,8,.98),rgba(5,6,8,.73) 56%,rgba(242,15,69,.18)),linear-gradient(135deg,#181b22,#08090b);background-position:center;background-size:cover}
+.deals-page .deals-hero:before{content:"PRICE DESK / LIVE"}
+.deals-page .deals-hero h1{font-family:Arial,Helvetica,sans-serif;font-weight:950;letter-spacing:-.045em}
+.deal-rules{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:0 0 18px;border:1px solid #343842;background:#343842}
+.deal-rules article{position:relative;min-height:128px;padding:23px 24px;background:#101216;overflow:hidden}
+.deal-rules article:after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#f20f45}
+.deal-rules .grail:after{background:#f2b84b}
+.deal-rules span{display:block;margin-bottom:8px;color:#ff5d7d;font-size:10px;font-weight:950;letter-spacing:.14em;text-transform:uppercase}
+.deal-rules .grail span{color:#f2c76d}
+.deal-rules strong{display:block;color:#fff;font-size:20px;letter-spacing:-.02em}
+.deal-rules p{max-width:610px;margin:7px 0 0;color:#9da5b1;font-size:13px;line-height:1.5}
+.deal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:20px 0 11px}
+.deal-platforms{display:flex;gap:7px;flex-wrap:wrap}
+.deal-toolbar label{display:flex;align-items:center;gap:9px;color:#8f98a6;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.deal-toolbar select{min-height:40px;border:1px solid #353a43;background:#11141a;color:#f5f7fa;padding:0 12px;font:inherit;font-size:13px}
+.deal-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 18px;color:#838c99;font-size:12px}
+.deal-summary p{margin:0}.deal-summary strong{color:#f3f5f8}
+.deals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:16px}
+.deal-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border:1px solid #303641;background:#101216;min-width:0;transition:transform .18s ease,border-color .18s ease}
+.deal-card:hover{transform:translateY(-3px);border-color:#596170}
+.deal-card.strike{box-shadow:inset 0 0 0 1px rgba(242,15,69,.16)}
+.deal-cover{position:relative;aspect-ratio:16/12;overflow:hidden;background:#090a0d}
+.deal-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(5,6,8,.62),transparent 55%);pointer-events:none}
+.deal-cover img{width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block}
+.deal-alert{position:absolute;z-index:2;left:-38px;top:21px;width:166px;padding:7px 0;text-align:center;transform:rotate(-38deg);background:#f20f45;color:#fff;font-size:9px;font-weight:950;letter-spacing:.13em;box-shadow:0 5px 20px rgba(0,0,0,.4)}
+.deal-card.physical .deal-alert{background:#d99b2b;color:#110d05}
+.deal-card.watch .deal-alert{background:#566172}
+.deal-format{position:absolute;z-index:2;right:10px;bottom:9px;padding:5px 7px;border:1px solid rgba(255,255,255,.35);background:rgba(5,6,8,.85);color:#fff;font-size:9px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}
+.deal-info{display:flex;flex:1;flex-direction:column;padding:16px}
+.deal-platform{color:#ff6684;font-size:10px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
+.deal-card.physical .deal-platform{color:#f2c76d}
+.deal-info h2{min-height:auto;margin:6px 0 13px;font-size:18px;line-height:1.18;letter-spacing:-.02em}
+.deal-price{display:flex;align-items:baseline;gap:8px;padding:11px 0;border-top:1px solid #292e37;border-bottom:1px solid #292e37}
+.deal-price strong{font-size:29px;letter-spacing:-.05em}.deal-price s{color:#717986;font-size:12px}.deal-price b{margin-left:auto;color:#ff6684;font-size:12px}
+.deal-card.physical .deal-price b{color:#f2c76d}
+.deal-info>p{min-height:58px;margin:12px 0;color:#a5adba;font-size:12px;line-height:1.55}
+.deal-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+.deal-bottom span{color:#abb3bf;font-size:11px;font-weight:800}.deal-bottom span.ended{color:#ff879b}
+.deal-bottom a{padding:8px 9px;border:1px solid #454c58;color:#fff;text-decoration:none;font-size:11px;font-weight:900}.deal-bottom a:hover{border-color:#f20f45;background:#f20f45}
+.deal-card.expired{opacity:.58}.deal-card.expired .deal-alert{background:#4f5661}
+.market-watch{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.9fr);gap:28px;align-items:center;margin:32px 0 0;padding:26px;border:1px solid #343842;background:#11151c}
+.market-watch h2{margin:5px 0 9px;font-size:clamp(22px,3vw,34px);letter-spacing:-.035em}.market-watch p{max-width:650px;margin:0;color:#aab2bf;font-size:13px;line-height:1.6}
+.market-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}.market-links a{padding:11px;border:1px solid #3b4555;color:#e6edf9;text-decoration:none;font-size:11px;font-weight:850}.market-links a:hover{border-color:#f20f45}
+@media(max-width:800px){.deal-rules,.market-watch{grid-template-columns:1fr}.deal-toolbar,.deal-summary{align-items:flex-start;flex-direction:column}.deals-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.deal-info{padding:12px}.deal-info h2{font-size:15px}.deal-price strong{font-size:23px}.deal-price b{font-size:10px}.deal-info>p{min-height:76px}.market-links{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.deals-page .w{padding-left:14px;padding-right:14px}.deals-page .site-links{overflow-x:auto}.deals-page .site-links a{padding-left:8px;padding-right:8px}.deal-cover{aspect-ratio:4/3}.deal-alert{left:-43px;top:17px}.deal-format{right:7px;bottom:7px}.deal-info>p{display:none}.deal-bottom{margin-top:12px;align-items:flex-end;flex-direction:column}.deal-bottom a{width:100%;text-align:center}.deal-price{flex-wrap:wrap}.deal-price b{width:100%;margin:0}.market-links{grid-template-columns:1fr}}
