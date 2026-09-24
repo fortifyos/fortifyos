@@ -1,31 +1,33 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-09-23T22:56:38.644314-04:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-09-24T04:09:49.315802-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 1,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -2,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
-    "Inflation Pressure moderately suppressed (score: -1)",
+    "Inflation Pressure moderately elevated (score: +1)",
+    "Breadth Quality moderately suppressed (score: -1)",
     "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
