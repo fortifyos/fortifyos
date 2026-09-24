@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0b0f">
+<meta name="color-scheme" content="dark">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./editorial.css?v=20260924-deals">
+<title>Deals · Game Vault</title>
+</head>
+<body class="watchlist deals-page">
+<div class="site-nav" role="navigation" aria-label="Main navigation">
+  <a class="site-brand" href="./"><span>FV</span><strong>Game Vault</strong></a>
+  <div class="site-links"><a href="./">Home</a><a href="./ultimate.html">Collection</a><a href="./#watchlist">Upcoming</a><a class="active" href="./deals.html">Deals</a><a href="./deadlines.html">Deadlines</a><a href="./sources.html">Sources</a></div>
+</div>
+<main class="w">
+  <header class="deals-hero">
+    <div>
+      <span class="kicker">Buy below value · checked September 24, 2026</span>
+      <h1>Deal<br>alerts.</h1>
+      <p>Strong games only. Steep digital discounts and verified physical lows are tracked separately, with the most urgent opportunities pushed to the top.</p>
+      <div class="hero-stats"><div><strong>11</strong><span>Deals tracked</span></div><div><strong>7</strong><span>Under $10</span></div><div><strong>4</strong><span>Platforms</span></div></div>
+    </div>
+    <nav class="f" aria-label="Deal format filter"><button class="a" data-format="all">All deals</button><button data-format="digital">Digital</button><button data-format="physical">Physical</button></nav>
+  </header>
+
+  <section class="deal-rules" aria-label="Deal alert rules">
+    <article class="strike"><span>Digital strike</span><strong>70%+ off or under $10</strong><p>Move when a genuinely strong game is dramatically cheaper than its physical copy.</p></article>
+    <article class="grail"><span>Physical all-time low</span><strong>Retail · eBay · Mercari</strong><p>Buy after the exact edition, condition, region, language and on-media content are verified.</p></article>
+  </section>
+
+  <section class="deal-toolbar" aria-label="Deal filters">
+    <div class="deal-platforms"><button class="a" data-platform="all">All platforms</button><button data-platform="ps4">PS4</button><button data-platform="ps5">PS5</button><button data-platform="switch">Switch</button><button data-platform="switch2">Switch 2</button></div>
+    <label>Sort <select id="deal-sort"><option value="priority">Best opportunity</option><option value="discount">Biggest discount</option><option value="price">Lowest price</option><option value="expiry">Ending soon</option></select></label>
+  </section>
+  <div class="deal-summary"><strong id="deal-count">11 opportunities shown</strong><p>Confirm the final price and condition at the seller before buying.</p></div>
+  <section class="deals-grid" id="deals-grid" aria-live="polite"></section>
+
+  <section class="market-watch">
+    <div><span class="kicker">Physical market watch</span><h2>Check the real floor before buying.</h2><p>Retail listings show availability. Sold listings show what collectors actually paid. These searches help verify whether a physical price is truly exceptional.</p></div>
+    <div class="market-links"><a href="https://www.dekudeals.com/hottest?filter%5Bformat%5D=physical&amp;sort=discount" target="_blank" rel="noopener">Deku Deals physical ↗</a><a href="https://www.ebay.com/sch/i.html?_nkw=PS5+Nintendo+Switch+physical+game&amp;LH_Sold=1&amp;LH_Complete=1" target="_blank" rel="noopener">eBay sold listings ↗</a><a href="https://www.mercari.com/search/?keyword=PS5%20Nintendo%20Switch%20physical%20game" target="_blank" rel="noopener">Mercari listings ↗</a><a href="https://www.play-asia.com/games/pre-orders/14/712fj" target="_blank" rel="noopener">Play-Asia ↗</a></div>
+  </section>
+  <footer>Game Vault deal desk · Digital savings and physical collection opportunities are judged separately.</footer>
+</main>
+<script>
+const deals=[
+{title:'Final Fantasy VII Remake Intergrade',platform:'switch2',platformLabel:'Switch 2',format:'digital',price:9.99,was:39.99,discount:75,expires:'2026-10-01',signal:'strike',verdict:'Buy digital',cover:'final-fantasy-vii-remake-intergrade.jpg',note:'Native Switch 2 edition and the strongest deal in the current scan.',url:'https://www.nintendo.com/us/store/products/final-fantasy-vii-remake-intergrade-switch-2/'},
+{title:'Monster Hunter Rise',platform:'switch',platformLabel:'Switch',format:'digital',price:4.99,was:39.99,discount:88,expires:'2026-10-16',signal:'strike',verdict:'Buy digital',cover:'monster-hunter-rise.jpg',note:'Historical-low territory and an exceptional amount of game for five dollars.',url:'https://www.dekudeals.com/search?q=Monster%20Hunter%20Rise'},
+{title:'Prince of Persia: The Lost Crown',platform:'switch',platformLabel:'Switch',format:'digital',price:8.99,was:29.99,discount:70,expires:'2026-10-08',signal:'strike',verdict:'Buy digital',cover:'prince-of-persia-the-lost-crown.jpg',note:'Excellent Metroidvania and an easy recommendation below ten dollars.',url:'https://www.dekudeals.com/search?q=Prince%20of%20Persia%20The%20Lost%20Crown'},
+{title:'SOMA',platform:'switch',platformLabel:'Switch',format:'digital',price:5.99,was:29.99,discount:80,expires:'2026-10-12',signal:'strike',verdict:'Buy digital',cover:'soma.jpg',note:'High-quality psychological horror at its lowest price tier.',url:'https://www.dekudeals.com/search?q=SOMA'},
+{title:'What Remains of Edith Finch',platform:'switch',platformLabel:'Switch',format:'digital',price:4.99,was:19.99,discount:75,expires:'2026-10-12',signal:'strike',verdict:'Buy digital',cover:'what-remains-of-edith-finch.jpg',note:'Short, exceptional narrative game. Ideal digital purchase at this price.',url:'https://www.dekudeals.com/search?q=What%20Remains%20of%20Edith%20Finch'},
+{title:'Resident Evil 2 Deluxe Edition',platform:'ps5',platformLabel:'PS4 + PS5',format:'digital',price:9.99,was:49.99,discount:80,expires:null,signal:'strike',verdict:'Buy digital',cover:'resident-evil-2.jpg',note:'The best current PlayStation value. Includes both PS4 and PS5 versions.',url:'https://store.playstation.com/en-us/search/resident%20evil%202%20deluxe'},
+{title:'Dave the Diver',platform:'ps5',platformLabel:'PS4 + PS5',format:'digital',price:10.99,was:19.99,discount:45,expires:null,signal:'watch',verdict:'Check price',cover:'dave-the-diver-anniversary-edition.jpg',note:'Excellent game. Buy for convenience or hold for the Anniversary physical.',url:'https://store.playstation.com/en-us/search/dave%20the%20diver'},
+{title:'Metroid Dread',platform:'switch',platformLabel:'Switch',format:'physical',price:41.99,was:59.99,discount:30,expires:'2026-09-26',signal:'physical',verdict:'Buy physical',cover:'metroid-dread.jpg',note:'The strongest immediate shelf purchase in this update.',url:'https://www.amazon.com/s?k=Metroid+Dread+Nintendo+Switch'},
+{title:'The Legend of Zelda: Ocarina of Time',platform:'switch2',platformLabel:'Switch 2',format:'physical',price:59,was:69,discount:14,expires:null,signal:'physical',verdict:'Preorder',cover:'zelda-ocarina-of-time-switch-2.jpg',note:'First printing is reported to include textured foil packaging.',url:'https://www.amazon.com/s?k=Ocarina+of+Time+Switch+2'},
+{title:'Metroid Ravenous',platform:'switch2',platformLabel:'Switch 2',format:'physical',price:59.88,was:69.99,discount:14,expires:null,signal:'physical',verdict:'Preorder',cover:'metroid-ravenous.jpg',note:'Rare first-party preorder discount. Releases January 28, 2027.',url:'https://www.walmart.com/search?q=Metroid%20Ravenous%20Switch%202'},
+{title:'Terranigma Foiled Standard Edition',platform:'switch2',platformLabel:'Switch 2 / PS5',format:'physical',price:39.99,was:39.99,discount:0,expires:'2026-11-08',signal:'physical',verdict:'Collector alert',cover:'terranigma.jpg',note:'Not a sale. The standard edition is the disciplined collector choice.',url:'https://limitedrungames.com/collections/all/products/terranigma-foiled-standard-edition-switch-2-ps5-xbox'}
+];
+const grid=document.getElementById('deals-grid'),count=document.getElementById('deal-count'),sort=document.getElementById('deal-sort');
+let format='all',platform='all';
+const money=n=>'$'+Number(n).toFixed(Number(n)%1?2:0);
+const expiry=d=>{if(!d)return 'Verify live price';const dt=new Date(d+'T23:59:59');return dt<new Date()?'Offer ended':'Ends '+dt.toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+function card(d){const expired=d.expires&&new Date(d.expires+'T23:59:59')<new Date();const badge=d.signal==='strike'?'HIGH ALERT':d.signal==='physical'?'PHYSICAL BUY':'GOOD DEAL';return '<article class="deal-card '+d.signal+(expired?' expired':'')+'" data-format="'+d.format+'" data-platform="'+d.platform+'"><div class="deal-cover"><img src="./covers/'+d.cover+'" alt="'+d.title+' cover art" loading="lazy" onerror="this.onerror=null;this.src=\'./covers/hades.jpg\'"><span class="deal-alert">'+badge+'</span><span class="deal-format">'+d.format+'</span></div><div class="deal-info"><span class="deal-platform">'+d.platformLabel+'</span><h2>'+d.title+'</h2><div class="deal-price"><strong>'+money(d.price)+'</strong>'+(d.discount?'<s>'+money(d.was)+'</s><b>−'+d.discount+'%</b>':'<b>Limited print</b>')+'</div><p>'+d.note+'</p><div class="deal-bottom"><span class="'+(expired?'ended':'')+'">'+expiry(d.expires)+'</span><a href="'+d.url+'" target="_blank" rel="noopener">'+d.verdict+' ↗</a></div></div></article>'}
+function draw(){let shown=deals.filter(d=>(format==='all'||d.format===format)&&(platform==='all'||d.platform===platform||(platform==='ps4'&&d.platform==='ps5'&&d.platformLabel.includes('PS4'))));const key=sort.value;shown.sort((a,b)=>key==='discount'?b.discount-a.discount:key==='price'?a.price-b.price:key==='expiry'?(a.expires||'9999').localeCompare(b.expires||'9999'):(a.signal==='strike'?0:a.signal==='physical'?1:2)-(b.signal==='strike'?0:b.signal==='physical'?1:2));grid.innerHTML=shown.map(card).join('');count.textContent=shown.length+' opportunities shown'}
+document.querySelectorAll('[data-format]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-format]').forEach(x=>x.classList.remove('a'));b.classList.add('a');format=b.dataset.format;draw()}));
+document.querySelectorAll('[data-platform]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-platform]').forEach(x=>x.classList.remove('a'));b.classList.add('a');platform=b.dataset.platform;draw()}));
+sort.addEventListener('change',draw);draw();
+</script>
+</body>
+</html>
