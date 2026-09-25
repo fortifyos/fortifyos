@@ -1,30 +1,34 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-09-25T07:01:51.328575-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-09-25T12:24:59.317966-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.5,
+  "confidence": 0.3,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
-    "volatilityStress": 0,
-    "dollarPressure": 0,
-    "breadthQuality": 0,
+    "volatilityStress": -1,
+    "dollarPressure": -1,
+    "breadthQuality": -2,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)",
-    "Growth Health neutral (score: +0)"
+    "Breadth Quality strongly suppressed (score: -2)",
+    "Volatility Stress moderately suppressed (score: -1)",
+    "Dollar Pressure moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Mixed signals across dimensions — no strong directional confirmation"
+    "VIX compressed — low implied volatility supporting risk-carrying capacity",
+    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
+    "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
