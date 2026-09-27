@@ -1,7 +1,7 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-09-27T07:18:08.059146-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-09-27T12:18:36.699832-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
