@@ -1,8 +1,191 @@
 {
-  "updated": "2026-09-21",
-  "source": "Deku Deals, Video Games Plus, official publisher pages, and verified direct listings",
-  "count": 536,
+  "updated": "2026-09-28",
+  "source": "Deku Deals, Video Games Plus, official publisher pages, Nintendo, and verified direct listings",
+  "count": 545,
   "items": [
+    {
+      "id": "s2-culdcept-begins-nintendo-switch-2-edition-standard",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Culdcept BEGINS – Nintendo Switch 2 Edition",
+      "rawTitle": "Culdcept Begins - Nintendo Switch 2 Edition [Standard Edition] - Nintendo Switch 2",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English confirmed",
+      "media": "Full on media",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/culdcept-begins-nintendo-switch-2-edition-standard-edition-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-culdcept-begins-standard.webp",
+      "verified": "2026-09-28",
+      "alternatives": [
+        {
+          "seller": "Official publisher",
+          "url": "https://game.neoscorp.jp/culdcept_begins/index_en.html"
+        }
+      ]
+    },
+    {
+      "id": "s2-culdcept-begins-nintendo-switch-2-edition-steelbook-vgp-exclusive",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Culdcept BEGINS – Steelbook Edition",
+      "rawTitle": "Culdcept Begins - Nintendo Switch 2 Edition [Steelbook Edition] - Nintendo Switch 2 (VGP Exclusive)",
+      "edition": "Steelbook",
+      "region": "North America · VGP exclusive",
+      "language": "English confirmed",
+      "media": "Full on media",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/culdcept-begins-nintendo-switch-2-edition-steelbook-edition-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-culdcept-begins-steelbook.webp",
+      "verified": "2026-09-28",
+      "alternatives": [
+        {
+          "seller": "Official publisher",
+          "url": "https://game.neoscorp.jp/culdcept_begins/index_en.html"
+        }
+      ]
+    },
+    {
+      "id": "s2-trails-in-the-sky-2nd-chapter-nintendo-switch-2-edition",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Trails in the Sky 2nd Chapter – Nintendo Switch 2 Edition",
+      "rawTitle": "Trails in the Sky 2nd Chapter - Nintendo Switch 2 Edition - Nintendo Switch 2",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English voice and text",
+      "media": "Full on media",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/trails-in-the-sky-2nd-chapter-nintendo-switch-2-edition-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-trails-in-the-sky-2nd-chapter.webp",
+      "verified": "2026-09-28",
+      "alternatives": [
+        {
+          "seller": "Nintendo",
+          "url": "https://www.nintendo.com/us/store/products/trails-in-the-sky-2nd-chapter-nintendo-switch-2-edition-switch-2/"
+        }
+      ]
+    },
+    {
+      "id": "sw-trails-in-the-sky-2nd-chapter",
+      "platformKey": "sw",
+      "platform": "Nintendo Switch",
+      "title": "Trails in the Sky 2nd Chapter",
+      "rawTitle": "Trails in the Sky 2nd Chapter - Nintendo Switch",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English voice and text",
+      "media": "Full on media",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/trails-in-the-sky-2nd-chapter-nintendo-switch-pre-order",
+      "cover": "./covers/preorders/sw/sw-trails-in-the-sky-2nd-chapter.webp",
+      "verified": "2026-09-28"
+    },
+    {
+      "id": "ps-trails-in-the-sky-2nd-chapter",
+      "platformKey": "ps",
+      "platform": "PlayStation 5",
+      "title": "Trails in the Sky 2nd Chapter",
+      "rawTitle": "Trails in the Sky 2nd Chapter - PlayStation 5",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English voice and text",
+      "media": "Disc",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/trails-in-the-sky-2nd-chapter-playstation-5-pre-order",
+      "cover": "./covers/preorders/ps/ps-trails-in-the-sky-2nd-chapter.webp",
+      "verified": "2026-09-28"
+    },
+    {
+      "id": "s2-fire-emblem-fortunes-weave",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Fire Emblem: Fortune’s Weave",
+      "rawTitle": "Fire Emblem: Fortune’s Weave - Nintendo Switch 2",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English confirmed",
+      "media": "Full on media",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/collections/pre-orders-1/products/fire-emblem%E2%84%A2-fortune-s-weave-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-fire-emblem-fortunes-weave.webp",
+      "verified": "2026-09-28",
+      "alternatives": [
+        {
+          "seller": "Nintendo",
+          "url": "https://www.nintendo.com/us/store/products/fire-emblem-fortunes-weave-125688/"
+        }
+      ]
+    },
+    {
+      "id": "s2-fire-emblem-fortunes-weave-dagdan-collection",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "Fire Emblem: Fortune’s Weave – Dagdan Collection",
+      "rawTitle": "Fire Emblem: Fortune’s Weave Dagdan Collection - Nintendo Switch 2",
+      "edition": "Collector",
+      "region": "North America",
+      "language": "English confirmed",
+      "media": "Full on media",
+      "release": "SEPTEMBER 17, 2026",
+      "availability": "Sold out / restock watch",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/fire-emblem-fortune-s-weave-dagdan-collection-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-fire-emblem-fortunes-weave-dagdan.webp",
+      "verified": "2026-09-28",
+      "alternatives": [
+        {
+          "seller": "Nintendo",
+          "url": "https://www.nintendo.com/en-ca/store/products/fire-emblem-fortunes-weave-dagdan-collection-128777/"
+        }
+      ]
+    },
+    {
+      "id": "s2-dragon-quest-xi-s-definitive-edition-game-key-card",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "DRAGON QUEST XI S: Echoes of an Elusive Age – Definitive Edition",
+      "rawTitle": "DRAGON QUEST XI S: Echoes of an Elusive Age - Definitive Edition [Game-Key Card] - Nintendo Switch 2",
+      "edition": "Complete / Deluxe",
+      "region": "North America",
+      "language": "English voice and text",
+      "media": "Game-Key Card",
+      "release": "SEPTEMBER 24, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/dragon-quest-xi-s-echoes-of-an-elusive-age-definitive-edition-game-key-card-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-dragon-quest-xi-s-definitive.webp",
+      "verified": "2026-09-28"
+    },
+    {
+      "id": "s2-ea-sports-fc-27-game-key-card",
+      "platformKey": "s2",
+      "platform": "Nintendo Switch 2",
+      "title": "EA SPORTS FC 27",
+      "rawTitle": "FC27 [Game-Key Card] - Nintendo Switch 2",
+      "edition": "Standard",
+      "region": "North America",
+      "language": "English listed",
+      "media": "Game-Key Card",
+      "release": "SEPTEMBER 25, 2026",
+      "availability": "Preorder open",
+      "seller": "Video Games Plus",
+      "url": "https://videogamesplus.ca/products/fc27-game-key-card-nintendo-switch-2-pre-order",
+      "cover": "./covers/preorders/s2/s2-ea-sports-fc-27.webp",
+      "verified": "2026-09-28"
+    },
     {
       "id": "s2-kingdom-come-deliverance-ii-royal-edition-game-key-card-nintendo-switch-2-pre-order",
       "platformKey": "s2",

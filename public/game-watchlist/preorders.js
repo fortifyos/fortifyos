@@ -62,7 +62,7 @@ edition.addEventListener('change', () => render());
 availability.addEventListener('change', () => render());
 loadMore.addEventListener('click', () => { visible += pageSize; render(false); });
 
-fetch('./preorders.json?v=20260921a')
+fetch('./preorders.json?v=20260928a')
   .then(response => {
     if (!response.ok) throw new Error('Catalog unavailable');
     return response.json();
