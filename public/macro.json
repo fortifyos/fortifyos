@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 61.02,
-    "change": -1.139
+    "value": 61.33,
+    "change": 0.18
   },
   "gold": {
-    "value": 4168.1,
-    "change": -0.007
+    "value": 4187.4,
+    "change": 0.456
   },
   "yieldCurve": null,
   "source": {
@@ -46,16 +46,16 @@
     "change": 0.485
   },
   "oil": {
-    "value": 93.9,
-    "change": 1.404
+    "value": 91.26,
+    "change": -1.447
   },
   "spy": {
     "value": 765.61,
     "change": -0.205
   },
   "vix": {
-    "value": 16.07,
-    "change": 8.07
+    "value": 15.92,
+    "change": -0.933
   },
   "sp500": {
     "value": 7683.69,
@@ -240,8 +240,8 @@
       "asOf": "2026-09-29"
     },
     "SOL": {
-      "value": 117.7,
-      "change": -0.953,
+      "value": 120.15,
+      "change": 1.105,
       "asOf": "2026-09-29"
     },
     "XRP": {
@@ -250,14 +250,14 @@
       "asOf": "2026-09-29"
     },
     "DOGE": {
-      "value": 0.09,
-      "change": -0.889,
+      "value": 0.1,
+      "change": 2.061,
       "asOf": "2026-09-29"
     }
   },
   "dxy": {
-    "value": 101.25,
-    "change": 0.054
+    "value": 101.32,
+    "change": 0.12
   },
   "tnx": {
     "value": 5.24,
