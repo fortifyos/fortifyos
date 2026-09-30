@@ -1,7 +1,7 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-09-30T13:31:35.241965-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-09-30T17:49:00.140896-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.5,
