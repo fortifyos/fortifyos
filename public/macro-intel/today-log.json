@@ -1,22 +1,21 @@
 {
-  "date": "2026-09-30",
+  "date": "2026-10-01",
   "status": "active",
   "entries": [
     {
-      "session": "global_markets",
-      "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-09-30T05:15:43.927606-04:00",
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-10-01T08:20:25.714969-04:00",
       "regimeMode": "mixed",
       "confidence": 0.4,
       "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Breadth Quality moderately suppressed (score: -1).",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Net Fed Liquidity neutral (score: +0).",
       "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher"
       ],
       "whatChangedSinceLastReport": [
-        "WTI Crude Oil up 1.03% since last checkpoint (+0.92)"
+        "WTI Crude Oil up 2.43% since last checkpoint (+2.17)"
       ],
       "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
       "watchNext": [
@@ -28,86 +27,8 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
-    },
-    {
-      "session": "pre_market",
-      "sessionLabel": "Pre-Market (08:00 ET)",
-      "timestamp": "2026-09-30T13:31:35.242138-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.5,
-      "source": "rule_based",
-      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 50%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Net Fed Liquidity neutral (score: +0); Inflation Pressure neutral (score: +0).",
-      "crossAssetConnections": [
-        "Mixed signals across dimensions — no strong directional confirmation"
-      ],
-      "whatChangedSinceLastReport": [
-        "Bitcoin up 1.10% since last checkpoint (+918)",
-        "Gold (XAU/USD) down 1.01% since last checkpoint (-42.6)",
-        "WTI Crude Oil up 0.88% since last checkpoint (+0.79)",
-        "10Y Treasury Yield up 0.95% since last checkpoint (+0.05)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 50%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-09-30T17:49:00.141029-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.5,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 50%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Net Fed Liquidity neutral (score: +0); Inflation Pressure neutral (score: +0).",
-      "crossAssetConnections": [
-        "Mixed signals across dimensions — no strong directional confirmation"
-      ],
-      "whatChangedSinceLastReport": [
-        "S&P 500 down 0.62% since last checkpoint (-47.78)",
-        "Bitcoin down 0.54% since last checkpoint (-456)",
-        "CBOE VIX up 2.19% since last checkpoint (+0.35)",
-        "WTI Crude Oil down 0.68% since last checkpoint (-0.62)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 50%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "evening_wrap",
-      "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-09-30T23:53:32.489814-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.5,
-      "source": "rule_based",
-      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 50%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Net Fed Liquidity neutral (score: +0); Inflation Pressure neutral (score: +0).",
-      "crossAssetConnections": [
-        "Mixed signals across dimensions — no strong directional confirmation"
-      ],
-      "whatChangedSinceLastReport": [
-        "WTI Crude Oil down 0.97% since last checkpoint (-0.88)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 50%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
     }
   ],
-  "entryCount": 4,
-  "lastUpdated": "2026-09-30T23:53:32.490779-04:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-10-01T08:20:25.716129-04:00"
 }
