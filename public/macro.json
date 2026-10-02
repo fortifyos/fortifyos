@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 61.24,
-    "change": 1.9
+    "value": 61.38,
+    "change": 1.07
   },
   "gold": {
-    "value": 4198.5,
-    "change": 0.282
+    "value": 4212.6,
+    "change": 0.245
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 84810,
-    "change": 1.657
+    "value": 86190,
+    "change": 3.038
   },
   "eth": {
-    "value": 2705.99,
-    "change": 0.905
+    "value": 2751.58,
+    "change": 2.385
   },
   "oil": {
-    "value": 93.05,
-    "change": 2.909
+    "value": 89.39,
+    "change": -3.747
   },
   "spy": {
     "value": 763.99,
     "change": -0.027
   },
   "vix": {
-    "value": 16.39,
-    "change": 0.306
+    "value": 15.97,
+    "change": -2.563
   },
   "sp500": {
     "value": 7666.45,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 118.7,
-    "change": 0.49
+    "value": 122.02,
+    "change": 3.602
   },
   "xrp": {
-    "value": 1.5,
-    "change": 0.454
+    "value": 1.54,
+    "change": 3.22
   },
   "doge": {
-    "value": 0.09433,
-    "change": -0.14
+    "value": 0.09729,
+    "change": 2.975
   },
   "ada": {
-    "value": 0.24616,
-    "change": -0.048
+    "value": 0.25594,
+    "change": 3.583
   },
   "avax": {
-    "value": 10.98,
-    "change": 0.771
+    "value": 11.1,
+    "change": -0.2
   },
   "link": {
-    "value": 14.29,
-    "change": -0.551
+    "value": 14.43,
+    "change": 1.115
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-10-02"
     },
     "SOL": {
-      "value": 118.69,
-      "change": 0.248,
+      "value": 122.08,
+      "change": 3.11,
       "asOf": "2026-10-02"
     },
     "XRP": {
@@ -250,14 +250,14 @@
       "asOf": "2026-10-02"
     },
     "DOGE": {
-      "value": 0.09,
-      "change": -0.03,
+      "value": 0.1,
+      "change": 3.278,
       "asOf": "2026-10-02"
     }
   },
   "dxy": {
-    "value": 102.03,
-    "change": 0.568
+    "value": 101.93,
+    "change": -0.166
   },
   "tnx": {
     "value": 5.24,
