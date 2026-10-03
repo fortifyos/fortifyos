@@ -1,93 +1,15 @@
 {
-  "date": "2026-10-02",
+  "date": "2026-10-03",
   "status": "active",
   "entries": [
     {
       "session": "global_markets",
       "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-10-02T05:17:53.872709-04:00",
+      "timestamp": "2026-10-03T07:01:51.550607-04:00",
       "regimeMode": "mixed",
       "confidence": 0.4,
       "source": "rule_based",
       "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Crypto Risk Appetite moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex softening — disinflationary read on demand outlook"
-      ],
-      "whatChangedSinceLastReport": [
-        "Bitcoin up 1.63% since last checkpoint (+1380)",
-        "CBOE VIX down 2.56% since last checkpoint (-0.42)",
-        "WTI Crude Oil down 3.93% since last checkpoint (-3.66)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "pre_market",
-      "sessionLabel": "Pre-Market (08:00 ET)",
-      "timestamp": "2026-10-02T13:21:41.098969-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Net Fed Liquidity neutral (score: +0).",
-      "crossAssetConnections": [
-        "Commodity complex softening — disinflationary read on demand outlook"
-      ],
-      "whatChangedSinceLastReport": [
-        "S&P 500 up 0.70% since last checkpoint (+53.86)",
-        "Bitcoin down 1.49% since last checkpoint (-1284)",
-        "CBOE VIX down 1.82% since last checkpoint (-0.29)",
-        "Gold (XAU/USD) down 1.07% since last checkpoint (-45)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-10-02T17:45:47.937581-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Breadth Quality moderately elevated (score: +1).",
-      "crossAssetConnections": [
-        "Commodity complex softening — disinflationary read on demand outlook",
-        "Broad participation — cross-asset confirmation across equities and crypto"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX down 2.36% since last checkpoint (-0.37)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "evening_wrap",
-      "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-10-02T23:35:44.682599-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
       "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Breadth Quality moderately suppressed (score: -1).",
       "crossAssetConnections": [
         "Commodity complex softening — disinflationary read on demand outlook",
@@ -106,6 +28,6 @@
       ]
     }
   ],
-  "entryCount": 4,
-  "lastUpdated": "2026-10-02T23:35:44.683370-04:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-10-03T07:01:51.551717-04:00"
 }
