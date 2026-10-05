@@ -1,25 +1,25 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-10-04T23:50:00.635764-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-10-05T09:28:20.043962-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 0,
     "dollarPressure": 1,
-    "breadthQuality": 2,
-    "cryptoRiskAppetite": 1
+    "breadthQuality": 1,
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly elevated (score: +2)",
     "Dollar Pressure moderately elevated (score: +1)",
-    "Crypto Risk Appetite moderately elevated (score: +1)"
+    "Breadth Quality moderately elevated (score: +1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
     "Dollar bid — cross-asset pressure on commodities and EM risk assets",
