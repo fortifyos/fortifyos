@@ -1,63 +1,11 @@
 {
-  "date": "2026-10-10",
+  "date": "2026-10-11",
   "status": "active",
   "entries": [
     {
-      "session": "evening_wrap",
-      "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-10-10T00:06:53.286331-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Volatility Stress moderately suppressed (score: -1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "VIX compressed — low implied volatility supporting risk-carrying capacity"
-      ],
-      "whatChangedSinceLastReport": [
-        "No significant changes detected since last checkpoint"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "global_markets",
-      "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-10-10T07:49:33.929619-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Volatility Stress moderately suppressed (score: -1); Net Fed Liquidity neutral (score: +0).",
-      "crossAssetConnections": [
-        "VIX compressed — low implied volatility supporting risk-carrying capacity"
-      ],
-      "whatChangedSinceLastReport": [
-        "No significant changes detected since last checkpoint"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
       "session": "pre_market",
       "sessionLabel": "Pre-Market (08:00 ET)",
-      "timestamp": "2026-10-10T12:52:57.036857-04:00",
+      "timestamp": "2026-10-11T08:01:20.925964-04:00",
       "regimeMode": "mixed",
       "confidence": 0.4,
       "source": "rule_based",
@@ -78,58 +26,8 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-10-10T17:04:54.881116-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Volatility Stress moderately suppressed (score: -1); Net Fed Liquidity neutral (score: +0).",
-      "crossAssetConnections": [
-        "VIX compressed — low implied volatility supporting risk-carrying capacity"
-      ],
-      "whatChangedSinceLastReport": [
-        "No significant changes detected since last checkpoint"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "evening_wrap",
-      "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-10-10T23:43:04.806172-04:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Volatility Stress moderately suppressed (score: -1); Net Fed Liquidity neutral (score: +0).",
-      "crossAssetConnections": [
-        "VIX compressed — low implied volatility supporting risk-carrying capacity"
-      ],
-      "whatChangedSinceLastReport": [
-        "No significant changes detected since last checkpoint"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
     }
   ],
-  "entryCount": 5,
-  "lastUpdated": "2026-10-10T23:43:04.807199-04:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-10-11T08:01:20.926548-04:00"
 }

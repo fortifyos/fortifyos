@@ -1,7 +1,7 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-10-10T23:43:04.806041-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-10-11T08:01:20.925895-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
