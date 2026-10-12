@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 61.23,
-    "change": 0.923
+    "value": 60.98,
+    "change": -0.103
   },
   "gold": {
-    "value": 4215.5,
-    "change": -0.019
+    "value": 4196.5,
+    "change": -0.47
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 83654,
-    "change": 0.862
+    "value": 83429,
+    "change": 0.54
   },
   "eth": {
-    "value": 2534.17,
-    "change": 1.144
+    "value": 2556.12,
+    "change": 2.227
   },
   "oil": {
-    "value": 90.83,
-    "change": -1.111
+    "value": 92.84,
+    "change": 1.078
   },
   "spy": {
     "value": 778.57,
     "change": 0.174
   },
   "vix": {
-    "value": 14.84,
-    "change": -3.699
+    "value": 15.49,
+    "change": 4.38
   },
   "sp500": {
     "value": 7811.54,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 111.19,
-    "change": 1.054
+    "value": 111.56,
+    "change": 1.971
   },
   "xrp": {
-    "value": 1.41,
-    "change": 0.542
+    "value": 1.4,
+    "change": 0.84
   },
   "doge": {
-    "value": 0.08674,
-    "change": 1.073
+    "value": 0.08699,
+    "change": 2.049
   },
   "ada": {
-    "value": 0.25184,
-    "change": 1.389
+    "value": 0.25129,
+    "change": 1.782
   },
   "avax": {
-    "value": 10.98,
-    "change": 6.035
+    "value": 11.05,
+    "change": 7.091
   },
   "link": {
-    "value": 13.37,
-    "change": 2.762
+    "value": 13.35,
+    "change": 3.7
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-10-12"
     },
     "SOL": {
-      "value": 111.15,
-      "change": -0.077,
+      "value": 111.51,
+      "change": 0.242,
       "asOf": "2026-10-12"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.09,
-      "change": 0.034,
+      "change": 0.287,
       "asOf": "2026-10-12"
     }
   },
   "dxy": {
-    "value": 102.2,
-    "change": -0.007
+    "value": 102.39,
+    "change": 0.175
   },
   "tnx": {
     "value": 5.24,
