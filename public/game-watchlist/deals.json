@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-12T23:53:00Z",
+  "generatedAt": "2026-10-12T23:58:49.880Z",
   "items": [
     {
       "title": "Mortal Kombat: Legacy Kollection",
@@ -17,7 +17,7 @@
       "note": "Seller lists this as new sealed US Switch 2 edition. $35 + $1.43 fee + $4.91 shipping = $41.34 before tax. Price and listing availability checked October 12. Confirm photos, exact region and cartridge contents before buying; no verified market-low claim.",
       "url": "https://www.mercari.com/us/item/m35834781257/?ref=search_results",
       "verified": "2026-10-12",
-      "liveConfirmed": true,
+      "liveConfirmed": false,
       "shipping": 4.91,
       "fee": 1.43,
       "source": "https://www.mercari.com/us/item/m35834781257/?ref=search_results",
@@ -25,7 +25,9 @@
       "checkedAt": "2026-10-12T23:53:00Z",
       "monitor": "mercari",
       "monitorPlatform": "Switch 2 Digital",
-      "currency": "USD"
+      "currency": "USD",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": "Source HTTP 403"
     },
     {
       "title": "Monster Hunter Rise",
@@ -35,67 +37,75 @@
       "price": 4.99,
       "was": 39.99,
       "discount": 88,
-      "expires": "2026-10-16",
+      "expires": null,
       "signal": "strike",
       "verdict": "Buy digital",
       "cover": "monster-hunter-rise.jpg",
-      "note": "Historical-low territory and an exceptional amount of game for five dollars.",
+      "note": "Current US switch digital price observed by the online checker. Compare the exact edition and confirm checkout price; sale cutoff is not verified.",
       "url": "https://www.nintendo.com/us/store/products/monster-hunter-rise-switch/",
       "verified": "2026-10-12",
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/monster-hunter-rise",
       "id": "switch-1",
-      "checkedAt": "2026-10-12T23:53:00Z",
+      "checkedAt": "2026-10-12T23:58:49.880Z",
       "monitor": "deku",
       "monitorPlatform": "Switch Digital",
-      "currency": "USD"
+      "currency": "USD",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": null,
+      "dealOpportunity": true
     },
     {
       "title": "SOMA",
       "platform": "switch",
       "platformLabel": "Switch",
       "format": "digital",
-      "price": 5.99,
+      "price": 29.99,
       "was": 29.99,
-      "discount": 80,
-      "expires": "2026-10-12",
+      "discount": 0,
+      "expires": null,
       "signal": "strike",
       "verdict": "Buy digital",
       "cover": "soma.jpg",
-      "note": "Narrative science-fiction horror at $5.99, checked against the US source October 12. Listed sale end is October 12; confirm the store cutoff before buying.",
+      "note": "Current US switch digital price observed by the online checker. Compare the exact edition and confirm checkout price; sale cutoff is not verified.",
       "url": "https://www.nintendo.com/us/store/products/soma-switch/",
       "verified": "2026-10-12",
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/soma",
       "id": "switch-2",
-      "checkedAt": "2026-10-12T23:53:00Z",
+      "checkedAt": "2026-10-12T23:58:49.880Z",
       "monitor": "deku",
       "monitorPlatform": "Switch Digital",
-      "currency": "USD"
+      "currency": "USD",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": null,
+      "dealOpportunity": false
     },
     {
       "title": "What Remains of Edith Finch",
       "platform": "switch",
       "platformLabel": "Switch",
       "format": "digital",
-      "price": 19.99,
+      "price": 18.99,
       "was": 19.99,
-      "discount": 0,
+      "discount": 5,
       "expires": null,
       "signal": "watch",
       "verdict": "Buy digital",
       "cover": "what-remains-of-edith-finch.jpg",
-      "note": "Nintendo Switch price is back to $19.99. The $4.99 value was a historical low, so this is a wait-for-sale lead.",
+      "note": "Current US switch digital price observed by the online checker. Compare the exact edition and confirm checkout price; sale cutoff is not verified.",
       "url": "https://www.dekudeals.com/items/what-remains-of-edith-finch",
       "verified": "2026-10-12",
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/what-remains-of-edith-finch",
       "dealOpportunity": false,
       "id": "switch-3",
-      "checkedAt": "2026-10-12T23:53:00Z",
+      "checkedAt": "2026-10-12T23:58:49.880Z",
       "monitor": "deku",
       "monitorPlatform": "Switch Digital",
-      "currency": "USD"
+      "currency": "USD",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": null
     },
     {
       "title": "Resident Evil 2 Deluxe Edition",
@@ -118,7 +128,9 @@
       "monitor": "deku",
       "monitorPlatform": "PS5 Digital",
       "currency": "USD",
-      "source": "https://www.dekudeals.com/items/resident-evil-2-deluxe-edition?platform=ps5"
+      "source": "https://www.dekudeals.com/items/resident-evil-2-deluxe-edition?platform=ps5",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": "No current USD price for PS5 Digital"
     },
     {
       "title": "Dave the Diver",
@@ -141,7 +153,9 @@
       "monitor": "deku",
       "monitorPlatform": "PS5 Digital",
       "currency": "USD",
-      "source": "https://www.dekudeals.com/items/dave-the-diver?platform=ps5"
+      "source": "https://www.dekudeals.com/items/dave-the-diver?platform=ps5",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": "No current USD price for PS5 Digital"
     },
     {
       "title": "The Legend of Zelda: Ocarina of Time",
@@ -214,23 +228,30 @@
       "platform": "switch2",
       "platformLabel": "Switch 2",
       "format": "digital",
-      "price": 5.99,
+      "price": 29.99,
       "was": 29.99,
-      "discount": 80,
-      "expires": "2026-10-12",
+      "discount": 0,
+      "expires": null,
       "signal": "strike",
       "verdict": "Buy digital",
       "cover": "soma.jpg",
-      "note": "Narrative science-fiction horror at $5.99, checked against the US source October 12. Listed sale end is October 12; confirm the store cutoff before buying.",
+      "note": "Current US switch 2 digital price observed by the online checker. Compare the exact edition and confirm checkout price; sale cutoff is not verified.",
       "url": "https://www.nintendo.com/us/store/products/soma-switch-2/",
       "verified": "2026-10-12",
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/soma",
       "id": "switch2-9",
-      "checkedAt": "2026-10-12T23:53:00Z",
+      "checkedAt": "2026-10-12T23:58:49.880Z",
       "monitor": "deku",
       "monitorPlatform": "Switch 2 Digital",
-      "currency": "USD"
+      "currency": "USD",
+      "lastAttemptAt": "2026-10-12T23:58:49.880Z",
+      "checkError": null,
+      "dealOpportunity": false
     }
-  ]
+  ],
+  "lastRun": {
+    "attempted": 7,
+    "successful": 4
+  }
 }
