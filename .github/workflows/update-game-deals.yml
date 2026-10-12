@@ -1,0 +1,49 @@
+
+name: Refresh Game Vault Deals
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update-game-deals.mjs
+      - scripts/update-game-deals.test.mjs
+      - .github/workflows/update-game-deals.yml
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: game-vault-deal-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify price parsing and browser script syntax
+        run: |
+          node --test scripts/update-game-deals.test.mjs
+          node --check public/game-watchlist/discovery.js
+          node --check public/game-watchlist/preorders.js
+          node --check public/game-watchlist/deals.js
+      - name: Check current online prices
+        run: node scripts/update-game-deals.mjs
+      - name: Save feed and request Pages deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- public/game-watchlist/deals.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/game-watchlist/deals.json
+          git commit -m "Refresh checked Game Vault deal prices"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run deploy.yml --ref main

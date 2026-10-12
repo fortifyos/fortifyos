@@ -1,0 +1,20 @@
+
+.guide-wrap{max-width:1500px;margin:auto;padding:24px;color:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.guide-hero{padding:38px 0 24px}.guide-hero h1{font-size:clamp(36px,6vw,70px);line-height:1;margin:10px 0 18px}.guide-hero p{max-width:850px;color:#b7c0cd;line-height:1.65}
+.guide-tabs,.guide-links,.guide-controls{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.guide-tabs button,.guide-controls select{background:#11141a;border:1px solid #424957;color:#fff;padding:12px;font:inherit;cursor:pointer}.guide-tabs button.a{background:#fff;color:#08090c}
+.guide-controls label{display:flex;gap:8px;align-items:center;color:#c2cad7}
+.guide-links a{color:#afc9fa;font-size:12px;line-height:1.5}.guide-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.guide-card{border:1px solid #303743;background:#11141a;overflow:hidden;min-width:0}.guide-art{height:280px;background:#080b10}.guide-art img{width:100%;height:100%;object-fit:contain;display:block}
+.guide-info{padding:18px}.guide-info>span,.guide-kicker{color:#ff7b91;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.guide-info h2{font-size:20px;line-height:1.3;margin:10px 0}.guide-info p{color:#b9c3d0;font-size:14px;line-height:1.6}.guide-info p.guide-buy{color:#e4c784;border-top:1px solid #303743;padding-top:12px}
+.guide-placeholder{display:grid;place-items:center;height:100%;padding:24px;color:#b5c7df;text-align:center;font-size:22px}
+.console-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}
+.console-paths article{padding:22px;border:1px solid #343b47;background:#11141a}.console-paths h2{font-size:22px;margin:10px 0;min-height:0}.console-paths p{color:#aeb9c9;font-size:14px;line-height:1.6}
+.console-paths a{display:inline-block;color:#b4cdff;margin:8px 12px 0 0;font-size:12px}
+.review-note{padding:18px;margin:20px 0;border-left:3px solid #e5bb70;background:#12161e;color:#bfcad9;line-height:1.6;font-size:13px}
+.guide-tabs button:focus-visible,.guide-controls select:focus-visible,.guide-links a:focus-visible{outline:2px solid #e5bb70;outline-offset:3px}
+@media(max-width:900px){.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.console-paths{grid-template-columns:1fr}}
+@media(max-width:600px){.guide-wrap{padding:16px}.guide-grid{grid-template-columns:1fr}.guide-art{height:300px}.guide-hero{padding-top:22px}}
+
+.collection-tools{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0}.collection-tools button{padding:10px 14px;border:1px solid #465166;background:#11141a;color:#fff;font:inherit;cursor:pointer}.collection-tools span{color:#bcc8d8;font-size:12px}

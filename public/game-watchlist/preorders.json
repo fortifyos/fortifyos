@@ -5606,7 +5606,8 @@
       "seller": "Video Games Plus",
       "url": "https://videogamesplus.ca/products/control-resonant-steelbook-playstation-5-pre-order",
       "cover": "./covers/preorders/ps/ps-control-resonant-steelbook-playstation-5-pre-order.jpg",
-      "verified": "2026-09-20"
+      "verified": "2026-10-12",
+      "currency": "CAD"
     },
     {
       "id": "ps-contruction-simulator-evolution-playstation-5-pre-order",
@@ -9331,5 +9332,6 @@
       "cover": "./covers/preorders/ps/ps-zzz-ps5.jpg",
       "verified": "2026-09-20"
     }
-  ]
+  ],
+  "reviewed": "2026-10-12"
 }

@@ -27,11 +27,11 @@
 @media(max-width:700px){.catalog-tools{grid-template-columns:1fr 1fr}.catalog-tools input{grid-column:1/-1}.catalog-summary{align-items:flex-start;flex-direction:column}.preorder-card .i{min-height:245px}.preorder-meta{grid-template-columns:1fr}.preorder-meta span:nth-child(2){display:none}}
 </style>
 <link rel="stylesheet" href="./editorial.css?v=20260920b">
-</head>
+<link rel="stylesheet" href="./discovery.css?v=20261012"></head>
 <body class="watchlist home-page">
 <div class="site-nav" role="navigation" aria-label="Main navigation">
 <a class="site-brand active" href="./"><span>FV</span><strong>Game Vault</strong></a>
-<div class="site-links"><a class="active" href="./">Home</a><a href="./ultimate.html">Collection</a><a href="#watchlist">Upcoming</a><a href="./deals.html">Deals</a><a href="./deadlines.html">Deadlines</a><a href="./sources.html">Sources</a></div>
+<div class="site-links"><a href="./consoles.html">Console guides</a><a class="active" href="./">Home</a><a href="./ultimate.html">Collection</a><a href="#watchlist">Upcoming</a><a href="./deals.html">Deals</a><a href="./deadlines.html">Deadlines</a><a href="./sources.html">Sources</a></div>
 </div>
 <main class="w">
 <section class="home-hero">
@@ -39,12 +39,17 @@
 <div class="home-covers" aria-hidden="true"><img src="./covers/signalis.jpg" alt="" onerror="this.onerror=null;this.src='./covers/hades.jpg'"><img src="./covers/ruiner.jpg" alt="" onerror="this.onerror=null;this.src='./covers/hades.jpg'"><img src="./covers/devil-may-cry-5-special-edition.jpg" alt="" onerror="this.onerror=null;this.src='./covers/hades.jpg'"></div>
 </section>
 <section class="home-grid" aria-label="Collector dashboard">
-<a href="./ultimate.html"><span>01</span><strong>Collection</strong><b>175 titles</b></a>
+<a href="./ultimate.html"><span>01</span><strong>Collection</strong><b>179 entries</b></a>
 <a href="#watchlist"><span>02</span><strong>Upcoming</strong><b>Future + preorders</b></a>
 <a href="./deals.html"><span>03</span><strong>Deals</strong><b>Price alerts</b></a>
 <a href="./deadlines.html"><span>04</span><strong>Deadlines</strong><b>Act first</b></a>
 <a href="./sources.html"><span>05</span><strong>Sources</strong><b>Find releases</b></a>
 </section>
+<section aria-label="Console discovery"><span class="guide-kicker">Choose your console</span><div class="console-paths">
+<article><h2>Nintendo Switch</h2><p>Nintendo essentials, portable RPGs and distinctive indie cartridges. Start with Mario Odyssey, Metroid Dread and 13 Sentinels.</p><a href="./consoles.html?console=Switch">Essentials &amp; hidden gems</a><a href="./deals.html?platform=sw">Switch deals</a><a href="./?platform=sw#watchlist">Switch preorders</a></article>
+<article><h2>Sony PS5</h2><p>PlayStation essentials, cinematic stories and demanding action. Start with Astro Bot, Ghost of Tsushima and Armored Core VI.</p><a href="./consoles.html?console=PS5">Essentials &amp; hidden gems</a><a href="./deals.html?platform=ps">PS5 deals</a><a href="./?platform=ps#watchlist">PS5 preorders</a></article>
+<article><h2>Nintendo Switch 2</h2><p>First-party anchors, upgrade comparisons and physical media checks. Start with Bananza, Mario Kart World and the exact Cyberpunk edition.</p><a href="./consoles.html?console=Switch%202">Build the Switch 2 shelf</a><a href="./deals.html?platform=s2">Switch 2 deals</a><a href="./?platform=s2#watchlist">Switch 2 preorders</a></article>
+</div></section>
 <section class="deku-research" aria-labelledby="deku-title">
 <div><span class="kicker">Outside research · Deku Deals</span><h2 id="deku-title">Find the next game and a fair price</h2><p>Use these live lists to discover releases, check reviews and price history, then confirm the exact physical edition and stock with the seller.</p></div>
 <div class="deku-links"><a href="https://www.dekudeals.com/hottest?filter%5Bplatform%5D=ps5&amp;filter%5Bformat%5D=physical&amp;sort=discount" target="_blank" rel="noopener">PS5 physical deals ↗</a><a href="https://www.dekudeals.com/hottest" target="_blank" rel="noopener">All current deals ↗</a><a href="https://www.dekudeals.com/upcoming-releases" target="_blank" rel="noopener">Upcoming releases ↗</a><a href="https://www.dekudeals.com/top-rated" target="_blank" rel="noopener">Top rated games ↗</a><a href="https://www.dekudeals.com/switch-2-physical-games" target="_blank" rel="noopener">Switch 2 physical ↗</a></div>
@@ -52,9 +57,9 @@
 <header id="watchlist" class="watchlist-hero">
 <div>
 <span class="kicker">Physical releases · preorder research</span>
-<h1>Preorder index</h1>
+<h1>Upcoming &amp; preorder leads</h1>
 <p>Compare tracked physical editions across PS4, PS5, Switch, and Switch 2. PS4 preorders appear only when a matching PS5 edition is listed; exceptional PS4-only games are selected individually. This retailer snapshot is not an exhaustive release list.</p>
-<div class="hero-stats"><div><strong id="tracked-total">—</strong><span>Tracked editions</span></div><div><strong id="open-total">—</strong><span>Open preorders</span></div><div><strong>4</strong><span>Platforms</span></div></div>
+<div class="hero-stats"><div><strong id="tracked-total">—</strong><span>Tracked editions</span></div><div><strong id="open-total">—</strong><span>Recently checked open</span></div><div><strong>4</strong><span>Platforms</span></div></div>
 </div>
 <nav class="f" aria-label="Platform filter">
 <button class="a" data-f="all">All</button>
@@ -64,10 +69,13 @@
 <button data-f="s2">Switch 2</button>
 </nav>
 </header>
-<section class="catalog-tools" aria-label="Preorder search and filters">
+<div class="review-note">Start with Collection fit or Personal watch. “Open” is only shown for a recently checked listing with a future date. Older listings and dates that have passed move to Recheck; that does not prove a release shipped or a preorder sold out.</div><section class="catalog-tools" aria-label="Preorder search and filters">
 <input id="preorder-search" type="search" placeholder="Search title, edition, region, or media type" aria-label="Search preorders">
 <select id="edition-filter" aria-label="Filter by edition"><option value="all">All editions</option><option>Standard</option><option>Collector</option><option>Limited</option><option>Steelbook</option><option>Complete / Deluxe</option><option>Reprint</option></select>
-<select id="availability-filter" aria-label="Filter by availability"><option value="all">All availability</option><option value="open">Preorder open</option><option value="restock">Sold out / restock watch</option><option value="announced">Announced · preorder TBD</option></select>
+<select id="availability-filter" aria-label="Filter by availability"><option value="all">All availability</option><option value="open">Preorder open</option><option value="restock">Sold out / restock watch</option><option value="announced">Announced · preorder TBD</option><option value="recheck">Listing / release needs recheck</option></select>
+<select id="fit-filter" aria-label="Collection relevance"><option value="curated">Collection fit + personal watch</option><option value="personal">Personal watch</option><option value="all">All discovery leads</option></select>
+<select id="media-filter" aria-label="Physical media"><option value="all">All media types</option><option value="card">Publisher / retailer says full on media</option><option value="key">Game-Key Card / download</option><option value="verify">Media needs checking</option></select>
+<select id="preorder-sort" aria-label="Sort preorders"><option value="fit">Collection fit first</option><option value="release">Listed release date</option><option value="title">Title A–Z</option></select>
 </section>
 <div class="catalog-summary"><strong id="result-count">Loading catalog…</strong><p>Listings checked <span id="catalog-date">—</span> · “Verify” means English support or full-on-media status is unconfirmed. Check each seller for current availability.</p></div>
 <section class="g" id="g">
@@ -75,6 +83,6 @@
 <div class="load-more-wrap"><button id="load-more" class="load-more" hidden>Show more</button></div>
 <footer>Physical preorder catalog · Standard and collector editions are separate · Sold-out listings remain visible for restock research.</footer>
 </main>
-<script src="./preorders.js?v=20260928a"></script>
+<script src="./discovery.js?v=20261012"></script><script src="./preorders.js?v=20261012"></script>
 </body>
 </html>
