@@ -19,3 +19,8 @@ test('Exact Mercari listing checks structured currency and stock',()=>{
  product.offers.availability='https://schema.org/OutOfStock';
  assert.throws(()=>parseMercari(prefix+JSON.stringify(product)+'</script>'));
 });
+
+test('Cross-generation PlayStation rows stay distinct from Nintendo prices',()=>{
+ const html='<h4>Current prices</h4><table><tr><td>Switch Digital</td><td>$4.99</td></tr><tr><td>PS5 / PS4 Digital</td><td>$19.99</td></tr></table><h3>Price history</h3>';
+ assert.equal(parseDeku(html,'PS5 / PS4 Digital').price,19.99);
+});

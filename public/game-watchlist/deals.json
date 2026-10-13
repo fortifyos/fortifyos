@@ -126,9 +126,9 @@
       "id": "ps5-4",
       "checkedAt": null,
       "monitor": "deku",
-      "monitorPlatform": "PS5 Digital",
+      "monitorPlatform": "PS5 / PS4 Digital",
       "currency": "USD",
-      "source": "https://www.dekudeals.com/items/resident-evil-2-deluxe-edition?platform=ps5",
+      "source": "https://www.dekudeals.com/items/resident-evil-2-deluxe-edition?platform=all",
       "lastAttemptAt": "2026-10-12T23:58:49.880Z",
       "checkError": "No current USD price for PS5 Digital"
     },
@@ -151,9 +151,9 @@
       "id": "ps5-5",
       "checkedAt": null,
       "monitor": "deku",
-      "monitorPlatform": "PS5 Digital",
+      "monitorPlatform": "PS5 / PS4 Digital",
       "currency": "USD",
-      "source": "https://www.dekudeals.com/items/dave-the-diver?platform=ps5",
+      "source": "https://www.dekudeals.com/items/dave-the-diver?platform=all",
       "lastAttemptAt": "2026-10-12T23:58:49.880Z",
       "checkError": "No current USD price for PS5 Digital"
     },
@@ -248,6 +248,28 @@
       "lastAttemptAt": "2026-10-12T23:58:49.880Z",
       "checkError": null,
       "dealOpportunity": false
+    },
+    {
+      "id": "ps5-disco-elysium",
+      "title": "Disco Elysium: The Final Cut",
+      "platform": "ps5",
+      "platformLabel": "PS4 + PS5",
+      "format": "digital",
+      "price": 39.99,
+      "was": 39.99,
+      "discount": 0,
+      "expires": null,
+      "signal": "strike",
+      "verdict": "Check live price",
+      "cover": "disco-elysium-the-final-cut.jpg",
+      "note": "Narrative RPG collection candidate; the scheduled checker will confirm the current PlayStation price.",
+      "url": "https://www.dekudeals.com/items/disco-elysium-the-final-cut?platform=all",
+      "source": "https://www.dekudeals.com/items/disco-elysium-the-final-cut?platform=all",
+      "monitor": "deku",
+      "monitorPlatform": "PS5 / PS4 Digital",
+      "currency": "USD",
+      "checkedAt": null,
+      "liveConfirmed": false
     }
   ],
   "lastRun": {
