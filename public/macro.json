@@ -16,17 +16,17 @@
     "change": null
   },
   "fedFundsRate": {
-    "date": "    <link href=\"https://fonts.googleapis.com/css?family=Open+Sans:300",
-    "value": 400,
+    "date": "2026-10-20",
+    "value": 3.88,
     "change": null
   },
   "silver": {
-    "value": 56.77,
-    "change": -1.631
+    "value": 55.96,
+    "change": -2.546
   },
   "gold": {
-    "value": 4130.6,
-    "change": -0.29
+    "value": 4098,
+    "change": -1.253
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 82917,
-    "change": 0.219
+    "value": 81929,
+    "change": -1.724
   },
   "eth": {
-    "value": 2442.23,
-    "change": -0.162
+    "value": 2403.13,
+    "change": -2.228
   },
   "oil": {
-    "value": 98.36,
-    "change": -3.37
+    "value": 99.36,
+    "change": 2.275
   },
   "spy": {
     "value": 773.09,
     "change": 0.862
   },
   "vix": {
-    "value": 16.68,
-    "change": -3.64
+    "value": 18.13,
+    "change": 8.693
   },
   "sp500": {
     "value": 7757.17,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 105.66,
-    "change": -0.492
+    "value": 104.39,
+    "change": -2.153
   },
   "xrp": {
-    "value": 1.35,
-    "change": 0.966
+    "value": 1.33,
+    "change": -2.132
   },
   "doge": {
-    "value": 0.08048,
-    "change": -1.442
+    "value": 0.07919,
+    "change": -3.382
   },
   "ada": {
-    "value": 0.22163,
-    "change": -1.007
+    "value": 0.21657,
+    "change": -3.996
   },
   "avax": {
-    "value": 9.38,
-    "change": -3.38
+    "value": 9.23,
+    "change": -4.942
   },
   "link": {
-    "value": 12.34,
-    "change": -0.067
+    "value": 12.05,
+    "change": -2.375
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-10-22"
     },
     "SOL": {
-      "value": 105.52,
-      "change": -1.202,
+      "value": 104.38,
+      "change": -2.26,
       "asOf": "2026-10-22"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.08,
-      "change": -1.806,
+      "change": -3.343,
       "asOf": "2026-10-22"
     }
   },
   "dxy": {
-    "value": 101.63,
-    "change": -0.101
+    "value": 101.67,
+    "change": -0.113
   },
   "tnx": {
     "value": 5.15,
