@@ -1,28 +1,27 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-10-22T17:08:49.080764-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-10-22T23:10:20.201566-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 0,
     "growthHealth": 0,
     "volatilityStress": 1,
     "dollarPressure": 0,
     "breadthQuality": -2,
-    "cryptoRiskAppetite": -1
+    "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
-    "Inflation Pressure moderately suppressed (score: -1)",
-    "Volatility Stress moderately elevated (score: +1)"
+    "Volatility Stress moderately elevated (score: +1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
