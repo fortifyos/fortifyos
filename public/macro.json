@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 54.13,
-    "change": -5.733
+    "value": 53.96,
+    "change": -1.468
   },
   "gold": {
-    "value": 4032,
-    "change": -2.843
+    "value": 4038.3,
+    "change": -0.544
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 81789,
-    "change": -1.22
+    "value": 81607,
+    "change": -0.454
   },
   "eth": {
-    "value": 2410.7,
-    "change": -1.156
+    "value": 2396.17,
+    "change": -0.301
   },
   "oil": {
-    "value": 99.94,
-    "change": 2.872
+    "value": 101.03,
+    "change": 1.568
   },
   "spy": {
     "value": 763.96,
     "change": -0.662
   },
   "vix": {
-    "value": 19.03,
-    "change": 14.089
+    "value": 19.63,
+    "change": 3.153
   },
   "sp500": {
     "value": 7663.43,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 104.38,
-    "change": -1.018
+    "value": 104.01,
+    "change": -0.408
   },
   "xrp": {
     "value": 1.32,
-    "change": -1.854
+    "change": -0.763
   },
   "doge": {
-    "value": 0.07954,
-    "change": -1.009
+    "value": 0.07995,
+    "change": 1.086
   },
   "ada": {
-    "value": 0.21544,
-    "change": -2.601
+    "value": 0.21579,
+    "change": -0.286
   },
   "avax": {
-    "value": 9.23,
-    "change": -1.32
+    "value": 9.2,
+    "change": -0.125
   },
   "link": {
-    "value": 12.18,
-    "change": -0.969
+    "value": 12.07,
+    "change": 0.201
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-10-23"
     },
     "SOL": {
-      "value": 104.31,
-      "change": 0.739,
+      "value": 103.94,
+      "change": 0.384,
       "asOf": "2026-10-23"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.08,
-      "change": 0.998,
+      "change": 1.556,
       "asOf": "2026-10-23"
     }
   },
   "dxy": {
-    "value": 101.68,
-    "change": -0.095
+    "value": 101.74,
+    "change": 0.132
   },
   "tnx": {
     "value": 4.95,
