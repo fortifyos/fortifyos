@@ -1,30 +1,31 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-10-23T12:22:27.046021-04:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-10-23T16:55:28.346925-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.5,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
-    "growthHealth": 0,
+    "growthHealth": -1,
     "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": 0,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Net Fed Liquidity neutral (score: +0)",
-    "Inflation Pressure neutral (score: +0)",
-    "Growth Health neutral (score: +0)"
+    "Growth Health moderately suppressed (score: -1)",
+    "Crypto Risk Appetite moderately elevated (score: +1)",
+    "Net Fed Liquidity neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Mixed signals across dimensions — no strong directional confirmation"
+    "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
   ],
   "watchLevels": [
+    "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
