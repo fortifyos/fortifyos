@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-10-24T18:50:55.785391-04:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-10-24T22:59:49.124923-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,19 +11,18 @@
     "growthHealth": -1,
     "volatilityStress": 0,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 0
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Growth Health moderately suppressed (score: -1)",
-    "Breadth Quality moderately suppressed (score: -1)",
-    "Net Fed Liquidity neutral (score: +0)"
+    "Net Fed Liquidity neutral (score: +0)",
+    "Inflation Pressure neutral (score: +0)"
   ],
   "supportingEvidence": [
-    "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
   ],
   "watchLevels": [
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
