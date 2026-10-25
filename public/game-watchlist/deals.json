@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-25T00:19:21.064Z",
+  "generatedAt": "2026-10-25T05:17:48.674Z",
   "items": [
     {
       "id": "switch-mercari-suikoden-mario-rpg-rudolph",
@@ -28,7 +28,7 @@
       "currency": "USD",
       "checkError": "Source host not allowed",
       "dealOpportunity": true,
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z"
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z"
     },
     {
       "title": "Monster Hunter Rise",
@@ -48,11 +48,11 @@
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/monster-hunter-rise",
       "id": "switch-1",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "monitor": "deku",
       "monitorPlatform": "Switch Digital",
       "currency": "USD",
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "checkError": null,
       "dealOpportunity": false
     },
@@ -74,11 +74,11 @@
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/soma",
       "id": "switch-2",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "monitor": "deku",
       "monitorPlatform": "Switch Digital",
       "currency": "USD",
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "checkError": null,
       "dealOpportunity": false
     },
@@ -101,11 +101,11 @@
       "source": "https://www.dekudeals.com/items/what-remains-of-edith-finch",
       "dealOpportunity": false,
       "id": "switch-3",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "monitor": "deku",
       "monitorPlatform": "Switch Digital",
       "currency": "USD",
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "checkError": null
     },
     {
@@ -125,12 +125,12 @@
       "verified": "2026-10-25",
       "liveConfirmed": true,
       "id": "ps5-4",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "monitor": "deku",
       "monitorPlatform": "PS5 / PS4 Digital",
       "currency": "USD",
       "source": "https://www.dekudeals.com/items/resident-evil-2-deluxe-edition?platform=all",
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "checkError": null,
       "dealOpportunity": false
     },
@@ -151,12 +151,12 @@
       "verified": "2026-10-25",
       "liveConfirmed": true,
       "id": "ps5-5",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "monitor": "deku",
       "monitorPlatform": "PS5 / PS4 Digital",
       "currency": "USD",
       "source": "https://www.dekudeals.com/items/dave-the-diver?platform=all",
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "checkError": null,
       "dealOpportunity": false
     },
@@ -244,11 +244,11 @@
       "liveConfirmed": true,
       "source": "https://www.dekudeals.com/items/soma",
       "id": "switch2-9",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "monitor": "deku",
       "monitorPlatform": "Switch 2 Digital",
       "currency": "USD",
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "checkError": null,
       "dealOpportunity": false
     },
@@ -271,9 +271,9 @@
       "monitor": "deku",
       "monitorPlatform": "PS5 / PS4 Digital",
       "currency": "USD",
-      "checkedAt": "2026-10-25T00:19:21.064Z",
+      "checkedAt": "2026-10-25T05:17:48.674Z",
       "liveConfirmed": true,
-      "lastAttemptAt": "2026-10-25T00:19:21.064Z",
+      "lastAttemptAt": "2026-10-25T05:17:48.674Z",
       "verified": "2026-10-25",
       "checkError": null,
       "dealOpportunity": false
