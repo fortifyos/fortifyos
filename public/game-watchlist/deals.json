@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-26T06:08:51.436Z",
+  "generatedAt": "2026-10-26T12:25:16Z",
   "items": [
     {
       "id": "switch-mercari-suikoden-mario-rpg-rudolph",
@@ -13,22 +13,22 @@
       "discount": 40,
       "expires": null,
       "signal": "physical",
-      "verdict": "Strong collection lot",
+      "verdict": "Buy while free shipping holds",
       "cover": "mercari-suikoden-mario-rpg-rudolph-switch-bundle.webp",
-      "note": "Three sealed North American Switch games: Suikoden I & II HD Remaster Day One Edition, Super Mario RPG, and Rudolph the Red-Nosed Reindeer. $50.63 + $2.09 buyer fee + $7.48 shipping = $60.20 before tax, or $20.07 per game. The value is the two RPGs; Rudolph is a low-value bonus. PriceCharting benchmarks put Suikoden Day One near $30 new, while recent Super Mario RPG completed sales generally cluster around the low-to-mid $20s used, so collection value is good but resale upside is modest.",
+      "note": "Three sealed North American Switch games: Suikoden I & II HD Remaster Day One Edition, Super Mario RPG, and Rudolph the Red-Nosed Reindeer. $50.63 + $1.82 buyer fee + free promotional shipping = $52.45 before tax, or $17.48 per sealed game. Mercari currently shows free shipping on this qualifying $50+ listing; the promotion end time is not disclosed, so confirm checkout. Value remains concentrated in Suikoden and Super Mario RPG; Rudolph is a low-value bonus. Collection value is strong; resale upside is modest.",
       "url": "https://www.mercari.com/us/item/m32841316984/",
       "source": "https://www.pricecharting.com/game/nintendo-switch/suikoden-i-%26-ii-hd-remaster-day-one-edition",
-      "verified": "2026-10-19",
-      "liveConfirmed": false,
-      "shipping": 7.48,
-      "fee": 2.09,
-      "checkedAt": "2026-10-19T13:08:33Z",
+      "verified": "2026-10-26",
+      "liveConfirmed": true,
+      "shipping": 0,
+      "fee": 1.82,
+      "checkedAt": "2026-10-26T12:25:16Z",
       "monitor": "mercari",
       "monitorPlatform": "Switch Physical",
       "currency": "USD",
-      "checkError": "Source host not allowed",
+      "checkError": null,
       "dealOpportunity": true,
-      "lastAttemptAt": "2026-10-26T06:08:51.436Z"
+      "lastAttemptAt": "2026-10-26T12:25:16Z"
     },
     {
       "title": "Monster Hunter Rise",
