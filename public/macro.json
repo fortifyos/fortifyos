@@ -21,12 +21,12 @@
     "change": null
   },
   "silver": {
-    "value": 53.67,
-    "change": -1.138
+    "value": 52.84,
+    "change": -1.145
   },
   "gold": {
-    "value": 4054,
-    "change": -0.506
+    "value": 4037.1,
+    "change": -0.358
   },
   "yieldCurve": null,
   "source": {
@@ -38,24 +38,24 @@
     "gold": "FRED API: GOLDAMGBD228NLBM"
   },
   "btc": {
-    "value": 81126,
-    "change": 0.537
+    "value": 80166,
+    "change": -1.562
   },
   "eth": {
-    "value": 2354.76,
-    "change": 0.478
+    "value": 2320.87,
+    "change": -1.992
   },
   "oil": {
-    "value": 102.27,
-    "change": 2.372
+    "value": 101,
+    "change": -1.732
   },
   "spy": {
     "value": 772.31,
     "change": 0.907
   },
   "vix": {
-    "value": 16.91,
-    "change": -3.482
+    "value": 17.13,
+    "change": 1.301
   },
   "sp500": {
     "value": 7743.98,
@@ -75,28 +75,28 @@
     "value": "—"
   },
   "sol": {
-    "value": 102.15,
-    "change": 1.007
+    "value": 100.37,
+    "change": -2.188
   },
   "xrp": {
-    "value": 1.32,
-    "change": -0.319
+    "value": 1.29,
+    "change": -2.941
   },
   "doge": {
-    "value": 0.07978,
-    "change": 1.184
+    "value": 0.07822,
+    "change": -2.397
   },
   "ada": {
-    "value": 0.20612,
-    "change": 0.368
+    "value": 0.19955,
+    "change": -3.658
   },
   "avax": {
-    "value": 8.99,
-    "change": 0.507
+    "value": 8.74,
+    "change": -3.179
   },
   "link": {
-    "value": 11.81,
-    "change": 2.231
+    "value": 11.5,
+    "change": -2.453
   },
   "tickers": {
     "AAPL": {
@@ -240,8 +240,8 @@
       "asOf": "2026-10-29"
     },
     "SOL": {
-      "value": 102.04,
-      "change": -0.263,
+      "value": 100.2,
+      "change": -2.06,
       "asOf": "2026-10-29"
     },
     "XRP": {
@@ -251,13 +251,13 @@
     },
     "DOGE": {
       "value": 0.08,
-      "change": 0.003,
+      "change": -1.955,
       "asOf": "2026-10-29"
     }
   },
   "dxy": {
-    "value": 102.27,
-    "change": -0.05
+    "value": 102.22,
+    "change": 0.031
   },
   "tnx": {
     "value": 5.04,
