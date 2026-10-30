@@ -49,7 +49,7 @@ document.querySelectorAll('[data-f]').forEach(button=>button.addEventListener('c
 search.addEventListener('input',()=>render());
 [edition,availability,document.getElementById('fit-filter'),document.getElementById('media-filter'),document.getElementById('preorder-sort')].forEach(el=>el.addEventListener('change',()=>render()));
 loadMore.addEventListener('click',()=>{visible+=pageSize;render(false)});
-fetch('./preorders.json?v=20261012').then(response=>{if(!response.ok)throw Error('Catalog unavailable');return response.json()}).then(data=>{
+fetch('./preorders.json?v=20261030b').then(response=>{if(!response.ok)throw Error('Catalog unavailable');return response.json()}).then(data=>{
  if(!Array.isArray(data.items))throw Error('Invalid catalog');
  catalog=data.items;
  document.getElementById('tracked-total').textContent=catalog.length.toLocaleString();
