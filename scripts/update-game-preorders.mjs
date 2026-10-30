@@ -1,9 +1,9 @@
-import { mkdir, writeFile, access, readFile } from 'node:fs/promises';
+import { writeFile, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const ROOT = path.resolve('public/game-watchlist');
-const COVER_ROOT = path.join(ROOT, 'covers', 'preorders');
 const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY_DATE = new Date(`${TODAY}T00:00:00Z`);
 const collections = [
   { key: 'ps4', platform: 'PlayStation 4', handle: 'ps4-pre-orders', match: /playstation 4|ps4/i },
   { key: 'ps', platform: 'PlayStation 5', handle: 'ps5-pre-orders', match: /playstation 5|ps5/i },
@@ -23,6 +23,22 @@ const releaseDate = (html = '') => {
   const text = stripHtml(html);
   const hit = text.match(/(?:RELEASE DATE|EXPECTED RELEASE|AVAILABLE)\s*:?\s*([A-Z]+\s+\d{1,2},\s+20\d{2}|\d{1,2}[/-]\d{1,2}[/-]20\d{2}|Q[1-4]\s+20\d{2}|20\d{2}|TBD)/i);
   return hit ? hit[1].replace(/\b\w/g, c => c.toUpperCase()) : 'TBD';
+};
+
+// Retailer preorder collections sometimes retain products after launch. Do not
+// present those stale collection entries as open preorders once their explicit
+// release date has arrived. Placeholder/TBD/quarter dates remain untouched.
+const parsedReleaseDate = value => {
+  const match = String(value || '').trim().match(/^([A-Za-z]+)\s+(\d{1,2}),\s+(20\d{2})$/);
+  if (!match) return null;
+  const date = new Date(`${match[1]} ${match[2]}, ${match[3]} 00:00:00 UTC`);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const correctReleasedListing = item => {
+  const date = parsedReleaseDate(item.release);
+  if (date && date <= TODAY_DATE) item.availability = 'Released / listing recheck';
+  return item;
 };
 
 const edition = title => {
@@ -49,8 +65,6 @@ const media = (title, body = '') => {
   return 'Physical media · verify';
 };
 
-const slug = value => value.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 120);
-
 async function fetchProducts(handle) {
   const all = [];
   for (let page = 1; page <= 5; page += 1) {
@@ -64,24 +78,12 @@ async function fetchProducts(handle) {
   return all;
 }
 
-async function exists(file) {
-  try { await access(file); return true; } catch { return false; }
-}
-
 async function downloadCover(item, url) {
   if (!url) return null;
-  const dir = path.join(COVER_ROOT, item.platformKey);
-  const file = path.join(dir, `${slug(item.id)}.jpg`);
-  const relative = `./covers/preorders/${item.platformKey}/${path.basename(file)}`;
-  if (await exists(file)) return relative;
-  await mkdir(dir, { recursive: true });
   const sized = new URL(url);
   sized.searchParams.set('width', '560');
   sized.searchParams.set('format', 'jpg');
-  const response = await fetch(sized, { headers: { 'user-agent': 'Game Vault preorder index' } });
-  if (!response.ok) return null;
-  await writeFile(file, Buffer.from(await response.arrayBuffer()));
-  return relative;
+  return sized.toString();
 }
 
 const rows = [];
@@ -150,5 +152,6 @@ for (const [id, alternatives] of Object.entries(supplemental.alternatives)) {
   if (item) item.alternatives = alternatives;
 }
 rows.sort((a, b) => a.platform.localeCompare(b.platform) || a.title.localeCompare(b.title) || a.edition.localeCompare(b.edition));
+rows.forEach(correctReleasedListing);
 await writeFile(path.join(ROOT, 'preorders.json'), JSON.stringify({ updated: TODAY, source: 'Video Games Plus collections and verified direct listings', count: rows.length, items: rows }, null, 2) + '\n');
 console.log(`Wrote ${rows.length} preorder editions (${rows.filter(x => x.availability === 'Preorder open').length} open).`);
