@@ -6,7 +6,7 @@ const keys={Switch:'sw','Switch 2':'s2',PS5:'ps',PS4:'ps4'};
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normalize=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const personalWatch=['control resonant','huntdown','terminator 2d','signalis'];
-const curatedTerms=[...picks.map(x=>normalize(x.title)), 'nine sols','the messenger','blasphemous','ender lilies','hollow knight','silksong','chained echoes','1000xresist','blue prince','mewgenics','binding of isaac','metroid','fire emblem','onimusha'];
+const curatedTerms=[...picks.map(x=>normalize(x.title)), 'nine sols','the messenger','blasphemous','ender lilies','hollow knight','silksong','chained echoes','1000xresist','blue prince','mewgenics','binding of isaac','metroid','fire emblem','onimusha','final fantasy vii revelation','tomb raider legacy of atlantis','monster hunter wilds','007 first light','yu gi oh tag force','lego batman legacy of the dark knight','dragon quest xi','metro 2039'];
 const fit=item=>{const title=normalize(item.title);return personalWatch.some(x=>title.includes(x))?'Personal watch':curatedTerms.some(x=>title.includes(x)||x.includes(title)&&title.length>8)?'Collection fit':'Discovery candidate'};
 const day=()=>(()=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day})();
 function stale(date,maxDays=7){
