@@ -54,6 +54,7 @@ fetch('./preorders.json?v=20261012').then(response=>{if(!response.ok)throw Error
  catalog=data.items;
  document.getElementById('tracked-total').textContent=catalog.length.toLocaleString();
  document.getElementById('open-total').textContent=catalog.filter(x=>listingState(x)==='open').length.toLocaleString();
+ ['s2','ps','sw','ps4'].forEach(key=>{const items=catalog.filter(x=>x.platformKey===key),open=items.filter(x=>listingState(x)==='open').length;document.getElementById('coverage-'+key).textContent=items.length.toLocaleString()+' tracked · '+open.toLocaleString()+' open'});
  document.getElementById('catalog-date').textContent=data.updated+' snapshot; per-entry dates below';
  render();
 }).catch(()=>{grid.innerHTML='<div class="catalog-error">The preorder catalog could not load. Refresh to try again, or use Sources to check publishers.</div>';countLabel.textContent='Catalog unavailable'});
