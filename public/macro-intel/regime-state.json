@@ -1,25 +1,25 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-10-31T05:13:38.984401-04:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-10-31T12:44:38.009677-04:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": -1,
     "volatilityStress": 1,
     "dollarPressure": 0,
-    "breadthQuality": -2,
-    "cryptoRiskAppetite": 0
+    "breadthQuality": -1,
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
     "Growth Health moderately suppressed (score: -1)",
-    "Volatility Stress moderately elevated (score: +1)"
+    "Volatility Stress moderately elevated (score: +1)",
+    "Breadth Quality moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
