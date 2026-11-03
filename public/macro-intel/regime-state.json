@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-02T16:20:04.466039-05:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-11-03T00:08:07.202315-05:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
@@ -9,24 +9,23 @@
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": -1,
-    "volatilityStress": 1,
+    "volatilityStress": 0,
     "dollarPressure": 0,
     "breadthQuality": -2,
-    "cryptoRiskAppetite": 0
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
     "Growth Health moderately suppressed (score: -1)",
-    "Volatility Stress moderately elevated (score: +1)"
+    "Crypto Risk Appetite moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
-    "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
