@@ -31,8 +31,40 @@
       "uncertaintyFlags": [
         "No dominant regime — cross-asset signals contradictory"
       ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-11-05T14:26:04.104445-05:00",
+      "regimeMode": "risk_off",
+      "confidence": 0.29,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Risk-off — volatility spike with deteriorating breadth and defensive rotation",
+      "dominantStory": "Regime classification: risk_off (confidence 29%). Risk-off — volatility spike with deteriorating breadth and defensive rotation. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress strongly elevated (score: +2).",
+      "crossAssetConnections": [
+        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
+        "VIX in elevated territory — hedging demand elevated, risk premium expanding",
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 down 4.06% since last checkpoint (-311.9)",
+        "Bitcoin down 5.41% since last checkpoint (-4345)",
+        "CBOE VIX up 57.39% since last checkpoint (+9.67)",
+        "WTI Crude Oil up 1.86% since last checkpoint (+1.65)"
+      ],
+      "operatorPosture": "Defensive — reduce exposure to cyclicals; prioritize volatility management",
+      "watchNext": [
+        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 29%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "Elevated volatility increases path uncertainty on all price targets"
+      ]
     }
   ],
-  "entryCount": 1,
-  "lastUpdated": "2026-11-05T05:16:13.924319-05:00"
+  "entryCount": 2,
+  "lastUpdated": "2026-11-05T14:26:04.105391-05:00"
 }
