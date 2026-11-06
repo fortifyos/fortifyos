@@ -1,42 +1,40 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-05T20:20:14.794853-05:00",
-  "regimeMode": "risk_off",
-  "regimeDescription": "Risk-off — volatility spike with deteriorating breadth and defensive rotation",
-  "confidence": 0.29,
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-11-06T05:19:03.157074-05:00",
+  "regimeMode": "growth_scare",
+  "regimeDescription": "Growth scare — demand-side weakness signaling potential recessionary pressure",
+  "confidence": 0.46,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 1,
+    "inflationPressure": -1,
     "growthHealth": -2,
-    "volatilityStress": 2,
-    "dollarPressure": 0,
-    "breadthQuality": -2,
+    "volatilityStress": 1,
+    "dollarPressure": 1,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": -2
   },
   "priorRegimeMode": "risk_off",
-  "regimeChanged": false,
+  "regimeChanged": true,
   "dominantDrivers": [
     "Growth Health strongly suppressed (score: -2)",
-    "Volatility Stress strongly elevated (score: +2)",
-    "Breadth Quality strongly suppressed (score: -2)"
+    "Crypto Risk Appetite strongly suppressed (score: -2)",
+    "Inflation Pressure moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "VIX in elevated territory — hedging demand elevated, risk premium expanding",
+    "Commodity complex softening — disinflationary read on demand outlook",
+    "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
     "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
+    "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
-    "VIX recaptures and holds below 20 — signals de-escalation of stress regime",
-    "SPX reclaims key moving average on volume — confirms risk appetite returning",
-    "Fed signals liquidity support or pivot — removes core driver of risk-off"
+    "SPX holds key support and bounces with volume — stabilization signal",
+    "VIX declines while SPX advances — fear subsiding, growth scare fading"
   ]
 }

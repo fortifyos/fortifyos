@@ -1,100 +1,37 @@
 {
-  "date": "2026-11-05",
+  "date": "2026-11-06",
   "status": "active",
   "entries": [
     {
       "session": "global_markets",
       "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-11-05T05:16:13.923462-05:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
+      "timestamp": "2026-11-06T05:19:03.157138-05:00",
+      "regimeMode": "growth_scare",
+      "confidence": 0.46,
       "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Growth Health moderately elevated (score: +1).",
+      "headline": "[Global Markets Open (03:00 ET)] Growth scare — demand-side weakness signaling potential recessionary pressure",
+      "dominantStory": "Regime classification: growth_scare (confidence 46%). Growth scare — demand-side weakness signaling potential recessionary pressure. Primary drivers: Growth Health strongly suppressed (score: -2); Crypto Risk Appetite strongly suppressed (score: -2).",
       "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Growth proxies constructive — SPX trending and volatility contained",
-        "Broad participation — cross-asset confirmation across equities and crypto"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX up 1.44% since last checkpoint (+0.24)",
-        "Gold (XAU/USD) up 0.60% since last checkpoint (+24.8)",
-        "WTI Crude Oil up 0.77% since last checkpoint (+0.68)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
-        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-11-05T14:26:04.104445-05:00",
-      "regimeMode": "risk_off",
-      "confidence": 0.29,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Risk-off — volatility spike with deteriorating breadth and defensive rotation",
-      "dominantStory": "Regime classification: risk_off (confidence 29%). Risk-off — volatility spike with deteriorating breadth and defensive rotation. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress strongly elevated (score: +2).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "VIX in elevated territory — hedging demand elevated, risk premium expanding",
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
         "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
       ],
       "whatChangedSinceLastReport": [
-        "S&P 500 down 4.06% since last checkpoint (-311.9)",
-        "Bitcoin down 5.41% since last checkpoint (-4345)",
-        "CBOE VIX up 57.39% since last checkpoint (+9.67)",
-        "WTI Crude Oil up 1.86% since last checkpoint (+1.65)"
+        "CBOE VIX down 7.20% since last checkpoint (-2.03)",
+        "WTI Crude Oil down 1.74% since last checkpoint (-1.59)"
       ],
-      "operatorPosture": "Defensive — reduce exposure to cyclicals; prioritize volatility management",
+      "operatorPosture": "De-risk — defensive sectors, cash; wait for stabilization before re-entry",
       "watchNext": [
         "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime"
       ],
-      "confidenceCommentary": "Rule-based confidence: 29%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "confidenceCommentary": "Rule-based confidence: 46%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
       "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "Elevated volatility increases path uncertainty on all price targets"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-11-05T20:20:14.794952-05:00",
-      "regimeMode": "risk_off",
-      "confidence": 0.29,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Risk-off — volatility spike with deteriorating breadth and defensive rotation",
-      "dominantStory": "Regime classification: risk_off (confidence 29%). Risk-off — volatility spike with deteriorating breadth and defensive rotation. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress strongly elevated (score: +2).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "VIX in elevated territory — hedging demand elevated, risk premium expanding",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX up 6.26% since last checkpoint (+1.66)",
-        "WTI Crude Oil up 1.12% since last checkpoint (+1.01)"
-      ],
-      "operatorPosture": "Defensive — reduce exposure to cyclicals; prioritize volatility management",
-      "watchNext": [
-        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 29%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
         "Elevated volatility increases path uncertainty on all price targets"
       ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-11-05T20:20:14.795697-05:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-11-06T05:19:03.157706-05:00"
 }
