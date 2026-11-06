@@ -1,7 +1,7 @@
 {
   "session": "mid_session",
   "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-05T14:26:04.104309-05:00",
+  "timestamp": "2026-11-05T20:20:14.794853-05:00",
   "regimeMode": "risk_off",
   "regimeDescription": "Risk-off — volatility spike with deteriorating breadth and defensive rotation",
   "confidence": 0.29,
@@ -14,8 +14,8 @@
     "breadthQuality": -2,
     "cryptoRiskAppetite": -2
   },
-  "priorRegimeMode": "mixed",
-  "regimeChanged": true,
+  "priorRegimeMode": "risk_off",
+  "regimeChanged": false,
   "dominantDrivers": [
     "Growth Health strongly suppressed (score: -2)",
     "Volatility Stress strongly elevated (score: +2)",
