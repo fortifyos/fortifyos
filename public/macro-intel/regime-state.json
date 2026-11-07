@@ -1,40 +1,39 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-11-06T13:49:12.417352-05:00",
-  "regimeMode": "mixed",
-  "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.4,
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-11-06T19:35:18.946108-05:00",
+  "regimeMode": "growth_scare",
+  "regimeDescription": "Growth scare — demand-side weakness signaling potential recessionary pressure",
+  "confidence": 0.26,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
-    "growthHealth": -1,
-    "volatilityStress": -1,
+    "inflationPressure": 0,
+    "growthHealth": -2,
+    "volatilityStress": 1,
     "dollarPressure": 1,
-    "breadthQuality": 0,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": 1
   },
-  "priorRegimeMode": "growth_scare",
+  "priorRegimeMode": "mixed",
   "regimeChanged": true,
   "dominantDrivers": [
-    "Inflation Pressure moderately suppressed (score: -1)",
-    "Growth Health moderately suppressed (score: -1)",
-    "Volatility Stress moderately suppressed (score: -1)"
+    "Growth Health strongly suppressed (score: -2)",
+    "Volatility Stress moderately elevated (score: +1)",
+    "Dollar Pressure moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
-    "VIX compressed — low implied volatility supporting risk-carrying capacity",
     "Dollar bid — cross-asset pressure on commodities and EM risk assets",
-    "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+    "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
+    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
-    "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+    "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
     "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
-    "Any two dimensions align strongly in one direction — regime will clarify",
-    "VIX spikes above 30 — even mixed regime becomes risk-off if vol escalates"
+    "SPX holds key support and bounces with volume — stabilization signal",
+    "VIX declines while SPX advances — fear subsiding, growth scare fading"
   ]
 }
