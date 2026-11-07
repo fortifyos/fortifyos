@@ -1,7 +1,7 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-11-07T04:33:51.101953-05:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-11-07T12:22:09.308322-05:00",
   "regimeMode": "growth_scare",
   "regimeDescription": "Growth scare — demand-side weakness signaling potential recessionary pressure",
   "confidence": 0.16,
