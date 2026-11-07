@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-06",
+  "status": "archived",
+  "entries": [
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-11-06T05:19:03.157138-05:00",
+      "regimeMode": "growth_scare",
+      "confidence": 0.46,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Growth scare — demand-side weakness signaling potential recessionary pressure",
+      "dominantStory": "Regime classification: growth_scare (confidence 46%). Growth scare — demand-side weakness signaling potential recessionary pressure. Primary drivers: Growth Health strongly suppressed (score: -2); Crypto Risk Appetite strongly suppressed (score: -2).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX down 7.20% since last checkpoint (-2.03)",
+        "WTI Crude Oil down 1.74% since last checkpoint (-1.59)"
+      ],
+      "operatorPosture": "De-risk — defensive sectors, cash; wait for stabilization before re-entry",
+      "watchNext": [
+        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 46%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Elevated volatility increases path uncertainty on all price targets"
+      ]
+    },
+    {
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-11-06T13:49:12.417454-05:00",
+      "regimeMode": "mixed",
+      "confidence": 0.4,
+      "source": "rule_based",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately suppressed (score: -1); Growth Health moderately suppressed (score: -1).",
+      "crossAssetConnections": [
+        "Commodity complex softening — disinflationary read on demand outlook",
+        "VIX compressed — low implied volatility supporting risk-carrying capacity",
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 0.72% since last checkpoint (+53.18)",
+        "CBOE VIX down 5.66% since last checkpoint (-1.48)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-11-06T19:35:18.946205-05:00",
+      "regimeMode": "growth_scare",
+      "confidence": 0.26,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Growth scare — demand-side weakness signaling potential recessionary pressure",
+      "dominantStory": "Regime classification: growth_scare (confidence 26%). Growth scare — demand-side weakness signaling potential recessionary pressure. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+      ],
+      "whatChangedSinceLastReport": [
+        "CBOE VIX up 3.93% since last checkpoint (+0.97)"
+      ],
+      "operatorPosture": "De-risk — defensive sectors, cash; wait for stabilization before re-entry",
+      "watchNext": [
+        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 26%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "Elevated volatility increases path uncertainty on all price targets"
+      ]
+    }
+  ],
+  "entryCount": 3,
+  "lastUpdated": "2026-11-06T19:35:18.947075-05:00",
+  "archivedAt": "2026-11-07T04:33:51.097708-05:00"
+}
