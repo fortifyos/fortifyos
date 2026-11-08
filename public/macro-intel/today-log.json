@@ -86,8 +86,36 @@
         "Low confidence — regime classification may shift on next checkpoint",
         "Elevated volatility increases path uncertainty on all price targets"
       ]
+    },
+    {
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-11-07T23:09:46.148648-05:00",
+      "regimeMode": "growth_scare",
+      "confidence": 0.16,
+      "source": "rule_based",
+      "headline": "[Evening Wrap (21:00 ET)] Growth scare — demand-side weakness signaling potential recessionary pressure",
+      "dominantStory": "Regime classification: growth_scare (confidence 16%). Growth scare — demand-side weakness signaling potential recessionary pressure. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+      ],
+      "whatChangedSinceLastReport": [
+        "No significant changes detected since last checkpoint"
+      ],
+      "operatorPosture": "De-risk — defensive sectors, cash; wait for stabilization before re-entry",
+      "watchNext": [
+        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 16%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "Elevated volatility increases path uncertainty on all price targets"
+      ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-11-07T16:23:13.068869-05:00"
+  "entryCount": 4,
+  "lastUpdated": "2026-11-07T23:09:46.149611-05:00"
 }
