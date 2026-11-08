@@ -1,16 +1,16 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-11-07T23:09:46.148557-05:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-11-08T07:40:45.770542-05:00",
   "regimeMode": "growth_scare",
   "regimeDescription": "Growth scare — demand-side weakness signaling potential recessionary pressure",
-  "confidence": 0.16,
+  "confidence": 0.14,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
     "growthHealth": -2,
     "volatilityStress": 1,
-    "dollarPressure": 1,
+    "dollarPressure": 0,
     "breadthQuality": 0,
     "cryptoRiskAppetite": 1
   },
@@ -19,15 +19,13 @@
   "dominantDrivers": [
     "Growth Health strongly suppressed (score: -2)",
     "Volatility Stress moderately elevated (score: +1)",
-    "Dollar Pressure moderately elevated (score: +1)"
+    "Crypto Risk Appetite moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
   ],
   "watchLevels": [
     "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-    "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
