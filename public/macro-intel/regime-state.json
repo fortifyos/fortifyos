@@ -1,37 +1,38 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-08T19:27:15.819514-05:00",
-  "regimeMode": "growth_scare",
-  "regimeDescription": "Growth scare — demand-side weakness signaling potential recessionary pressure",
-  "confidence": 0.24,
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-11-09T05:50:46.827011-05:00",
+  "regimeMode": "mixed",
+  "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
     "inflationPressure": 0,
-    "growthHealth": -2,
-    "volatilityStress": 1,
-    "dollarPressure": 0,
+    "growthHealth": -1,
+    "volatilityStress": 0,
+    "dollarPressure": -1,
     "breadthQuality": -1,
-    "cryptoRiskAppetite": 1
+    "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "growth_scare",
-  "regimeChanged": false,
+  "regimeChanged": true,
   "dominantDrivers": [
-    "Growth Health strongly suppressed (score: -2)",
-    "Volatility Stress moderately elevated (score: +1)",
+    "Growth Health moderately suppressed (score: -1)",
+    "Dollar Pressure moderately suppressed (score: -1)",
     "Breadth Quality moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
+    "Dollar weakening — relief for dollar-denominated risk assets and commodities",
     "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
-    "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
+    "DXY 100 — psychological support; break below could accelerate commodity repricing",
     "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
   ],
   "invalidationConditions": [
-    "SPX holds key support and bounces with volume — stabilization signal",
-    "VIX declines while SPX advances — fear subsiding, growth scare fading"
+    "Any two dimensions align strongly in one direction — regime will clarify",
+    "VIX spikes above 30 — even mixed regime becomes risk-off if vol escalates"
   ]
 }
