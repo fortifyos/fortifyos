@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T09:44:02.220Z",
+  "generatedAt": "2026-11-09T14:08:00.000Z",
   "items": [
     {
       "title": "Monster Hunter Rise",
@@ -171,28 +171,6 @@
       "verified": null,
       "liveConfirmed": false,
       "id": "switch2-7",
-      "checkedAt": null,
-      "monitor": null,
-      "monitorPlatform": "Switch 2 Digital",
-      "currency": "USD"
-    },
-    {
-      "title": "Terranigma Foiled Standard Edition",
-      "platform": "switch2",
-      "platformLabel": "Switch 2 / PS5",
-      "format": "physical",
-      "price": 39.99,
-      "was": 39.99,
-      "discount": 0,
-      "expires": "2026-11-08",
-      "signal": "physical",
-      "verdict": "Collector alert",
-      "cover": "terranigma.jpg",
-      "note": "Not a sale. The standard edition is the disciplined collector choice.",
-      "url": "https://limitedrungames.com/collections/all/products/terranigma-foiled-standard-edition-switch-2-ps5-xbox",
-      "verified": null,
-      "liveConfirmed": false,
-      "id": "switch2-8",
       "checkedAt": null,
       "monitor": null,
       "monitorPlatform": "Switch 2 Digital",
