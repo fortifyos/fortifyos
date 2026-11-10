@@ -1,69 +1,37 @@
 {
-  "date": "2026-11-09",
+  "date": "2026-11-10",
   "status": "active",
   "entries": [
     {
-      "session": "global_markets",
-      "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-11-09T05:50:46.827160-05:00",
+      "session": "evening_wrap",
+      "sessionLabel": "Evening Wrap (21:00 ET)",
+      "timestamp": "2026-11-10T00:47:28.911467-05:00",
       "regimeMode": "mixed",
-      "confidence": 0.4,
+      "confidence": 0.3,
       "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Growth Health moderately suppressed (score: -1); Dollar Pressure moderately suppressed (score: -1).",
-      "crossAssetConnections": [
-        "Dollar weakening — relief for dollar-denominated risk assets and commodities",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "Bitcoin down 1.13% since last checkpoint (-850)",
-        "CBOE VIX down 7.80% since last checkpoint (-2)",
-        "Gold (XAU/USD) up 0.58% since last checkpoint (+23.7)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "DXY 100 — psychological support; break below could accelerate commodity repricing",
-        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-11-09T16:53:00.405870-05:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Growth Health moderately elevated (score: +1); Volatility Stress moderately suppressed (score: -1).",
+      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Growth Health moderately elevated (score: +1).",
       "crossAssetConnections": [
         "VIX compressed — low implied volatility supporting risk-carrying capacity",
-        "Dollar weakening — relief for dollar-denominated risk assets and commodities",
-        "Growth proxies constructive — SPX trending and volatility contained"
+        "Growth proxies constructive — SPX trending and volatility contained",
+        "Broad participation — cross-asset confirmation across equities and crypto"
       ],
       "whatChangedSinceLastReport": [
-        "S&P 500 up 2.35% since last checkpoint (+173.1)",
-        "Bitcoin up 1.05% since last checkpoint (+775)",
-        "CBOE VIX down 15.74% since last checkpoint (-3.72)",
-        "Gold (XAU/USD) up 0.96% since last checkpoint (+39.4)"
+        "WTI Crude Oil down 0.70% since last checkpoint (-0.61)"
       ],
       "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
       "watchNext": [
         "VIX 20 — watch for mean-reversion spike given compressed volatility baseline",
-        "DXY 100 — psychological support; break below could accelerate commodity repricing",
-        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks"
+        "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
       ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
       "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
         "No dominant regime — cross-asset signals contradictory"
       ]
     }
   ],
-  "entryCount": 2,
-  "lastUpdated": "2026-11-09T16:53:00.406491-05:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-11-10T00:47:28.912271-05:00"
 }
