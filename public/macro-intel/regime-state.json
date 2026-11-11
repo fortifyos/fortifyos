@@ -1,32 +1,35 @@
 {
-  "session": "evening_wrap",
-  "sessionLabel": "Evening Wrap (21:00 ET)",
-  "timestamp": "2026-11-10T23:29:32.360592-05:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-11-11T08:28:41.699638-05:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-  "confidence": 0.3,
+  "confidence": 0.4,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": 0,
+    "inflationPressure": 1,
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 1,
-    "breadthQuality": -2,
+    "breadthQuality": -1,
     "cryptoRiskAppetite": -1
   },
   "priorRegimeMode": "mixed",
   "regimeChanged": false,
   "dominantDrivers": [
-    "Breadth Quality strongly suppressed (score: -2)",
+    "Inflation Pressure moderately elevated (score: +1)",
     "Growth Health moderately elevated (score: +1)",
     "Dollar Pressure moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
+    "Commodity complex showing inflation persistence — oil and/or gold trending higher",
     "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
   ],
   "watchLevels": [
+    "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
+    "Gold $2,400 — sustained hold signals institutional inflation hedging in force",
     "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
     "SPX all-time highs — watch for momentum exhaustion signals near prior peaks",
     "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
