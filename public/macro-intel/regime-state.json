@@ -1,13 +1,13 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-10T16:09:54.357565-05:00",
+  "session": "evening_wrap",
+  "sessionLabel": "Evening Wrap (21:00 ET)",
+  "timestamp": "2026-11-10T23:29:32.360592-05:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.3,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 0,
     "growthHealth": 1,
     "volatilityStress": 0,
     "dollarPressure": 1,
@@ -18,11 +18,10 @@
   "regimeChanged": false,
   "dominantDrivers": [
     "Breadth Quality strongly suppressed (score: -2)",
-    "Inflation Pressure moderately suppressed (score: -1)",
-    "Growth Health moderately elevated (score: +1)"
+    "Growth Health moderately elevated (score: +1)",
+    "Dollar Pressure moderately elevated (score: +1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
     "Dollar bid — cross-asset pressure on commodities and EM risk assets",
     "Growth proxies constructive — SPX trending and volatility contained",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
