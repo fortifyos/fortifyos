@@ -48,12 +48,15 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 <p>Collection picks are shown first. The release-check view includes older Future entries whose current release status still needs confirmation.</p>
 <div class="collection-tools">
 <label>View <select id="release"><option value="collection">Collection picks</option><option value="research">Upcoming / release check</option><option value="all">All entries</option></select></label>
+<label>Switch 2 media <select id="cartridge-filter"><option value="all">All formats</option><option value="confirmed-full">Confirmed full game card</option><option value="reported-full">Reported full game card</option><option value="needs-verification">Needs verification</option><option value="game-key">Game-Key Cards</option></select></label>
 <label>Ownership <select id="ownership"><option value="all">All ownership states</option><option>Untracked</option><option>Wanted</option><option>Ordered</option><option>Owned sealed</option><option>Owned opened</option></select></label>
 <label>Play status <select id="play-filter"><option value="all">All play states</option><option>Not started</option><option>Playing</option><option>Completed</option></select></label>
 <label>Buying plan <select id="priority-filter"><option value="all">All buying plans</option><option>Wait for sale</option><option>Buy below target</option><option>Monitor edition</option></select></label>
 <label>Sort <select id="sort"><option value="curated">Curated order</option><option value="title">Title A–Z</option><option value="platform">Platform</option><option value="target">Lowest buying target</option></select></label>
 </div>
 <p class="personal-summary" id="personal-summary"></p>
+<p class="fine">Cartridge classifications cite Nintendo Life’s official-confirmation guide or the wider US physical index. “Full cartridge” means the base game data is on the card, not that patches and DLC are included. North American packaging must be checked before purchase. <a href="https://www.nintendolife.com/guides/every-nintendo-switch-2-physical-release-with-the-full-game-on-the-cart" target="_blank" rel="noopener">Confirmed source ↗</a> · <a href="https://1me.com/games/switch-2/physical" target="_blank" rel="noopener">US physical index ↗</a></p>
+<p id="cartridge-summary" class="personal-summary"></p>
 <div class="collection-tools"><button id="export" type="button">Export my collection</button><button id="import" type="button">Import backup</button><input id="backup-file" type="file" accept=".json,application/json" hidden></div>
 <p class="fine">Your ownership, play status and targets save in this browser. Export a backup to carry them to another device. Targets are your spending limits, not live prices or verified market lows. Compare the total with shipping, fees and tax.</p>
 <div id="storage-message" role="status" aria-live="polite"></div>
@@ -75,10 +78,129 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 <a href="https://www.pushsquare.com/guides/best-ps5-games">Push Square · PS5 critical and reader canon ↗</a>
 <a href="https://www.theverge.com/news/671051/lost-in-cult-editions-physical-game-releases">The Verge · preservation-first physical publishing ↗</a>
 </div></details>
-<footer class="fine">Personal physical archive · Catalog reviewed October 12, 2026 · Per-entry evidence dates shown where checked</footer>
+<footer class="fine">Personal physical archive · Cartridge index reviewed November 13, 2026 · Per-entry evidence dates shown where checked</footer>
 </main>
 <script>
 const raw=`
+Absolum|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Animal Crossing: New Horizons|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+ChromaGun 2: Dye Hard|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Culdcept Begins|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Daemon X Machina: Titanic Scion|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Eternal Anima|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Fantasy Life i: The Girl Who Steals Time|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Godzilla: Destroy All Monsters Melee Remastered|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Harvest Moon: Echoes of Teradea|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Hello Kitty Island Adventure|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Hollow Knight: Silksong|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Hyrule Warriors: Age of Imprisonment|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Kirby Air Riders|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Lies of P: Complete Edition|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Mario Tennis Fever|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Marvel Cosmic Invasion|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+MIO: Memories in Orbit|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Mortal Kombat: Legacy Kollection|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Nintendo Switch Sports Resort|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Order Up!!|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Outbound|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Pastry Panic!|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+R-Type Dimensions III|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Ratatan|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Ravenswatch|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Shenmue III Enhanced|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Shin chan: Me and the Professor on Summer Vacation and Shiro and the Coal Town Double Pack|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+SHUTEN ORDER|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Splatoon Raiders|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Star Fox|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Stardew Valley|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+STEINS;GATE RE:BOOT|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Story of Seasons: Grand Bazaar|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Super Mario Bros. Wonder|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Teenage Mutant Ninja Turtles: Splintered Fate|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+The Disney Afternoon Collection|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+The Elder Scrolls IV: Oblivion Remastered|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Thief: The Dark Project Remastered|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Trails in the Sky 2nd Chapter|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Truxton Extreme|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Xenoblade Chronicles 2|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Xenoblade Chronicles 3|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Xenoblade Chronicles X: Definitive Edition|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Xenoblade Chronicles: Definitive Edition|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Yooka-Replaylee|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Yoshi and the Mysterious Book|Switch 2|Archive|Franchise|Research|Physical edition — verify North American SKU|Listed by Nintendo Life as full-game card; verify ESRB release and launch date
+Moonlighter 2: The Endless Vault|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Observer: System Redux|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Pikmin 4|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Starsand Island|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Hollow Knight|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Citizen Sleeper 2: Starward Vector|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Warhammer 40,000: Rogue Trader|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Layers of Fear: Final Masterpiece Edition|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Screenbound|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Orbitals|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Wanderstop|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+UNBEATABLE|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Bluey's Quest for the Gold Pen|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Bubsy 4D|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Coffee Talk Tokyo|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Bandit Trap|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Inkonbini: One Store, Many Stories|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Human: Fall Flat|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Rushing Beat X: Return of Brawl Brothers|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Dispatch|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Dave the Diver|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+MOUSE: P.I. for Hire|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Solarpunk|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Super Meat Boy 3D|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+The Séance of Blake Manor|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Azure Striker Gunvolt Trilogy Enhanced|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Cotton Reboot|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Hitman: Absolution|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Tenebris Somnia|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+House Flipper 2|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Toy Story Retro Roundup and Toy Story 3|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Order of the Sinking Star|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Lollipop Chainsaw RePOP|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Super Bomberman Collection|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Another Eden Begins|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+The Immortal John Triptych|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Grim Trials|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+The Midnight Walk|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+The Lord of the Rings: War in the North|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Cotton Rock With You|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Constance|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Fitness Boxing 3: Your Personal Trainer|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Gunvolt Chronicles: Luminous Avenger iX 1+2 Dual Collection|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Moonlight Peaks|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Dark Auction|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Rise of the Tomb Raider|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+FZ: Formation Z|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Psyvariar 3|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Sektori|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Alien: Rogue Incursion|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Darwin's Paradox!|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Haste|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Bang! Bang! Bandits|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Dread Delusion|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Minishoot' Adventures|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Card-en-Ciel|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+A-Train: All Aboard! Tourism|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Tomb Raider: Definitive Edition|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Inazuma Eleven: Victory Road|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Momotaro Dentetsu 2|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Majogami|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+KUUKIYOMI 4: Consider It|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Tamagotchi Plaza|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Terranigma|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Muramasa: Revenant Blades|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Rain World|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Bubble Bobble 4 Friends: The Baron is Back|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Viractal: Will You Trust Your Party?|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Caves of Qud|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Croc|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Croc 2|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Hoa 2|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
+Shenmue III|Switch 2|Future|Cult collector|Research|Physical edition — verify North American SKU|Listed in broader physical-format index; needs publisher and ESRB confirmation
 The Legend of Zelda: Breath of the Wild|Switch|Crown|Masterpiece|Adventure|Standard ESRB cartridge|Full base game; updates optional
 The Legend of Zelda: Tears of the Kingdom|Switch|Crown|Masterpiece|Adventure|Standard ESRB cartridge|Full base game; updates optional
 The Legend of Zelda: Link's Awakening|Switch|Archive|Franchise|Adventure|Standard ESRB cartridge|Full cartridge
@@ -322,6 +444,23 @@ const data=raw.trim().split('\n').filter(Boolean).map(line=>{
  const id=title+'|'+platform;
  return {title,platform,tier,lane,genre,edition,media,id,...(metadata[id]||{})};
 });
+
+// Evidence tiers are not offline cartridge tests. Future items can be format-confirmed but not yet purchasable.
+const verifiedFullTitles = new Set(["Absolum","Animal Crossing: New Horizons","ChromaGun 2: Dye Hard","Culdcept Begins","Cyberpunk 2077: Ultimate Edition","Daemon X Machina: Titanic Scion","Donkey Kong Bananza","Eternal Anima","Fantasy Life i: The Girl Who Steals Time","Fire Emblem: Fortune's Weave","Godzilla: Destroy All Monsters Melee Remastered","Hades II","Harvest Moon: Echoes of Teradea","Hello Kitty Island Adventure","Hollow Knight: Silksong","Hyrule Warriors: Age of Imprisonment","Indiana Jones and the Great Circle","Kirby Air Riders","Kirby and the Forgotten Land + Star-Crossed World","Lies of P: Complete Edition","Mario Kart World","Mario Tennis Fever","Marvel Cosmic Invasion","Metroid Prime 4: Beyond","Metroid Ravenous","MIO: Memories in Orbit","Mortal Kombat: Legacy Kollection","Nintendo Switch Sports Resort","Order Up!!","Outbound","Pastry Panic!","Pokémon Legends: Z-A","R-Type Dimensions III","Ratatan","Ravenswatch","Rune Factory: Guardians of Azuma","Shenmue III Enhanced","Shin chan: Me and the Professor on Summer Vacation and Shiro and the Coal Town Double Pack","SHUTEN ORDER","Sonic Racing: CrossWorlds","Splatoon Raiders","Star Fox","Stardew Valley","STEINS;GATE RE:BOOT","Stellar Blade: Complete Edition","Story of Seasons: Grand Bazaar","Super Mario Bros. Wonder","Super Mario Party Jamboree + Jamboree TV","Teenage Mutant Ninja Turtles: Splintered Fate","The Binding of Isaac: Repentance+","The Disney Afternoon Collection","The Elder Scrolls IV: Oblivion Remastered","The Legend of Zelda: Breath of the Wild","The Legend of Zelda: Tears of the Kingdom","Thief: The Dark Project Remastered","Trails in the Sky 2nd Chapter","Truxton Extreme","Xenoblade Chronicles 2","Xenoblade Chronicles 3","Xenoblade Chronicles X: Definitive Edition","Xenoblade Chronicles: Definitive Edition","Yooka-Replaylee","Yoshi and the Mysterious Book"]);
+const normalizeCartridgeTitle = value => value.toLowerCase()
+ .replace(/[-–—]\s*(nintendo )?switch 2 edition.*$/i,'')
+ .replace(/:\s*complete edition$/i,'')
+ .replace(/[^a-z0-9]/g,'');
+const verifiedKeys = new Set([...verifiedFullTitles].map(normalizeCartridgeTitle));
+function cartridgeStatus(x){
+ if(x.platform!=='Switch 2')return 'not-applicable';
+ if(x.mediaType==='Game-Key Card'||/game.key card|download required/i.test(x.edition+' '+x.media))return 'game-key';
+ if(verifiedKeys.has(normalizeCartridgeTitle(x.title)))return 'confirmed-full';
+ if(/full game card|full game and expansion on card|complete.*game card/i.test(x.media))return 'reported-full';
+ if(/game.key|download code/i.test(x.media))return 'game-key';
+ return 'needs-verification';
+}
+const formatLabels={'confirmed-full':'Full cartridge · publisher-reported','reported-full':'Full cartridge · check ESRB edition','needs-verification':'Format verification needed','game-key':'Game-Key Card · download required'};
 const byId=new Map(data.map(x=>[x.id,x]));
 const $=id=>document.getElementById(id);
 const cards=$('cards'),q=$('q'),pf=$('platform'),tf=$('tier'),lf=$('lane'),count=$('count');
@@ -371,6 +510,8 @@ const needsReleaseCheck=x=>x.tier==='Future'||x.releaseCheck===true;
 function summaries(){
  $('catalog-total').textContent=data.length;
  $('catalog-stats').innerHTML=[['Curated entries',data.length],...['Switch','Switch 2','PS5','PS4'].map(p=>[platformLabel(p),data.filter(x=>x.platform===p).length])].map(([label,n])=>'<div><strong>'+n+'</strong><span>'+label+'</span></div>').join('');
+ const switch2=data.filter(x=>x.platform==='Switch 2'); const totals=Object.fromEntries(['confirmed-full','reported-full','needs-verification','game-key'].map(k=>[k,switch2.filter(x=>cartridgeStatus(x)===k).length]));
+ $('cartridge-summary').textContent='Switch 2 media tracking: '+totals['confirmed-full']+' publisher-reported full cards · '+totals['reported-full']+' additional full-card claims · '+totals['needs-verification']+' require verification · '+totals['game-key']+' key cards. Upcoming releases included.';
  const owned=data.filter(x=>state(x).status.startsWith('Owned')).length;
  $('personal-summary').textContent=owned+' owned · '+data.filter(x=>state(x).status==='Wanted').length+' wanted · '+data.filter(x=>state(x).status==='Ordered').length+' ordered · '+data.filter(x=>state(x).play==='Completed').length+' completed · '+data.filter(needsReleaseCheck).length+' entries need a release check';
 }
@@ -379,16 +520,17 @@ function link(url,label,cls=''){const valid=safeURL(url);return valid?'<a class=
 function card(x,index){
  const s=state(x),term=encodeURIComponent(x.title+' '+x.platform+' physical');
  const source=x.source?link(x.source,x.sourceLabel||'Edition source','buy'):'';
+ const mediaStatus=cartridgeStatus(x);const formatLine=x.platform==='Switch 2'?'<p class="media '+(mediaStatus.includes('full')?'full':'verify')+'"><strong>'+esc(formatLabels[mediaStatus])+'</strong></p>':'';
  const evidence=x.checked?'Checked '+x.checked+' · '+esc(x.scope):'Edition-specific evidence not checked. Existing media notes are research leads.';
  const region=x.region||(/PEGI/i.test(x.edition)?'PEGI import':/Asia/i.test(x.edition)?'Asia / mixed-region entry; verify English':/ESRB/i.test(x.edition)?'ESRB edition sought; verify seller':'Region and English support need checking');
  const img=x.cover||'./covers/'+coverSlug(x)+'.jpg?v=20261012';
- return '<article class="game-card'+(x.cover?' new-art':'')+'" data-id="'+esc(x.id)+'"><div class="cover-frame"><img src="'+esc(img)+'" alt="'+esc(x.title)+' cover" loading="'+(index<6?'eager':'lazy')+'" decoding="async"><span class="platform-ribbon">'+platformLabel(x.platform)+'</span></div><div class="card-info"><h3>'+esc(x.title)+'</h3><details class="card-details" open><summary>Edition details</summary><div class="card-top"><span class="tier '+x.tier.toLowerCase()+'">'+x.tier+'</span><span class="lane">'+esc(x.lane)+'</span></div><p class="genre">'+esc(x.genre)+'</p>'+(x.why?'<p class="media">'+esc(x.why)+'</p>':'')+'<div class="edition">'+esc(x.edition)+'</div><p class="media verify">'+esc(x.media)+'</p><p class="media">'+esc(region)+'</p><p class="evidence">'+evidence+'</p>'+(needsReleaseCheck(x)?'<p class="media verify">Release check needed. Confirm current availability and reviews before buying.</p>':'')+'</details><div class="personal"><label>Ownership<select data-field="status">'+options(statuses,s.status)+'</select></label><label>Play status<select data-field="play">'+options(playStates,s.play)+'</select></label><label>Buying plan<select data-field="priority">'+options(priorities,s.priority)+'</select></label><label>My maximum total (USD)<input data-field="target" type="number" min="0" max="10000" step="0.01" placeholder="Set a spending limit" value="'+(s.target===null?'':s.target)+'"></label></div>'+source+'<div class="market-links">'+link('https://www.dekudeals.com/search?q='+encodeURIComponent(x.title),'Price history search')+link('https://www.mercari.com/search/?keyword='+term,'Mercari search')+link('https://www.ebay.com/sch/i.html?_nkw='+term+'&LH_Sold=1&LH_Complete=1','eBay sold search')+link('https://www.amazon.com/s?k='+term,'Amazon search')+'</div></div></article>';
+ return '<article class="game-card'+(x.cover?' new-art':'')+'" data-id="'+esc(x.id)+'"><div class="cover-frame"><img src="'+esc(img)+'" alt="'+esc(x.title)+' cover" loading="'+(index<6?'eager':'lazy')+'" decoding="async"><span class="platform-ribbon">'+platformLabel(x.platform)+'</span></div><div class="card-info"><h3>'+esc(x.title)+'</h3><details class="card-details" open><summary>Edition details</summary><div class="card-top"><span class="tier '+x.tier.toLowerCase()+'">'+x.tier+'</span><span class="lane">'+esc(x.lane)+'</span></div><p class="genre">'+esc(x.genre)+'</p>'+(x.why?'<p class="media">'+esc(x.why)+'</p>':'')+'<div class="edition">'+esc(x.edition)+'</div>'+formatLine<p class="media verify">'+esc(x.media)+'</p><p class="media">'+esc(region)+'</p><p class="evidence">'+evidence+'</p>'+(needsReleaseCheck(x)?'<p class="media verify">Release check needed. Confirm current availability and reviews before buying.</p>':'')+'</details><div class="personal"><label>Ownership<select data-field="status">'+options(statuses,s.status)+'</select></label><label>Play status<select data-field="play">'+options(playStates,s.play)+'</select></label><label>Buying plan<select data-field="priority">'+options(priorities,s.priority)+'</select></label><label>My maximum total (USD)<input data-field="target" type="number" min="0" max="10000" step="0.01" placeholder="Set a spending limit" value="'+(s.target===null?'':s.target)+'"></label></div>'+source+'<div class="market-links">'+link('https://www.dekudeals.com/search?q='+encodeURIComponent(x.title),'Price history search')+link('https://www.mercari.com/search/?keyword='+term,'Mercari search')+link('https://www.ebay.com/sch/i.html?_nkw='+term+'&LH_Sold=1&LH_Complete=1','eBay sold search')+link('https://www.amazon.com/s?k='+term,'Amazon search')+'</div></div></article>';
 }
 function filtered(){
  const query=q.value.trim().toLowerCase();
  const shown=data.filter(x=>{
   const s=state(x);
-  return (pf.value==='all'||x.platform===pf.value)&&(tf.value==='all'||x.tier===tf.value)&&(lf.value==='all'||x.lane===lf.value)&&
+  return (pf.value==='all'||x.platform===pf.value)&&(tf.value==='all'||x.tier===tf.value)&&(lf.value==='all'||x.lane===lf.value)&&($('cartridge-filter').value==='all'||cartridgeStatus(x)===$('cartridge-filter').value)&&
   ($('release').value==='all'||($('release').value==='research'?needsReleaseCheck(x):!needsReleaseCheck(x)))&&
   ($('ownership').value==='all'||s.status===$('ownership').value)&&
   ($('play-filter').value==='all'||s.play===$('play-filter').value)&&
@@ -427,7 +569,7 @@ cards.addEventListener('change',event=>{
  // Refilter only when this edit changes active filtering or ordering.
  if((field==='status'&&$('ownership').value!=='all')||(field==='play'&&$('play-filter').value!=='all')||(field==='priority'&&$('priority-filter').value!=='all')||(field==='target'&&$('sort').value==='target'))draw();
 });
-[q,pf,tf,lf,$('release'),$('ownership'),$('play-filter'),$('priority-filter'),$('sort')].forEach(el=>el.addEventListener(el===q?'input':'change',draw));
+[q,pf,tf,lf,$('release'),$('ownership'),$('play-filter'),$('priority-filter'),$('sort'),$('cartridge-filter')].forEach(el=>el.addEventListener(el===q?'input':'change',draw));
 $('export').addEventListener('click',()=>{
  const backup={version:1,exportedAt:new Date().toISOString(),records:personal};
  const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));
@@ -449,6 +591,7 @@ $('backup-file').addEventListener('change',async event=>{
 });
 const initialQuery=new URLSearchParams(location.search);
 if(['Switch','Switch 2','PS5','PS4'].includes(initialQuery.get('platform')))pf.value=initialQuery.get('platform');
+if(['confirmed-full','reported-full','needs-verification','game-key'].includes(initialQuery.get('cartridge'))) $('cartridge-filter').value=initialQuery.get('cartridge');
 if(initialQuery.get('q'))q.value=initialQuery.get('q').slice(0,200);
 draw();
 
