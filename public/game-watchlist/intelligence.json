@@ -11,11 +11,11 @@
   },
   "counts": {
     "curatedEntries": 298,
-    "physicalListings": 445,
-    "titlesNotCurated": 419,
+    "physicalListings": 444,
+    "titlesNotCurated": 418,
     "newlySeenListings": 0,
     "fullMediaClaims": 1,
-    "formatUnverified": 424
+    "formatUnverified": 423
   },
   "curated": [
     {
@@ -12047,28 +12047,6 @@
       "seller": "Video Games Plus",
       "url": "https://videogamesplus.ca/products/hyrule-warriors-age-of-calamity-definitive-edition-nintendo-switch-2-pre-order",
       "cover": "https://cdn.shopify.com/s/files/1/0557/5868/4333/files/81wbJnERDKL._AC_SX679.avif?v=1788988329&width=560&format=jpg",
-      "checkedAt": "2026-11-13",
-      "firstSeen": "2026-11-13",
-      "lastSeen": "2026-11-13",
-      "newSinceBaseline": false,
-      "inCuratedCatalog": false,
-      "discoveryStatus": "research-candidate"
-    },
-    {
-      "id": "s2-kuukiyomi-4-consider-it-nintendo-switch-2-edition-jpn-import-multi-language-nintendo-switch-2-pre-order",
-      "title": "Kuukiyomi 4: Consider It Nintendo Switch 2 Edition+ (JPN Import - Multi-Language)",
-      "platform": "Switch 2",
-      "platformKey": "s2",
-      "edition": "Standard",
-      "region": "Japan import",
-      "language": "Verify",
-      "release": "OCTOBER 29, 2026",
-      "media": "Physical media · verify",
-      "mediaStatus": "format-unverified",
-      "availability": "Released / listing recheck",
-      "seller": "Video Games Plus",
-      "url": "https://videogamesplus.ca/products/kuukiyomi-4-consider-it-nintendo-switch-2-edition-jpn-import-multi-language-nintendo-switch-2-pre-order",
-      "cover": "https://cdn.shopify.com/s/files/1/0557/5868/4333/files/kuukiyomi-4-consider-it-nintendo-switch-2-edition-multilanguage-943069.1.jpg?v=1786390029&width=560&format=jpg",
       "checkedAt": "2026-11-13",
       "firstSeen": "2026-11-13",
       "lastSeen": "2026-11-13",
