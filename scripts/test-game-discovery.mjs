@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import test from 'node:test';
 
 const root='public/game-watchlist/';
+const profile=fs.readFileSync(root+'game.html','utf8');
 const html=fs.readFileSync(root+'discover.html','utf8');
 const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 test('Discovery page has working JavaScript and core controls',()=>{
@@ -14,10 +15,17 @@ test('Discovery page has working JavaScript and core controls',()=>{
  }
 });
 test('Discovery uses published data rather than fabricated live availability',()=>{
- assert.match(script,/fetch\('\.\/preorders\.json'/);
+ assert.match(script,/fetch\('\.\/intelligence\.json'/);
  assert.match(script,/fetch\('\.\/deals\.json'/);
  assert.match(html,/retailer listing alone does not verify/i);
  assert.match(script,/Old listing · recheck/);
+});
+test('Per-game profile parses and links to source evidence',()=>{
+ const script=profile.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+ assert.ok(script);
+ new vm.Script(script,{filename:'game.html'});
+ assert.match(script,/intelligence\.json/);
+ assert.match(profile,/Before you buy/);
 });
 test('Published preorder feed is consistent',()=>{
  const feed=JSON.parse(fs.readFileSync(root+'preorders.json','utf8'));
