@@ -43,7 +43,6 @@ jobs:
           node --check public/game-watchlist/preorders.js
           node --check scripts/build-game-intelligence.mjs
           node --test scripts/test-game-discovery.mjs scripts/test-game-intelligence.mjs
-          node --test scripts/test-game-discovery.mjs
           node -e "const f=require('./public/game-watchlist/preorders.json'); if(!Array.isArray(f.items)||!f.updated) process.exit(1)"
       - name: Save refreshed catalog
         run: |
