@@ -75,6 +75,7 @@ export function buildIntelligence({ curated, listings, prior, date, feedDate }) 
       fullMediaClaims: candidates.filter(x=>x.mediaStatus==='retailer-full-card-claim').length,
       formatUnverified: candidates.filter(x=>x.mediaStatus==='format-unverified').length
     },
+    curated,
     candidates
   };
 }
