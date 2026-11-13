@@ -94,7 +94,7 @@ Promise.all([fetch('./intelligence.json',{cache:'no-store'}).then(x=>{if(!x.ok)t
  get('stat-unreviewed').textContent=feed.counts?.titlesNotCurated??retail.filter(x=>!x.inCuratedCatalog).length;
  get('stat-listings').textContent=retail.length;get('stat-freshness').textContent=date(feed.sourceFeedDate);
  const days=(Date.now()-Date.parse(feed.sourceFeedDate))/(86400000);
- get('radar-note').textContent='Retailer feed last published '+date(feed.updated)+(days>7?' · older than 7 days: prioritize source rechecks':'')+'. Listings are not guaranteed in stock. '+(deals?.generatedAt?'Deal checker last published '+date(deals.generatedAt)+'. ': '')+'Use the Deals page for checked offer-specific timestamps.';
+ get('radar-note').textContent='Retailer feed last published '+date(feed.sourceFeedDate)+(days>7?' · older than 7 days: prioritize source rechecks':'')+'. Listings are not guaranteed in stock. '+(deals?.generatedAt?'Deal checker last published '+date(deals.generatedAt)+'. ': '')+'Use the Deals page for checked offer-specific timestamps.';
  draw();
 }).catch(()=>{get('stat-listings').textContent='—';get('stat-freshness').textContent='Unavailable';get('radar-note').textContent='The physical-release feed could not be loaded. Editorial recommendations remain available. Open Upcoming to check the source directly.';draw()});
 draw();
