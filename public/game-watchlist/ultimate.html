@@ -42,6 +42,9 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 <section class="hero"><div class="eyebrow">Four platforms · one collection</div><h1>The Collection</h1><p class="lead"><span id="catalog-total">179</span> curated physical editions and research candidates. PS4 picks focus on exceptional games without a native PS5 edition; many play on PS5 through backward compatibility.</p></section>
 <div class="numbers" id="catalog-stats"></div>
 <section class="collection-guide" aria-label="Collection guide">
+<strong>Switch 2 · Complete on Cartridge First</strong>
+<p>Track all discovered Switch 2 cartridge candidates without mixing full games with Game-Key Cards. Prioritize verified physical editions, confirm ESRB region and retail availability, then compare sealed-copy prices.</p>
+<div class="collection-tools"><button type="button" id="show-full-cart">Browse confirmed full cards</button><button type="button" id="show-all-switch2">Review every Switch 2 entry</button></div>
 <strong>Build the shelf with a plan</strong>
 <p>Crown: our essential picks. Archive: strong additions to preserve. Cult: distinctive games and editions to research. These are editorial judgments, not rarity or investment guarantees.</p>
 <p>Edition confirmation and offline completeness are separate. Older media notes remain research leads until supported by an edition-specific test. North American copies are preferred; imports and mixed-region entries are labeled for checking.</p>
@@ -589,9 +592,12 @@ $('backup-file').addEventListener('change',async event=>{
  }catch(error){message('Import failed: '+error.message+' Your existing collection is unchanged.')}
  finally{event.target.value=''}
 });
+$('show-full-cart').addEventListener('click',()=>{pf.value='Switch 2';$('cartridge-filter').value='confirmed-full';$('release').value='all';draw();$('cards').scrollIntoView({behavior:'smooth',block:'start'})});
+$('show-all-switch2').addEventListener('click',()=>{pf.value='Switch 2';$('cartridge-filter').value='all';$('release').value='all';draw();$('cards').scrollIntoView({behavior:'smooth',block:'start'})});
+$('cartridge-filter').addEventListener('change',()=>{if($('cartridge-filter').value!=='all'){$('release').value='all';pf.value='Switch 2';}draw()});
 const initialQuery=new URLSearchParams(location.search);
 if(['Switch','Switch 2','PS5','PS4'].includes(initialQuery.get('platform')))pf.value=initialQuery.get('platform');
-if(['confirmed-full','reported-full','needs-verification','game-key'].includes(initialQuery.get('cartridge'))) $('cartridge-filter').value=initialQuery.get('cartridge');
+if(['confirmed-full','reported-full','needs-verification','game-key'].includes(initialQuery.get('cartridge'))){$('cartridge-filter').value=initialQuery.get('cartridge');pf.value='Switch 2';$('release').value='all';}
 if(initialQuery.get('q'))q.value=initialQuery.get('q').slice(0,200);
 draw();
 
