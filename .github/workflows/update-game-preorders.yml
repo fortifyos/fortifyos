@@ -8,6 +8,12 @@ on:
     branches: [main]
     paths:
       - scripts/update-game-preorders.mjs
+      - scripts/build-game-intelligence.mjs
+      - scripts/test-game-intelligence.mjs
+      - scripts/test-game-discovery.mjs
+      - public/game-watchlist/ultimate.html
+      - public/game-watchlist/discover.html
+      - public/game-watchlist/game.html
       - public/game-watchlist/supplemental-preorders.json
       - .github/workflows/update-game-preorders.yml
 
@@ -29,20 +35,24 @@ jobs:
           node-version: 22
       - name: Refresh retailer preorder catalog
         run: node scripts/update-game-preorders.mjs
+      - name: Build cross-linked game intelligence
+        run: node scripts/build-game-intelligence.mjs
       - name: Verify catalog and browser script
         run: |
           node --check scripts/update-game-preorders.mjs
           node --check public/game-watchlist/preorders.js
+          node --check scripts/build-game-intelligence.mjs
+          node --test scripts/test-game-discovery.mjs scripts/test-game-intelligence.mjs
           node --test scripts/test-game-discovery.mjs
           node -e "const f=require('./public/game-watchlist/preorders.json'); if(!Array.isArray(f.items)||!f.updated) process.exit(1)"
       - name: Save refreshed catalog
         run: |
-          if git diff --quiet -- public/game-watchlist/preorders.json; then
+          if git diff --quiet -- public/game-watchlist/preorders.json public/game-watchlist/intelligence.json; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/game-watchlist/preorders.json
-          git commit -m "Refresh Game Vault preorder catalog"
+          git add public/game-watchlist/preorders.json public/game-watchlist/intelligence.json
+          git commit -m "Refresh Game Vault preorder and title intelligence"
           git pull --rebase origin main
           git push origin HEAD:main
