@@ -1,25 +1,25 @@
 {
-  "session": "global_markets",
-  "sessionLabel": "Global Markets Open (03:00 ET)",
-  "timestamp": "2026-11-21T05:35:51.921329-05:00",
+  "session": "pre_market",
+  "sessionLabel": "Pre-Market (08:00 ET)",
+  "timestamp": "2026-11-21T13:38:35.951427-05:00",
   "regimeMode": "risk_off",
   "regimeDescription": "Risk-off — volatility spike with deteriorating breadth and defensive rotation",
-  "confidence": 0.36,
+  "confidence": 0.26,
   "scores": {
     "liquidity": 0,
     "inflationPressure": -1,
     "growthHealth": -2,
     "volatilityStress": 2,
     "dollarPressure": 0,
-    "breadthQuality": -2,
-    "cryptoRiskAppetite": -1
+    "breadthQuality": -1,
+    "cryptoRiskAppetite": 1
   },
   "priorRegimeMode": "risk_off",
   "regimeChanged": false,
   "dominantDrivers": [
     "Growth Health strongly suppressed (score: -2)",
     "Volatility Stress strongly elevated (score: +2)",
-    "Breadth Quality strongly suppressed (score: -2)"
+    "Inflation Pressure moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
     "Commodity complex softening — disinflationary read on demand outlook",
