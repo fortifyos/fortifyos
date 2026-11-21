@@ -1,78 +1,15 @@
 {
-  "date": "2026-11-20",
+  "date": "2026-11-21",
   "status": "active",
   "entries": [
     {
       "session": "global_markets",
       "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-11-20T05:51:44.489144-05:00",
-      "regimeMode": "growth_scare",
-      "confidence": 0.43,
-      "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Growth scare — demand-side weakness signaling potential recessionary pressure",
-      "dominantStory": "Regime classification: growth_scare (confidence 43%). Growth scare — demand-side weakness signaling potential recessionary pressure. Primary drivers: Growth Health strongly suppressed (score: -2); Inflation Pressure moderately suppressed (score: -1).",
-      "crossAssetConnections": [
-        "Commodity complex softening — disinflationary read on demand outlook",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
-        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
-      ],
-      "whatChangedSinceLastReport": [
-        "Bitcoin up 0.75% since last checkpoint (+462)",
-        "CBOE VIX up 1.27% since last checkpoint (+0.36)",
-        "Gold (XAU/USD) up 0.62% since last checkpoint (+22)",
-        "WTI Crude Oil down 1.75% since last checkpoint (-1.45)"
-      ],
-      "operatorPosture": "De-risk — defensive sectors, cash; wait for stabilization before re-entry",
-      "watchNext": [
-        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 43%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Elevated volatility increases path uncertainty on all price targets"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-11-20T14:33:43.951438-05:00",
-      "regimeMode": "risk_off",
-      "confidence": 0.37,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Risk-off — volatility spike with deteriorating breadth and defensive rotation",
-      "dominantStory": "Regime classification: risk_off (confidence 37%). Risk-off — volatility spike with deteriorating breadth and defensive rotation. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress strongly elevated (score: +2).",
-      "crossAssetConnections": [
-        "Commodity complex softening — disinflationary read on demand outlook",
-        "VIX in elevated territory — hedging demand elevated, risk premium expanding",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
-      ],
-      "whatChangedSinceLastReport": [
-        "S&P 500 down 3.12% since last checkpoint (-223.8)",
-        "Bitcoin down 6.34% since last checkpoint (-3933)",
-        "CBOE VIX up 15.17% since last checkpoint (+4.37)",
-        "Gold (XAU/USD) down 2.12% since last checkpoint (-76)"
-      ],
-      "operatorPosture": "Defensive — reduce exposure to cyclicals; prioritize volatility management",
-      "watchNext": [
-        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
-        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 37%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "Low confidence — regime classification may shift on next checkpoint",
-        "Elevated volatility increases path uncertainty on all price targets"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-11-20T20:56:43.568557-05:00",
+      "timestamp": "2026-11-21T05:35:51.921394-05:00",
       "regimeMode": "risk_off",
       "confidence": 0.36,
       "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Risk-off — volatility spike with deteriorating breadth and defensive rotation",
+      "headline": "[Global Markets Open (03:00 ET)] Risk-off — volatility spike with deteriorating breadth and defensive rotation",
       "dominantStory": "Regime classification: risk_off (confidence 36%). Risk-off — volatility spike with deteriorating breadth and defensive rotation. Primary drivers: Growth Health strongly suppressed (score: -2); Volatility Stress strongly elevated (score: +2).",
       "crossAssetConnections": [
         "Commodity complex softening — disinflationary read on demand outlook",
@@ -80,10 +17,8 @@
         "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
       ],
       "whatChangedSinceLastReport": [
-        "S&P 500 down 0.60% since last checkpoint (-41.66)",
-        "Bitcoin up 1.35% since last checkpoint (+786)",
-        "CBOE VIX up 8.20% since last checkpoint (+2.72)",
-        "Gold (XAU/USD) up 0.61% since last checkpoint (+21.6)"
+        "Bitcoin down 1.72% since last checkpoint (-1010)",
+        "Gold (XAU/USD) down 0.67% since last checkpoint (-23.6)"
       ],
       "operatorPosture": "Defensive — reduce exposure to cyclicals; prioritize volatility management",
       "watchNext": [
@@ -98,6 +33,6 @@
       ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-11-20T20:56:43.569435-05:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-11-21T05:35:51.922086-05:00"
 }
