@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-21T19:53:50.658056-05:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-11-22T05:39:43.585523-05:00",
   "regimeMode": "risk_off",
   "regimeDescription": "Risk-off — volatility spike with deteriorating breadth and defensive rotation",
   "confidence": 0.26,
