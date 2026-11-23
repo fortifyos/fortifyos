@@ -1,13 +1,13 @@
 {
-  "session": "pre_market",
-  "sessionLabel": "Pre-Market (08:00 ET)",
-  "timestamp": "2026-11-22T13:58:41.099544-05:00",
+  "session": "mid_session",
+  "sessionLabel": "Mid-Session (14:00 ET)",
+  "timestamp": "2026-11-22T20:22:09.311759-05:00",
   "regimeMode": "risk_off",
   "regimeDescription": "Risk-off — volatility spike with deteriorating breadth and defensive rotation",
-  "confidence": 0.26,
+  "confidence": 0.16,
   "scores": {
     "liquidity": 0,
-    "inflationPressure": -1,
+    "inflationPressure": 0,
     "growthHealth": -2,
     "volatilityStress": 2,
     "dollarPressure": 0,
@@ -19,10 +19,9 @@
   "dominantDrivers": [
     "Growth Health strongly suppressed (score: -2)",
     "Volatility Stress strongly elevated (score: +2)",
-    "Inflation Pressure moderately suppressed (score: -1)"
+    "Breadth Quality moderately suppressed (score: -1)"
   ],
   "supportingEvidence": [
-    "Commodity complex softening — disinflationary read on demand outlook",
     "VIX in elevated territory — hedging demand elevated, risk premium expanding",
     "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
     "Breadth divergence — SPX/BTC divergence or narrow leadership visible"

@@ -1,6 +1,6 @@
 {
-  "session": "pre_market",
-  "timestamp": "2026-11-22T13:58:41.098976-05:00",
+  "session": "mid_session",
+  "timestamp": "2026-11-22T20:22:09.311200-05:00",
   "assets": [
     {
       "key": "spx",
@@ -16,11 +16,11 @@
     {
       "key": "btc",
       "label": "Bitcoin",
-      "value": 60730.0,
-      "changeSinceLast": 49.0,
-      "pctSinceLast": 0.0808,
-      "changeVsClose": 677.987224,
-      "pctVsClose": 1.129,
+      "value": 60922.0,
+      "changeSinceLast": 192.0,
+      "pctSinceLast": 0.3162,
+      "changeVsClose": 796.067348,
+      "pctVsClose": 1.324,
       "impactTag": "bullish",
       "meta": {}
     },
@@ -30,20 +30,20 @@
       "value": 35.89,
       "changeSinceLast": 0.0,
       "pctSinceLast": 0.0,
-      "changeVsClose": 7.449887,
-      "pctVsClose": 26.195,
+      "changeVsClose": 11.330013,
+      "pctVsClose": 46.132,
       "impactTag": "strongly_bullish",
       "meta": {}
     },
     {
       "key": "gold",
       "label": "Gold (XAU/USD)",
-      "value": 3515.4,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.0,
-      "pctVsClose": 0.0,
-      "impactTag": "neutral",
+      "value": 3601.1,
+      "changeSinceLast": 85.7,
+      "pctSinceLast": 2.4378,
+      "changeVsClose": 85.705322,
+      "pctVsClose": 2.438,
+      "impactTag": "strongly_bullish",
       "meta": {}
     },
     {
@@ -60,11 +60,11 @@
     {
       "key": "dxy",
       "label": "US Dollar Index",
-      "value": 103.84,
-      "changeSinceLast": 0.0,
-      "pctSinceLast": 0.0,
-      "changeVsClose": 0.030105,
-      "pctVsClose": 0.029,
+      "value": 103.76,
+      "changeSinceLast": -0.08,
+      "pctSinceLast": -0.077,
+      "changeVsClose": -0.04879,
+      "pctVsClose": -0.047,
       "impactTag": "neutral",
       "meta": {}
     },
