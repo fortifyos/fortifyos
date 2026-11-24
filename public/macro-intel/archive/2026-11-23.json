@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-23",
+  "status": "archived",
+  "entries": [
+    {
+      "session": "global_markets",
+      "sessionLabel": "Global Markets Open (03:00 ET)",
+      "timestamp": "2026-11-23T06:43:28.271153-05:00",
+      "regimeMode": "growth_scare",
+      "confidence": 0.13,
+      "source": "rule_based",
+      "headline": "[Global Markets Open (03:00 ET)] Growth scare — demand-side weakness signaling potential recessionary pressure",
+      "dominantStory": "Regime classification: growth_scare (confidence 13%). Growth scare — demand-side weakness signaling potential recessionary pressure. Primary drivers: Growth Health strongly suppressed (score: -2); Crypto Risk Appetite moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+      ],
+      "whatChangedSinceLastReport": [
+        "Bitcoin up 0.87% since last checkpoint (+529)",
+        "CBOE VIX down 15.99% since last checkpoint (-5.74)",
+        "Gold (XAU/USD) up 0.55% since last checkpoint (+19.8)",
+        "WTI Crude Oil down 1.71% since last checkpoint (-1.43)"
+      ],
+      "operatorPosture": "De-risk — defensive sectors, cash; wait for stabilization before re-entry",
+      "watchNext": [
+        "SPX 200-day MA — key structural support; break and hold below shifts trend regime",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 13%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint"
+      ]
+    },
+    {
+      "session": "mid_session",
+      "sessionLabel": "Mid-Session (14:00 ET)",
+      "timestamp": "2026-11-23T18:18:46.572421-05:00",
+      "regimeMode": "mixed",
+      "confidence": 0.3,
+      "source": "rule_based",
+      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 30%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Breadth Quality strongly elevated (score: +2); Dollar Pressure moderately elevated (score: +1).",
+      "crossAssetConnections": [
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+        "Broad participation — cross-asset confirmation across equities and crypto"
+      ],
+      "whatChangedSinceLastReport": [
+        "S&P 500 up 4.73% since last checkpoint (+326.8)",
+        "CBOE VIX down 11.71% since last checkpoint (-3.53)",
+        "WTI Crude Oil down 2.18% since last checkpoint (-1.79)"
+      ],
+      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
+      "watchNext": [
+        "DXY 105 — resistance zone; sustained break higher increases cross-asset stress",
+        "10Y Treasury 4.5% — yield boundary between equity-supportive and equity-restrictive regimes"
+      ],
+      "confidenceCommentary": "Rule-based confidence: 30%. Score spread suggests low conviction. Signals partially contradictory — treat regime with caution.",
+      "uncertaintyFlags": [
+        "Low confidence — regime classification may shift on next checkpoint",
+        "No dominant regime — cross-asset signals contradictory"
+      ]
+    }
+  ],
+  "entryCount": 2,
+  "lastUpdated": "2026-11-23T18:18:46.573468-05:00",
+  "archivedAt": "2026-11-24T03:09:58.002947-05:00"
+}
