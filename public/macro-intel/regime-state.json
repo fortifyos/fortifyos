@@ -1,7 +1,7 @@
 {
-  "session": "mid_session",
-  "sessionLabel": "Mid-Session (14:00 ET)",
-  "timestamp": "2026-11-25T20:29:31.981403-05:00",
+  "session": "global_markets",
+  "sessionLabel": "Global Markets Open (03:00 ET)",
+  "timestamp": "2026-11-26T06:50:09.151355-05:00",
   "regimeMode": "mixed",
   "regimeDescription": "Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
   "confidence": 0.4,
@@ -11,11 +11,11 @@
     "growthHealth": -1,
     "volatilityStress": 1,
     "dollarPressure": 0,
-    "breadthQuality": -1,
+    "breadthQuality": 0,
     "cryptoRiskAppetite": 1
   },
-  "priorRegimeMode": "risk_off",
-  "regimeChanged": true,
+  "priorRegimeMode": "mixed",
+  "regimeChanged": false,
   "dominantDrivers": [
     "Inflation Pressure moderately elevated (score: +1)",
     "Growth Health moderately suppressed (score: -1)",
@@ -23,8 +23,7 @@
   ],
   "supportingEvidence": [
     "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-    "Growth proxies deteriorating — SPX under pressure and/or VIX rising",
-    "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
+    "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
   ],
   "watchLevels": [
     "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
