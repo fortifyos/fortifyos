@@ -1,81 +1,26 @@
 {
-  "date": "2026-11-26",
+  "date": "2026-11-27",
   "status": "active",
   "entries": [
     {
-      "session": "global_markets",
-      "sessionLabel": "Global Markets Open (03:00 ET)",
-      "timestamp": "2026-11-26T06:50:09.151505-05:00",
+      "session": "pre_market",
+      "sessionLabel": "Pre-Market (08:00 ET)",
+      "timestamp": "2026-11-27T11:02:18.016752-05:00",
       "regimeMode": "mixed",
       "confidence": 0.4,
       "source": "rule_based",
-      "headline": "[Global Markets Open (03:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Growth Health moderately suppressed (score: -1).",
+      "headline": "[Pre-Market (08:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
+      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Volatility Stress moderately elevated (score: +1).",
       "crossAssetConnections": [
         "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
+        "Dollar bid — cross-asset pressure on commodities and EM risk assets",
+        "Breadth divergence — SPX/BTC divergence or narrow leadership visible"
       ],
       "whatChangedSinceLastReport": [
-        "CBOE VIX down 4.42% since last checkpoint (-1.25)",
-        "WTI Crude Oil up 0.86% since last checkpoint (+0.72)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory",
-        "Elevated volatility increases path uncertainty on all price targets"
-      ]
-    },
-    {
-      "session": "mid_session",
-      "sessionLabel": "Mid-Session (14:00 ET)",
-      "timestamp": "2026-11-26T15:52:12.636264-05:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Mid-Session (14:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Growth Health moderately suppressed (score: -1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
-      ],
-      "whatChangedSinceLastReport": [
-        "CBOE VIX down 0.89% since last checkpoint (-0.24)"
-      ],
-      "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
-      "watchNext": [
-        "VIX 30 — a sustained breach confirms stress escalation; break below signals relief",
-        "WTI $90+ — key level where energy costs begin to feed into broader CPI expectations",
-        "Gold $2,400 — sustained hold signals institutional inflation hedging in force"
-      ],
-      "confidenceCommentary": "Rule-based confidence: 40%. Score spread suggests moderate conviction. Signals partially contradictory — treat regime with caution.",
-      "uncertaintyFlags": [
-        "No dominant regime — cross-asset signals contradictory",
-        "Elevated volatility increases path uncertainty on all price targets"
-      ]
-    },
-    {
-      "session": "evening_wrap",
-      "sessionLabel": "Evening Wrap (21:00 ET)",
-      "timestamp": "2026-11-26T22:26:54.075502-05:00",
-      "regimeMode": "mixed",
-      "confidence": 0.4,
-      "source": "rule_based",
-      "headline": "[Evening Wrap (21:00 ET)] Mixed — no clear dominant macro regime; signals are contradictory or low-conviction",
-      "dominantStory": "Regime classification: mixed (confidence 40%). Mixed — no clear dominant macro regime; signals are contradictory or low-conviction. Primary drivers: Inflation Pressure moderately elevated (score: +1); Growth Health moderately suppressed (score: -1).",
-      "crossAssetConnections": [
-        "Commodity complex showing inflation persistence — oil and/or gold trending higher",
-        "Growth proxies deteriorating — SPX under pressure and/or VIX rising"
-      ],
-      "whatChangedSinceLastReport": [
-        "Bitcoin up 1.44% since last checkpoint (+872)",
-        "Gold (XAU/USD) up 1.78% since last checkpoint (+64.1)",
-        "WTI Crude Oil up 1.07% since last checkpoint (+0.91)"
+        "S&P 500 up 1.16% since last checkpoint (+83.63)",
+        "Bitcoin down 2.40% since last checkpoint (-1477)",
+        "CBOE VIX down 5.86% since last checkpoint (-1.57)",
+        "WTI Crude Oil down 2.67% since last checkpoint (-2.29)"
       ],
       "operatorPosture": "Neutral — reduce conviction bets; size positions smaller pending clarity",
       "watchNext": [
@@ -90,6 +35,6 @@
       ]
     }
   ],
-  "entryCount": 3,
-  "lastUpdated": "2026-11-26T22:26:54.076415-05:00"
+  "entryCount": 1,
+  "lastUpdated": "2026-11-27T11:02:18.017403-05:00"
 }
